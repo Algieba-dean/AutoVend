@@ -1,0 +1,20 @@
+[project]
+name = "scripts"
+version = "0.1.0"
+description = "AutoVend scripts"
+readme = "README.md"
+requires-python = "~=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "graphrag>=2.1.0",
+    "httpx>=0.28.1",
+    "ipykernel>=6.29.5",
+    "mcp>=1.6.0",
+    "openai>=1.72.0",
+    "openai-agents>=0.0.9",
+    "pip>=25.0.1",
+    "python-dotenv>=1.1.0",
+]
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
