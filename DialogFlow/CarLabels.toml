@@ -1,0 +1,26 @@
+# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+
+title = "CarLabels"
+
+[Pricise Labels]
+
+# prize, the prize range of this car model, should be like "200,000-300,000"
+prize = ""
+
+# vehicle_category, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV"
+vehicle_category = ""
+
+# brand, candidate values: "BMW", "Audi", "Mercedes-Benz"
+brand = ""
+
+[Ambibuous Labels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = ""
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = ""
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = ""
+

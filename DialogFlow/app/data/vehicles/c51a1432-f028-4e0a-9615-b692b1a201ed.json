@@ -1,0 +1,31 @@
+{
+    "vehicle_id": "c51a1432-f028-4e0a-9615-b692b1a201ed",
+    "brand": "Ford",
+    "model": "F-150",
+    "category": "Pickup Truck",
+    "price": 35000.0,
+    "year": 2023,
+    "specs": {
+        "engine": "3.5L V6",
+        "transmission": "10-Speed Automatic",
+        "fuel_economy": "20 city / 26 highway",
+        "horsepower": 290,
+        "seats": 6,
+        "towing_capacity": "8,500 lbs"
+    },
+    "features": [
+        "Android Auto",
+        "Apple CarPlay",
+        "Bluetooth",
+        "Backup Camera",
+        "Pro Trailer Backup Assist",
+        "Tailgate Step"
+    ],
+    "tags": [
+        "Rugged",
+        "Utility",
+        "Work",
+        "Towing",
+        "Off-road"
+    ]
+}

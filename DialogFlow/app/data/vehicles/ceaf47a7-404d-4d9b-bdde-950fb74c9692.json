@@ -1,0 +1,29 @@
+{
+    "vehicle_id": "ceaf47a7-404d-4d9b-bdde-950fb74c9692",
+    "brand": "Tesla",
+    "model": "Model 3",
+    "category": "Electric Sedan",
+    "price": 42000.0,
+    "year": 2023,
+    "specs": {
+        "engine": "Electric",
+        "transmission": "Single-Speed",
+        "range": "358 miles",
+        "horsepower": 283,
+        "seats": 5
+    },
+    "features": [
+        "Autopilot",
+        "Navigation",
+        "Panoramic Roof",
+        "Over-the-air Updates",
+        "Sentry Mode",
+        "15-inch Touchscreen"
+    ],
+    "tags": [
+        "Electric",
+        "Tech-forward",
+        "Eco-friendly",
+        "Modern"
+    ]
+}

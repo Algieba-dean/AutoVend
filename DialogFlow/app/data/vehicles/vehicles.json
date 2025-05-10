@@ -1,0 +1,152 @@
+[
+    {
+        "vehicle_id": "5fb97caf-db22-46be-b118-3669dcaa8c7a",
+        "brand": "Toyota",
+        "model": "Camry",
+        "category": "Sedan",
+        "price": 25000.0,
+        "year": 2023,
+        "specs": {
+            "engine": "2.5L 4-Cylinder",
+            "transmission": "8-Speed Automatic",
+            "fuel_economy": "28 city / 39 highway",
+            "horsepower": 203,
+            "seats": 5
+        },
+        "features": [
+            "Android Auto",
+            "Apple CarPlay",
+            "Bluetooth",
+            "Backup Camera",
+            "Lane Departure Warning",
+            "Adaptive Cruise Control"
+        ],
+        "tags": [
+            "Reliable",
+            "Fuel-efficient",
+            "Family",
+            "Commuter"
+        ]
+    },
+    {
+        "vehicle_id": "0cf0205b-14b0-42d5-abca-e80d87426740",
+        "brand": "Honda",
+        "model": "CR-V",
+        "category": "SUV",
+        "price": 28000.0,
+        "year": 2023,
+        "specs": {
+            "engine": "1.5L Turbo 4-Cylinder",
+            "transmission": "CVT",
+            "fuel_economy": "28 city / 34 highway",
+            "horsepower": 190,
+            "seats": 5
+        },
+        "features": [
+            "Android Auto",
+            "Apple CarPlay",
+            "Bluetooth",
+            "Backup Camera",
+            "Lane Keeping Assist",
+            "Adaptive Cruise Control",
+            "Collision Mitigation Braking"
+        ],
+        "tags": [
+            "Versatile",
+            "Spacious",
+            "Family",
+            "Reliable",
+            "Safety"
+        ]
+    },
+    {
+        "vehicle_id": "09ef640c-efa2-4da8-a3b5-680515f8fab4",
+        "brand": "BMW",
+        "model": "3 Series",
+        "category": "Luxury Sedan",
+        "price": 45000.0,
+        "year": 2023,
+        "specs": {
+            "engine": "2.0L Turbo 4-Cylinder",
+            "transmission": "8-Speed Automatic",
+            "fuel_economy": "26 city / 36 highway",
+            "horsepower": 255,
+            "seats": 5
+        },
+        "features": [
+            "Android Auto",
+            "Apple CarPlay",
+            "Bluetooth",
+            "Navigation",
+            "Heated Seats",
+            "Premium Sound System",
+            "Heads-up Display"
+        ],
+        "tags": [
+            "Luxury",
+            "Performance",
+            "Status",
+            "Technology"
+        ]
+    },
+    {
+        "vehicle_id": "ceaf47a7-404d-4d9b-bdde-950fb74c9692",
+        "brand": "Tesla",
+        "model": "Model 3",
+        "category": "Electric Sedan",
+        "price": 42000.0,
+        "year": 2023,
+        "specs": {
+            "engine": "Electric",
+            "transmission": "Single-Speed",
+            "range": "358 miles",
+            "horsepower": 283,
+            "seats": 5
+        },
+        "features": [
+            "Autopilot",
+            "Navigation",
+            "Panoramic Roof",
+            "Over-the-air Updates",
+            "Sentry Mode",
+            "15-inch Touchscreen"
+        ],
+        "tags": [
+            "Electric",
+            "Tech-forward",
+            "Eco-friendly",
+            "Modern"
+        ]
+    },
+    {
+        "vehicle_id": "c51a1432-f028-4e0a-9615-b692b1a201ed",
+        "brand": "Ford",
+        "model": "F-150",
+        "category": "Pickup Truck",
+        "price": 35000.0,
+        "year": 2023,
+        "specs": {
+            "engine": "3.5L V6",
+            "transmission": "10-Speed Automatic",
+            "fuel_economy": "20 city / 26 highway",
+            "horsepower": 290,
+            "seats": 6,
+            "towing_capacity": "8,500 lbs"
+        },
+        "features": [
+            "Android Auto",
+            "Apple CarPlay",
+            "Bluetooth",
+            "Backup Camera",
+            "Pro Trailer Backup Assist",
+            "Tailgate Step"
+        ],
+        "tags": [
+            "Rugged",
+            "Utility",
+            "Work",
+            "Towing",
+            "Off-road"
+        ]
+    }
+]

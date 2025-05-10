@@ -1,0 +1,31 @@
+{
+    "vehicle_id": "0cf0205b-14b0-42d5-abca-e80d87426740",
+    "brand": "Honda",
+    "model": "CR-V",
+    "category": "SUV",
+    "price": 28000.0,
+    "year": 2023,
+    "specs": {
+        "engine": "1.5L Turbo 4-Cylinder",
+        "transmission": "CVT",
+        "fuel_economy": "28 city / 34 highway",
+        "horsepower": 190,
+        "seats": 5
+    },
+    "features": [
+        "Android Auto",
+        "Apple CarPlay",
+        "Bluetooth",
+        "Backup Camera",
+        "Lane Keeping Assist",
+        "Adaptive Cruise Control",
+        "Collision Mitigation Braking"
+    ],
+    "tags": [
+        "Versatile",
+        "Spacious",
+        "Family",
+        "Reliable",
+        "Safety"
+    ]
+}
