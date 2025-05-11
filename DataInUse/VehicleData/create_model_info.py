@@ -5,12 +5,14 @@ using OpenAI API to generate realistic car specifications.
 
 Usage:
     python create_model_info.py --model_name "Audi-A8"
+    python create_model_info.py --brand_name "Audi"  # Generate info for all models in brand's model_list.py
 """
 
 import os
 import argparse
 import openai
 import re
+import time
 from brand_list import brand_list
 
 # OpenAI API configuration
@@ -30,7 +32,11 @@ PURE_COMBUSTION_LABELS = ["engine_displacement", "fuel_consumption", "fuel_tank_
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="Generate detailed information file for a specific car model")
-    parser.add_argument("--model_name", type=str, required=True, help="Car model name (e.g., 'Audi-A8')")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--model_name", type=str, help="Car model name (e.g., 'Audi-A8')")
+    group.add_argument("--brand_name", type=str, help="Brand name to generate info for all models")
+    parser.add_argument("--delay", type=int, default=2, help="Delay in seconds between API calls when processing multiple models (default: 2)")
+    parser.add_argument("--skip_existing", action="store_true", help="Skip models that already have .toml files")
     return parser.parse_args()
 
 def validate_model_name(model_name):
@@ -48,6 +54,42 @@ def validate_model_name(model_name):
         return False
     
     return True
+
+def validate_brand_name(brand_name):
+    """Validate if the brand exists."""
+    if brand_name not in brand_list:
+        print(f"Error: Brand '{brand_name}' is not in the list of available brands.")
+        print("Available brands:")
+        for b in sorted(brand_list):
+            print(f"- {b}")
+        return False
+    return True
+
+def get_models_for_brand(brand_name):
+    """Get all models for a specific brand from model_list.py."""
+    model_list_path = os.path.join(os.getcwd(), brand_name, "model_list.py")
+    
+    if not os.path.exists(model_list_path):
+        print(f"Error: Model list file '{model_list_path}' does not exist.")
+        return []
+    
+    try:
+        # Create a temporary namespace
+        namespace = {}
+        # Execute the file content in the namespace
+        with open(model_list_path, 'r') as f:
+            exec(f.read(), namespace)
+        # Extract the model_list variable
+        if 'model_list' in namespace:
+            models = namespace['model_list']
+            print(f"Found {len(models)} models for {brand_name}.")
+            return models
+        else:
+            print(f"Error: No 'model_list' found in {model_list_path}")
+            return []
+    except Exception as e:
+        print(f"Error reading model list file: {e}")
+        return []
 
 def check_model_exists(model_name):
     """Check if the model exists in the brand's model_list.py file."""
@@ -77,6 +119,12 @@ def check_model_exists(model_name):
     except Exception as e:
         print(f"Error reading model list file: {e}")
         return False
+
+def check_info_file_exists(model_name):
+    """Check if the model's info file already exists."""
+    brand = model_name.split("-")[0]
+    info_file = os.path.join(os.getcwd(), brand, f"{model_name}.toml")
+    return os.path.exists(info_file)
 
 def extract_sections_from_template(template):
     """Extract section names and the last label from the template."""
@@ -526,23 +574,12 @@ def write_model_info(model_name, info_content):
         print(f"Error writing information file: {e}")
         return False
 
-def main():
-    """Main function to run the script."""
-    args = parse_arguments()
-    model_name = args.model_name
-    
-    if not validate_model_name(model_name):
-        return
-    
-    if not check_model_exists(model_name):
-        user_input = input(f"Model '{model_name}' not found in model list. Continue anyway? (y/n): ")
-        if user_input.lower() != 'y':
-            return
-    
-    template = read_template()
-    if not template:
-        return
-    
+def process_single_model(model_name, template, args):
+    """Process a single model - generate and save info."""
+    if args.skip_existing and check_info_file_exists(model_name):
+        print(f"Skipping {model_name} - info file already exists.")
+        return True
+        
     print(f"Generating detailed information for {model_name}...")
     info_content = generate_model_info(model_name, template)
     
@@ -550,8 +587,72 @@ def main():
         success = write_model_info(model_name, info_content)
         if success:
             print(f"Done! Information file for {model_name} created successfully.")
+            return True
+        else:
+            print(f"Failed to write information file for {model_name}.")
+            return False
     else:
-        print("Failed to generate model information.")
+        print(f"Failed to generate model information for {model_name}.")
+        return False
+
+def main():
+    """Main function to run the script."""
+    args = parse_arguments()
+    
+    template = read_template()
+    if not template:
+        return
+    
+    if args.model_name:
+        # Process a single model
+        if not validate_model_name(args.model_name):
+            return
+        
+        if not check_model_exists(args.model_name):
+            user_input = input(f"Model '{args.model_name}' not found in model list. Continue anyway? (y/n): ")
+            if user_input.lower() != 'y':
+                return
+        
+        process_single_model(args.model_name, template, args)
+    
+    elif args.brand_name:
+        # Process all models for a brand
+        if not validate_brand_name(args.brand_name):
+            return
+        
+        models = get_models_for_brand(args.brand_name)
+        if not models:
+            return
+        
+        print(f"Will generate info files for {len(models)} models of {args.brand_name}.")
+        
+        success_count = 0
+        fail_count = 0
+        skip_count = 0
+        
+        for i, model in enumerate(models):
+            print(f"\nProcessing model {i+1} of {len(models)}: {model}")
+            
+            if args.skip_existing and check_info_file_exists(model):
+                print(f"Skipping {model} - info file already exists.")
+                skip_count += 1
+                continue
+            
+            if process_single_model(model, template, args):
+                success_count += 1
+            else:
+                fail_count += 1
+            
+            # Add delay between API calls to avoid rate limiting
+            if i < len(models) - 1:  # Don't delay after the last model
+                print(f"Waiting {args.delay} seconds before processing next model...")
+                time.sleep(args.delay)
+        
+        print(f"\nSummary for {args.brand_name}:")
+        print(f"Total models: {len(models)}")
+        print(f"Successfully processed: {success_count}")
+        print(f"Failed: {fail_count}")
+        print(f"Skipped (already exist): {skip_count}")
 
 if __name__ == "__main__":
     main() 

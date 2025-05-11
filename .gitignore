@@ -1,0 +1,9 @@
+**/venv/**
+DialogFlow/app/data/vehicles/*.json
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.pyw
+**/*.pyz
+**/*.pywz
+**/*.pyzw

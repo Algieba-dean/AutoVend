@@ -10,5 +10,15 @@ model_list = [
     "Audi-Q7 55 TFSI e quattro",
     "Audi-RS6 Avant Performance",
     "Audi-e-tron GT quattro",
-    "Audi-A3 35 TFSI Sportback S tronic"
+    "Audi-A3 35 TFSI Sportback S tronic",
+    "Audi-S5 Sportback 3.0 TFSI quattro",
+    "Audi-Q8 60 TFSI e quattro",
+    "Audi-TT RS Coupe 2.5 TFSI",
+    "Audi-A6 allroad 55 TFSI quattro",
+    "Audi-SQ7 TDI V8",
+    "Audi-RS Q8 Performance",
+    "Audi-A1 Sportback 40 TFSI S line",
+    "Audi-e-tron S Sportback",
+    "Audi-RS3 Sportback 2.5 TFSI",
+    "Audi-A7 50 TDI quattro S tronic"
 ]

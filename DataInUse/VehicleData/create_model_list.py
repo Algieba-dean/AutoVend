@@ -171,6 +171,8 @@ def main():
     if not validate_brand(brand_name):
         return
     # for brand_name in brand_list:
+    #     if brand_name == "XiaoMi":
+    #         continue
     #     # Check for existing models
     #     existing_models = get_existing_models(brand_name)
     
