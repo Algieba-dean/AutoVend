@@ -1,0 +1,182 @@
+# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+
+title = "CarLabels"
+
+car_model = "BYD-Dolphin 405km Dynamic"
+car_model_comments = "The BYD Dolphin 405km Dynamic is a compact electric hatchback with a focus on urban mobility and efficiency."
+
+[Pricise Labels]
+
+prize = "30,000-35,000"
+prize_comments = "The BYD-Dolphin 405km Dynamic is priced between $30,000 and $35,000 USD depending on regional taxes and incentives."
+
+vehicle_category = "Compact Sedan"
+vehicle_category_comments = "The Dolphin is classified as a compact sedan with a length of 4,290mm and a wheelbase of 2,700mm."
+
+brand = "BYD"
+brand_comments = "BYD (Build Your Dreams) is a Chinese automotive manufacturer specializing in electric vehicles and battery technology."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The Dolphin 405km Dynamic is a pure electric vehicle with no internal combustion engine."
+
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers 4.2 cubic meters of passenger space with comfortable seating for five adults."
+
+trunk_volume = "300~400L"
+trunk_volume_comments = "The trunk capacity is 345 liters, expandable to 1,310 liters with rear seats folded."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase measures exactly 2,700mm, providing stable handling and good interior space."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is 140mm, optimized for urban driving conditions."
+
+design_style = "Sproty"
+design_style_comments = "Features a youthful, sporty design with dolphin-inspired styling cues."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The car features flowing, aerodynamic lines with a drag coefficient of 0.29."
+
+color = "Bright Colors"
+color_comments = "Available in vibrant colors including Coral Pink, Surf Blue, and Ski White."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Features modern interior with metal accents and soft-touch materials."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard across all trims."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side, and curtain airbags for comprehensive protection."
+
+seat_material = "Lether"
+seat_material_comments = "Premium synthetic leather upholstery with contrast stitching."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Effective noise reduction with some road noise at highway speeds."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BYD DiLink system supports natural voice commands for navigation and climate control."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for infotainment and vehicle systems."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Level 2 ADAS with adaptive cruise and lane centering."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Radar-based adaptive cruise with stop-and-go functionality."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic jam assist works below 60km/h for low-speed congestion."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with automatic emergency braking."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane departure warning with active lane keeping assistance."
+
+remote_parking = "No"
+remote_parking_comments = "Does not feature remote parking capability."
+
+auto_parking = "Yes"
+auto_parking_comments = "Includes semi-automatic parking assist for parallel and perpendicular spaces."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver attention monitoring system included."
+
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as this is a pure electric vehicle."
+
+motor_power = "70~120kW"
+motor_power_comments = "Front-mounted permanent magnet synchronous motor producing 95kW (127hp)."
+
+battery_capacity = "50~80kWh"
+battery_capacity_comments = "44.9kWh Blade Battery (LFP chemistry) with advanced thermal management."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable for battery electric vehicles."
+
+horsepower = "100~200hp"
+horsepower_comments = "Produces 127 horsepower (95kW) for responsive urban performance."
+
+torque = "200~300N·m"
+torque_comments = "180N·m of instant torque provides strong acceleration from standstill."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100km/h in 9.9 seconds, optimized for efficiency."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 160km/h for efficiency and safety."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable for battery electric vehicles."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "Rated at 12.5kWh/100km under CLTC test conditions."
+
+driving_range = "300~400km"
+driving_range_comments = "CLTC-rated range of 405km (252 miles) on full charge."
+
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Single motor front-wheel drive configuration."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts and rear torsion beam setup."
+
+passibility = "Medium"
+passibility_comments = "Balanced for urban driving with 140mm ground clearance."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard five-seat configuration with 60:40 split rear seats."
+
+city_commuting = "Yes"
+city_commuting_comments = "Ideal for urban use with compact dimensions and EV efficiency."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "405km range suitable for intercity travel with charging stops."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Practical cargo space with fold-flat rear seats."
+
+clod_resistance = "High"
+clod_resistance_comments = "Blade Battery maintains 80% capacity at -30°C with heat pump system."
+
+heat_resistance = "High"
+heat_resistance_comments = "Advanced battery cooling system maintains performance in hot climates."
+
+[Ambibuous Labels]
+
+size = "Small"
+size_comments = "Compact dimensions ideal for urban environments (4,290mm length)."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced between compact size and practical interior space."
+
+aesthetics = "High"
+aesthetics_comments = "Modern, youthful design with distinctive BYD styling."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Efficient electric drivetrain with 12.5kWh/100km rating."
+
+confort_level = "Medium"
+confort_level_comments = "Comfortable for class with quality materials and adequate space."
+
+smartness = "High"
+smartness_comments = "Advanced connectivity and driver assistance features."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical for small families with good safety features."
+
+[Key Details]
+key_details="The BYD Dolphin 405km Dynamic features BYD's proprietary Blade Battery technology offering enhanced safety and longevity. It includes a 12.8-inch rotating touchscreen with DiLink 4.0 system, V2L (vehicle-to-load) capability, and comprehensive ADAS suite. The thermal management system ensures reliable performance in extreme temperatures."
+key_details_comments = "The BYD Dolphin 405km Dynamic showcases BYD's innovative Blade Battery technology, which provides superior thermal stability and safety compared to conventional lithium-ion batteries. The vehicle features a 12.8-inch adaptive rotating touchscreen with the DiLink 4.0 infotainment system, offering smartphone-like responsiveness and connectivity. Unique V2L (vehicle-to-load) capability allows the car to power external devices up to 3.3kW. The comprehensive ADAS suite includes 12 ultrasonic radars and 5 millimeter-wave radars for robust driver assistance. The advanced thermal management system with heat pump technology ensures optimal battery performance in temperatures ranging from -30°C to 60°C, while the e-platform 3.0 architecture provides excellent structural rigidity and energy efficiency."

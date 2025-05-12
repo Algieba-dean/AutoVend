@@ -1,0 +1,233 @@
+# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+
+title = "CarLabels"
+
+car_model = "Audi-RS3 Sportback 2.5 TFSI"
+
+[Pricise Labels]
+
+# prize, the prize range of this car model, should be like "200,000-300,000"
+prize = "60,000-70,000"
+prize_comments = "The Audi-RS3 Sportback 2.5 TFSI is priced between $60,000 and $70,000 USD depending on the trim level and options."
+
+# vehicle_category, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category = "Compact Sedan"
+vehicle_category_comments = "The Audi-RS3 Sportback is a high-performance compact sedan with a sporty design and hatchback practicality."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Citroën", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Audi"
+brand_comments = "Audi is a German luxury automotive manufacturer known for its Quattro all-wheel-drive system and high-performance RS models."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The RS3 Sportback is powered by a turbocharged 2.5L inline-5 gasoline engine, a signature of Audi's high-performance models."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The RS3 Sportback offers a passenger space volume of approximately 3.8 cubic meters, providing comfortable seating for five."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "300~400L"
+trunk_volume_comments = "The exact trunk capacity is 356L, expandable to 1,102L with rear seats folded, offering practical cargo space for a compact sedan."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The RS3 Sportback has a wheelbase of 2,630mm, providing a balanced combination of agility and stability."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The RS3 Sportback features a sport-tuned suspension with a chassis height of approximately 140mm for improved handling."
+
+# design_style, candidate values: "Sproty", "Business"
+design_style = "Sproty"
+design_style_comments = "The RS3 Sportback has an aggressive, sporty design with flared wheel arches, a honeycomb grille, and distinctive RS styling cues."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The RS3 Sportback features sleek, aerodynamic body lines with a drag coefficient of 0.34, enhancing both aesthetics and performance."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "The RS3 Sportback is available in a range of colors, including Nardo Gray, Daytona Gray, and Glacier White, which are neutral yet sporty."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The RS3 Sportback's interior features aluminum trim, carbon fiber accents, and high-quality leather upholstery for a sporty, premium feel."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The RS3 Sportback is equipped with an advanced Anti-lock Braking System (ABS) for improved control during hard braking."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "The RS3 Sportback includes Electronic Stability Program (ESP) to enhance stability and prevent skidding in challenging driving conditions."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "The RS3 Sportback is equipped with 8 airbags, including front, side, and curtain airbags for comprehensive occupant protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The RS3 Sportback features premium Nappa leather seats with RS embossing, offering both comfort and sporty support."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "The RS3 Sportback provides excellent noise insulation, with acoustic glass and sound-deadening materials for a quiet cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The RS3 Sportback's MMI infotainment system supports voice interaction for navigation, media, and climate control."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The RS3 Sportback supports over-the-air (OTA) updates for its MMI infotainment system, ensuring the latest features and improvements."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The RS3 Sportback offers Level 2 autonomous driving features, including adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "The RS3 Sportback includes adaptive cruise control with stop-and-go functionality for relaxed highway driving."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "The RS3 Sportback features traffic jam assist, which helps with steering, acceleration, and braking in congested traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "The RS3 Sportback is equipped with automatic emergency braking to prevent or mitigate collisions."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "The RS3 Sportback includes lane-keeping assist to help maintain the vehicle's position within the lane."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "The RS3 Sportback does not offer remote parking functionality, focusing instead on driver engagement."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "The RS3 Sportback includes an auto-parking system that can handle parallel and perpendicular parking maneuvers."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "The RS3 Sportback features blind-spot monitoring with visual and audible alerts to enhance safety during lane changes."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "The RS3 Sportback includes a fatigue detection system that monitors driving behavior and suggests breaks when needed."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "2.5~3.5L"
+engine_displacement_comments = "The RS3 Sportback is powered by a 2.5L turbocharged inline-5 engine, a unique configuration in its class."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "The RS3 Sportback is not equipped with an electric motor, as it is a gasoline-powered vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "The RS3 Sportback does not have a high-voltage battery, as it is not a hybrid or electric vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "The RS3 Sportback has a 55L fuel tank, providing a good balance between range and weight."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "300~400hp"
+horsepower_comments = "The RS3 Sportback's 2.5L TFSI engine produces 394hp (294kW), delivering exhilarating performance."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "400~500N·m"
+torque_comments = "The RS3 Sportback generates 480N·m of torque, with peak torque available from 1,700 to 5,850 rpm for strong acceleration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The RS3 Sportback accelerates from 0-100 km/h in just 3.8 seconds, thanks to its powerful engine and Quattro all-wheel drive."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "The RS3 Sportback has an electronically limited top speed of 250 km/h (155 mph), with an optional RS Dynamic package increasing it to 280 km/h (174 mph)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "The RS3 Sportback has a combined fuel consumption of 8.4L/100km (28 mpg), reflecting its high-performance nature."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "The RS3 Sportback does not have electric consumption data, as it is not an electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "With its 55L fuel tank and 8.4L/100km consumption, the RS3 Sportback offers a driving range of approximately 650 km (404 miles)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The RS3 Sportback features Audi's legendary Quattro all-wheel-drive system for exceptional traction and handling."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The RS3 Sportback uses a sophisticated independent suspension setup with adaptive dampers for a balance of comfort and performance."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "The RS3 Sportback offers medium passibility with its sport-tuned suspension and low ground clearance, suited for paved roads."
+
+# seat_layout, candidate values: "5-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The RS3 Sportback is configured as a 5-seater, with sport seats for the front passengers and a 60:40 split-folding rear bench."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Despite its performance focus, the RS3 Sportback is practical enough for daily city commuting with its compact dimensions and comfortable ride."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The RS3 Sportback excels on highways, with its powerful engine, comfortable cabin, and advanced driver assistance systems."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The RS3 Sportback has low off-road capability due to its sport-tuned suspension, low ground clearance, and performance-oriented tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The RS3 Sportback offers practical cargo capability with its 356L trunk and foldable rear seats, expanding to 1,102L."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "The RS3 Sportback performs well in cold conditions, with features like heated seats, a heated steering wheel, and excellent cold-start performance."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The RS3 Sportback is engineered to handle high temperatures, with an efficient cooling system and heat-resistant materials."
+
+
+[Ambibuous Labels]
+smartness = ""
+smartness_comments = "The RS3 Sportback scores high on smartness with its advanced MMI infotainment system featuring voice control, OTA updates, and smartphone integration. It also includes intelligent driver assistance systems like adaptive cruise control, lane keep assist, and traffic jam assist, making it both technologically sophisticated and user-friendly."
+family_friendliness = ""
+family_friendliness_comments = "While primarily a performance vehicle, the RS3 Sportback offers medium family-friendliness with its 5-seat configuration, decent trunk space (356L expandable to 1,102L), and comprehensive safety features including 8 airbags. However, its firm sport suspension and performance focus may compromise comfort for younger children on long journeys."
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The RS3 Sportback is a medium-sized vehicle, offering a balance between compact dimensions and interior space."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "The RS3 Sportback provides medium usability, with practical features for daily use while maintaining its sporty character."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The RS3 Sportback boasts high aesthetics with its aggressive RS styling, premium materials, and attention to detail."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "As a high-performance vehicle, the RS3 Sportback has a high energy consumption level compared to standard compact cars."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "The RS3 Sportback offers a high
+[Key Details]
+key_details=""
+key_details_comments = "The Audi RS3 Sportback 2.5 TFSI is a high-performance compact sedan featuring Audi's legendary 2.5L turbocharged inline-5 engine producing 394hp, Quattro all-wheel drive, and a 0-100km/h acceleration of 3.8 seconds. It combines sporty performance with practical hatchback functionality, offering premium interior materials, advanced driver assistance systems, and distinctive RS styling."
