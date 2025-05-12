@@ -77,7 +77,35 @@ depends on the interface, which label/slots we support, we should have such a li
 
 直接取出值，然后所有取出值用“与”逻辑做搜索
 
-- budget
+- prize
+
+	- Below 10,000
+
+		- Cheap
+
+	- 10,000 ~ 20,000
+
+		- Economy
+
+	- 20,000 ~ 30,000
+
+		- Mid-Range Low-End
+
+	- 30,000 ~ 40,000
+
+		- Mid-Range
+
+	- 40,000 ~ 60,000
+
+		- Mid-Range High-End
+
+	- 60,000 ~ 100,000
+
+		- High-End
+
+	- Above 100,000
+
+		- Luxury
 
 - Vehicle Basic Information
 
@@ -149,6 +177,9 @@ depends on the interface, which label/slots we support, we should have such a li
 
 	- Brand
 
+	  Need some specific handling to search
+	  e.g. brand=European -> brand=Germany + 
+	  
 		- European
 
 			- Germany
@@ -173,8 +204,6 @@ depends on the interface, which label/slots we support, we should have such a li
 			- France
 
 				- Peugeot
-
-				- Citroën
 
 				- Renault
 
@@ -622,7 +651,7 @@ depends on the interface, which label/slots we support, we should have such a li
 
 			- Low
 
-				- 200牛*米以下
+				- 200N·m
 
 			- Lower-Medium
 
@@ -857,14 +886,6 @@ depends on the interface, which label/slots we support, we should have such a li
 	- High
 
 - Comfort Level
-
-	- Low
-
-	- Medium
-
-	- High
-
-- Business Characteristics
 
 	- Low
 
