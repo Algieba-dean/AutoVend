@@ -38,7 +38,7 @@ class CarNeeds(BaseModel):
     # Explicit requirements
     budget: Optional[CarNeed] = None
     brand: List[CarNeed] = []
-    vehicle_category: List[CarNeed] = []
+    vehicle_category_bottom: List[CarNeed] = []
     color: List[CarNeed] = []
     
     # Performance requirements
@@ -74,7 +74,7 @@ class CarNeeds(BaseModel):
                     "confidence": 1.0,
                     "source": "direct"
                 },
-                "vehicle_category": [
+                "vehicle_category_bottom": [
                     {
                         "value": "SUV",
                         "is_implicit": False,
@@ -117,7 +117,7 @@ class CarNeeds(BaseModel):
         if category in ["budget", "size", "seats", "fuel_efficiency", "sunroof"]:
             setattr(self, category, need)
         # Handle list categories
-        elif category in ["brand", "vehicle_category", "color", "engine_type", 
+        elif category in ["brand", "vehicle_category_bottom", "color", "engine_type", 
                          "transmission", "entertainment", "safety_features", 
                          "usage", "style"]:
             category_list = getattr(self, category)
@@ -152,7 +152,7 @@ class CarNeeds(BaseModel):
         if category in ["budget", "size", "seats", "fuel_efficiency", "sunroof"]:
             setattr(self, category, None)
         # Handle list categories
-        elif category in ["brand", "vehicle_category", "color", "engine_type", 
+        elif category in ["brand", "vehicle_category_bottom", "color", "engine_type", 
                          "transmission", "entertainment", "safety_features", 
                          "usage", "style"]:
             if value is None:
@@ -197,7 +197,7 @@ class CarNeeds(BaseModel):
                     needs_dict[category] = need.value
         
         # Process list categories
-        for category in ["brand", "vehicle_category", "color", "engine_type", 
+        for category in ["brand", "vehicle_category_bottom", "color", "engine_type", 
                         "transmission", "entertainment", "safety_features", 
                         "usage", "style"]:
             needs_list = getattr(self, category)
@@ -230,8 +230,8 @@ class CarNeeds(BaseModel):
             brands = ", ".join([b.value for b in self.brand])
             tags["Brand"] = brands
             
-        if self.vehicle_category:
-            categories = ", ".join([c.value for c in self.vehicle_category])
+        if self.vehicle_category_bottom:
+            categories = ", ".join([c.value for c in self.vehicle_category_bottom])
             tags["Vehicle Category"] = categories
             
         if self.size:

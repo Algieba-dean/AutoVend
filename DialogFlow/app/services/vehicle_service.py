@@ -150,14 +150,14 @@ class VehicleService:
                 total_weight -= weight
         
         # Vehicle category match (high weight)
-        if "vehicle_category" in needs:
+        if "vehicle_category_bottom" in needs:
             weight = 20.0
             total_weight += weight
             
-            if isinstance(needs["vehicle_category"], list):
-                categories = needs["vehicle_category"]
+            if isinstance(needs["vehicle_category_bottom"], list):
+                categories = needs["vehicle_category_bottom"]
             else:
-                categories = [needs["vehicle_category"]]
+                categories = [needs["vehicle_category_bottom"]]
             
             for category in categories:
                 category_value = category

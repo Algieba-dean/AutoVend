@@ -31,7 +31,7 @@ class UserProfile(BaseModel):
     """
     Represents a user profile with personal information and preferences.
     """
-    # Basic information
+    # BasicInformation
     profile_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     phone_number: Optional[str] = None
     age: Optional[str] = None
@@ -40,7 +40,7 @@ class UserProfile(BaseModel):
     target_driver: Optional[str] = None  # Self, Family, Friend
     expertise: Optional[int] = None  # 0-10 level of automotive knowledge
     
-    # Additional information
+    # AdditionalInformation
     family_size: Optional[int] = None
     price_sensitivity: Optional[str] = None  # High, Medium, Low
     residence: Optional[str] = None  # Format: Country+Province+City

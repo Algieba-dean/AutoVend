@@ -1,6 +1,6 @@
 [
     {
-        "vehicle_id": "5fb97caf-db22-46be-b118-3669dcaa8c7a",
+        "vehicle_id": "e967c00a-a7ae-404b-898d-e1f21c3c6228",
         "brand": "Toyota",
         "model": "Camry",
         "category": "Sedan",
@@ -29,7 +29,7 @@
         ]
     },
     {
-        "vehicle_id": "0cf0205b-14b0-42d5-abca-e80d87426740",
+        "vehicle_id": "590814a7-b720-4e2f-9212-375d0008879c",
         "brand": "Honda",
         "model": "CR-V",
         "category": "SUV",
@@ -60,7 +60,7 @@
         ]
     },
     {
-        "vehicle_id": "09ef640c-efa2-4da8-a3b5-680515f8fab4",
+        "vehicle_id": "a7cc3058-6095-4d0f-bc97-9cd22cb85c67",
         "brand": "BMW",
         "model": "3 Series",
         "category": "Luxury Sedan",
@@ -90,7 +90,7 @@
         ]
     },
     {
-        "vehicle_id": "ceaf47a7-404d-4d9b-bdde-950fb74c9692",
+        "vehicle_id": "a9b0be6b-489f-4031-8a69-bc513dc430f1",
         "brand": "Tesla",
         "model": "Model 3",
         "category": "Electric Sedan",
@@ -119,7 +119,7 @@
         ]
     },
     {
-        "vehicle_id": "c51a1432-f028-4e0a-9615-b692b1a201ed",
+        "vehicle_id": "d4767888-a54a-450b-b07e-ca7a2e5e230f",
         "brand": "Ford",
         "model": "F-150",
         "category": "Pickup Truck",

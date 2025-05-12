@@ -12,31 +12,32 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # API Configuration
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo-1106')
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo-1106")
+OPENAI_URL = os.getenv("OPENAI_URL", "https://api.deepseek.com/v1")
 
 # Application Settings
-APP_ENVIRONMENT = os.getenv('APP_ENVIRONMENT', 'development')
-DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't')
-APP_SECRET_KEY = os.getenv('APP_SECRET_KEY', 'default_secret_key_for_development')
+APP_ENVIRONMENT = os.getenv("APP_ENVIRONMENT", "development")
+DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
+APP_SECRET_KEY = os.getenv("APP_SECRET_KEY", "default_secret_key_for_development")
 
 # Server Settings
-HOST = os.getenv('HOST', '0.0.0.0')
-PORT = int(os.getenv('PORT', '8000'))
+HOST = os.getenv("HOST", "0.0.0.0")
+PORT = int(os.getenv("PORT", "8000"))
 
 # Data Directories
-DATA_DIR = os.path.join(BASE_DIR, 'app', 'data')
-SESSIONS_DIR = os.path.join(DATA_DIR, 'sessions')
-USER_PROFILES_DIR = os.path.join(DATA_DIR, 'profiles')
-NEEDS_DIR = os.path.join(DATA_DIR, 'needs')
-VEHICLES_DIR = os.path.join(DATA_DIR, 'vehicles')
+DATA_DIR = os.path.join(BASE_DIR, "app", "data")
+SESSIONS_DIR = os.path.join(DATA_DIR, "sessions")
+USER_PROFILES_DIR = os.path.join(DATA_DIR, "profiles")
+NEEDS_DIR = os.path.join(DATA_DIR, "needs")
+VEHICLES_DIR = os.path.join(DATA_DIR, "vehicles")
 
 # Ensure data directories exist
 for directory in [DATA_DIR, SESSIONS_DIR, USER_PROFILES_DIR, NEEDS_DIR, VEHICLES_DIR]:
     os.makedirs(directory, exist_ok=True)
 
 # Car related settings
-CAR_LABELS_FILE = os.path.join(DATA_DIR, 'car_labels.toml')
+CAR_LABELS_FILE = os.path.join(DATA_DIR, "car_labels.toml")
 
 # User Profile Constants
 USER_TITLE_OPTIONS = ["Mr.", "Mrs.", "Miss", "Ms."]
@@ -48,13 +49,13 @@ PRICE_SENSITIVITY_OPTIONS = ["High", "Medium", "Low"]
 SYSTEM_PROMPTS = {
     "welcome": """You are AutoVend, an intelligent automotive sales assistant. 
 Your goal is to help customers find the perfect vehicle for their needs. 
-Be friendly, professional, and helpful. Ask for information that will help you understand the customer's requirements.
+Be friendly, professional, and helpful. Ask for information that will help you understand the customer"s requirements.
 Extract information about the customer, such as their name, title (Mr./Mrs./Ms.), and basic demographic information if mentioned.
 When greeting a returning customer, reference their previous interactions if they exist.
 Always maintain a polite and respectful tone.""",
     
     "needs_analysis": """You are AutoVend, an intelligent automotive sales assistant currently in the needs analysis phase.
-Your goal is to understand the customer's vehicle requirements in detail. 
+Your goal is to understand the customer"s vehicle requirements in detail. 
 Ask specific questions about their preferences regarding:
 - Budget range
 - Vehicle type (sedan, SUV, hatchback, etc.)
@@ -73,10 +74,10 @@ When the customer shows interest in a specific vehicle, offer more detailed info
 Aim to help the customer reach a decision on which vehicle(s) they would like to test drive or learn more about.""",
     
     "dealership": """You are AutoVend, an intelligent automotive sales assistant in the dealership connection phase.
-Your goal is to facilitate the customer's next steps with a dealership.
+Your goal is to facilitate the customer"s next steps with a dealership.
 Offer to schedule a test drive or appointment at a nearby dealership.
 Ask if they have any final questions before concluding the conversation.
-Thank them for their time and express that you're looking forward to helping them with their vehicle purchase.
+Thank them for their time and express that you"re looking forward to helping them with their vehicle purchase.
 Provide contact information for follow-up questions."""
 }
 
@@ -91,7 +92,7 @@ APP_NAME = "AutoVend"
 USER_PROFILES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "profiles")
 CAR_LABELS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "CarLabels.toml")
 
-# Create directories if they don't exist
+# Create directories if they don"t exist
 os.makedirs(USER_PROFILES_DIR, exist_ok=True)
 
 # Profile settings
@@ -108,7 +109,7 @@ PARKING_CONDITIONS_OPTIONS = [
 ]
 
 # Car labels settings
-VEHICLE_CATEGORY_OPTIONS = [
+vehicle_category_bottom_OPTIONS = [
     "Micro Sedan", "Compact Sedan", "B-Segment Sedan", 
     "C-Segment Sedan", "D-Segment Sedan", 
     "Compact SUV", "Mid-Size SUV", "Full-Size SUV"

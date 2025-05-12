@@ -334,7 +334,7 @@ class ChatService:
             "type": "object",
             "properties": {
                 "budget": {"type": "string"},
-                "vehicle_category": {"type": "array", "items": {"type": "string"}},
+                "vehicle_category_bottom": {"type": "array", "items": {"type": "string"}},
                 "brand": {"type": "array", "items": {"type": "string"}},
                 "color": {"type": "array", "items": {"type": "string"}},
                 "engine_type": {"type": "array", "items": {"type": "string"}},
@@ -359,7 +359,13 @@ class ChatService:
                 # Get or create profile
                 if session.profile_id:
                     profile = profile_service.get_profile_by_id(session.profile_id)
-                    profile_service.update_profile(profile.profile_id, profile_data)
+                    if profile:
+                        profile_service.update_profile(profile.profile_id, profile_data)
+                    else:
+                        # Create new profile
+                        profile = profile_service.create_profile(session.phone_number)
+                        profile_service.update_profile(profile.profile_id, profile_data)
+                        session.profile_id = profile.profile_id
                 else:
                     # Create new profile
                     profile = profile_service.create_profile(session.phone_number)
@@ -383,7 +389,7 @@ class ChatService:
                     )
             
             # Update list fields
-            for list_field in ["vehicle_category", "brand", "color", "engine_type", "transmission"]:
+            for list_field in ["vehicle_category_bottom", "brand", "color", "engine_type", "transmission"]:
                 if needs_data.get(list_field):
                     for value in needs_data[list_field]:
                         needs_service.add_need(

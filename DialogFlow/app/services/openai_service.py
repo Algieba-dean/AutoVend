@@ -5,7 +5,7 @@ import json
 import logging
 from typing import Dict, List, Any, Optional
 import openai
-from app.config import OPENAI_API_KEY, OPENAI_MODEL, SYSTEM_PROMPTS
+from app.config import OPENAI_API_KEY, OPENAI_MODEL, SYSTEM_PROMPTS, OPENAI_URL
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -15,6 +15,10 @@ if OPENAI_API_KEY:
     openai.api_key = OPENAI_API_KEY
 else:
     logger.error("OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.")
+
+# Set OpenAI API base URL if provided
+if OPENAI_URL:
+    openai.api_base = OPENAI_URL
 
 
 class OpenAIService:
@@ -43,8 +47,14 @@ class OpenAIService:
             if system_prompt:
                 messages = [{"role": "system", "content": system_prompt}] + messages
             
+            # Create OpenAI client
+            client = openai.OpenAI(
+                api_key=OPENAI_API_KEY,
+                base_url=OPENAI_URL if OPENAI_URL else None
+            )
+            
             # Call OpenAI API
-            response = await openai.chat.completions.create(
+            response = client.chat.completions.create(
                 model=OPENAI_MODEL,
                 messages=messages,
                 temperature=0.7,
@@ -87,8 +97,14 @@ class OpenAIService:
                 {"role": "user", "content": text}
             ]
             
+            # Create OpenAI client
+            client = openai.OpenAI(
+                api_key=OPENAI_API_KEY,
+                base_url=OPENAI_URL if OPENAI_URL else None
+            )
+            
             # Call OpenAI API
-            response = await openai.chat.completions.create(
+            response = client.chat.completions.create(
                 model=OPENAI_MODEL,
                 messages=messages,
                 temperature=0.0,  # Use lower temperature for more deterministic results
@@ -149,8 +165,14 @@ class OpenAIService:
                 {"role": "user", "content": text}
             ]
             
+            # Create OpenAI client
+            client = openai.OpenAI(
+                api_key=OPENAI_API_KEY,
+                base_url=OPENAI_URL if OPENAI_URL else None
+            )
+            
             # Call OpenAI API
-            response = await openai.chat.completions.create(
+            response = client.chat.completions.create(
                 model=OPENAI_MODEL,
                 messages=messages,
                 temperature=0.0,

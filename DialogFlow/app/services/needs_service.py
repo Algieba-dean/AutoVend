@@ -153,7 +153,7 @@ class NeedsService:
             needs = self.get_needs(profile_id)
             
             # Example: If they have specified SUV, they might need more space
-            for need in needs.vehicle_category:
+            for need in needs.vehicle_category_bottom:
                 if need.value.lower() == "suv" and not need.is_implicit:
                     self.add_need(
                         profile_id=profile_id,

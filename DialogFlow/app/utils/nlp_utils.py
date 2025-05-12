@@ -164,9 +164,9 @@ def extract_car_needs(text: str) -> Dict[str, Any]:
     categories = ["sedan", "suv", "truck", "van", "hatchback", "coupe", "convertible"]
     for category in categories:
         if category in text.lower():
-            if "vehicle_category" not in car_needs:
-                car_needs["vehicle_category"] = []
-            car_needs["vehicle_category"].append(category.capitalize())
+            if "vehicle_category_bottom" not in car_needs:
+                car_needs["vehicle_category_bottom"] = []
+            car_needs["vehicle_category_bottom"].append(category.capitalize())
     
     # Extract brands
     brands = ["toyota", "honda", "ford", "chevrolet", "bmw", "audi", "mercedes", "tesla", "hyundai", "kia"]

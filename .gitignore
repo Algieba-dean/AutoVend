@@ -1,5 +1,6 @@
 **/venv/**
 DialogFlow/app/data/vehicles/*.json
+DialogFlow/app/data/needs/*.json
 **/*.pyc
 **/*.pyo
 **/*.pyd
@@ -7,3 +8,4 @@ DialogFlow/app/data/vehicles/*.json
 **/*.pyz
 **/*.pywz
 **/*.pyzw
+**/*.env

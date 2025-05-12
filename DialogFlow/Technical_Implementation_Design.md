@@ -76,7 +76,7 @@ def extract_information(session_id: str) -> dict:
 
 ```python
 class UserProfile:
-    # Basic information
+    # BasicInformation
     profile_id: str
     phone_number: str
     age: Optional[str]
@@ -85,7 +85,7 @@ class UserProfile:
     target_driver: Optional[str]
     expertise: Optional[int]  # 0-10 level of automotive knowledge
     
-    # Additional information
+    # AdditionalInformation
     family_size: Optional[int]
     price_sensitivity: Optional[str]  # High, Medium, Low
     residence: Optional[str]  # Residence, format: Country+Province+City
@@ -139,7 +139,7 @@ class CarNeeds:
     # Explicit requirements
     budget: Optional[CarNeed]
     brand: List[CarNeed]
-    vehicle_category: List[CarNeed]
+    vehicle_category_bottom: List[CarNeed]
     color: List[CarNeed]
     
     # Performance requirements
