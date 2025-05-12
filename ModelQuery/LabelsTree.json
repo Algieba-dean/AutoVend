@@ -1,0 +1,57 @@
+{
+    "size": {
+        "Small": {
+            "vehicle_category_bottom": ["Micro Sedan","Compact Sedan"]
+        },
+        "Medium": {
+            "vehicle_category_bottom": ["B-Segment Sedan","C-Segment Sedan","D-Segment Sedan"]
+        },
+        "Large": {
+            "vehicle_category_bottom": ["Compact SUV","Mid-Size SUV","Mid-to-Large SUV"]
+        }
+    }
+}
+[size]
+    Small=[ vehicle_category_bottom= ["Micro Sedan","Compact Sedan"]]
+    Medium=[""]
+    Large=[""]
+
+[vehicle_usability]
+    High=[""]
+    Medium=[""]
+    Low=[""]
+
+[aesthetics]
+    High=[""]
+    Medium=[""]
+    Low=[""]
+
+[energy_consumption_level]
+    High=[""]
+    Medium=[""]
+    Low=[""]
+
+[confort_level]
+    High=[""]
+    Medium=[""]
+    Low=[""]
+
+[smartness]
+    High=[""]
+    Medium=[""]
+    Low=[""]
+
+[family_friendliness]
+    High=[""]
+    Medium=[""]
+    Low=[""]
+
+[brand_region]
+
+[brand_country]
+
+[vehicle_category_top]
+
+[vehicle_category_sub]
+
+[vehicle_category_bottom]
