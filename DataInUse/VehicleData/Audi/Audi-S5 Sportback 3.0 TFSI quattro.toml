@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-S5 Sportback 3.0 TFSI quattro"
 car_model_comments = "The Audi S5 Sportback combines sporty performance with practical four-door coupe styling."
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "60,000-70,000"
@@ -204,7 +204,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Engine cooling system and climate control are designed for hot weather operation."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -234,7 +234,7 @@ smartness_comments = "Advanced driver assistance systems and cutting-edge infota
 family_friendliness = "Medium"
 family_friendliness_comments = "Practical enough for small families but focused more on driving enjoyment."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi S5 Sportback 3.0 TFSI quattro combines sports car performance with everyday practicality. Its turbocharged 3.0L V6 produces 349 hp and 500 Nm of torque, sent to all four wheels via Audi's legendary quattro system. The Sportback body style offers four-door convenience with coupe-like styling and a practical hatchback. Standard features include Audi Virtual Cockpit, MMI Navigation plus, and a comprehensive suite of driver assistance systems. The adaptive suspension balances sporty handling with ride comfort, making it equally capable on twisty roads and long highway journeys."
 key_details_comments = "The Audi S5 Sportback 3.0 TFSI quattro represents the perfect blend of performance and practicality in Audi's lineup. Its turbocharged 3.0L V6 engine delivers 349 horsepower and 500 Nm of torque, providing exhilarating acceleration while maintaining refinement. The quattro all-wheel-drive system ensures confident traction in all conditions. The Sportback body style offers the sleek profile of a coupe with the added functionality of four doors and a practical hatchback. Inside, drivers enjoy Audi's Virtual Cockpit digital instrument cluster, MMI Navigation plus with natural voice control, and premium materials throughout. The adaptive suspension can be configured for comfort or sporty handling, making it versatile for daily commutes and spirited driving. Standard driver assistance features like adaptive cruise control with traffic jam assist, lane keep assist, and automatic emergency braking enhance both safety and convenience. With its combination of performance, technology, and practicality, the S5 Sportback stands out in the premium midsize segment."

@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi e-tron S Sportback"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "85,000-95,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling systems maintain performance in hot climates up to 50°C."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -233,7 +233,7 @@ smartness_comments = "Cutting-edge technology with advanced driver assistance sy
 family_friendliness = "High"
 family_friendliness_comments = "Spacious, safe, and practical for families, though limited to 5 seats."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi e-tron S Sportback combines sporty coupe styling with SUV practicality, featuring three electric motors (one front, two rear) for exceptional performance (0-100 km/h in 4.5s) and quattro all-wheel drive. It offers a premium interior with advanced technology, including virtual cockpit plus, MMI touch response, and extensive driver assistance systems. The 95 kWh battery provides up to 364 km (WLTP) range, with 150 kW DC fast charging capability (10-80% in about 30 minutes). Unique features include virtual mirrors (optional), matrix LED headlights, and customizable drive modes with adjustable air suspension."
 key_details_comments = "The Audi e-tron S Sportback represents Audi's high-performance electric SUV offering, blending coupe-like styling with SUV practicality. Its triple-motor setup (one front, two rear) enables torque vectoring and delivers sports car-like acceleration (0-100 km/h in 4.5s) while maintaining the benefits of electric propulsion. The vehicle features a sophisticated 95 kWh battery system with advanced thermal management for consistent performance in all climates. Premium technology includes the virtual cockpit plus with dual touchscreens, optional digital side mirrors, and matrix LED lighting. The air suspension with adaptive damping provides both comfort and dynamic handling. With 150 kW DC fast charging capability, it can recharge from 10-80% in approximately 30 minutes, making it practical for long-distance travel despite the 364 km WLTP range. The interior showcases Audi's luxury craftsmanship with sustainable materials, while the sportback design maintains 615L of cargo space (expandable to 1,655L)."

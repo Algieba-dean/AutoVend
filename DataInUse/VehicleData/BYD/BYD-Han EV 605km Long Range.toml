@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-Han EV 605km Long Range"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "45,000-65,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "LFP battery chemistry is inherently more heat-resistant than conventional lithium-ion."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -233,7 +233,7 @@ smartness_comments = "Advanced connectivity and driver assistance features."
 family_friendliness = "Medium"
 family_friendliness_comments = "Spacious and safe, though not specifically designed for family use."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The BYD Han EV 605km Long Range features BYD's innovative Blade Battery technology, offering exceptional safety and range. It combines luxury sedan comfort with cutting-edge EV technology, including a 15.6-inch rotating touchscreen, 5G connectivity, and comprehensive driver assistance systems. The vehicle supports DC fast charging (10-80% in 25 minutes) and features premium materials throughout the cabin."
 key_details_comments = "The BYD Han EV 605km Long Range represents the pinnacle of BYD's electric vehicle technology, featuring their revolutionary Blade Battery system that offers superior thermal stability and safety. This full-size luxury sedan combines executive-level comfort with cutting-edge EV performance, boasting a 605km NEDC range from its 85.4kWh LFP battery. The vehicle features a premium interior with Nappa leather, wood trim, and a 15.6-inch rotating touchscreen with 5G connectivity. Advanced driver assistance systems include Level 2 autonomous driving capabilities with traffic jam assist and remote parking. The Blade Battery supports ultra-fast DC charging (10-80% in 25 minutes) and maintains excellent performance in extreme temperatures thanks to its intelligent thermal management system. With its aerodynamic 0.233Cd design, the Han EV delivers both efficiency and striking aesthetics, making it a compelling choice in the premium EV segment."

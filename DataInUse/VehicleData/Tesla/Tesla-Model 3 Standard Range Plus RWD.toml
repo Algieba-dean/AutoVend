@@ -2,238 +2,239 @@
 
 title = "CarLabels"
 
-car_model = "BYD-Tang EV 4WD 517hp"
+car_model = "Tesla-Model 3 Standard Range Plus RWD"
+car_model_comments = "The Tesla Model 3 Standard Range Plus RWD is an all-electric compact sedan with rear-wheel drive."
 
 [PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "45,000-65,000"
-prize_comments = "The BYD-Tang EV 4WD 517hp is priced between $45,000 and $65,000 USD depending on the trim level and options."
+prize_comments = "The Tesla-Model 3 Standard Range Plus RWD is priced between $45,000 and $65,000 USD depending on the trim level and options."
 
 # vehicle_category, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
-vehicle_category = "Mid-to-Large SUV"
-vehicle_category_comments = "The Tang EV is a 7-seater electric SUV with dimensions of 4870×1950×1725mm, placing it firmly in the mid-to-large SUV category."
+vehicle_category = "Compact Sedan"
+vehicle_category_comments = "The Tesla Model 3 is classified as a compact sedan with a sleek, aerodynamic design."
 
 # brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Citroën", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
-brand = "BYD"
-brand_comments = "BYD (Build Your Dreams) is a leading Chinese new energy vehicle manufacturer."
+brand = "Tesla"
+brand_comments = "Tesla is an American electric vehicle and clean energy company."
 
 # powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
 powertrain_type = "Battery Electric Vehicle"
-powertrain_type_comments = "The Tang EV is a pure electric vehicle with dual permanent magnet synchronous motors."
+powertrain_type_comments = "The Tesla Model 3 Standard Range Plus RWD is a pure electric vehicle with no internal combustion engine."
 
 # passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Tang EV offers 4.8 cubic meters of passenger space with three rows of seating."
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The Model 3 offers a spacious interior with approximately 3.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
-trunk_volume = "Above 500L"
-trunk_volume_comments = "The trunk offers 515L of space, expandable to 1,652L with rear seats folded."
+trunk_volume = "400~500L"
+trunk_volume_comments = "The exact trunk capacity is 425L, expandable to 1,502L with rear seats folded."
 
 # wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
 wheelbase = "2800~2950mm"
-wheelbase_comments = "The Tang EV has a 2820mm wheelbase, providing excellent interior space."
+wheelbase_comments = "The Model 3 has a wheelbase of 2,875mm, contributing to its stable ride."
 
 # chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
-chassis_height = "150~200mm"
-chassis_height_comments = "Ground clearance is 180mm, suitable for urban and light off-road use."
+chassis_height = "130~150mm"
+chassis_height_comments = "The ground clearance is approximately 140mm, optimized for aerodynamics."
 
 # design_style, candidate values: "Sproty", "Business"
-design_style = "Business"
-design_style_comments = "The Tang EV features a premium, business-oriented design with chrome accents."
+design_style = "Sproty"
+design_style_comments = "The Model 3 features a sporty, minimalist design with clean lines."
 
 # body_line_smoothness, candidate values: "High", "Medium", "Low"
 body_line_smoothness = "High"
-body_line_smoothness_comments = "Features flowing body lines with a 0.33Cd drag coefficient."
+body_line_smoothness_comments = "The Model 3 has an extremely smooth body design with a drag coefficient of just 0.23."
 
 # color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
 color = "Neutral Colors"
-color_comments = "Available in sophisticated neutral tones like Mountain Grey and Snow White."
+color_comments = "Tesla offers a range of neutral colors including white, black, silver, and blue."
 
 # interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
 interior_material_texture = "Wood Trim"
-interior_material_texture_comments = "Premium wood trim with genuine leather upholstery."
+interior_material_texture_comments = "The interior features premium open-pore wood trim for a luxurious feel."
 
 # ABS, candidate values: "Yes", "No"
 ABS = "Yes"
-ABS_comments = "Standard ABS with electronic brake-force distribution."
+ABS_comments = "Standard anti-lock braking system for improved safety."
 
 # ESP, candidate values: "Yes", "No"
 ESP = "Yes"
-ESP_comments = "Electronic Stability Program included as standard."
+ESP_comments = "Electronic Stability Program is standard for enhanced vehicle control."
 
 # airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
 airbag_count = "8"
-airbag_count_comments = "Includes front, side, curtain, and knee airbags."
+airbag_count_comments = "The Model 3 includes 8 airbags: front, knee, side, and curtain airbags."
 
 # seat_material, candidate values: "Lether", "Fabric"
 seat_material = "Lether"
-seat_material_comments = "Premium Nappa leather seats with ventilation and heating."
+seat_material_comments = "Premium synthetic leather seats are standard."
 
 # noise_insulation, candidate values: "High", "Medium", "Low"
 noise_insulation = "High"
-noise_insulation_comments = "Features double-layer acoustic glass and extensive sound deadening."
+noise_insulation_comments = "Excellent noise insulation due to the lack of engine noise and acoustic glass."
 
 # voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
 voice_interfaction = "Yes"
-voice_interfaction_comments = "BYD DiLink system supports natural voice commands in multiple languages."
+voice_interfaction_comments = "Tesla's voice command system allows control of various vehicle functions."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
-ota_updates_comments = "Supports over-the-air updates for infotainment and vehicle systems."
+ota_updates_comments = "Tesla vehicles receive regular over-the-air software updates."
 
 # autonomous_driving_level, candidate values: "L2", "L3"
 autonomous_driving_level = "L2"
-autonomous_driving_level_comments = "Level 2 autonomous driving with adaptive cruise and lane centering."
+autonomous_driving_level_comments = "Includes Tesla's Autopilot system with lane keeping and adaptive cruise control."
 
 # adaptive_cruise_control, candidate values: "Yes", "No"
 adaptive_cruise_control = "Yes"
-adaptive_cruise_control_comments = "Full-speed range adaptive cruise control with stop-and-go."
+adaptive_cruise_control_comments = "Standard Traffic-Aware Cruise Control adjusts speed based on surrounding traffic."
 
 # traffic_jam_assit, candidate values: "Yes", "No"
 traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic jam assist can handle stop-and-go traffic autonomously."
+traffic_jam_assit_comments = "Autopilot can assist in stop-and-go traffic situations."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
-automatic_emergency_braking_comments = "AEB with pedestrian and cyclist detection."
+automatic_emergency_braking_comments = "Standard Automatic Emergency Braking helps prevent collisions."
 
 # lane_keep_assist, candidate values: "Yes", "No"
 lane_keep_assist = "Yes"
-lane_keep_assist_comments = "Lane keeping assist with emergency lane keeping."
+lane_keep_assist_comments = "Autopilot includes lane keeping assistance."
 
 # remote_parking, candidate values: "Yes", "No"
-remote_parking = "Yes"
-remote_parking_comments = "Remote parking via smartphone app."
+remote_parking = "No"
+remote_parking_comments = "The Standard Range Plus does not include remote parking features."
 
 # auto_parking, candidate values: "Yes", "No"
 auto_parking = "Yes"
-auto_parking_comments = "Fully automatic parking system."
+auto_parking_comments = "Includes basic Autopark functionality for parallel and perpendicular spaces."
 
 # blind_spot_detection, candidate values: "Yes", "No"
 blind_spot_detection = "Yes"
-blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert."
+blind_spot_detection_comments = "Blind spot monitoring is integrated into the vehicle's safety systems."
 
 # fatigue_driving_detection, candidate values: "Yes", "No"
-fatigue_driving_detection = "Yes"
-fatigue_driving_detection_comments = "Driver attention monitoring system."
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No dedicated fatigue detection system, though Autopilot provides some assistance."
 
 # engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
 engine_displacement = "None"
 engine_displacement_comments = "Not applicable as this is a pure electric vehicle."
 
 # motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
-motor_power = "Above 400kW"
-motor_power_comments = "Dual motors producing combined 517hp (380kW)."
+motor_power = "180~250kW"
+motor_power_comments = "The rear motor produces 239 kW (320 hp) of power."
 
 # battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
-battery_capacity = "Above 100kWh"
-battery_capacity_comments = "108.8kWh Blade Battery (LFP chemistry)."
+battery_capacity = "50~80kWh"
+battery_capacity_comments = "The Standard Range Plus has a 60 kWh lithium-ion battery pack."
 
 # fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
 fuel_tank_capacity = "None"
 fuel_tank_capacity_comments = "Not applicable as this is a pure electric vehicle."
 
 # horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
-horsepower = "Above 400hp"
-horsepower_comments = "517hp (386kW) combined output from dual motors."
+horsepower = "200~300hp"
+horsepower_comments = "The rear motor produces 320 hp (239 kW)."
 
 # torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
-torque = "Above 500N·m"
-torque_comments = "680N·m combined torque, enabling rapid acceleration."
+torque = "400~500N·m"
+torque_comments = "Produces 416 N·m (307 lb-ft) of torque."
 
 # zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
-zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
-zero_to_one_hundred_km_h_acceleration_time_comments = "3.9 seconds 0-100km/h acceleration."
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates from 0-100 km/h in 5.8 seconds."
 
 # top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
-top_speed = "160~200km/h"
-top_speed_comments = "Electronically limited to 180km/h."
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited top speed of 225 km/h (140 mph)."
 
 # fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
 fuel_consumption = "None"
 fuel_consumption_comments = "Not applicable as this is a pure electric vehicle."
 
 # electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
-electric_consumption = "Above 14kWh/100km"
-electric_consumption_comments = "17.9kWh/100km combined consumption."
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "Rated at 13.5 kWh/100 km (combined) by EPA standards."
 
 # driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
 driving_range = "400~800km"
-driving_range_comments = "CLTC-rated range of 635km (394 miles)."
+driving_range_comments = "EPA-rated range of 438 km (272 miles) on a full charge."
 
 # drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "All-Wheel Drive"
-drive_type_comments = "Dual-motor AWD system with intelligent torque vectoring."
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "Single motor driving the rear wheels."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
 suspension = "Independent Suspension"
-suspension_comments = "Front MacPherson strut and rear multi-link independent suspension."
+suspension_comments = "Front and rear independent suspension for improved ride quality."
 
 # passibility, candidate values: "Low", "Medium", "High"
 passibility = "Medium"
-passibility_comments = "180mm ground clearance with AWD capability for light off-road."
+passibility_comments = "Good urban maneuverability but limited by low ground clearance."
 
 # seat_layout, candidate values: "5-seat", "7-seat"
-seat_layout = "7-seat"
-seat_layout_comments = "Three-row seating configuration (2+3+2)."
+seat_layout = "5-seat"
+seat_layout_comments = "Standard five-seat configuration with two rows."
 
 # city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
 city_commuting = "Yes"
-city_commuting_comments = "Excellent for city use with one-pedal driving mode."
+city_commuting_comments = "Excellent for city driving with instant torque and regenerative braking."
 
 # highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
 highway_long_distance = "Yes"
-highway_long_distance_comments = "635km range and fast charging make it highway-capable."
+highway_long_distance_comments = "Good highway cruiser with Autopilot capabilities and adequate range."
 
 # off_road_capability, candidate values: "Low", "Medium", "High"
-off_road_capability = "Medium"
-off_road_capability_comments = "AWD system with multiple drive modes for light off-road."
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance."
 
 # cargo_capability, candidate values: "Yes", "No"
 cargo_capability = "Yes"
-cargo_capability_comments = "515L trunk expandable to 1,652L with seats folded."
+cargo_capability_comments = "Good cargo capacity with front trunk (frunk) and rear trunk."
 
 # clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Blade Battery maintains 70% capacity at -30°C."
+clod_resistance = "Medium"
+clod_resistance_comments = "Battery performance is affected in cold weather, but the vehicle includes cold weather features."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"
-heat_resistance_comments = "Battery thermal management system maintains optimal temperature up to 60°C."
+heat_resistance_comments = "Battery thermal management system maintains performance in hot conditions."
 
 
 [AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
-size = "Large"
-size_comments = "4870mm length classifies it as a large SUV."
+size = "Medium"
+size_comments = "Compact sedan dimensions with spacious interior."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
-vehicle_usability = "Large"
-vehicle_usability_comments = "Spacious 7-seater with excellent daily usability."
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced size for urban and highway use."
 
 # aesthetics: candidate values: "Low", "Medium", "High"
 aesthetics = "High"
-aesthetics_comments = "Premium design with Dragon Face 3.0 styling language."
+aesthetics_comments = "Sleek, modern design with clean lines."
 
 # energy_consumption_level: candidate values: "Low", "Medium", "High"
-energy_consumption_level = "Medium"
-energy_consumption_level_comments = "17.9kWh/100km is competitive for its size and performance."
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Very efficient electric drivetrain."
 
 # confort_level: candidate values: "Low", "Medium", "High"
 confort_level = "High"
-confort_level_comments = "Premium NVH control and adaptive suspension options."
+confort_level_comments = "Premium interior with excellent ride quality."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced DiPilot system with 5G connectivity."
+smartness_comments = "Advanced technology features and connectivity."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
-family_friendliness = "High"
-family_friendliness_comments = "7-seat configuration with comprehensive safety features."
+family_friendliness = "Medium"
+family_friendliness_comments = "Good for small families but limited by sedan form factor."
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The BYD Tang EV 4WD combines luxury and performance with its 517hp dual-motor AWD system, 635km CLTC range, and premium 7-seat interior. It features BYD's innovative Blade Battery technology for enhanced safety and cold-weather performance. The vehicle offers Level 2 autonomous driving capabilities, a 15.6-inch rotating touchscreen, and comprehensive connectivity features."
-key_details_comments = "The BYD Tang EV 4WD 517hp represents the pinnacle of BYD's electric SUV technology, combining luxury, performance, and cutting-edge EV technology. Its dual-motor AWD system delivers exceptional 517hp power and 680N·m torque for sports car-like acceleration (0-100km/h in 3.9s) while maintaining a practical 635km CLTC range. The vehicle features BYD's revolutionary Blade Battery (LFP chemistry) that offers superior thermal stability and cold weather performance. The premium interior includes three rows of Nappa leather seats, a 15.6-inch rotating touchscreen with 5G connectivity, and comprehensive DiPilot L2 autonomous driving features. With dimensions of 4870×1950×1725mm and 2820mm wheelbase, it provides spacious accommodation for seven adults while maintaining excellent cargo capacity (515L-1,652L). The vehicle's Dragon Face 3.0 design language gives it a distinctive premium appearance, complemented by advanced features like remote parking, vehicle-to-load capability, and bidirectional charging functionality."
+key_details="The Tesla Model 3 Standard Range Plus RWD features a minimalist interior with a 15-inch touchscreen, premium audio system, and Tesla's advanced Autopilot driver assistance features. It offers a balance of performance, range, and value in the electric vehicle market."
+key_details_comments = "The Tesla Model 3 Standard Range Plus RWD represents Tesla's entry-level sedan with premium features. Its minimalist interior centers around a 15-inch touchscreen controlling most vehicle functions. The premium audio system delivers immersive sound quality. Tesla's Autopilot provides advanced driver assistance including Traffic-Aware Cruise Control and Autosteer. With a 438 km EPA range and 5.8s 0-100km/h acceleration, it offers compelling performance for an entry-level EV. The vehicle includes over-the-air software updates that continuously improve functionality. Its rear-wheel drive configuration and low center of gravity provide engaging driving dynamics while maintaining efficiency."

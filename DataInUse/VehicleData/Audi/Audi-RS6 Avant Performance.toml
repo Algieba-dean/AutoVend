@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-RS6 Avant Performance"
 car_model_comments = "The Audi RS6 Avant Performance is a high-performance estate car with a 4.0L V8 twin-turbo engine and advanced quattro all-wheel drive."
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "120,000-140,000"
@@ -204,7 +204,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Robust cooling systems for high-performance operation in hot conditions."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -234,7 +234,7 @@ smartness_comments = "Advanced driver assistance systems and cutting-edge infota
 family_friendliness = "Medium"
 family_friendliness_comments = "Practical wagon body style but focused on performance over family needs."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi RS6 Avant Performance combines supercar performance (0-100km/h in 3.4s) with estate car practicality. It features a 4.0L V8 twin-turbo producing 630PS, quattro all-wheel drive with torque vectoring, and adaptive air suspension. The interior boasts premium materials with RS-specific sport seats and the latest MMI touch response infotainment. Despite its performance focus, it offers 565L of cargo space (expandable to 1,680L) and advanced driver assistance systems."
 key_details_comments = "The Audi RS6 Avant Performance represents the pinnacle of performance wagons, blending supercar acceleration (0-100km/h in 3.4 seconds) with exceptional practicality. Its 4.0L V8 twin-turbo engine delivers 630PS (621hp) and 850Nm of torque, paired with an advanced quattro all-wheel drive system featuring torque vectoring and a sport differential. The adaptive air suspension with RS-specific tuning provides both dynamic handling and comfort. The interior features premium Valcona leather, RS sport seats, and the latest MMI touch response infotainment with natural voice control. Despite its performance focus, it offers class-leading cargo capacity (565L standard, 1,680L expanded) and comprehensive driver assistance systems including adaptive cruise assist and traffic jam assist. The optional Dynamic package raises the top speed to 305km/h (190mph), making it one of the fastest production wagons ever built."

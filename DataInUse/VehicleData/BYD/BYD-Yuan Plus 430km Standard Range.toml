@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-Yuan Plus 430km Standard Range"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "30,000-35,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "The battery and cooling system are designed to handle high temperatures effectively."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -233,7 +233,7 @@ smartness_comments = "Equipped with advanced infotainment and driver assistance 
 family_friendliness = "High"
 family_friendliness_comments = "Practical and safe, making it suitable for families."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The BYD-Yuan Plus 430km Standard Range is a compact electric SUV with a modern design, efficient electric drivetrain, and a range of 430km. It features advanced safety systems, a comfortable interior, and smart connectivity options, making it a practical choice for urban and family use."
 key_details_comments = "The BYD-Yuan Plus 430km Standard Range is a well-equipped compact electric SUV designed for urban and family use. It features a modern aesthetic with sporty design elements, a 60.48kWh battery providing 430km WLTP range, and a 150kW (201hp) electric motor delivering 310N·m of torque. The vehicle includes advanced safety features (6 airbags, ABS, ESP), Level 2 autonomous driving capabilities, and smart connectivity with voice interaction and OTA updates. With 434L trunk space (expandable to 1,338L), comfortable leather seats, and efficient energy consumption (13.5kWh/100km), it offers practical daily usability while maintaining BYD's reputation for quality electric vehicles."

@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-TT RS Coupe 2.5 TFSI"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "70,000-85,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Robust cooling systems maintain performance in hot conditions."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Small"
@@ -233,7 +233,7 @@ smartness_comments = "Full digital cockpit with advanced driver assistance syste
 family_friendliness = "Low"
 family_friendliness_comments = "Limited rear seat space and cargo capacity compared to family vehicles."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi TT RS Coupe combines iconic design with serious performance, featuring a unique 2.5L turbocharged inline-5 engine producing 400 hp. Its quattro all-wheel drive system and magnetic ride suspension deliver exceptional handling. The Virtual Cockpit digital display and premium interior materials maintain Audi's luxury standards while aggressive styling cues mark it as a true RS model. With a 0-100 km/h time of 3.7 seconds, it competes with more expensive sports cars while offering surprising everyday usability."
 key_details_comments = "The Audi TT RS Coupe 2.5 TFSI represents the pinnacle of the TT lineup, combining Audi's racing heritage with daily drivability. Its standout feature is the award-winning 2.5L turbocharged inline-5 engine - a configuration unique to Audi's high-performance models - delivering 400 hp through a 7-speed S tronic dual-clutch transmission. The quattro all-wheel drive system features torque vectoring for exceptional cornering ability, while the magnetic ride adaptive suspension offers customizable handling characteristics. The cabin features Audi's Virtual Cockpit digital instrument cluster with RS-specific displays, wrapped in premium materials with available Nappa leather and Alcantara. Despite its performance focus, it maintains surprising practicality with 305L of trunk space (expandable to 712L) and modern tech features like MMI navigation with voice control. The aggressive styling includes RS-specific elements like the honeycomb grille, large air intakes, fixed rear spoiler, and oval exhaust tips, making it instantly recognizable as Audi's top-tier performance model."

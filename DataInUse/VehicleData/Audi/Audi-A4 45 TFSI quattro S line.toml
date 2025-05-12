@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-A4 45 TFSI quattro S line"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "45,000-65,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Efficient cooling system and optional ventilated seats for hot climates."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -234,7 +234,7 @@ family_friendliness = "Medium"
 family_friendliness_comments = "Good safety ratings but limited rear space compared to SUVs; ISOFIX anchors standard."
 
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details = "The Audi A4 45 TFSI quattro S line combines a 261hp 2.0L turbo engine with quattro AWD and sporty S line styling. Highlights include the 12.3" Virtual Cockpit, MMI Touch infotainment, and comprehensive driver assists. The S line package adds 19" wheels, sport suspension, and exclusive interior trim."
 key_details_comments = "The Audi A4 45 TFSI quattro S line represents the sportier iteration of Audi's premium compact executive sedan, combining performance-oriented engineering with luxury appointments. Its 2.0L TFSI turbocharged engine delivers 261hp and 370N·m of torque, paired with Audi's renowned quattro all-wheel-drive system for exceptional traction. The S line package enhances both aesthetics and dynamics with 19-inch alloy wheels, sport suspension (15mm lower than standard), aluminum interior trim, and distinctive exterior styling elements. Technological highlights include the 12.3-inch Virtual Cockpit digital instrument cluster, MMI Touch infotainment with natural voice control, and a comprehensive suite of driver assistance systems (L2 autonomy). The cabin features premium materials like Milano leather upholstery with contrast stitching, while the 460L trunk (expandable to 1,490L) offers practical utility. With a 0-100km/h acceleration of 5.8 seconds and a top speed of 250km/h (electronically limited), it delivers engaging performance while maintaining respectable fuel efficiency (7.1L/100km combined)."

@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-RS Q8 Performance"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "130,000-150,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling systems maintain performance even in high ambient temperatures."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -233,7 +233,7 @@ smartness_comments = "Packed with advanced driver assistance systems and connect
 family_friendliness = "Medium"
 family_friendliness_comments = "Practical for families but with a strong performance orientation."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi RS Q8 Performance is the most powerful version of Audi's flagship SUV, featuring a 4.0L twin-turbo V8 producing 630 PS, making it one of the fastest SUVs in production. It combines supercar performance with everyday usability, featuring Audi's Quattro all-wheel drive, adaptive air suspension, and a luxurious interior with cutting-edge technology. The RS-specific styling includes wider fenders, larger air intakes, and distinctive OLED taillights. Performance highlights include 0-100 km/h in 3.8 seconds and a top speed of 305 km/h with the optional dynamic package."
 key_details_comments = "The Audi RS Q8 Performance represents the pinnacle of Audi's performance SUV lineup, combining supercar-level acceleration with full-size luxury SUV practicality. Its 4.0L twin-turbo V8 engine delivers 630 PS (621 hp) and 850 N·m (627 lb-ft) of torque, making it one of the most powerful production SUVs available. The vehicle features cutting-edge technologies including electromechanical active roll stabilization, rear-wheel steering, and carbon-ceramic brakes (optional). The interior boasts Valcona leather RS sport seats, a fully digital cockpit, and premium sound insulation. With its combination of 3.8-second 0-100 km/h acceleration, 305 km/h top speed (with dynamic package), and 605L cargo capacity, it redefines what a performance SUV can achieve. The RS-specific design includes 23-inch wheels, widened fenders, and distinctive OLED taillights, while maintaining Audi's renowned build quality and quattro all-wheel drive capability for all-weather performance."

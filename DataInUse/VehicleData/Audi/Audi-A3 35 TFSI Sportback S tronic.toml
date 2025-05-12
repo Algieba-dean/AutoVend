@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-A3 35 TFSI Sportback S tronic"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "35,000-45,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Effective cooling systems maintain performance in hot conditions."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Small"
@@ -233,7 +233,7 @@ smartness_comments = "Advanced infotainment and driver assistance systems."
 family_friendliness = "Medium"
 family_friendliness_comments = "Practical for small families but limited rear space compared to larger vehicles."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi A3 35 TFSI Sportback S tronic combines premium compact dimensions with Audi's signature quality and technology. It features a 1.5L TFSI turbocharged engine producing 150hp, paired with a 7-speed S tronic dual-clutch transmission. The Sportback body style offers practical versatility with 380L of cargo space. Standard features include Audi's Virtual Cockpit, MMI Navigation Plus, and comprehensive safety systems. The dynamic design incorporates Audi's Singleframe grille and LED lighting technology."
 key_details_comments = "The Audi A3 35 TFSI Sportback S tronic represents the premium compact segment with Audi's hallmark engineering excellence. Its 1.5L TFSI turbocharged engine delivers 150hp through a responsive 7-speed S tronic dual-clutch transmission, combining efficiency with sporty performance. The Sportback design offers exceptional practicality with 380L of cargo space (expandable to 1,200L) while maintaining sleek proportions. Key technologies include the fully digital Audi Virtual Cockpit (12.3-inch display), MMI Navigation Plus with natural voice control, and comprehensive driver assistance systems. The vehicle showcases Audi's design language with Matrix LED headlights, Singleframe grille, and precise body lines achieving a 0.31 drag coefficient. Interior quality features premium materials including leather upholstery, brushed aluminum trim, and acoustic glass for superior noise insulation. The suspension system combines MacPherson struts front and multi-link rear for balanced handling and comfort."

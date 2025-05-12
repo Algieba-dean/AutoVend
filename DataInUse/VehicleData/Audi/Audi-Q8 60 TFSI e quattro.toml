@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi Q8 60 TFSI e quattro"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "80,000-100,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Tested for reliability in extreme temperatures up to 50°C."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -233,7 +233,7 @@ smartness_comments = "Advanced driver aids, connectivity, and customizable ambie
 family_friendliness = "Medium"
 family_friendliness_comments = "Spacious but lacks third-row seating; ideal for 4-5 passengers."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details = "The Audi Q8 60 TFSI e quattro combines a 3.0L V6 turbocharged engine (340 PS) with a 136 PS electric motor for a total output of 462 PS and 700 N·m torque. It features a 17.8 kWh battery for up to 47 km electric range (WLTP), quattro AWD, adaptive air suspension, and a luxurious interior with dual touchscreens. Standard tech includes MMI navigation, virtual cockpit, and Level 2 driving aids."
 key_details_comments = "The Audi Q8 60 TFSI e quattro is a high-performance plug-in hybrid luxury SUV that combines a 3.0L V6 TFSI turbocharged gasoline engine producing 340 PS with a 136 PS electric motor, delivering a combined system output of 462 PS and 700 N·m of torque. It features a 17.8 kWh lithium-ion battery (net capacity) providing up to 47 km of pure electric range (WLTP). The vehicle comes standard with Audi's quattro all-wheel drive system, adaptive air suspension with damping control, and a luxurious interior featuring dual touchscreen MMI infotainment, virtual cockpit, and premium Valcona leather upholstery. Advanced driver assistance systems include Level 2 autonomous driving capabilities with adaptive cruise control, lane keep assist, traffic jam assist, and 360-degree cameras. The coupe-like design offers a spacious 5-seat configuration with 505L of cargo space (expandable to 1,755L), combining sporty performance with practical luxury."

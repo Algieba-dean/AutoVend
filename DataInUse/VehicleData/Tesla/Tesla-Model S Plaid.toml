@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "Tesla-Model S Plaid"
+
+[PriciseLabels]
+
+# prize, the prize range of this car model, should be like "200,000-300,000"
+prize = "89,990-109,990"
+prize_comments = "The Tesla Model S Plaid starts at $89,990 USD for the base model and goes up to $109,990 USD with optional upgrades like Full Self-Driving capability."
+
+# vehicle_category, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category = "D-Segment Sedan"
+vehicle_category_comments = "The Model S Plaid is a full-size luxury sedan with high-performance capabilities."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Citroën", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Tesla"
+brand_comments = "Tesla is an American electric vehicle and clean energy company."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The Model S Plaid is a pure electric vehicle with no internal combustion engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The Model S Plaid offers a spacious interior with approximately 4.9 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The Model S Plaid has a trunk capacity of 793L (28 cubic feet), expandable to 1,645L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The Model S Plaid has a wheelbase of 2,960mm (116.5 inches), providing excellent stability and interior space."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The Model S Plaid has an adjustable air suspension with a ground clearance ranging from 135mm to 145mm in normal driving mode."
+
+# design_style, candidate values: "Sproty", "Business"
+design_style = "Business"
+design_style_comments = "The Model S Plaid combines luxury business styling with high-performance sports car capabilities."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The Model S Plaid features an aerodynamic design with a drag coefficient of just 0.208, one of the lowest for production cars."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Tesla offers a range of neutral colors for the Model S Plaid, including Pearl White Multi-Coat, Solid Black, Midnight Silver Metallic, and Deep Blue Metallic."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "The Model S Plaid features premium open-pore wood trim as standard, with optional carbon fiber trim available."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The Model S Plaid comes standard with anti-lock braking system (ABS) as part of its advanced safety features."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is standard on the Model S Plaid to enhance vehicle stability."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "The Model S Plaid is equipped with 8 airbags: front, knee, side, and curtain airbags for comprehensive protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The Model S Plaid features premium vegan leather upholstery as standard, with optional upgraded leather available."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "The Model S Plaid features acoustic glass and advanced noise insulation materials for a quiet cabin experience."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The Model S Plaid's infotainment system supports advanced voice commands for navigation, media, and vehicle controls."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Tesla's over-the-air (OTA) updates regularly add new features and improvements to the Model S Plaid."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The Model S Plaid currently offers Level 2 autonomous driving capabilities with its Full Self-Driving (FSD) package."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard adaptive cruise control with Traffic-Aware Cruise Control (TACC) is included."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "The Model S Plaid includes traffic-aware cruise control and automatic lane keeping for traffic jam assistance."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking is standard on all Model S vehicles."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist is part of Tesla's Autopilot system, which comes standard."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "Yes"
+remote_parking_comments = "The Model S Plaid features Smart Summon, allowing remote parking via the Tesla app."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Autopark feature is included with the Full Self-Driving package."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring is integrated into the vehicle's safety systems."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "The vehicle monitors driving patterns and can alert if it detects signs of fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as the Model S Plaid is a pure electric vehicle."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "Above 400kW"
+motor_power_comments = "The Model S Plaid features a tri-motor setup with a combined output of 1,020 horsepower (760 kW)."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "Above 100kWh"
+battery_capacity_comments = "The Model S Plaid has a 100 kWh battery pack (actual usable capacity is slightly less)."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable as the Model S Plaid is a pure electric vehicle."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The Model S Plaid produces 1,020 horsepower (761 kW), making it one of the most powerful production sedans."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "The Model S Plaid generates approximately 1,050 lb-ft (1,424 N·m) of instant torque."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The Model S Plaid accelerates from 0-100 km/h (0-62 mph) in just 2.1 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "The Model S Plaid has an electronically limited top speed of 322 km/h (200 mph)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable as the Model S Plaid is a pure electric vehicle."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "The Model S Plaid has an EPA-rated consumption of approximately 16.7 kWh/100km (combined)."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "Above 800km"
+driving_range_comments = "The Model S Plaid has an EPA-estimated range of 637 km (396 miles), though real-world highway range is typically less."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The Model S Plaid features a tri-motor all-wheel-drive system for maximum traction and performance."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The Model S Plaid features adaptive air suspension with independent suspension at all four corners."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "While not an off-road vehicle, the Model S Plaid's air suspension can raise ground clearance for rough roads."
+
+# seat_layout, candidate values: "5-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The Model S Plaid is configured as a 5-seater, with an optional third row making it a 7-seater in some configurations."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "The Model S Plaid is excellent for city commuting with its instant torque, one-pedal driving, and compact turning radius."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "With its long range and Autopilot capabilities, the Model S Plaid is ideal for highway driving."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The Model S Plaid is not designed for off-road use, though its air suspension can handle rough roads."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "With front and rear trunks, the Model S Plaid offers excellent cargo capacity for a sedan."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The Model S Plaid performs well in cold weather, though range is reduced in extreme cold conditions."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Tesla's battery thermal management system ensures good performance in hot climates."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "The Model S Plaid is a full-size luxury sedan with dimensions of 4,980mm (L) x 1,964mm (W) x 1,445mm (H)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "The Model S Plaid offers excellent usability with its spacious interior and large cargo capacity."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The Model S Plaid features sleek, aerodynamic styling with premium design elements."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "While efficient for its performance level, the Plaid's high power output results in moderate energy consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "The Model S Plaid offers exceptional comfort with premium materials, air suspension, and a quiet cabin."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "The Model S Plaid features cutting-edge technology including advanced driver assistance systems and a sophisticated infotainment system."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "While spacious and safe, the Plaid's extreme performance may not be ideal for all family uses."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Tesla Model S Plaid is the high-performance variant of Tesla's flagship sedan, featuring a tri-motor all-wheel-drive system producing 1,020 horsepower. It accelerates from 0-60 mph in just 1.99 seconds and has a top speed of 200 mph. The Plaid features a minimalist interior with a 17-inch touchscreen, yoke steering wheel, and advanced autonomous
+key_details_comments = "The Tesla Model S Plaid represents the pinnacle of electric performance sedans, featuring a revolutionary tri-motor all-wheel-drive system delivering 1,020 horsepower. It achieves astonishing acceleration with 0-60 mph in just 1.99 seconds (0-100 km/h in 2.1 seconds) and boasts a top speed of 200 mph (322 km/h). The vehicle features Tesla's most advanced technology including a 17-inch cinematic touchscreen, yoke steering wheel, and 22-speaker premium audio system. With an EPA-estimated range of 396 miles (637 km), the Plaid combines extreme performance with practical range. The interior offers premium vegan leather seating, open-pore wood trim, and industry-leading noise insulation. Advanced features include Tesla's Full Self-Driving capability (hardware-ready for future autonomous features), adaptive air suspension, and over-the-air software updates that continuously improve the vehicle."

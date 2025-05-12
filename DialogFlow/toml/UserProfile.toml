@@ -1,7 +1,7 @@
 # User Information from calling, collected for user analysis
 title = "User Profile"
 
-[Basic Information]
+[BasicInformation]
 
 # profile_id: Required, should be an uuid
 
@@ -25,7 +25,7 @@ target_driver = ""
 # expertise: Required, number from 0 to 10 to mark how deep user know cars
 expertise = ""
 
-[Additional Information]
+[AdditionalInformation]
 
 # family_size: Optional, the family size of user, should be a number
 family_size = ""
@@ -37,9 +37,9 @@ price_sensitivy = ""
 residence = ""
 
 # parking_conditions: Optional, candidate values: "Allocated Parking Space", "Temporary Parking Alllowed", "Charging Pile Facilites Available"
-parking_conditions: ""
+parking_conditions = ""
 
-[Connection Information]
+[ConnectionInformation]
 
 # connection_id: Optional, the user id for another connection user
 connection_id = ""

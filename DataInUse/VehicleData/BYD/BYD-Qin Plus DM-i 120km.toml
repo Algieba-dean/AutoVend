@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-Qin Plus DM-i 120km"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "25,000-35,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Battery cooling system ensures optimal performance in hot climates up to 50°C."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -233,7 +233,7 @@ smartness_comments = "Advanced connectivity features and driver assistance syste
 family_friendliness = "High"
 family_friendliness_comments = "Spacious interior, safety features, and practical design make it family-friendly."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The BYD-Qin Plus DM-i 120km combines a 1.5L efficient engine with a 145kW electric motor and 18.32kWh battery, offering 120km pure EV range and 1,200km total hybrid range. Features include L2 autonomous driving, premium interior, and advanced BYD Blade Battery technology for safety and efficiency."
 key_details_comments = "The BYD-Qin Plus DM-i 120km is a technologically advanced plug-in hybrid featuring BYD's innovative DM-i (Dual Mode intelligent) system. It combines a highly efficient 1.5L Atkinson-cycle gasoline engine with a 145kW electric motor and an 18.32kWh Blade Battery, delivering 120km of pure electric range (NEDC) and an exceptional total hybrid range of up to 1,200km. The vehicle offers Level 2 autonomous driving capabilities, premium interior finishes with metal trim accents, and BYD's proprietary Blade Battery technology that provides enhanced safety with superior thermal stability. The PHEV system allows for both EV-only urban commuting and extended hybrid driving, with fast charging capability (0-100% in about 2.5 hours) and V2L (vehicle-to-load) functionality. The aerodynamic design (0.24Cd) contributes to its efficiency, while the comprehensive safety suite includes 6 airbags and multiple driver assistance systems."

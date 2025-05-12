@@ -2,65 +2,65 @@
 
 title = "CarLabels"
 
-car_model = "Volvo-XC60 B5 AWD Inscription"
+car_model = "Volvo-V90 CC B5 AWD Inscription"
 
 [PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
-prize = "45,000-65,000"
-prize_comments = "The Volvo-XC60 B5 AWD Inscription is priced between $45,000 and $65,000 USD depending on the trim level and options."
+prize = "55,000-65,000"
+prize_comments = "The Volvo V90 CC B5 AWD Inscription is priced between $55,000 and $65,000 USD depending on optional features and regional pricing."
 
 # vehicle_category, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
-vehicle_category = "Mid-Size SUV"
-vehicle_category_comments = "The Volvo XC60 is a premium mid-size SUV with a balance of luxury and practicality."
+vehicle_category = "All-terrain SUV"
+vehicle_category_comments = "The V90 Cross Country (CC) is a raised, all-terrain variant of the V90 wagon with AWD capability."
 
 # brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Citroën", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
 brand = "Volvo"
 brand_comments = "Volvo is a Swedish luxury automotive brand known for safety and Scandinavian design."
 
 # powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
-powertrain_type = "Hybrid Electric Vehicle"
-powertrain_type_comments = "The B5 model features a mild-hybrid gasoline engine with an integrated starter-generator."
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The B5 variant uses a 2.0L turbocharged gasoline engine with mild-hybrid technology (48V system)."
 
 # passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The XC60 offers 3.8 cubic meters of passenger space with premium legroom and headroom."
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Spacious interior with 4.8 cubic meters of passenger volume, typical for a luxury wagon."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
-trunk_volume_comments = "Trunk capacity is 505L (VDA), expandable to 1,432L with rear seats folded."
+trunk_volume_comments = "Trunk capacity is 560L (expandable to 1,526L with rear seats folded)."
 
 # wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
-wheelbase = "2800~2950mm"
-wheelbase_comments = "The XC60 has a 2,865mm wheelbase, providing stable handling and interior space."
+wheelbase = "2950~3100mm"
+wheelbase_comments = "Wheelbase is 2,941mm, providing excellent legroom and stability."
 
 # chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
 chassis_height = "150~200mm"
-chassis_height_comments = "Ground clearance is 216mm, suitable for light off-road use."
+chassis_height_comments = "Ground clearance is 210mm (higher than standard V90 for off-road capability)."
 
 # design_style, candidate values: "Sproty", "Business"
 design_style = "Business"
-design_style_comments = "Elegant Scandinavian design with premium materials and clean lines."
+design_style_comments = "Elegant Scandinavian design with premium materials, targeting executive buyers."
 
 # body_line_smoothness, candidate values: "High", "Medium", "Low"
 body_line_smoothness = "High"
-body_line_smoothness_comments = "Flowing, aerodynamic design with a 0.32 drag coefficient."
+body_line_smoothness_comments = "Sleek, aerodynamic profile with refined surfacing."
 
 # color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
 color = "Neutral Colors"
-color_comments = "Offers sophisticated Nordic color options like Birch Light and Blond."
+color_comments = "Offers colors like Silver Dawn, Pine Grey, and Onyx Black."
 
 # interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
 interior_material_texture = "Wood Trim"
-interior_material_texture_comments = "Premium driftwood inlays with Nappa leather upholstery."
+interior_material_texture_comments = "Premium driftwood inlays and Nappa leather upholstery."
 
 # ABS, candidate values: "Yes", "No"
 ABS = "Yes"
-ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+ABS_comments = "Standard anti-lock braking system."
 
 # ESP, candidate values: "Yes", "No"
 ESP = "Yes"
-ESP_comments = "Electronic Stability Program with traction control and roll stability control."
+ESP_comments = "Electronic Stability Program included."
 
 # airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
 airbag_count = "8"
@@ -68,51 +68,51 @@ airbag_count_comments = "Includes dual front, side, curtain, and knee airbags."
 
 # seat_material, candidate values: "Lether", "Fabric"
 seat_material = "Lether"
-seat_material_comments = "Standard Nappa leather seats with optional ventilation/massage."
+seat_material_comments = "Standard Nappa leather seats with ventilation/massage options."
 
 # noise_insulation, candidate values: "High", "Medium", "Low"
 noise_insulation = "High"
-noise_insulation_comments = "Acoustic laminated glass and extensive sound-deadening materials."
+noise_insulation_comments = "Acoustic laminated glass and active noise cancellation."
 
 # voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
 voice_interfaction = "Yes"
-voice_interfaction_comments = "Google Assistant integration with natural language processing."
+voice_interfaction_comments = "Google Assistant integration via Volvo's Sensus system."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
-ota_updates_comments = "Over-the-air updates for infotainment and vehicle systems."
+ota_updates_comments = "Over-the-air updates for infotainment and select ECUs."
 
 # autonomous_driving_level, candidate values: "L2", "L3"
 autonomous_driving_level = "L2"
-autonomous_driving_level_comments = "Pilot Assist with adaptive cruise and lane centering."
+autonomous_driving_level_comments = "Pilot Assist provides adaptive cruise + lane centering."
 
 # adaptive_cruise_control, candidate values: "Yes", "No"
 adaptive_cruise_control = "Yes"
-adaptive_cruise_control_comments = "Includes speed adaptation and queue assist."
+adaptive_cruise_control_comments = "Includes stop-and-go functionality."
 
 # traffic_jam_assit, candidate values: "Yes", "No"
 traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Steering assist works up to 80km/h in congested traffic."
+traffic_jam_assit_comments = "Low-speed steering assist under 37 mph."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
-automatic_emergency_braking_comments = "City Safety system detects vehicles, pedestrians, cyclists."
+automatic_emergency_braking_comments = "Detects vehicles, pedestrians, cyclists, and large animals."
 
 # lane_keep_assist, candidate values: "Yes", "No"
 lane_keep_assist = "Yes"
-lane_keep_assist_comments = "Active lane keeping with gentle steering inputs."
+lane_keep_assist_comments = "Active steering correction if drifting."
 
 # remote_parking, candidate values: "Yes", "No"
 remote_parking = "No"
-remote_parking_comments = "Not available on B5 models (requires PHEV variant)."
+remote_parking_comments = "Not available on this model."
 
 # auto_parking, candidate values: "Yes", "No"
 auto_parking = "Yes"
-auto_parking_comments = "Park Pilot Assist for parallel and perpendicular spaces."
+auto_parking_comments = "Park Pilot Assist for parallel/perpendicular spaces."
 
 # blind_spot_detection, candidate values: "Yes", "No"
 blind_spot_detection = "Yes"
-blind_spot_detection_comments = "BLIS with cross-traffic alert and rear collision mitigation."
+blind_spot_detection_comments = "BLIS (Blind Spot Information System) with steer assist."
 
 # fatigue_driving_detection, candidate values: "Yes", "No"
 fatigue_driving_detection = "Yes"
@@ -120,120 +120,119 @@ fatigue_driving_detection_comments = "Driver Alert Control monitors steering pat
 
 # engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
 engine_displacement = "2.0~2.5L"
-engine_displacement_comments = "2.0L turbocharged 4-cylinder with 48V mild hybrid system."
+engine_displacement_comments = "2.0L turbocharged 4-cylinder with 48V mild hybrid (B5 variant)."
 
 # motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
 motor_power = "70~120kW"
-motor_power_comments = "Integrated starter-generator provides 10kW boost and smooth start-stop."
+motor_power_comments = "Integrated starter-generator provides 10kW boost."
 
 # battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
 battery_capacity = "None"
-battery_capacity_comments = "Mild hybrid uses small 48V battery, not a traction battery."
+battery_capacity_comments = "Mild-hybrid system uses a small 48V battery, not a traction battery."
 
 # fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
 fuel_tank_capacity = "50~70L"
-fuel_tank_capacity_comments = "71L fuel tank capacity for extended range."
+fuel_tank_capacity_comments = "60L fuel tank capacity."
 
 # horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
 horsepower = "200~300hp"
-horsepower_comments = "247hp combined output (engine + electric motor)."
+horsepower_comments = "247 hp (combined with mild-hybrid system)."
 
 # torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
 torque = "300~400N·m"
-torque_comments = "350N·m available from 1,800-4,800 rpm."
+torque_comments = "350 N·m @ 1,800-4,800 rpm."
 
 # zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
 zero_to_one_hundred_km_h_acceleration_time = "6~8s"
-zero_to_one_hundred_km_h_acceleration_time_comments = "6.9 seconds 0-100km/h acceleration."
+zero_to_one_hundred_km_h_acceleration_time_comments = "6.8 seconds (manufacturer claim)."
 
 # top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
 top_speed = "200~240km/h"
-top_speed_comments = "Electronically limited to 210km/h."
+top_speed_comments = "Electronically limited to 180 km/h (112 mph)."
 
 # fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
 fuel_consumption = "6~8L/100km"
-fuel_consumption_comments = "7.2L/100km combined (WLTP) with hybrid assistance."
+fuel_consumption_comments = "7.4L/100km (combined, WLTP)."
 
 # electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
 electric_consumption = "None"
-electric_consumption_comments = "Not applicable - mild hybrid doesn't have pure EV mode."
+electric_consumption_comments = "Not applicable – gasoline powertrain."
 
 # driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
 driving_range = "400~800km"
-driving_range_comments = "Approximately 700km range with 71L tank."
+driving_range_comments = "~810 km range (60L tank at 7.4L/100km)."
 
 # drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
-drive_type_comments = "Instant AWD with torque vectoring capability."
+drive_type_comments = "Volvo's AWD with Instant Traction."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
 suspension = "Independent Suspension"
-suspension_comments = "Front strut and rear integral axle with optional air suspension."
+suspension_comments = "Front strut + rear multi-link with adaptive dampers (optional)."
 
 # passibility, candidate values: "Low", "Medium", "High"
 passibility = "Medium"
-passibility_comments = "Competent on rough roads but not extreme off-road."
+passibility_comments = "Cross Country trim improves rough-road capability."
 
 # seat_layout, candidate values: "5-seat", "7-seat"
 seat_layout = "5-seat"
-seat_layout_comments = "Premium 5-seat configuration with optional heated rear seats."
+seat_layout_comments = "Luxury-focused 5-seat configuration."
 
 # city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
 city_commuting = "Yes"
-city_commuting_comments = "Excellent visibility and compact dimensions for urban use."
+city_commuting_comments = "Compact footprint for urban use, with 360° camera."
 
 # highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
 highway_long_distance = "Yes"
-highway_long_distance_comments = "Comfortable cruiser with advanced driver assists."
+highway_long_distance_comments = "Excellent comfort and Pilot Assist for highways."
 
 # off_road_capability, candidate values: "Low", "Medium", "High"
 off_road_capability = "Medium"
-off_road_capability_comments = "Competent on light trails with 216mm clearance."
+off_road_capability_comments = "Higher ground clearance than standard wagons, but not a true off-roader."
 
 # cargo_capability, candidate values: "Yes", "No"
 cargo_capability = "Yes"
-cargo_capability_comments = "1,432L max capacity with 40/20/40 split folding."
+cargo_capability_comments = "1,526L max cargo volume with seats folded."
 
 # clod_resistance, candidate values: "High", "Medium", "Low"
 clod_resistance = "High"
-clod_resistance_comments = "Proven Swedish winter performance with heated components."
+clod_resistance_comments = "Tested for Nordic winters with heated components."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"
-heat_resistance_comments = "Robust cooling systems validated in extreme conditions."
-
+heat_resistance_comments = "Robust cooling systems validated up to 50°C."
 
 [AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
-size = "Medium"
-size_comments = "4,688mm length positions it between compact and large SUVs."
+size = "Large"
+size_comments = "Long-wheelbase luxury wagon (4,959mm length)."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
-vehicle_usability = "Medium"
-vehicle_usability_comments = "Balanced dimensions for both urban and family use."
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious for families and long trips."
 
 # aesthetics: candidate values: "Low", "Medium", "High"
 aesthetics = "High"
-aesthetics_comments = "Award-winning Scandinavian design with premium details."
+aesthetics_comments = "Award-winning Scandinavian design."
 
 # energy_consumption_level: candidate values: "Low", "Medium", "High"
 energy_consumption_level = "Medium"
-energy_consumption_level_comments = "Efficient for its class but not class-leading."
+energy_consumption_level_comments = "Balanced for a 2.0L turbo AWD vehicle."
 
 # confort_level: candidate values: "Low", "Medium", "High"
 confort_level = "High"
-confort_level_comments = "Exceptional ride quality with optional air suspension."
+confort_level_comments = "Pillowy seats and refined ride quality."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced connectivity and semi-autonomous features."
+smartness_comments = "Google-based infotainment + advanced driver aids."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"
-family_friendliness_comments = "Top safety ratings and practical family features."
+family_friendliness_comments = "Top safety ratings and versatile cargo space."
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The Volvo XC60 B5 AWD Inscription combines Scandinavian luxury with advanced safety, featuring a 247hp mild-hybrid powertrain, Pilot Assist semi-autonomous driving, and premium interior materials. Its 2.0L turbocharged engine with 48V hybrid system delivers 350N·m torque while achieving 7.2L/100km fuel efficiency. The cabin offers exceptional noise insulation and Google-based infotainment with over-the-air updates."
-key_details_comments = "The Volvo XC60 B5 AWD Inscription represents the perfect blend of Scandinavian luxury and cutting-edge technology. Its mild-hybrid powertrain combines a 2.0L turbocharged engine with a 48V system for both performance (247hp, 350N·m) and efficiency (7.2L/100km). The vehicle features Volvo's acclaimed Pilot Assist system for semi-autonomous driving, a premium cabin with driftwood inlays and Nappa leather, and Google-based infotainment with OTA updates. With 505L of cargo space (expandable to 1,432L), comprehensive safety systems including City Safety, and exceptional noise insulation, it's designed for both family practicality and executive comfort. The AWD system provides confident all-weather capability while maintaining Volvo's renowned safety standards."
+key_details = "The Volvo V90 Cross Country B5 AWD Inscription combines luxury wagon practicality with mild-hybrid efficiency and all-terrain capability. Highlights include: 247hp turbocharged 2.0L with 48V hybrid, standard AWD, 210mm ground clearance, Pilot Assist (L2 autonomy), and a premium interior with Nappa leather. Safety features include City Safety with animal detection and Run-off Road Mitigation."
+key_details_comments = "The Volvo V90 Cross Country B5 AWD Inscription represents the pinnacle of Scandinavian luxury wagons with enhanced all-terrain capability. Its 2.0L turbocharged B5 mild-hybrid powertrain delivers 247hp and 350N·m while maintaining respectable 7.4L/100km fuel efficiency. The Inscription trim adds premium Nappa leather, driftwood inlays, and advanced features like 4-corner air suspension (optional) and Pilot Assist with adaptive cruise control. With 210mm ground clearance and Volvo's Instant Traction AWD system, it bridges the gap between luxury sedan comfort and SUV versatility. The vehicle excels in safety with standard City Safety (including large animal detection), Run-off Road Mitigation, and a comprehensive 8-airbag system. Its 560L cargo capacity (expandable to 1,526L) and 5-seat executive cabin make it ideal for both family use and business travel."

@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-Dolphin 405km Dynamic"
 car_model_comments = "The BYD Dolphin 405km Dynamic is a compact electric hatchback with a focus on urban mobility and efficiency."
 
-[Pricise Labels]
+[PriciseLabels]
 
 prize = "30,000-35,000"
 prize_comments = "The BYD-Dolphin 405km Dynamic is priced between $30,000 and $35,000 USD depending on regional taxes and incentives."
@@ -154,7 +154,7 @@ clod_resistance_comments = "Blade Battery maintains 80% capacity at -30°C with 
 heat_resistance = "High"
 heat_resistance_comments = "Advanced battery cooling system maintains performance in hot climates."
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 size = "Small"
 size_comments = "Compact dimensions ideal for urban environments (4,290mm length)."
@@ -177,6 +177,6 @@ smartness_comments = "Advanced connectivity and driver assistance features."
 family_friendliness = "Medium"
 family_friendliness_comments = "Practical for small families with good safety features."
 
-[Key Details]
+[KeyDetails]
 key_details="The BYD Dolphin 405km Dynamic features BYD's proprietary Blade Battery technology offering enhanced safety and longevity. It includes a 12.8-inch rotating touchscreen with DiLink 4.0 system, V2L (vehicle-to-load) capability, and comprehensive ADAS suite. The thermal management system ensures reliable performance in extreme temperatures."
 key_details_comments = "The BYD Dolphin 405km Dynamic showcases BYD's innovative Blade Battery technology, which provides superior thermal stability and safety compared to conventional lithium-ion batteries. The vehicle features a 12.8-inch adaptive rotating touchscreen with the DiLink 4.0 infotainment system, offering smartphone-like responsiveness and connectivity. Unique V2L (vehicle-to-load) capability allows the car to power external devices up to 3.3kW. The comprehensive ADAS suite includes 12 ultrasonic radars and 5 millimeter-wave radars for robust driver assistance. The advanced thermal management system with heat pump technology ensures optimal battery performance in temperatures ranging from -30°C to 60°C, while the e-platform 3.0 architecture provides excellent structural rigidity and energy efficiency."

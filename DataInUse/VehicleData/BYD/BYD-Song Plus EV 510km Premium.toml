@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-Song Plus EV 510km Premium"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "45,000-65,000"
@@ -202,7 +202,7 @@ clod_resistance_comments = "LFP battery maintains good performance in cold weath
 heat_resistance = "High"
 heat_resistance_comments = "Blade Battery technology is highly resistant to thermal runaway."
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -232,7 +232,7 @@ smartness_comments = "Advanced connectivity features and driver assistance syste
 family_friendliness = "High"
 family_friendliness_comments = "Spacious interior, safety features, and practical storage solutions."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The BYD-Song Plus EV 510km Premium features BYD's innovative Blade Battery technology, offering excellent safety and energy density. It combines a premium interior with advanced technology including a rotating 12.8-inch touchscreen, 5G connectivity, and comprehensive ADAS features. The vehicle supports DC fast charging (0-80% in 30 minutes) and V2L (vehicle-to-load) capability for powering external devices."
 key_details_comments = "The BYD-Song Plus EV 510km Premium represents BYD's cutting-edge EV technology, featuring their revolutionary Blade Battery system that offers superior thermal stability and safety compared to conventional lithium-ion batteries. The vehicle boasts a premium interior with vegan leather seats, ambient lighting, and a 12.8-inch adaptive rotating touchscreen with 5G connectivity. Advanced driver assistance systems include full-speed adaptive cruise control, lane centering, and automated parking. With 510km NEDC range (approximately 420km real-world), DC fast charging capability (10-80% in 30 minutes), and vehicle-to-load (V2L) functionality that can power external devices up to 3.3kW, it's a versatile family SUV. The acoustic windshield and extensive sound insulation create a quiet cabin experience, while the DiPilot intelligent driving system provides Level 2 autonomous capabilities."

@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-A1 Sportback 40 TFSI S line"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "30,000-40,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Effective cooling systems maintain performance in hot conditions."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Small"
@@ -233,7 +233,7 @@ smartness_comments = "Advanced driver assistance systems and connectivity featur
 family_friendliness = "Medium"
 family_friendliness_comments = "Practical for small families but limited rear space."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi A1 Sportback 40 TFSI S line combines premium compact dimensions with sporty performance. Its 2.0L TFSI engine delivers 245 hp, paired with a 7-speed S tronic transmission. The S line package adds sport suspension, 18-inch wheels, and distinctive styling elements. Advanced features include Audi virtual cockpit, MMI navigation plus, and comprehensive driver assistance systems. With a 0-100 km/h time of 6.5 seconds and top speed of 235 km/h, it offers engaging performance while maintaining everyday practicality."
 key_details_comments = "The Audi A1 Sportback 40 TFSI S line represents the sportiest iteration of Audi's premium compact hatchback. It features a potent 2.0L TFSI turbocharged engine producing 245 hp, paired with a quick-shifting 7-speed S tronic dual-clutch transmission. The S line package enhances both aesthetics and performance with sport suspension lowering the ride height by 15mm, 18-inch alloy wheels, S line exterior styling package (including more aggressive bumpers and side skirts), and distinctive interior elements like stainless steel pedals and sport seats. Technological highlights include the fully digital Audi virtual cockpit (12.3-inch display), MMI navigation plus with 10.1-inch touchscreen, and Bang & Olufsen premium sound system. Safety is comprehensive with Audi pre sense front, lane departure warning, and rear cross-traffic alert. Despite its compact 4.03m length, it offers practical 335L cargo capacity (expandable to 1,090L) while delivering sports car-like acceleration (0-100km/h in 6.5s) thanks to its 370Nm torque available from just 1,600rpm. The combination of premium materials, advanced technology, and engaging driving dynamics makes it stand out in the premium compact segment."

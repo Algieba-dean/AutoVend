@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-Atto 3 150kW Extended Range"
 car_model_comments = "BYD's compact electric SUV with a focus on range and smart features."
 
-[Pricise Labels]
+[PriciseLabels]
 
 prize = "30,000-40,000"
 prize_comments = "The BYD-Atto 3 150kW Extended Range is priced between $30,000 and $40,000 USD depending on the market and optional features."
@@ -154,7 +154,7 @@ clod_resistance_comments = "Performs well in cold climates with battery heating 
 heat_resistance = "High"
 heat_resistance_comments = "Efficient thermal management for battery in hot conditions."
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 size = "Medium"
 size_comments = "Compact SUV dimensions (4,455mm long, 1,875mm wide)."
@@ -177,6 +177,6 @@ smartness_comments = "Advanced DiLink 4.0 infotainment and L2 autonomy."
 family_friendliness = "Medium"
 family_friendliness_comments = "Good for small families with 5 seats and safety features."
 
-[Key Details]
+[KeyDetails]
 key_details = "The BYD-Atto 3 150kW Extended Range features BYD's Blade Battery technology for safety and longevity, a 420km NEDC range, and a 150kW electric motor. It includes advanced driver assistance systems (ADAS) and a premium interior with vegan leather seats. Fast charging (0-80% in 45 minutes) and V2L (vehicle-to-load) capability are standout features."
 key_details_comments = "The BYD-Atto 3 150kW Extended Range is a technologically advanced compact electric SUV featuring BYD's proprietary Blade Battery (LFP chemistry) that offers exceptional thermal stability and safety. With a 60.48kWh battery capacity, it delivers a practical 420km NEDC-rated range, making it suitable for both daily commutes and longer journeys. The 150kW (201hp) front-mounted permanent magnet synchronous motor provides strong acceleration (0-100km/h in 7.3s) and responsive driving dynamics. Key highlights include: DC fast charging capability (0-80% in ~45 minutes), vehicle-to-load (V2L) functionality for powering external devices, Level 2 autonomous driving features (adaptive cruise, lane keeping, traffic jam assist), and a premium interior with DiLink 4.0 smart rotating touchscreen (12.8-inch), vegan leather seats, and excellent NVH control. The combination of BYD's e-platform 3.0 architecture, efficient energy consumption (~13.5kWh/100km), and comprehensive safety systems (6 airbags, ABS, ESP) make it a compelling package in the affordable EV segment."

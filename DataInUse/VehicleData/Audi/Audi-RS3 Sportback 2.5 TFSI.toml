@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-RS3 Sportback 2.5 TFSI"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "60,000-70,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "The RS3 Sportback is engineered to handle high temperatures, with an efficient cooling system and heat-resistant materials."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 smartness = ""
 smartness_comments = "The RS3 Sportback scores high on smartness with its advanced MMI infotainment system featuring voice control, OTA updates, and smartphone integration. It also includes intelligent driver assistance systems like adaptive cruise control, lane keep assist, and traffic jam assist, making it both technologically sophisticated and user-friendly."
 family_friendliness = ""
@@ -227,7 +227,9 @@ energy_consumption_level_comments = "As a high-performance vehicle, the RS3 Spor
 
 # confort_level: candidate values: "Low", "Medium", "High"
 confort_level = "High"
-confort_level_comments = "The RS3 Sportback offers a high
-[Key Details]
+confort_level_comments = "The RS3 Sportback offers a high"
+
+[KeyDetails]
+
 key_details=""
 key_details_comments = "The Audi RS3 Sportback 2.5 TFSI is a high-performance compact sedan featuring Audi's legendary 2.5L turbocharged inline-5 engine producing 394hp, Quattro all-wheel drive, and a 0-100km/h acceleration of 3.8 seconds. It combines sporty performance with practical hatchback functionality, offering premium interior materials, advanced driver assistance systems, and distinctive RS styling."

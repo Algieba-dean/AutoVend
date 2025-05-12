@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-A7 50 TDI quattro S tronic"
 car_model_comments = "The Audi A7 50 TDI quattro S tronic is a luxury executive fastback with a diesel powertrain and quattro all-wheel drive."
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "70,000-85,000"
@@ -204,7 +204,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Robust cooling systems maintain performance in hot conditions."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -234,7 +234,7 @@ smartness_comments = "Features advanced driver assistance systems and cutting-ed
 family_friendliness = "Medium"
 family_friendliness_comments = "Spacious enough for families but more oriented toward executive use than family hauling."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi A7 50 TDI quattro combines elegant fastback styling with a powerful yet efficient 3.0L V6 diesel engine producing 286 hp and 620 Nm of torque. It features quattro all-wheel drive, an advanced 48V mild hybrid system for improved efficiency, and a luxurious interior with the latest MMI touch response infotainment. The sportback design offers 535L of cargo space, expandable to 1,390L, blending practicality with coupe-like styling. Advanced driver assistance systems include adaptive cruise assist, traffic jam assist, and active lane keeping."
 key_details_comments = "The Audi A7 50 TDI quattro S tronic represents the pinnacle of Audi's luxury fastback design, combining a 3.0L V6 turbocharged diesel engine (286 hp/620 Nm) with a 48V mild hybrid system for enhanced efficiency. Its quattro all-wheel drive system ensures confident traction in all conditions, while the sophisticated five-link suspension (with optional adaptive air suspension) delivers both sporty handling and executive comfort. The fastback design provides exceptional practicality with 535L of cargo space (expandable to 1,390L), blending coupe-like aesthetics with sedan functionality. The interior features Audi's Virtual Cockpit digital instrument cluster, MMI touch response infotainment with natural voice control, and Valcona leather upholstery. Advanced driver assistance systems include adaptive cruise assist with traffic jam functionality (operational up to 65 km/h), active lane assist, and 360-degree camera systems. The vehicle's aerodynamic efficiency (0.28 Cd) and diesel powertrain enable an impressive 1,150 km driving range, making it an ideal grand tourer."

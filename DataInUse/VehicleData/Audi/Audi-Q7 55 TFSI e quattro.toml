@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-Q7 55 TFSI e quattro"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "70,000-85,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "The Q7's cooling systems are designed to maintain performance in hot conditions."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -233,7 +233,7 @@ smartness_comments = "The Q7 features advanced technology including digital cock
 family_friendliness = "High"
 family_friendliness_comments = "With its spacious interior and safety features, the Q7 is excellent for families."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi Q7 55 TFSI e quattro is a premium plug-in hybrid SUV combining a 2.0L turbocharged engine with an electric motor for 367 hp total output. It offers up to 40 km of electric-only range, quattro all-wheel drive, and a luxurious interior with advanced technology features. The Q7 balances performance and efficiency while providing three rows of seating and premium comfort."
 key_details_comments = "The Audi Q7 55 TFSI e quattro represents Audi's flagship plug-in hybrid SUV, combining a 2.0L TFSI turbocharged four-cylinder engine (252 hp) with an electric motor (141 hp) for a combined 367 hp and 500 Nm of torque. The 17.3 kWh battery enables up to 40 km of pure electric driving (WLTP), making it ideal for urban commutes. It features Audi's legendary quattro all-wheel drive, adaptive air suspension (optional), and a luxurious interior with Valcona leather, four-zone climate control, and advanced driver assistance systems. The three-row seating configuration offers flexibility for up to seven passengers, while the 865-1,955 liter cargo capacity ensures practicality. With DC fast charging capability (0-100% in ~2.5 hours) and a combined range of ~700 km, it bridges the gap between electric mobility and traditional SUV capability."

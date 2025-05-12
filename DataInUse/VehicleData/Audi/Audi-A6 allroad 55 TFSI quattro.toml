@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-A6 allroad 55 TFSI quattro"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "65,000-75,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Efficient cooling systems and climate control ensure comfort in hot weather."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -233,7 +233,7 @@ smartness_comments = "Equipped with the latest connectivity and driver assistanc
 family_friendliness = "High"
 family_friendliness_comments = "Spacious and safe, ideal for family use."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi-A6 allroad 55 TFSI quattro combines luxury, performance, and versatility with its 3.0L V6 turbocharged engine, quattro all-wheel drive, and adaptive air suspension. It offers advanced driver assistance systems, a premium interior, and all-terrain capabilities."
 key_details_comments = "The Audi-A6 allroad 55 TFSI quattro represents the pinnacle of Audi's luxury wagon offerings, combining a powerful 3.0L V6 TFSI engine producing 335 hp with a 48V mild hybrid system for improved efficiency. Its quattro all-wheel drive system and adaptive air suspension with adjustable ride height (139-185mm) provide exceptional all-terrain capability while maintaining sedan-like handling. The vehicle features a premium interior with Valcona leather, wood trim, and advanced noise insulation. Cutting-edge technology includes Audi's MMI touch response system with voice control, L2 autonomous driving features, and comprehensive safety systems with 8 airbags. With 565L of cargo space (expandable to 1,680L), it offers practical versatility while delivering 0-100 km/h in 5.5 seconds and a top speed of 250 km/h (electronically limited)."

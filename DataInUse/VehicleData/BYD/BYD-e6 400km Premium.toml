@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-e6 400km Premium"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "45,000-65,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Blade Battery excels in high temperatures with liquid cooling (stable up to 60°C)."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -234,8 +234,8 @@ family_friendliness = "High"
 family_friendliness_comments = "Spacious rear seats and child seat anchors (ISOFIX) make it family-friendly."
 
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details = "The BYD-e6 400km Premium is a purpose-built electric MPV featuring BYD's Blade Battery technology for safety and longevity. Key highlights include 520 km NEDC range, 160 kW motor, and DiLink 3.0 smart ecosystem. Designed for fleet/commercial use with durable interiors and L2 autonomous features."
 key_details_comments = "The BYD-e6 400km Premium is a purpose-built electric MPV featuring BYD's innovative Blade Battery technology, which offers exceptional thermal stability and safety. With an NEDC-rated range of 520 km (~400 km real-world), it's ideal for both urban commuting and longer trips. The vehicle boasts a 160 kW (218 hp) permanent magnet synchronous motor, delivering 310 N·m of instant torque for responsive acceleration. Key features include the DiLink 3.0 smart ecosystem with a 12.8\" rotating touchscreen, 5G connectivity, and OTA updates. Designed primarily for fleet and commercial use, it offers durable fabric interiors, 550L cargo capacity (expandable to 1,200L), and comprehensive L2 autonomous driving features including adaptive cruise control and lane-keeping assist. The MPV body style provides 4.8 cubic meters of passenger space with comfortable seating for five adults."
 

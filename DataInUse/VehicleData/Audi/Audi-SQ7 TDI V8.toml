@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Audi-SQ7 TDI V8"
 car_model_comments = "The Audi SQ7 TDI is a high-performance luxury SUV with a 4.0L V8 diesel engine and 48V mild hybrid system."
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "90,000-110,000"
@@ -204,7 +204,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Robust cooling systems and thermal management for hot climate operation."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
@@ -234,7 +234,7 @@ smartness_comments = "Features advanced driver assistance systems and cutting-ed
 family_friendliness = "High"
 family_friendliness_comments = "Excellent family vehicle with spacious interior, safety features, and practical storage solutions."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Audi SQ7 TDI combines luxury SUV practicality with sports car performance. Its 4.0L V8 TDI diesel engine delivers 429 hp and 900 Nm of torque, paired with a 48V mild hybrid system. Features include quattro all-wheel drive, adaptive air suspension, and a premium interior with advanced technology. The SQ7 offers seating for up to seven and maintains Audi's reputation for build quality and driving dynamics."
 key_details_comments = "The Audi SQ7 TDI V8 represents the pinnacle of diesel-powered luxury SUVs, blending exceptional performance with premium practicality. Its 4.0L V8 TDI engine is one of the most advanced diesel powerplants available, featuring twin turbochargers plus an electric compressor for instantaneous response. The 48V mild hybrid system enhances efficiency without compromising the 429 hp and massive 900 Nm torque output. As Audi's performance flagship in the Q7 lineup, it offers quattro all-wheel drive with sport differential, adaptive air suspension with controlled damping, and dynamic all-wheel steering for exceptional handling. The interior showcases Audi's luxury craftsmanship with Valcona leather, fine wood inlays, and advanced digital interfaces including the virtual cockpit and dual touchscreen MMI system. With optional third-row seating, it provides versatile accommodation for up to seven passengers while maintaining impressive cargo capacity. The SQ7 TDI stands out for its unique combination of long-distance cruising comfort, sports car-like acceleration (0-100 km/h in 4.8s), and impressive towing capability - all while delivering better fuel efficiency than comparable gasoline V8 performance SUVs."

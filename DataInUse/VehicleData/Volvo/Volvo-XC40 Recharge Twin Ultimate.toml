@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "Volvo-XC40 Recharge Twin Ultimate"
 car_model_comments = "The Volvo XC40 Recharge Twin Ultimate is a premium all-electric compact SUV with dual-motor AWD and advanced technology features."
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "55,000-65,000"
@@ -204,7 +204,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling system protects battery performance in high temperatures up to 50°C."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -234,7 +234,7 @@ smartness_comments = "Advanced Google-based infotainment, digital key, and compr
 family_friendliness = "High"
 family_friendliness_comments = "Excellent safety features, practical storage solutions, and comfortable rear seats."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The Volvo XC40 Recharge Twin Ultimate combines Scandinavian luxury with electric performance, featuring a 78kWh battery, 402hp dual-motor AWD system, and 418km EPA range. It offers Volvo's comprehensive safety suite, Google-based infotainment, and premium interior materials. Fast charging capability (10-80% in 37 minutes) and over-the-air updates make it a technologically advanced compact SUV."
 key_details_comments = "The Volvo XC40 Recharge Twin Ultimate represents the pinnacle of Volvo's electric vehicle technology in the compact SUV segment. Its 78kWh battery provides an EPA-estimated 418km (260 miles) of range, with fast charging capability that can add 80% charge in just 37 minutes using a 150kW DC fast charger. The dual-motor all-wheel drive system delivers 402 horsepower and 660 N·m of instant torque, enabling 0-100km/h acceleration in 4.9 seconds. The vehicle features Volvo's comprehensive IntelliSafe suite of driver assistance systems, including Pilot Assist with adaptive cruise control and lane centering. The interior showcases Scandinavian luxury with Nappa leather seats, metal trim accents, and a state-of-the-art Google-based infotainment system with natural voice control. Practical features include 452L of cargo space (expandable to 1,328L), multiple storage solutions, and over-the-air software updates that continuously improve vehicle performance and features."

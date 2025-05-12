@@ -1,11 +1,11 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-Seal 550km RWD"
 car_model_comments = "The BYD-Seal 550km RWD is a pure electric mid-size sedan with a focus on performance and efficiency."
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "45,000-65,000"
@@ -204,7 +204,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Battery cooling system maintains optimal temperature even in 60°C ambient conditions."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -234,7 +234,7 @@ smartness_comments = "Advanced DiPilot ADAS system and comprehensive connectivit
 family_friendliness = "Medium"
 family_friendliness_comments = "Good safety features and space, though sporty suspension may be firm for some."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The BYD-Seal 550km RWD combines cutting-edge Blade Battery technology with premium features and sporty dynamics. Its 82.56kWh LFP battery provides excellent thermal stability and longevity, while the 230kW rear motor delivers 550N·m of instant torque. The car features BYD's e-Platform 3.0 with 800V architecture for fast charging (10-80% in 26 minutes at 150kW). Standard equipment includes a 15.6" rotating touchscreen, 10.25" digital instrument cluster, and comprehensive ADAS suite. The aerodynamic 0.219Cd design contributes to its exceptional efficiency."
 key_details_comments = "The BYD-Seal 550km RWD represents BYD's cutting-edge electric vehicle technology, featuring their proprietary Blade Battery system that offers superior thermal stability and safety. The 82.56kWh lithium iron phosphate (LFP) battery provides an impressive 550km CLTC-rated range while supporting ultra-fast 150kW DC charging (10-80% in just 26 minutes). The rear-wheel drive configuration features a 230kW (308hp) permanent magnet synchronous motor delivering 550N·m of instant torque for sporty acceleration (0-100km/h in 7.5s). Built on BYD's e-Platform 3.0 with 800V architecture, the vehicle boasts advanced features including vehicle-to-load (V2L) capability, a 15.6" rotating touchscreen with DiLink 4.0 system, and comprehensive DiPilot ADAS with 12 ultrasonic radars and 5 millimeter-wave radars. The aerodynamic design achieves a class-leading 0.219Cd drag coefficient, while the premium interior offers vegan leather seats with heating/ventilation, dual-zone climate control, and extensive sound insulation. The suspension combines front double wishbones with rear five-link setup for balanced handling and comfort."

@@ -1,10 +1,10 @@
-# The Car Information Labels, contains Pricise Labels and Ambibuous Labels
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
 
 title = "CarLabels"
 
 car_model = "BYD-F5 DM-i 55km Comfort"
 
-[Pricise Labels]
+[PriciseLabels]
 
 # prize, the prize range of this car model, should be like "200,000-300,000"
 prize = "20,000-25,000"
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "The battery and cooling systems are designed to handle high temperatures effectively."
 
 
-[Ambibuous Labels]
+[AmbibuousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
@@ -233,7 +233,7 @@ smartness_comments = "Equipped with advanced infotainment, voice control, and dr
 family_friendliness = "High"
 family_friendliness_comments = "Safe, spacious, and practical, making it a great choice for families."
 
-[Key Details]
-# key_details, a value to introduce more key details for current car model
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
 key_details="The BYD-F5 DM-i 55km Comfort is a plug-in hybrid sedan offering a blend of efficiency, comfort, and advanced technology. Key features include a 1.5L engine paired with a 110kW electric motor, 55km pure electric range, and a total hybrid range of over 1,000km. It comes with Level 2 autonomous driving, a modern interior, and competitive pricing."
 key_details_comments = "The BYD-F5 DM-i 55km Comfort is a technologically advanced plug-in hybrid sedan that combines a 1.5L gasoline engine with a 110kW electric motor, delivering both efficiency and performance. With a pure electric range of 55km and a total hybrid range exceeding 1,000km (NEDC), it's ideal for both daily commutes and long-distance travel. The vehicle features Level 2 autonomous driving capabilities including adaptive cruise control and lane-keeping assist, along with a modern interior design featuring metal trim accents. Its competitive pricing, comprehensive safety features (6 airbags, ABS, ESP), and smart connectivity options (voice interaction, OTA updates) make it an excellent choice for urban professionals and families alike."
