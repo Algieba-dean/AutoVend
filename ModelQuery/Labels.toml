@@ -1,12 +1,30 @@
 # The Car Information Labels, contains PreciseLabels and AmbiguousLabels
 
-prize = ["AnyString"]
 
-vehicle_category_top = []
+prize=[
+    "Below 10,000",
+    "10,000 ~ 20,000",
+    "20,000 ~ 30,000",
+    "30,000 ~ 40,000",
+    "40,000 ~ 60,000",
+    "60,000 ~ 100,000",
+    "Above 100,000",
+    "Cheap",
+    "Economy",
+    "Mid-Range Low-End",
+    "Mid-Range",
+    "Mid-Range High-End",
+    "High-End",
+    "Luxury"]
+Vehicle_Category=[
+    {Sedan=[
+        {Small_Sedan=[
+            "Micro Sedan","Compact Sedan"
+        ]},
+        {Mid-Size_Sedan="B-Segment Sedan"},
+    ]}
+]
 
-vehicle_category_sub = []
-
-vehicle_category_bottom = ["Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"]
 
 brand_region = ["European","American","Asian"]
 
@@ -105,7 +123,6 @@ cargo_capability = ["Yes", "No"]
 clod_resistance = ["High", "Medium", "Low"]
 
 heat_resistance = ["High", "Medium", "Low"]
-
 
 size = ["Small", "Medium", "Large"]
 
