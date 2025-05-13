@@ -6,14 +6,24 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Great Wall Motor-Haval H6 GT 2.0T",
-    "Great Wall Motor-Paoche 300 2.0T 4WD",
-    "Great Wall Motor-WEY VV7 GT 2.0T Luxury",
-    "Great Wall Motor-Ora Good Cat 401km Pro",
-    "Great Wall Motor-Tank 300 City Edition 2.0T",
-    "Great Wall Motor-Haval Jolion 1.5T Premium",
-    "Great Wall Motor-Poer Pickup 2.4T Diesel 4x4",
-    "Great Wall Motor-WEY Mocha 2.0T PHEV",
-    "Great Wall Motor-Ora Lightning Cat 600km AWD",
-    "Great Wall Motor-Tank 500 3.0T V6 Luxury"
+      "GWM-Haval M6",
+  "GWM-Haval H5",
+  "GWM-Haval H6",
+  "GWM-Haval H6S",
+  "GWM-Haval H7",
+  "GWM-Haval H9",
+  "GWM-Haval Jolion",
+  "GWM-Haval Jolion Pro",
+  "GWM-Haval Big Dog",
+  "GWM-Haval Dargo X",
+  "GWM-Haval Xiaolong",
+  "GWM-Great Wall Poer",
+  "GWM-Great Wall Poer EV",
+  "GWM-Orchina",
+  "GWM-Wingle 5",
+  "GWM-Wingle 7",
+  "GWM-Tank 300",
+  "GWM-Tank 500",
+  "GWM-Tank 700",
+  "GWM-Tank 800"
 ]

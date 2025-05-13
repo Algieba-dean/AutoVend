@@ -6,14 +6,19 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "XPeng-P7 RWD Long Range",
-    "XPeng-P7 Performance AWD",
-    "XPeng-G3 520i NEDC",
-    "XPeng-G3i 460c",
-    "XPeng-P5 550P",
-    "XPeng-P5 600P",
-    "XPeng-G9 650 Performance",
-    "XPeng-G9 570 Max",
-    "XPeng-P7 Wing Edition",
-    "XPeng-P7i 610 Performance"
+  "XPeng-G6 625 Long-Range Max Technology Edition",
+  "XPeng-G6 625 Long-Range Max Ultimate Edition",
+  "XPeng-G6 725 Ultra-Long-Range Max Ultimate Edition",
+  "XPeng-G9 625 Long-Range RWD",
+  "XPeng-G9 725 Ultra-Long-Range RWD",
+  "XPeng-G9 680 AWD Performance",
+  "XPeng-P7+ Long Range",
+  "XPeng-P7+ Ultra Long Range",
+  "XPeng-P7+ Ultra Long Range Flagship",
+  "XPeng-X9 650 Long-Range FWD",
+  "XPeng-X9 702 Ultra-Long-Range AWD",
+  "XPeng-X9 740 Ultra-Long-Range FWD",
+  "XPeng-Mona M03 Standard Range",
+  "XPeng-Mona M03 Long Range",
+  "XPeng-Mona M03 Max"
 ]

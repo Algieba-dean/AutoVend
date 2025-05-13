@@ -6,14 +6,21 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Bugatti-Chiron Super Sport 300+",
-    "Bugatti-Veyron 16.4 Grand Sport Vitesse",
-    "Bugatti-Divo",
-    "Bugatti-Chiron Pur Sport",
-    "Bugatti-Veyron 16.4",
-    "Bugatti-Chiron Sport",
-    "Bugatti-Centodieci",
-    "Bugatti-La Voiture Noire",
-    "Bugatti-Chiron Super Sport",
-    "Bugatti-EB110 Super Sport"
+  "Bugatti-Chiron",
+  "Bugatti-Chiron Sport",
+  "Bugatti-Chiron Super Sport",
+  "Bugatti-Chiron Pur Sport",
+  "Bugatti-Chiron Profilée",
+  "Bugatti-Divo",
+  "Bugatti-Divo 110",
+  "Bugatti-La Voiture Noire",
+  "Bugatti-Veyron",
+  "Bugatti-Veyron Super Sport",
+  "Bugatti-Veyron Grand Sport Vitesse",
+  "Bugatti-Veyron 16.4",
+  "Bugatti-Bolide",
+  "Bugatti-Bolide Prototype",
+  "Bugatti-Centenary Edition",
+  "Bugatti-Chiron Sport 300+",
+  "Bugatti-Chiron Super Sport 300+"
 ]

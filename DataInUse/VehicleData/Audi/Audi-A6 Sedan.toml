@@ -1,0 +1,241 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "Audi-A6 Sedan"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The Audi A6 Sedan starts at approximately $54,900 USD for the base Premium trim and can exceed $65,000 USD for higher trims like Prestige or with optional packages."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "D-Segment Sedan"
+vehicle_category_bottom_comments = "The Audi A6 is a premium executive sedan competing in the D-segment (mid-to-large luxury sedans)."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Audi"
+brand_comments = "Audi is a German luxury automotive manufacturer known for its Quattro all-wheel-drive system and premium vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Audi A6 is available with turbocharged gasoline engines (e.g., 2.0L TFSI or 3.0L TFSI), with optional mild-hybrid technology (MHEV)."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The A6 offers 41.3 inches of front legroom and 37.4 inches of rear legroom, totaling approximately 4.8 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 530L (18.7 cu ft), expandable to 1,680L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The wheelbase measures 2,924mm (115.1 inches), contributing to its spacious interior."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is approximately 140mm, optimized for a balance of sportiness and comfort."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The A6 features a sophisticated, understated design with sharp lines and a wide Singleframe grille, targeting executive buyers."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Audi's signature flowing lines and precise creases give the A6 a sleek, aerodynamic profile (Cd: 0.27)."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Common color options include Floret Silver Metallic, Daytona Gray Pearl, and Glacier White Metallic."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Premium Valcona leather seats with optional open-pore wood inlays (e.g., Birch Natural Brown)."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is standard, including traction control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "10"
+airbag_count_comments = "Includes front, side, knee, and curtain airbags for all occupants."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Milano leather upholstery; optional Nappa leather or Alcantara/leather combinations."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials result in a quiet cabin (62 dB at 60 mph)."
+
+# voice_interfaction, candidate values: "Yes", "No"
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Audi's MMI Touch Response supports natural-language voice commands (e.g., 'Find charging stations')."
+
+# ota_updates, candidate values: "Yes", "No"
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment and select vehicle functions via Audi Connect."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Audi AI includes adaptive cruise assist, traffic jam assist, and lane-keeping up to 37 mph."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard Audi Adaptive Cruise Control (ACC) with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic Jam Assist combines ACC and lane guidance for semi-autonomous driving in congested traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front and rear Pre Sense systems detect collisions and apply brakes if needed."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Assist provides gentle steering corrections to maintain lane position."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking via smartphone is not available, but it includes semi-autonomous parking assist."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Park Assist Plus can handle parallel and perpendicular parking with driver supervision."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind-spot monitoring with rear cross-traffic alert is standard or optional depending on trim."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assist monitors steering patterns and suggests breaks during long drives."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L"
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "Base engine: 2.0L TFSI turbocharged I4 (248 hp). Optional 3.0L TFSI V6 (335 hp) also available."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable for gasoline-engine variants; the A6 TFSI e plug-in hybrid has a 105 kW electric motor."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable for gasoline-only variants; the PHEV version has a 14.1 kWh battery."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "Fuel tank holds 63L (16.6 gallons) for the gasoline models."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "Base 2.0L TFSI produces 248 hp; 3.0L TFSI V6 delivers 335 hp."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "300~400N·m"
+torque_comments = "2.0L TFSI generates 273 lb-ft (370 N·m); 3.0L TFSI produces 369 lb-ft (500 N·m)."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 6.8s (2.0L TFSI) or 5.1s (3.0L TFSI with Quattro)."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 209 km/h (130 mph) for US models; higher in other markets."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km"
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA-rated at 9.0L/100km (26 mpg) combined for the 2.0L TFSI; 3.0L TFSI averages 9.8L/100km (24 mpg)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline-only variants."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 700 km (435 miles) on a full tank (2.0L TFSI)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Quattro all-wheel drive is standard on V6 models and optional for the 2.0L TFSI."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Five-link front and rear suspension with optional adaptive air suspension."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Balanced for urban and highway driving; not designed for off-road use."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-seat configuration with optional 4-seat executive rear package."
+
+# city_commuting, candidate values: "Yes", "No"
+city_commuting = "Yes"
+city_commuting_comments = "Mild-hybrid system improves stop-start efficiency in urban traffic."
+
+# highway_long_distance, candidate values: "Yes", "No"
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride, adaptive cruise control, and ample range ideal for long trips."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Quattro AWD aids traction but low ground clearance limits off-road use."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "530L trunk and 40/20/40 split-folding rear seats offer practical storage."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Proven performance in cold climates with heated seats, mirrors, and windshield."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Thermal management systems ensure reliability in hot conditions (tested up to 50°C)."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large"
+size = "Large"
+size_comments = "Length: 4,939mm (194.4 inches); width: 1,886mm (74.3 inches)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior and trunk suit families and business use."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Sleek LED lighting, premium materials, and balanced proportions."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its class but not a hybrid/electric leader."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Quiet cabin, supportive seats, and smooth ride quality."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Virtual Cockpit, MMI Touch, and extensive driver aids."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Safe and practical but lacks third-row seating."
+
+[KeyDetails]
+key_details = "The Audi A6 Sedan combines cutting-edge technology (e.g., 12.3-inch Virtual Cockpit, MMI Touch) with refined performance. Highlights include Quattro AWD, available adaptive air suspension, and a 335 hp 3.0L V6. It’s a top choice for executives seeking a balance of luxury and driving dynamics."
+key_details_comments = "The Audi A6 Sedan represents the pinnacle of Audi's executive sedan lineup, blending advanced technology with refined luxury. Its standout features include the 12.3-inch Virtual Cockpit digital instrument cluster, dual touchscreen MMI Touch Response infotainment (10.1-inch upper and 8.6-inch lower displays), and available HD Matrix LED headlights. The 3.0L TFSI V6 with 48V mild-hybrid system delivers 335 hp and 500 N·m of torque, paired with a 7-speed S tronic transmission and Quattro all-wheel drive. Optional adaptive air suspension with predictive active damping provides exceptional ride comfort. The interior features Valcona leather, genuine wood inlays, and available Bang & Olufsen 3D sound system. With Level 2 autonomous driving capabilities (including traffic jam assist and lane centering), 530L trunk capacity, and comprehensive safety systems (10 airbags, pre sense collision avoidance), the A6 competes directly with the BMW 5 Series and Mercedes-Benz E-Class in the premium executive segment."
+
+
+### Notes:

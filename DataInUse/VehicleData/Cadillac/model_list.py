@@ -6,14 +6,33 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Cadillac-CT5-V Blackwing",
-    "Cadillac-Escalade ESV Platinum 6.2L",
-    "Cadillac-XT5 Premium Luxury 3.6L",
-    "Cadillac-CT4-V AWD 2.7L",
-    "Cadillac-XT6 Sport 3.6L",
-    "Cadillac-ATS-V Coupe 3.6L Twin-Turbo",
-    "Cadillac-DTS Luxury III 4.6L",
-    "Cadillac-STS-V 4.4L Supercharged",
-    "Cadillac-SRX Premium Collection 3.0L",
-    "Cadillac-ELR Extended Range Electric"
+  "Cadillac-XT4",
+  "Cadillac-XT5",
+  "Cadillac-XT6",
+  "Cadillac-XT6 Premium Luxury",
+  "Cadillac-XT5 Sport",
+  "Cadillac-XT4 Sport",
+  "Cadillac-CT4",
+  "Cadillac-CT4 V-Series",
+  "Cadillac-CT5",
+  "Cadillac-CT5 V-Series",
+  "Cadillac-CT5-V Blackwing",
+  "Cadillac-CTS",
+  "Cadillac-CTS V",
+  "Cadillac-CTS-V Blackwing",
+  "Cadillac-Escalade",
+  "Cadillac-Escalade ESV",
+  "Cadillac-Escalade V-Series",
+  "Cadillac-Lyriq",
+  "Cadillac-Lyriq AWD",
+  "Cadillac-CT6",
+  "Cadillac-CT6 V-Sport",
+  "Cadillac-ELR",
+  "Cadillac-Grand Prix",
+  "Cadillac-SRX",
+  "Cadillac-XTS",
+  "Cadillac-Vista",
+  "Cadillac-Cadillac V-Series Blackwing",
+  "Cadillac-Escalade IQ"
 ]
+ 

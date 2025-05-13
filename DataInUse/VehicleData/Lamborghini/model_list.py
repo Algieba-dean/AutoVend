@@ -6,14 +6,25 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Lamborghini-Huracan EVO RWD Coupe",
-    "Lamborghini-Aventador SVJ 63 Roadster",
-    "Lamborghini-Urus Performante",
-    "Lamborghini-Huracan STO",
-    "Lamborghini-Revuelto V12 Hybrid",
-    "Lamborghini-Aventador LP 780-4 Ultimae",
-    "Lamborghini-Huracan Tecnica",
-    "Lamborghini-Sian FKP 37",
-    "Lamborghini-Countach LPI 800-4",
-    "Lamborghini-Gallardo LP 560-4 Spyder"
+  "Lamborghini-Revuelto",
+  "Lamborghini-Revuelto Coupe",
+  "Lamborghini-Revuelto Roadster",
+  "Lamborghini-Temerario",
+  "Lamborghini-Temerario Coupe",
+  "Lamborghini-Urus",
+  "Lamborghini-Urus SE",
+  "Lamborghini-Urus Performante",
+  "Lamborghini-Huracán Tecnica",
+  "Lamborghini-Huracán STO",
+  "Lamborghini-Huracán Sterrato",
+  "Lamborghini-Huracán Evo Spyder",
+  "Lamborghini-Huracán Evo Coupe",
+  "Lamborghini-Huracán EVO RWD",
+  "Lamborghini-Sian FKP 37",
+  "Lamborghini-Sian Roadster",
+  "Lamborghini-Aventador S",
+  "Lamborghini-Aventador SVJ",
+  "Lamborghini-Aventador SVJ Roadster",
+  "Lamborghini-Aventador Ultimae",
+  "Lamborghini-Aventador Ultimae Roadster"
 ]

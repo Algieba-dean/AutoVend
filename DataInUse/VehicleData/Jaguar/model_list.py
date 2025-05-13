@@ -6,14 +6,23 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Jaguar-F-Type R Coupe 5.0L V8",
-    "Jaguar-XE SV Project 8 5.0L Supercharged",
-    "Jaguar-XF S 3.0L V6 Diesel",
-    "Jaguar-F-Pace SVR 5.0L V8",
-    "Jaguar-I-Pace EV400 HSE",
-    "Jaguar-XJ L Supercharged 5.0L V8",
-    "Jaguar-E-Pace P250 R-Dynamic",
-    "Jaguar-XK R-S GT 5.0L V8",
-    "Jaguar-X-Type 3.0L V6 Sport",
-    "Jaguar-S-Type R 4.2L V8"
+  "Jaguar-Type 00",
+  "Jaguar-Type 01",
+  "Jaguar-Type 02",
+  "Jaguar-Type 03",
+  "Jaguar-I-PACE EV400",
+  "Jaguar-I-PACE EV400 S",
+  "Jaguar-I-PACE EV400 SE",
+  "Jaguar-I-PACE EV400 HSE",
+  "Jaguar-I-PACE EV400 First Edition",
+  "Jaguar-XJ EV",
+  "Jaguar-XJ EV Long Wheelbase",
+  "Jaguar-XJ EV R-Dynamic",
+  "Jaguar-XJ EV R-Sport",
+  "Jaguar-XJ EV HSE",
+  "Jaguar-F-Type EV",
+  "Jaguar-F-Type EV R",
+  "Jaguar-F-Type EV P300",
+  "Jaguar-F-Type EV P400",
+  "Jaguar-F-Type EV P450"
 ]
