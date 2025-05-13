@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-530i"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The BMW-530i is priced between $54,200 and $62,500 USD depending on the trim level and optional features."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "D-Segment Sedan"
+vehicle_category_bottom_comments = "The BMW-530i is a luxury executive sedan in the D-segment, competing with the Mercedes E-Class and Audi A6."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for its performance-oriented vehicles and premium build quality."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The 530i is powered by a turbocharged 2.0L 4-cylinder gasoline engine (B48)."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers 4.8 cubic meters of passenger space, with generous legroom and headroom."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 530L, expandable to 1,650L with 40/20/40 split-folding rear seats."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The wheelbase measures 2,975mm, contributing to stable handling and rear passenger comfort."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is 140mm, optimized for sporty handling while maintaining practicality."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The 530i blends executive elegance with subtle sporty accents, suitable for business professionals."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Features BMW's signature flowing lines with a 0.23 Cd drag coefficient for aerodynamic efficiency."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offers sophisticated shades like Mineral White Metallic, Carbon Black Metallic, and Bluestone Metallic."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Premium Fineline Cove matte wood trim with optional aluminum rhombicle accents."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Dynamic Stability Control includes cornering brake control and traction control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "10"
+airbag_count_comments = "Includes front, side, knee, and curtain airbags for all outboard passengers."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard SensaTec leatherette with optional Vernasca or Nappa leather upholstery."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials result in 62 dB at 120 km/h."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability for iDrive 7 infotainment system."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package enables hands-off highway driving under 60 km/h."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Active Cruise Control with Stop&Go function maintains following distance."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Extended Traffic Jam Assistant for low-speed semi-autonomous driving."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city braking function up to 60 km/h."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant provides steering corrections up to 210 km/h."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "Yes"
+remote_parking_comments = "Optional Parking Assistant Plus with remote control via smartphone app."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Automated parallel and perpendicular parking with ultrasonic sensors."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection with cross-traffic alert and steering intervention."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors steering inputs and driving patterns."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "2.0L turbocharged inline-4 (B48B20) with TwinPower Turbo technology."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - this is a conventional gasoline-powered model."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Conventional 12V electrical system with 70Ah AGM battery."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "68L fuel tank capacity provides up to 900 km highway range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "248 hp (184 kW) @ 5,200-6,500 rpm with Valvetronic variable valve timing."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "300~400N·m"
+torque_comments = "350 N·m @ 1,450-4,800 rpm for strong low-end response."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "6.5 seconds (0-100 km/h) with xDrive all-wheel drive."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph) with optional M Sport package."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EU combined cycle: 6.8L/100km (41.5 mpg) with 8-speed Steptronic transmission."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline-powered variant."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "Above 800km"
+driving_range_comments = "Approximately 900 km highway range (68L tank at 7.5L/100km)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "Standard rear-wheel drive with optional xDrive all-wheel drive system."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Double-wishbone front and multi-link rear suspension with adaptive dampers available."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "140mm ground clearance handles urban obstacles but not designed for off-road use."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Executive Lounge seating package available for enhanced rear comfort."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions (4,963mm length) and tight 11.8m turning circle suit urban driving."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent high-speed stability and comfort with active cruise control."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use despite available xDrive system."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "530L trunk with through-loading system and 40/20/40 split rear seats."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Proven operation down to -30°C with heated components and cold-weather package."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Cooled seats and advanced thermal management maintain performance in +50°C conditions."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "4,963mm length × 1,868mm width classifies it as a full-size executive sedan."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior and trunk accommodate families and business needs equally."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "BMW's signature kidney grille and Hofmeister kink create a distinctive, elegant profile."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Balanced efficiency for its class with 6.8L/100km combined consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Acoustic glass, premium materials, and available air suspension provide exceptional comfort."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "iDrive 7 with gesture control, digital key, and extensive driver assistance features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Spacious but lacks sliding doors or third-row seating of dedicated family vehicles."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The BMW 530i combines executive luxury with sporty dynamics, featuring a 248hp 2.0L turbo engine, 530L trunk capacity, and advanced iDrive 7 infotainment. Standard safety includes 10 airbags and Level 2 autonomous driving capability. The long 2,975mm wheelbase ensures rear passenger comfort while maintaining agile handling characteristics."
+key_details_comments = "The BMW 530i represents the perfect balance of executive luxury and driving dynamics in BMW's midsize sedan lineup. Powered by a 248hp 2.0L turbocharged engine (B48), it delivers 0-100km/h in 6.5 seconds while maintaining excellent fuel efficiency. The long 2,975mm wheelbase creates a spacious cabin with premium materials including available Nappa leather and wood trim. Advanced technology features include iDrive 7 with gesture control, digital key, and BMW's Intelligent Personal Assistant. Safety is comprehensive with 10 airbags and Level 2 autonomous driving capabilities through the Driving Assistant Professional package. The 530L trunk (expandable to 1,650L) and 900km highway range make it practical for both business and family use, while the rear-wheel drive platform (with optional xDrive) maintains BMW's signature driving dynamics."

@@ -1,0 +1,242 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-X8"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The BMW X8 is a luxury flagship SUV with an estimated starting price of $110,000 USD, reaching up to $150,000 USD for high-performance variants."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Mid-to-Large SUV"
+vehicle_category_bottom_comments = "The X8 is positioned as a luxury coupe-SUV, blending SUV practicality with sporty design, similar to the X6 but larger."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance-oriented vehicles and the X8 is their flagship SUV."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Plug-in Hybird Electric Vehicle"
+powertrain_type_comments = "The X8 is expected to feature a plug-in hybrid powertrain (e.g., X8 xDrive45e), combining a turbocharged V8 with an electric motor."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Spacious interior with approximately 4.8 cubic meters of passenger volume, offering ample legroom and headroom."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Boot capacity of 580L (expandable to 1,725L with rear seats folded), typical for large SUVs."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "Above 3100mm"
+wheelbase_comments = "Long wheelbase of 3,105mm for superior stability and rear-seat comfort."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "Adaptive air suspension adjusts ride height between 160mm (sport mode) and 190mm (off-road mode)."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "Sleek coupe-like roofline, aggressive front grille, and muscular wheel arches emphasize performance."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Flowing, aerodynamic lines with a drag coefficient of 0.32, exceptional for an SUV."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offers premium finishes like Mineral White Metallic and Sophisto Grey, alongside BMW Individual custom options."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Finest Merino leather upholstery with optional open-pore wood trim (e.g., Ash Grain)."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with large ventilated discs (400mm front, 380mm rear)."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program includes torque vectoring for cornering precision."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "10"
+airbag_count_comments = "Comprehensive protection: front, side, knee, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Vernasca leather; optional full Merino leather with massage function."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass, active noise cancellation, and insulated wheel arches for a library-quiet cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing ('Hey BMW')."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability for infotainment and driver-assistance features."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package enables hands-off highway driving under 60km/h."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Included in Driving Assistant Pro, with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Can autonomously follow lanes and preceding vehicles in congested traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city braking intervention up to 60km/h."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant gently corrects steering if drifting occurs."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "Yes"
+remote_parking_comments = "Remote Control Parking via smartphone app for tight spaces."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Parking Assistant Plus automates parallel/perpendicular parking maneuvers."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection with steering intervention if lane change is unsafe."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors steering inputs and suggests breaks."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "4.4L twin-turbo V8 (M Hybrid system in X8 M60i variant)."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "120~180kW"
+motor_power_comments = "Integrated electric motor delivers 145kW (197hp) for hybrid boost."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "30~50kWh"
+battery_capacity_comments = "29.5kWh lithium-ion pack (WLTP electric range: 88km)."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "75L tank for extended range (combined: 800km)."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "Combined output of 489hp (X8 xDrive45e) or 617hp (X8 M60i)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "Peak torque of 700N·m (X8 M60i) for explosive acceleration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "4.7s (X8 xDrive45e) or 3.9s (X8 M60i) with Launch Control."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250km/h (290km/h with M Driver's Package)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "WLTP combined: 8.9L/100km (hybrid mode), 1.8L/100km (electric-priority)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "WLTP: 22.5kWh/100km due to large battery and regen braking."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Total range: 740km (hybrid), 88km (electric-only)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "xDrive AWD system with rear-biased torque distribution."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Adaptive M Suspension Professional with active roll stabilization."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Off-road capable but optimized for on-road dynamics (wading depth: 500mm)."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-seat configuration; optional 4-seat Executive Lounge."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "EV mode ideal for urban driving, with automated parking aids."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfort-focused with Active Cruise Control and lane centering."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "All-terrain capability via xOffroad mode, but not a hardcore off-roader."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Versatile load space with hands-free tailgate and 40/20/40 split seats."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Tested for -30°C operation with battery pre-conditioning."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Cooled battery pack maintains performance up to 50°C ambient."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "Length: 5,150mm, width: 2,000mm (mirrors folded), height: 1,745mm."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious for families, with premium tech for business use."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Bold design with iconic BMW elements like laser headlights and Hofmeister kink."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its class, but high performance demands energy."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Executive-grade comfort with multi-contour seats and 4-zone climate."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Cutting-edge iDrive 8.5 with 5G, AR navigation, and digital key."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical but leans toward luxury over kid-friendly features."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "Flagship luxury SUV with coupe styling; PHEV powertrain combines 4.4L V8 + electric motor; 489-617hp; 0-100km/h in 3.9s (M60i); xDrive AWD; 29.5kWh battery (88km EV range); 5-seat/4-seat options; BMW OS 8.5 with 14.9\" curved display; optional Bowers & Wilkins Diamond audio."
+key_details_comments = "The BMW X8 represents the pinnacle of BMW's luxury SUV lineup, combining coupe-inspired styling with flagship technology. As a plug-in hybrid, it pairs a 4.4L twin-turbo V8 with an electric motor (145kW) and 29.5kWh battery, delivering 489hp (X8 xDrive45e) or 617hp (X8 M60i). Performance highlights include 0-100km/h in 3.9 seconds (M60i) and 250km/h top speed (expandable to 290km/h). The xDrive all-wheel-drive system features rear-biased torque distribution, while the adaptive M suspension ensures dynamic handling. Interior highlights include available 4-seat Executive Lounge configuration, BMW OS 8.5 with 14.9\" curved display, and optional Bowers & Wilkins Diamond surround sound. The PHEV system offers 88km electric-only range (WLTP) and 740km total hybrid range, making it both performance-oriented and efficient."
+
+
+### Notes:

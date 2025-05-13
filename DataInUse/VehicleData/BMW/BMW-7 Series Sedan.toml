@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-7 Series Sedan"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The BMW-7 Series Sedan is priced between $86,800 and $157,800 USD depending on the trim level (740i, 760i, or M760e xDrive) and optional features."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "D-Segment Sedan"
+vehicle_category_bottom_comments = "The BMW-7 Series is a full-size luxury sedan (D-segment) with executive-level features and spacious interiors."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance-oriented vehicles and premium craftsmanship."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Plug-in Hybird Electric Vehicle"
+powertrain_type_comments = "The 2023 BMW-7 Series offers multiple powertrains, including a plug-in hybrid (M760e xDrive) with a 3.0L turbocharged inline-6 and electric motor."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers 4.8 cubic meters of passenger space, with generous legroom and headroom in both rows."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 540L (19.1 cu ft), expandable with foldable rear seats."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The long-wheelbase variant (G70) measures 3,215mm (126.6 inches), enhancing rear-seat comfort."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is 140mm, with adaptive air suspension for adjustable ride height."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The 7 Series emphasizes executive luxury with clean lines and a commanding presence."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Features flush door handles and aerodynamic contours (Cd: 0.24)."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offers shades like Mineral White, Carbon Black, and Sophisto Grey."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Optional Fineline Black wood or open-pore Ash Grey wood trim."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (DSC) includes cornering brake control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "10"
+airbag_count_comments = "Includes front, side, knee, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Vernasca leather; optional Merino full leather upholstery."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and active noise cancellation for a 64 dB cabin at 120 km/h."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability via BMW Operating System 8."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package enables hands-off highway driving up to 130 km/h."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes stop-and-go functionality and traffic light recognition."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Can autonomously handle stop-and-go traffic up to 60 km/h."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city braking intervention."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant with side collision avoidance."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "Yes"
+remote_parking_comments = "Remote Control Parking via smartphone app (optional)."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Parking Assistant Plus with 3D surround view cameras."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection with rear cross-traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors steering inputs for drowsiness."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.0~3.5L"
+engine_displacement_comments = "M760e xDrive uses a 3.0L turbocharged inline-6 (B58) paired with an electric motor."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "120~180kW"
+motor_power_comments = "Electric motor delivers 145 kW (197 hp) in the hybrid system."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "30~50kWh"
+battery_capacity_comments = "18.7 kWh lithium-ion battery (PHEV variant) for 56 km (35 miles) electric range."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "65L fuel tank capacity for extended range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "M760e xDrive produces combined 571 hp (426 kW)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "Peak torque of 800 N·m (590 lb-ft) from 1,600 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "M760e xDrive accelerates 0-100 km/h in 4.3 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph); optional 285 km/h (177 mph) with M Driver's Package."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Combined 8.1-8.8 L/100km (EU cycle) for hybrid models."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "19.1-20.8 kWh/100km in electric-only mode."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "Above 800km"
+driving_range_comments = "Total range exceeds 850 km (528 miles) with combined powertrain."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "xDrive AWD system with rear-biased torque distribution."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Executive Drive Pro with active roll stabilization and rear-axle steering."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Not designed for off-road use but handles poor pavement well."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-seat configuration; optional 4-seat Executive Lounge."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "EV mode suits urban driving; tight turning circle (12.5m) for size."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent high-speed stability and comfort for extended trips."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not intended for off-road use despite AWD system."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "540L trunk with power-operated lid; ski pass-through."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Tested to -40°C with battery thermal management system."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Cooled seats and robust cooling systems for desert climates."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "Overall length exceeds 5.2 meters (205 inches)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior with premium amenities for executive transport."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Controversial but distinctive design with illuminated kidney grille."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its class but still a heavy luxury vehicle."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Massaging seats, 36-speaker Bowers & Wilkins audio, and climate-controlled cupholders."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "BMW Operating System 8 with 5G connectivity and augmented reality navigation."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Spacious but lacks third-row seating; more suited for executives."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The 2023 BMW 7 Series represents a technological flagship with: 1) Optional 31.3" 8K Theater Screen, 2) Crystal Headlights with Swarovski elements, 3) Sky Lounge LED roof, 4) BMW Interaction Bar spanning the dashboard, 5) Rear Executive Lounge with reclining seats (optional). Combines a plug-in hybrid powertrain with Level 2 autonomous capabilities and over-the-air update functionality."
+key_details_comments = "The 2023 BMW 7 Series represents the pinnacle of BMW's luxury and technology offerings, featuring: 1) An optional 31.3-inch 8K Theater Screen for rear passengers with Amazon Fire TV integration, 2) Iconic Crystal Headlights with Swarovski crystal elements and adaptive laser light technology, 3) Sky Lounge panoramic glass roof with LED lighting that creates a starlight effect, 4) A revolutionary BMW Interaction Bar that spans the dashboard with touch-sensitive controls and ambient lighting, 5) Available Rear Executive Lounge package with power-adjustable reclining seats, footrests, and a tablet control system. The vehicle combines a sophisticated plug-in hybrid powertrain delivering 571 hp with Level 2 autonomous driving capabilities, featuring highway assistant with hands-free driving up to 130 km/h. The vehicle also supports comprehensive over-the-air updates for both infotainment and driving systems through BMW Operating System 8."

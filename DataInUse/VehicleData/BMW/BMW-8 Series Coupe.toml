@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-8 Series Coupe"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The BMW 8 Series Coupe starts at $85,000 USD for the base 840i model and can exceed $100,000 USD for the M850i xDrive with options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The 8 Series Coupe is a luxury grand tourer with a sporty two-door hardtop design."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance-oriented vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The 8 Series Coupe is currently offered with turbocharged gasoline engines (no diesel or hybrid variants available)."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers approximately 3.8 cubic meters of passenger space with premium legroom and headroom."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "400~500L"
+trunk_volume_comments = "Trunk capacity is 420 liters, expandable when rear seats are folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase measures 2,822mm (111.1 inches), providing stable handling."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is approximately 140mm, optimized for sporty driving."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The 8 Series features aggressive styling with a low-slung profile and muscular lines."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Features flowing, aerodynamic lines with a 0.29 drag coefficient."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Dark Colors"
+color_comments = "Offered in sophisticated shades like Black Sapphire and Carbon Black metallic."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Premium aluminum trim with optional carbon fiber or fine wood."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with dynamic brake control."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program includes dynamic traction control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, knee, and head protection airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Vernasca leather with optional Merino full leather upholstery."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials provide a quiet cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability for over-the-air updates."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package offers Level 2 autonomy."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Active Cruise Control with Stop&Go function."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic Jam Assistant handles stop-and-go traffic up to 37 mph."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city collision mitigation."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Departure Warning with active lane keeping."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "Yes"
+remote_parking_comments = "Available Parking Assistant Plus with remote control via smartphone."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Automated parking for parallel and perpendicular spaces."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection with lane change warning."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors driving behavior for fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "M850i features a 4.4L twin-turbo V8; 840i has a 3.0L turbo I6."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - this is a combustion engine vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable - this is a combustion engine vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "68-liter fuel tank capacity for extended range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "M850i produces 523hp; 840i makes 335hp."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "M850i generates 553 lb-ft (750N·m) of torque."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "M850i accelerates 0-100km/h in 3.7s; 840i in 4.9s."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250km/h (155mph), optional 305km/h (190mph) with M Driver's Package."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Combined consumption: 840i - 8.1L/100km; M850i - 10.8L/100km."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - this is a combustion engine vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650km range for 840i on a full tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "xDrive all-wheel drive system standard on M850i, optional on 840i."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Double-wishbone front and multi-link rear suspension with adaptive dampers."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Sport-tuned suspension prioritizes handling over rough road comfort."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "4-seat"
+seat_layout_comments = "2+2 seating configuration with individual rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Comfort mode and good visibility make it suitable for city driving."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent grand touring capabilities with comfortable high-speed cruising."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Practical for a sports coupe with folding rear seats."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Proven performance in cold climates with heated components."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling systems designed for high-performance operation."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "Substantial footprint at 4,851mm length and 1,902mm width."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balances sportiness with daily usability."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Striking design with premium materials throughout."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Performance-oriented engines consume more fuel."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Luxury appointments with premium comfort features."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Cutting-edge technology and connectivity features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Primarily designed for driving enthusiasts rather than family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The BMW 8 Series Coupe represents the pinnacle of BMW's luxury sports coupe lineup, combining breathtaking performance with exquisite craftsmanship. Key highlights include available 523hp V8 power, advanced xDrive all-wheel drive, and a meticulously crafted interior with cutting-edge technology. The vehicle serves as a technological showcase with features like Laserlight headlights, BMW Live Cockpit Professional, and comprehensive driver assistance systems."
+key_details_comments = "The BMW 8 Series Coupe represents the pinnacle of BMW's luxury grand touring lineup, blending exceptional performance with sophisticated design. It features cutting-edge technology including BMW's latest iDrive 7.0 infotainment, Laserlight headlights, and comprehensive driver assistance systems. The vehicle offers a choice between a 335hp 3.0L turbocharged inline-6 (840i) and a 523hp 4.4L twin-turbo V8 (M850i), both paired with an 8-speed automatic transmission. The luxurious interior features premium materials like Vernasca leather, aluminum trim, and optional glass controls. With its combination of sports car performance and luxury touring comfort, the 8 Series competes with vehicles like the Mercedes-Benz S-Class Coupe and Lexus LC."

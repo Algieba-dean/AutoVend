@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW X4 M Competition"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The BMW X4 M Competition is priced between $82,800 and $95,000 USD depending on options and packages."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The X4 M Competition is a high-performance mid-size SUV with a coupe-like roofline."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The X4 M Competition features a high-performance twin-turbocharged gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The X4 M Competition offers approximately 3.8 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 525 liters (18.5 cu ft), expandable to 1,430 liters (50.5 cu ft) with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase measures exactly 2,864 mm (112.8 inches)."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is approximately 180mm (7.1 inches)."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The X4 M Competition features aggressive M-specific styling with large air intakes and quad exhausts."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The coupe-like roofline creates a sleek, aerodynamic profile with a 0.30 Cd drag coefficient."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available in a range of colors including Brooklyn Grey Metallic and Alpine White."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Features aluminum carbon structure trim with extended Merino leather."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with M Compound brakes."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program with M Dynamic Mode for performance driving."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes front, side, and curtain airbags for all outboard occupants."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Merino leather upholstery with M-specific seat designs."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and extensive sound insulation materials provide a quiet cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability for over-the-air updates."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package offers Level 2 autonomy features."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Included with Driving Assistant Professional package."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic Jam Assistant can handle stop-and-go traffic up to 37 mph."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city collision mitigation."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant with side collision avoidance."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Does not offer remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Parking Assistant Plus with automated parallel and perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection with lane change warning."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors driving behavior for signs of fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.0~3.5L"
+engine_displacement_comments = "3.0-liter BMW M TwinPower Turbo inline-6 (S58) engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "59-liter (15.6-gallon) fuel tank capacity."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "400~500hp", "Above 500hp"
+horsepower = "500~600hp"
+horsepower_comments = "503 horsepower (375 kW) at 6,250 rpm."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "479 lb-ft (650 Nm) of torque from 2,750-5,500 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h (0-62 mph) in 3.8 seconds with Competition package."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph), or 285 km/h (177 mph) with M Driver's Package."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA-rated at 15 mpg city/20 mpg highway (15.7-11.8 L/100km)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 480-520 km (300-325 miles) on a full tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "M xDrive all-wheel drive system with rear bias and active M Differential."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Adaptive M suspension with electronically controlled dampers."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Sport-tuned suspension prioritizes handling over comfort."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-passenger seating with optional heated and ventilated front seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Suitable for city driving but optimized for performance."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable for long distances with adaptive cruise control."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Performance-oriented with limited off-road capability."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Practical cargo space despite coupe-like design."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Proven performance in cold climates with all-wheel drive."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Robust cooling systems for sustained high-performance driving."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "Length: 4,754 mm (187.2 in), Width: 1,927 mm (75.9 in), Height: 1,620 mm (63.8 in)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balances performance with everyday practicality."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Distinctive coupe-SUV styling with aggressive M design elements."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Performance-oriented with higher fuel consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Luxury appointments with sport-tuned suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Latest iDrive 7 infotainment with advanced driver assistance."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical but performance-focused."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The BMW X4 M Competition combines coupe styling with SUV practicality, featuring a 503-hp twin-turbo inline-6, M xDrive AWD, and track-capable performance while maintaining daily drivability. It includes the latest BMW technology with a focus on driver engagement."
+key_details_comments = "The BMW X4 M Competition represents the pinnacle of performance SUVs, blending the practicality of an SUV with the dynamic capabilities of a sports car. Its 3.0-liter S58 twin-turbo inline-6 engine delivers 503 horsepower and 479 lb-ft of torque, paired with an 8-speed M Steptronic transmission and M xDrive all-wheel drive system. The vehicle features aggressive M-specific styling cues, including enlarged air intakes, quad exhaust tips, and 21-inch M light-alloy wheels. Inside, it offers premium Merino leather upholstery, carbon fiber trim, and the latest iDrive 7 infotainment system. Despite its performance focus, it maintains practical elements like 525 liters of cargo space and advanced driver assistance systems, making it suitable for both track days and daily commuting."

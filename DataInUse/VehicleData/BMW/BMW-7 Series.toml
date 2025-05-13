@@ -1,0 +1,204 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-7 Series"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "90,000~120,000"
+prize_comments = "The BMW 7 Series starts at $93,300 USD for the 740i (gasoline) and goes up to $118,000 USD for the 760i xDrive, excluding options."
+
+vehicle_category_bottom = "D-Segment Sedan"
+vehicle_category_bottom_comments = "Flagship luxury sedan with executive-class dimensions."
+
+brand = "BMW"
+brand_comments = "Bayerische Motoren Werke AG, German luxury automaker."
+
+# Powertrain details (assuming 740i gasoline variant as baseline)
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "3.0L turbocharged inline-6 (B58 engine) with 48V mild hybrid system."
+
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "Generous 5.8 cubic meters (205 cubic feet) of EPA-measured passenger volume. Long-wheelbase version offers 42.5" rear legroom in Executive Lounge configuration - limousine-class accommodations."
+passenger_sapce_comments = "Spacious cabin with 5.8 cubic meters of passenger volume (EPA measurement)."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "535L trunk capacity, expandable to 1,860L with rear seats folded."
+
+wheelbase = "Above 3100mm"
+wheelbase_comments = "3,215mm wheelbase (126.6 inches) in long-wheelbase version."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "Air suspension with adaptive ride height (140mm standard ground clearance)."
+
+# Design attributes
+design_style = "Business"
+design_style_comments = "Executive-focused design with optional M Sport package for sportier aesthetics."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Flush-mounted door handles and 0.24 Cd drag coefficient."
+
+color = "Neutral Colors"
+color_comments = "Premium palette including Mineral White Metallic and Carbon Black Metallic."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Fineline Black wood trim standard, optional open-pore Ash wood."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "4-channel ABS with brake assist."
+
+ESP = "Yes"
+ESP_comments = "Dynamic Stability Control with cornering brake control."
+
+airbag_count = "10"
+airbag_count_comments = "Includes knee airbags for driver and front passenger."
+
+seat_material = "Lether"
+seat_material_comments = "Vernasca leather standard, optional Merino full leather."
+
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and active noise cancellation (option)."
+
+# Tech features
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability via BMW Operating System 8."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Meets SAE Level 2 criteria with hands-off capability up to 85 mph when conditions allow (divided highways only). Requires constant driver supervision despite the advanced automation."
+autonomous_driving_comments = "Driving Assistant Professional package enables hands-off up to 85 mph."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Active Cruise Control with Stop&Go maintains set speed and following distance (adjustable in 4 stages) from 0-210 km/h. Uses radar and camera fusion to smoothly handle traffic flow interruptions."
+adaptive_cruise_comments = "Active Cruise Control with Stop&Go function."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Extended Traffic Jam Assistant (part of Driving Assistant Professional) enables hands-free driving up to 60 km/h in congested highway traffic, using steering and lane guidance while monitoring driver attention via cabin camera."
+traffic_jam_comments = "Extended Traffic Jam Assistant (part of Driving Assistant Pro)."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city braking function detects vehicles/pedestrians at speeds up to 60 km/h, providing visual/acoustic warnings and automatically applying brakes if collision is imminent."
+aeb_comments = "Front collision warning with city braking function."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant provides continuous steering corrections at speeds above 70 km/h, working with lane departure warning to prevent unintentional lane exits. Can actively countersteer in emergency situations."
+lane_keep_comments = "Active Lane Keeping Assistant with side collision avoidance."
+
+remote_parking = "Yes"
+remote_parking_comments = "Remote Control Parking via smartphone app (option)."
+
+auto_parking = "Yes"
+auto_parking_comments = "Parking Assistant Plus with 3D surround view."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "BMW's Active Blind Spot Detection monitors adjacent lanes at speeds above 30 km/h, providing visual alerts in mirrors and haptic steering wheel vibrations. The system can also actively steer the car back into lane if an unsafe lane change is attempted."
+blind_spot_comments = "Active Blind Spot Detection with cross-traffic alert."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant analyzes steering inputs and uses an infrared camera to monitor driver eye movements/head position, triggering audible and visual warnings if drowsiness is detected. System becomes active above 70 km/h."
+fatigue_comments = "Attention camera-based drowsiness detection."
+
+# Performance specs (740i model)
+engine_displacement = "3.0~3.5L"
+engine_displacement_comments = "2,998cc turbocharged inline-6 with 48V mild hybrid."
+
+motor_power = "None"
+motor_power_comments = "Mild hybrid system provides 11 hp boost, not classified as motor power."
+
+battery_capacity = "None"
+battery_capacity_comments = "48V battery for mild hybrid functions only."
+
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "78-liter (20.6 gallon) tank provides excellent range for a luxury sedan - approximately 750 km highway driving. Tank is positioned ahead of rear axle for optimal weight distribution."
+fuel_tank_comments = "78L (20.6 gallon) fuel tank capacity."
+
+horsepower = "300~400hp"
+horsepower_comments = "375 hp @ 5,200-6,250 rpm (740i model)."
+
+torque = "400~500N·m"
+torque_comments = "383 lb-ft (520 N·m) @ 1,850-5,000 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "5.0~5.5s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The 740i xDrive variant accelerates from 0-100 km/h in 5.1 seconds, thanks to its 375 hp turbocharged inline-6 with 48V mild hybrid boost and xDrive AWD system. Performance models like the 760i xDrive are even quicker."
+zero_to_100_comments = "5.1 seconds for 740i xDrive (per BMW factory specs)."
+
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph)."
+
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA-rated 23 mpg combined (10.2 L/100km), 9.8 L/100km EU cycle."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline powertrain."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 750 km (470 miles) highway range."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "xDrive AWD system standard on most markets."
+
+suspension = "Independent Suspension"
+suspension_comments = "Integral Active Steering with adaptive air suspension."
+
+passibility = "Medium"
+passibility_comments = "Air suspension can raise by 20mm for rough roads."
+
+seat_layout = "5-seat"
+seat_layout_comments = "4+1 seating, optional 4-seat Executive Lounge configuration."
+
+# Usage scenarios
+city_commuting = "Yes"
+city_commuting_comments = "Comfort+ mode optimizes for urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Ideal for highway cruising with standard adaptive air suspension that automatically lowers at high speeds for stability. Optional Executive Drive Pro adds active roll stabilization and predictive chassis adjustments based on navigation data."
+highway_comments = "Executive Drive Pro package enhances high-speed stability."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Despite air suspension that can raise clearance by 20mm, the low-profile tires and luxury focus make it unsuitable for off-road use. Best limited to improved unpaved roads."
+off_road_comments = "Not designed for off-road use despite air suspension."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "535L trunk fits 4 golf bags, expandable to 1,860L via 40/20/40 split-folding rear seats. Power trunk operation and optional hands-free opening enhance convenience."
+cargo_comments = "Split-folding rear seats and generous trunk space."
+
+clod_resistance = "High"
+clod_resistance_comments = "Tested to -40°C with heated components throughout."
+
+heat_resistance = "High"
+heat_resistance_comments = "Cooled seats and solar-reflective glass options."
+
+[AmbibuousLabels]
+
+size = "Large"
+size_comments = "Overall length: 5,391mm (212.2 inches)."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Executive-class dimensions with limousine space."
+
+aesthetics = "High"
+aesthetics_comments = "Controversial but distinctive design language."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "EPA rates the 740i at 23 mpg combined (10.2 L/100km), competitive for a 2+ ton luxury sedan. The 48V mild hybrid system recovers braking energy to power electrical systems and provide torque fill."
+energy_consumption_comments = "Class-competitive for large luxury sedan."
+
+confort_level = "High"
+confort_level_comments = "BMW's pinnacle of comfort with multi-contour seats featuring 20-way power adjustment, available massage functions, and acoustic laminated glass. Air suspension provides magic carpet ride quality."
+confort_comments = "BMW's flagship with premium materials and isolation."
+
+smartness = "High"
+smartness_comments = "BMW OS 8 with 14.9" curved display and 5G connectivity."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "While spacious, the 7 Series prioritizes executive luxury over family utility. Lacks child-friendly features like integrated booster seats, though ISOFIX anchors are present."
+family_comments = "Spacious but luxury-focused rather than family-oriented."
+
+[KeyDetails]
+key_details = "The 2023 BMW 7 Series (G70) represents the seventh generation, featuring radical design changes, an available 31" Theater Screen rear entertainment system, and optional BMW Interaction Bar spanning the dashboard. The platform supports pure electric (i7), plug-in hybrid, and gasoline powertrains. Notable technologies include Automatic Door Opening function, BMW Crystal Headlights with Swarovski elements, and Executive Lounge rear seating with 42.5" legroom."
+key_details_comments = "The G70 generation 7 Series introduces BMW's most advanced luxury technologies, including optional 31.3" 8K Theater Screen, automatic soft-close doors with touchless operation, and crystal ambient lighting elements. Available with three powertrain types (gasoline, PHEV, and full electric i7) on the same CLAR platform."

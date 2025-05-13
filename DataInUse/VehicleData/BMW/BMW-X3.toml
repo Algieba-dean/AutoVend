@@ -1,0 +1,240 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-X3"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The BMW-X3 is priced between $43,000 and $57,000 USD depending on the trim level (sDrive30i, xDrive30i, M40i) and optional features."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The BMW-X3 is classified as a mid-size luxury SUV with a length of 4,708mm and a width of 1,891mm."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance-oriented vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The BMW-X3 is primarily offered with gasoline engines (B48/B58), though diesel and PHEV variants exist in select markets."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The X3 provides 3.8 cubic meters of well-appointed passenger space with premium ergonomics. Front occupants enjoy 1,018mm of headroom and 1,004mm of rear legroom, while the rear seats offer 40/20/40 split-folding capability. The cabin features BMW's driver-oriented cockpit design with 8-way power front seats (14-way optional), and the panoramic moonroof option enhances the sense of space. The rear seats recline up to 15 degrees for added comfort on long journeys."
+passenger_space_volume_comments = "The X3 offers 3.8 cubic meters of passenger space with 1,018mm front headroom and 1,004mm rear legroom."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 550L (VDA), expandable to 1,600L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The X3 has a 2,864mm wheelbase, contributing to its stable ride."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 204mm (with xDrive), suitable for light off-road use."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "BMW's signature athletic styling with short overhangs and a coupe-like roofline."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Precise body gaps (3-4mm) and aerodynamic Cd of 0.29."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Popular colors include Alpine White, Black Sapphire, and Mineral Grey metallic."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Optional Fineline Cove wood or Aluminum Tetragon trim."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-channel ABS with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "DSC (Dynamic Stability Control) includes cornering brake control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes front, side, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard SensaTec leatherette, optional Vernasca or Merino leather."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and underbody panels reduce cabin noise to 63dB at 120km/h."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability via BMW ConnectedDrive."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package enables hands-off up to 60km/h."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Included in Driving Assistant Professional (stop-and-go capable)."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Extended Traffic Jam Assistant works under 60km/h."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city braking function."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant with side collision avoidance."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "BMW X3 does not offer remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Parking Assistant Plus can handle parallel and perpendicular spaces."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection with cross-traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors steering inputs for fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "B48 2.0L turbo (248hp) or B58 3.0L turbo (382hp in M40i)."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable for gasoline variants (see xDrive30e PHEV for electric motor specs)."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Standard 12V battery only in gasoline models."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "65L fuel tank capacity for gasoline models."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "xDrive30i produces 248hp, M40i variant delivers 382hp."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "300~400N·m"
+torque_comments = "350N·m (xDrive30i) to 500N·m (M40i) from 1,520-4,800rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "6.0s (xDrive30i) to 4.4s (M40i) with launch control."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 210km/h (xDrive30i) or 250km/h (M40i)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "WLTP combined: 7.4L/100km (xDrive30i), 8.8L/100km (M40i)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline variants."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650-750km range (NEDC) with 65L tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "xDrive system with 40:60 rear-biased torque split (adjustable to 100% front/rear)."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Double-joint spring strut front, five-link rear with optional adaptive dampers."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "204mm ground clearance with hill descent control (off-road package available)."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-seat configuration with optional 40/20/40 split folding."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Tight 11.8m turning circle and 360° cameras available."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfort seats with 14-way power adjustment and active cruise control."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "xDrive system with off-road mode (hill descent control optional)."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Roof rails standard (max payload 650kg), tow hitch optional (2,400kg)."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Tested to -40°C with heated components (mirrors, washer jets, steering wheel)."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Cooled oil systems maintain performance up to +50°C ambient."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "4,708mm length places it between compact and full-size SUVs."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced dimensions for urban and highway use."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "BMW's signature kidney grille and Hofmeister kink design elements."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient powertrains but premium fuel requirements."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Acoustic glass, premium materials, and optional air suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "iDrive 7 with gesture control and smartphone integration."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Good safety features but lacks third-row seating."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The BMW X3 combines sporty handling with premium luxury, featuring BMW's xDrive AWD system, a 10.25" touchscreen with iDrive 7, and optional M Sport package. The M40i variant delivers 382hp for 0-100km/h in 4.4s while maintaining practicality with 550L cargo space."
+key_details_comments = "The BMW X3 represents the perfect balance between sporty performance and practical luxury. As BMW's best-selling SUV globally, it features the latest generation xDrive intelligent all-wheel-drive system, a 10.25-inch touchscreen running iDrive 7 with natural voice control, and available M Sport package for enhanced dynamics. The range-topping M40i variant boasts a 382hp 3.0L turbocharged inline-6 that propels the SUV from 0-100km/h in just 4.4 seconds, while still offering 550 liters of cargo space and premium comfort features like Vernasca leather seats and 3-zone automatic climate control."

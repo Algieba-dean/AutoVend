@@ -1,0 +1,179 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-X5 M Competition"
+
+[PriciseLabels]
+prize = "Above 100,000"
+prize_comments = "The BMW-X5 M Competition starts at $119,800 USD (2023 model) before options and destination fees."
+
+vehicle_category_bottom = "Mid-to-Large SUV"
+vehicle_category_bottom_comments = "The X5 M Competition is a high-performance variant of BMW's mid-to-large luxury SUV segment."
+
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance-oriented vehicles."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "Features a high-performance twin-turbocharged gasoline V8 engine."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Offers 4.9 cubic meters of passenger space with premium accommodations."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Standard cargo capacity is 650L, expandable to 1,860L with rear seats folded."
+
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The exact wheelbase is 2,975mm (117.1 inches)."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is approximately 170mm in standard configuration."
+
+design_style = "Sporty"
+design_style_comments = "Aggressive M-specific styling with aerodynamic enhancements."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Flowing yet muscular design with excellent aerodynamic efficiency (Cd 0.34)."
+
+color = "Dark Colors"
+color_comments = "Offers signature M colors including Donington Grey Metallic and Marina Bay Blue Metallic."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Features aluminum carbon structure trim with Merino leather upholstery."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with M Compound brakes."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program with M-specific tuning."
+
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain and knee airbags for all occupants."
+
+seat_material = "Lether"
+seat_material_comments = "Full Merino leather upholstery with M multifunction seats."
+
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and extensive sound insulation materials."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability for infotainment and vehicle systems."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package available."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Included with Driving Assistant Professional package."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Extended Traffic Jam Assistant available."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city collision mitigation."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant included."
+
+remote_parking = "Yes"
+remote_parking_comments = "Available with Parking Assistant Plus package."
+
+auto_parking = "Yes"
+auto_parking_comments = "Includes automated parallel and perpendicular parking."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection standard."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors driver alertness."
+
+engine_displacement = "4.4~6.0L"
+engine_displacement_comments = "4.4-liter twin-turbocharged V8 engine (S63)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as this is not an electric vehicle."
+
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "21.9-gallon (83L) fuel tank capacity."
+
+horsepower = "Above 400hp"
+horsepower_comments = "617 hp (460 kW) at 6,000 rpm."
+
+torque = "Above 500N·m"
+torque_comments = "553 lb-ft (750 N·m) from 1,800-5,800 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 3.8 seconds."
+
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph), optional increase to 290 km/h (180 mph)."
+
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA rated at 13 mpg city/18 mpg highway (15.7 L/100km combined)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is not an electric vehicle."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650 km (404 miles) on a full tank."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "M xDrive all-wheel drive system with rear bias."
+
+suspension = "Independent Suspension"
+suspension_comments = "Adaptive M suspension with active roll stabilization."
+
+passibility = "Medium"
+passibility_comments = "Performance-oriented but capable of light off-road use."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard configuration with optional third row (7-seat)."
+
+city_commuting = "Yes"
+city_commuting_comments = "Suitable for urban driving despite performance focus."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent high-speed stability and comfort."
+
+off_road_capability = "Medium"
+off_road_capability_comments = "xOffroad package available for enhanced capability."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Versatile cargo area with split tailgate."
+
+clod_resistance = "High"
+clod_resistance_comments = "Proven performance in cold climates with winter package available."
+
+heat_resistance = "High"
+heat_resistance_comments = "Robust cooling systems for high-performance operation."
+
+[AmbibuousLabels]
+size = "Large"
+size_comments = "Dimensions: 4,945mm long × 2,004mm wide × 1,745mm tall."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior with premium utility features."
+
+aesthetics = "High"
+aesthetics_comments = "Distinctive M design with aggressive styling cues."
+
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Performance-focused with higher fuel consumption."
+
+confort_level = "High"
+confort_level_comments = "Luxury appointments with performance-oriented seating."
+
+smartness = "High"
+smartness_comments = "Latest iDrive 7 system with extensive connectivity."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Spacious but performance-focused rather than family-oriented."
+
+[KeyDetails]
+key_details = "The BMW X5 M Competition combines supercar performance with SUV practicality, featuring a 617hp twin-turbo V8, M xDrive AWD, and track-capable suspension in a luxurious package. It offers 0-100 km/h in 3.8 seconds while maintaining premium comfort and advanced technology features."
+key_details_comments = "The BMW X5 M Competition represents the pinnacle of performance SUVs, blending supercar-level acceleration (0-100 km/h in 3.8 seconds) with practical SUV functionality. At its heart lies a hand-built 4.4-liter S63 twin-turbo V8 producing 617 hp and 553 lb-ft of torque, paired with an 8-speed M Steptronic transmission and M xDrive all-wheel drive system with rear bias. Despite its track-capable performance (including adaptive M suspension and active roll stabilization), it maintains luxury credentials with full Merino leather interior, acoustic glass insulation, and advanced tech like BMW's latest iDrive 7 system. The Competition package adds enhanced engine tuning, sport exhaust, and unique styling elements. With 650L of cargo space (expandable to 1,860L) and available 7-seat configuration, it offers surprising practicality for a vehicle with 290 km/h top speed capability (with optional M Driver's Package)."

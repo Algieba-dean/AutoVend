@@ -1,0 +1,240 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-Z4"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The BMW Z4 starts at $51,800 USD for the sDrive30i and goes up to $64,700 USD for the M40i trim (2023 model year)."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Convertible Sprots Car"
+vehicle_category_bottom_comments = "The BMW Z4 is a two-seater roadster with a retractable soft-top roof."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance-oriented vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Z4 is offered with turbocharged gasoline engines (no diesel or hybrid variants)."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The Z4 is a compact two-seater with limited cabin space (exact volume not officially specified)."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "Trunk capacity is 281L (with roof up) or 239L (with roof down)."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "Exact wheelbase is 2,470mm (97.2 inches)."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is approximately 140mm (sport suspension lowers this further)."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "Aggressive styling with long hood, short rear deck, and muscular wheel arches."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Flowing aerodynamic lines with a wind-cheating profile (Cd ~0.29)."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offers classic BMW hues like Alpine White, Black Sapphire, and San Francisco Red."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Aluminum hexagon trim standard; optional fine-wood oak trim available."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Dynamic Stability Control (DSC) includes cornering brake control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side-impact, and head protection airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Vernasca leather standard; Merino leather optional."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Adequate insulation but roadster design allows some wind/road noise at speed."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability via BMW ConnectedDrive."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package adds lane-keeping and traffic jam assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available with Stop&Go function in optional packages."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assist_comments = "Part of Driving Assistant Professional package (hands-free under 37 mph)."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city collision mitigation standard."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant included in driver assistance packages."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "BMW does not currently offer remote parking on the Z4."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Parking Assistant Plus available (automated parallel/perpendicular parking)."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection included in driver assistance packages."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors driving behavior for fatigue signs."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "sDrive30i: 2.0L turbo (255hp); M40i: 3.0L turbo (382hp)."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - pure internal combustion engine vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable - no hybrid or electric variant available."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "52L (13.7 gal) capacity for all models."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "sDrive30i: 255hp; M40i: 382hp (varies by market)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "300~400N·m"
+torque_comments = "sDrive30i: 400N·m; M40i: 500N·m (369 lb-ft)."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "sDrive30i: 5.2s; M40i: 4.5s (with launch control)."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph) for all models."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "sDrive30i: 7.1L/100km (combined); M40i: 8.1L/100km (EU cycle)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - pure internal combustion engine vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 600-700km range on a full tank (varies by driving style)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "Classic rear-wheel-drive layout (xDrive AWD not available on Z4)."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Double-joint spring strut front, multi-link rear suspension."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "Low ground clearance and sport-tuned suspension limit rough terrain capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "Strict two-seater configuration with no rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Maneuverable size but firm suspension may be less comfortable in urban areas."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent high-speed stability and wind protection with roof up."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use (low clearance, RWD, performance tires)."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "No"
+cargo_capability_comments = "Limited to small trunk space (281L max) with no roof rack options."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "While not specifically designed for extreme cold, the Z4 performs adequately in winter conditions with standard features like heated seats and steering wheel (optional). The rear-wheel drive configuration benefits from standard DSC stability control, though dedicated winter tires are recommended for snowy conditions. The soft-top insulation provides reasonable thermal protection."
+cold_resistance_comments = "Performs well in cold weather but lacks dedicated winter features (standard on luxury models)."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Effective climate control and ventilated seats available."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Small"
+size_comments = "Compact two-seater dimensions: 4,324mm long, 1,864mm wide."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Small"
+vehicle_usability_comments = "Limited practicality due to two-seat configuration and small trunk."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Striking roadster design with premium finishes and iconic BMW styling cues."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Moderate fuel efficiency for a performance roadster (7-8L/100km combined)."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "Sport-tuned suspension prioritizes handling over comfort; well-appointed interior."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Latest iDrive 7.0 with touchscreen, voice control, and advanced driver aids available."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Two-seat configuration and limited storage make it unsuitable for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The BMW Z4 is a premium two-seat roadster featuring a turbocharged engine lineup (2.0L/3.0L), rear-wheel drive, and a retractable soft-top roof. It offers sharp handling characteristics with optional M Sport differential and adaptive suspension. The interior features BMW's latest iDrive 7.0 infotainment with a 10.25" touchscreen. Distinctive styling includes a long hood, short rear deck, and aggressive front fascia with BMW's signature kidney grille."
+key_details_comments = "The BMW Z4 represents the pinnacle of BMW's roadster heritage, combining a perfect 50:50 weight distribution with rear-wheel drive dynamics. It features a fully-electric soft-top that operates in 10 seconds at speeds up to 50 km/h. The M40i variant includes an M Sport differential, adaptive M suspension, and distinctive M aerodynamic elements. The cockpit features BMW's Live Cockpit Professional with a 12.3" digital instrument cluster and 10.25" central touchscreen running iDrive 7.0."

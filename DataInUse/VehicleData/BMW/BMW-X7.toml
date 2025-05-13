@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-X7"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The BMW X7 is priced between $77,850 and $148,500 USD depending on the trim level (xDrive40i, M60i, or Alpina XB7) and optional features."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Mid-to-Large SUV"
+vehicle_category_bottom_comments = "The BMW X7 is a full-size luxury SUV with three rows of seating, competing with the Mercedes-Benz GLS and Range Rover."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for performance-oriented vehicles and the X7 is their flagship SUV."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The BMW X7 is currently offered with gasoline engines (xDrive40i with 3.0L I6 turbo or M60i with 4.4L V8 twin-turbo). A plug-in hybrid variant may be introduced later."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "The X7 offers 5.8 cubic meters of passenger space with generous legroom in all three rows."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 326L behind third row, 750L behind second row, and 2,120L with both rear rows folded (exact measurements)."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The X7 has a 3,105mm (122.2-inch) wheelbase, providing excellent interior space."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "Ground clearance is 210mm (8.3 inches), with optional air suspension offering adjustable height."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The X7 features BMW's luxury design language with prominent kidney grille and elegant proportions suitable for executive transport."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Flowing character lines with 0.28 Cd drag coefficient for a vehicle of its size."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offered in sophisticated shades like Mineral White, Phytonic Blue, and Carbon Black metallic."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Fineline Brown wood trim standard, with optional Piano Black or Aluminum Mesh effect."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program includes Dynamic Stability Control and Cornering Brake Control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "Above 10"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags totaling 12 airbags for all seating rows."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Vernasca leather upholstery with optional Merino full leather trim."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass, insulated bulkheads, and active noise cancellation provide limousine-like quietness."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW Intelligent Personal Assistant responds to natural language commands for navigation, climate, etc."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Remote Software Upgrade capability for over-the-air updates to vehicle software."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Driving Assistant Professional package enables hands-free driving up to 85 mph with active lane keeping."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Included in Driving Assistant package with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Extended Traffic Jam Assistant works hands-free below 40 mph on divided highways."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with city collision mitigation braking."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assistant provides steering correction up to 130 mph."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "Yes"
+remote_parking_comments = "Available Parking Assistant Plus allows remote control via smartphone app."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Can autonomously parallel and perpendicular park with driver supervision."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Active Blind Spot Detection includes lane change warning and side collision avoidance."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assistant monitors steering inputs and driving behavior for fatigue warnings."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "xDrive40i has 2,998cc I6 turbo (3.0L), M60i has 4,395cc V8 twin-turbo (4.4L)."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is not an electric vehicle (gasoline powertrain only)."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable for gasoline-powered X7 models."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "21.9-gallon (83L) fuel tank provides 500+ miles of range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "xDrive40i: 375hp, M60i: 523hp, Alpina XB7: 630hp."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "xDrive40i: 520N·m, M60i: 750N·m, Alpina XB7: 800N·m."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "xDrive40i: 5.8s, M60i: 4.5s, Alpina XB7: 3.9s."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph), or 290 km/h (180 mph) with M Driver's Package."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA rated: xDrive40i - 9.8L/100km (24 mpg combined), M60i - 12.4L/100km (19 mpg combined)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline-powered models."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "Above 800km"
+driving_range_comments = "xDrive40i can achieve 850+ km (530+ miles) highway range on a full tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "xDrive AWD system standard on all models with rear-biased torque distribution."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Double-wishbone front, multi-link rear with optional active roll stabilization."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Offers xOffroad package with hill descent control, but primarily designed for on-road luxury."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "7-seat"
+seat_layout_comments = "Standard 3-row seating (2-3-2), optional captain's chairs (2-2-2 configuration)."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Despite size, offers excellent visibility and parking aids for urban use."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Exceptional highway cruiser with adaptive suspension and superb NVH isolation."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "Can handle light off-road conditions with air suspension lift, but not a hardcore off-roader."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Roof rails standard, towing capacity up to 7,500 lbs with trailer hitch."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Proven operation in -30°C conditions with heated components and cold-weather package."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Tested in 50°C desert conditions with robust cooling systems."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "Length: 5,151mm (202.8 in), Width: 2,000mm (78.7 in), Height: 1,805mm (71.1 in) - full-size dimensions."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious three-row seating with premium amenities for 7 passengers."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Imposing yet elegant design with BMW's signature styling cues and premium finishes."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Expected for a large, powerful luxury SUV with premium features."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Executive-class comfort with massaging seats, 4-zone climate, and air suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Cutting-edge iDrive 8 with curved display, 5G connectivity, and extensive driver aids."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "Excellent for families with ISOFIX anchors, rear entertainment, and spacious interior."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="Flagship BMW SUV with luxurious appointments, advanced technology, and powerful engine options. The X7 combines limousine-like comfort with SUV versatility, featuring BMW's latest iDrive 8 infotainment, optional Executive Lounge rear seating, and available Alpina-tuned high-performance variant."
+key_details_comments = "The BMW X7 represents the pinnacle of BMW's SUV lineup, offering uncompromising luxury and cutting-edge technology. As the brand's flagship SUV, it combines limousine-like comfort with versatile three-row seating for up to 7 passengers. The X7 features BMW's latest iDrive 8 infotainment system with a curved display, 5G connectivity, and advanced driver assistance systems. Available in multiple powertrain options ranging from the efficient 3.0L turbocharged inline-6 (xDrive40i) to the high-performance 4.4L twin-turbo V8 (M60i) and the ultra-luxurious Alpina XB7 variant with 630hp. The interior boasts premium materials including optional Merino leather, glass controls, and available Executive Lounge rear seating with massaging functions. With its combination of spaciousness, technology, and driving dynamics, the X7 competes directly with the Mercedes-Benz GLS and Range Rover in the full-size luxury SUV segment."

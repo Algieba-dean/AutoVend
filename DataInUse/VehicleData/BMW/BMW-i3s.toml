@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "BMW-i3s"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The BMW-i3s is priced between $45,000 and $55,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The BMW-i3s is a compact electric hatchback with a unique design and urban-focused dimensions."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BMW"
+brand_comments = "BMW is a German luxury automaker known for its performance-oriented vehicles and innovative electric models like the i3s."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The BMW-i3s is a pure electric vehicle with no combustion engine, powered solely by a lithium-ion battery pack."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The i3s offers 2.8 cubic meters of passenger space, optimized for urban commuting with a spacious feel despite its compact size."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "The trunk capacity is 260 liters, expandable to 1,100 liters with the rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,570 mm, contributing to its agile handling and tight turning radius."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The chassis height is approximately 140 mm, optimized for urban driving with a low center of gravity."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The i3s features a futuristic, sporty design with bold lines and a distinctive silhouette."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The i3s has smooth, aerodynamic body lines with a drag coefficient of 0.29."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Bright Colors"
+color_comments = "The i3s is often seen in bright colors like Protonic Blue and Capparis White, emphasizing its modern appeal."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "The i3s features sustainable materials like eucalyptus wood trim and recycled fabrics."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system (ABS) is included for enhanced safety."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is standard to improve vehicle stability."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "The i3s includes six airbags: front, side, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Fabric"
+seat_material_comments = "Standard seats use sustainable fabric, with leather available as an option."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "The i3s has moderate noise insulation, with some road noise noticeable at higher speeds."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BMW's iDrive system supports voice interaction for navigation and media control."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air (OTA) updates are supported for the infotainment system and some vehicle functions."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The i3s offers Level 2 autonomy with features like adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available as part of the Driving Assistant package."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic Jam Assist is included in the Driving Assistant package."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard automatic emergency braking with pedestrian detection."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keeping Assist is part of the Driving Assistant package."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available on the i3s."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Parking Assistant is available as an option."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Detection is included in the Driving Assistant package."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Assist monitors driver fatigue and alerts if needed."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as the i3s is a pure electric vehicle."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "120~180kW"
+motor_power_comments = "The i3s has a 135 kW (184 hp) electric motor."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "30~50kWh"
+battery_capacity_comments = "The i3s has a 42.2 kWh lithium-ion battery pack."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable as the i3s is a pure electric vehicle."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "100~200hp"
+horsepower_comments = "The i3s delivers 184 hp (135 kW) of power."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "200~300N·m"
+torque_comments = "The i3s produces 270 N·m of torque, providing strong acceleration from a standstill."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The i3s accelerates from 0-100 km/h in 6.9 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The i3s has an electronically limited top speed of 160 km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable as the i3s is a pure electric vehicle."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "The i3s consumes approximately 13.1 kWh/100 km under combined conditions."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "300~400km"
+driving_range_comments = "The i3s offers a WLTP-rated range of 310-345 km depending on conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "The i3s uses rear-wheel drive for balanced handling and weight distribution."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The i3s features a MacPherson strut front and multi-link rear suspension for comfort and agility."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "The i3s has moderate ground clearance suitable for urban environments but not off-road use."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "4-seat"
+seat_layout_comments = "The i3s is configured as a 4-seater with individual rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "The i3s is ideal for city commuting with its compact size, tight turning radius, and electric powertrain."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "No"
+highway_long_distance_comments = "The limited range makes it less suitable for long highway trips compared to city use."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The i3s is not designed for off-road use due to its low ground clearance and urban focus."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The i3s offers practical cargo space with foldable rear seats for larger items."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The battery performs adequately in cold weather but range may decrease in extreme temperatures."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The battery management system effectively handles high temperatures with minimal range impact."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Small"
+size_comments = "The i3s is a compact vehicle with a length of 4,001 mm, making it ideal for urban environments."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "While compact, the i3s offers good interior space and practicality for its size."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The i3s has a distinctive, futuristic design that stands out in urban settings."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "The i3s is highly efficient with low energy consumption for an electric vehicle."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "The i3s offers a comfortable ride with premium materials, though road noise can be noticeable."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "The i3s features advanced connectivity, OTA updates, and driver assistance systems."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "The i3s is practical for small families but limited by its 4-seat configuration and compact size."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The BMW-i3s is a sportier version of the i3, featuring a more powerful motor, sport suspension, and unique styling. It uses sustainable materials like recycled plastics and renewable fibers in its construction. The carbon-fiber-reinforced plastic (CFRP) passenger cell reduces weight while maintaining strength. Its compact size and rear-wheel-drive layout make it exceptionally agile in urban environments."
+key_details_comments = "The BMW-i3s is the performance-oriented variant of BMW's innovative i3 electric hatchback. It features a 135 kW (184 hp) electric motor (up from 125 kW in standard i3), sport-tuned suspension with 10mm lower ride height, and wider track for improved handling. Unique exterior elements include black wheel arches, 20-inch alloy wheels, and sportier bumpers. The carbon fiber reinforced plastic (CFRP) passenger cell paired with aluminum chassis makes it exceptionally light (1,315 kg) yet rigid. Sustainable materials include eucalyptus wood trim, recycled plastics, and renewable kenaf fibers. With 270 N·m torque and 0-100 km/h in 6.9s, it offers zippy urban performance while maintaining 310-345 km WLTP range. The rear-wheel drive layout and tight 9.86m turning circle make it exceptionally maneuverable in cities."
