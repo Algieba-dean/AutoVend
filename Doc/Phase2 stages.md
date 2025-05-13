@@ -165,9 +165,9 @@ depends on the interface, which label/slots we support, we should have such a li
 
 			- Convertible Sports Car
 
-				- Two-door Convertible Sprots Car
+				- Two-door Convertible Sports  Car
 
-				- Four-door Convertible Sprots Car
+				- Four-door Convertible Sports Car
 
 			- Hardtop Sports Car
 
