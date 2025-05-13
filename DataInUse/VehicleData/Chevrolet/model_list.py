@@ -6,14 +6,21 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Chevrolet-Corvette Stingray Z51 3LT",
-    "Chevrolet-Silverado 1500 High Country 6.2L V8",
-    "Chevrolet-Tahoe RST Performance Edition",
-    "Chevrolet-Camaro SS 1LE",
-    "Chevrolet-Equinox Premier 1.5L Turbo",
-    "Chevrolet-Malibu LT 1.5T",
-    "Chevrolet-Trailblazer RS 1.3T AWD",
-    "Chevrolet-Spark LS 1.4L",
-    "Chevrolet-Suburban Premier 5.3L V8",
-    "Chevrolet-Bolt EV Premier"
+  "Chevrolet-Corvette Stingray",
+  "Chevrolet-Corvette Z06",
+  "Chevrolet-Corvette ZR1",
+  "Chevrolet-Corvette E-Ray",
+  "Chevrolet-Trax",
+  "Chevrolet-Trailblazer",
+  "Chevrolet-Equinox",
+  "Chevrolet-Equinox EV",
+  "Chevrolet-Blazer",
+  "Chevrolet-Blazer EV",
+  "Chevrolet-Traverse",
+  "Chevrolet-Tahoe",
+  "Chevrolet-Suburban",
+  "Chevrolet-Colorado",
+  "Chevrolet-Silverado 1500",
+  "Chevrolet-Silverado HD",
+  "Chevrolet-Silverado EV"
 ]

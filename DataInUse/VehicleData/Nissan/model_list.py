@@ -6,14 +6,20 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Nissan-Altima SR VC-Turbo",
-    "Nissan-Rogue Platinum AWD",
-    "Nissan-Maxima SR Midnight Edition",
-    "Nissan-Sentra SV Premium Package",
-    "Nissan-Pathfinder Rock Creek Edition",
-    "Nissan-Frontier PRO-4X Crew Cab",
-    "Nissan-Titan XD Platinum Reserve Diesel",
-    "Nissan-Leaf SV Plus",
-    "Nissan-Z Performance 6MT",
-    "Nissan-Armada SL 4x4"
+  "Nissan Versa",
+  "Nissan Sentra",
+  "Nissan Altima",
+  "Nissan Maxima",
+  "Nissan Z",
+  "Nissan Kicks",
+  "Nissan Rogue",
+  "Nissan Rogue Rock Creek",
+  "Nissan Murano",
+  "Nissan Pathfinder",
+  "Nissan Armada",
+  "Nissan Ariya",
+  "Nissan Leaf",
+  "Nissan Frontier",
+  "Nissan Titan",
+  "Nissan Titan XD"
 ]

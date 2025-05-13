@@ -6,14 +6,19 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Nio-ES6 420km Signature Edition",
-    "Nio-ES8 580km Performance Edition",
-    "Nio-EC6 605km Sport Edition",
-    "Nio-ET7 1000km Ultra-Long Range",
-    "Nio-ET5 75kWh Standard Range",
-    "Nio-ES7 100kWh Executive Edition",
-    "Nio-EP9 Electric Supercar",
-    "Nio-ET5 Touring 100kWh Long Range",
-    "Nio-ES8 450km Business Edition",
-    "Nio-EC7 700km Luxury Edition"
+  "NIO EP9",
+  "NIO ET7",
+  "NIO ET5",
+  "NIO ET9",
+  "NIO ES8",
+  "NIO ES6",
+  "NIO EC6",
+  "NIO EC7",
+  "NIO EL8",
+  "NIO EL7",
+  "NIO EL6",
+  "Onvo L60",
+  "Onvo L80",
+  "Onvo L90",
+  "Firefly Compact EV"
 ]

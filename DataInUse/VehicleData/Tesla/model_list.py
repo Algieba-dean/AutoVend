@@ -6,14 +6,19 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Tesla-Model 3 Long Range AWD",
-    "Tesla-Model S Plaid",
-    "Tesla-Model Y Performance",
-    "Tesla-Model X Long Range",
-    "Tesla-Model 3 Standard Range Plus RWD",
-    "Tesla-Model S 100D",
-    "Tesla-Model Y Long Range AWD",
-    "Tesla-Model X Plaid",
-    "Tesla-Model 3 Performance",
-    "Tesla-Model S 75D"
+  "Model S",
+  "Model S Plaid",
+  "Model 3 Standard RWD",
+  "Model 3 Long Range RWD",
+  "Model 3 Long Range AWD",
+  "Model 3 Performance",
+  "Model X",
+  "Model X Plaid",
+  "Model Y",
+  "Model Y Long Range AWD",
+  "Model Y Long Range RWD",
+  "Model Y Performance",
+  "Model Y Launch Series",
+  "Model Q",
+  "Model 2"
 ]

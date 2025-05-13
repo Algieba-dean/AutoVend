@@ -6,14 +6,20 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Changan-UNI-T 1.5T Premium",
-    "Changan-UNI-K 2.0T AWD",
-    "Changan-CS75 PLUS 2.0TGDI",
-    "Changan-Eado DT 1.6L Luxury",
-    "Changan-Raeton CC 1.5T Elite",
-    "Changan-Benni EV360",
-    "Changan-ALSVIN 1.4T Comfort",
-    "Changan-CS35 PLUS 1.4T Blue Core",
-    "Changan-Hunter 2.0T 4WD",
-    "Changan-Deepal SL03 515EV"
+  "Changan-CS35 Plus",
+  "Changan-CS55 Plus",
+  "Changan-CS75 Plus",
+  "Changan-CS75 Pro",
+  "Changan-CS85",
+  "Changan-CS95",
+  "Changan-UNI-T",
+  "Changan-UNI-K",
+  "Changan-UNI-Z",
+  "Changan-UNI-V",
+  "Changan-Raeton Plus",
+  "Changan-Eado",
+  "Changan-Eado EV",
+  "Changan-Lumin",
+  "Changan-F70",
+  "Changan-Hunter"
 ]

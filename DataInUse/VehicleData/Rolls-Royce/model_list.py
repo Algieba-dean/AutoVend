@@ -6,14 +6,14 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Rolls-Royce-Phantom VIII EWB 6.75L V12",
-    "Rolls-Royce-Ghost Black Badge 6.6L V12",
-    "Rolls-Royce-Cullinan Black Badge 6.75L V12",
-    "Rolls-Royce-Wraith Black Badge 6.6L V12",
-    "Rolls-Royce-Dawn Black Badge 6.6L V12",
-    "Rolls-Royce-Spectre Dual-Motor EV",
-    "Rolls-Royce-Phantom VIII Extended 6.75L V12",
-    "Rolls-Royce-Ghost Extended 6.75L V12",
-    "Rolls-Royce-Cullinan Series II 6.75L V12",
-    "Rolls-Royce-Wraith Aero Coupe 6.6L V12"
+  "Rolls-Royce Spectre",
+  "Rolls-Royce Spectre Black Badge",
+  "Rolls-Royce Ghost Series II",
+  "Rolls-Royce Ghost Series II Extended",
+  "Rolls-Royce Ghost Series II Black Badge",
+  "Rolls-Royce Phantom Series II",
+  "Rolls-Royce Phantom Series II Extended",
+  "Rolls-Royce Phantom Series II Scintilla Private",
+  "Rolls-Royce Cullinan Series II",
+  "Rolls-Royce Cullinan Series II Black Badge"
 ]

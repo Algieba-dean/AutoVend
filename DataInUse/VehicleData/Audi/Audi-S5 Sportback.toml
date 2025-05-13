@@ -1,0 +1,241 @@
+# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+
+title = "CarLabels"
+
+car_model = "Audi-S5 Sportback"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Audi S5 Sportback starts at approximately $62,000 USD for the base trim and can exceed $80,000 USD with premium options like the Prestige package and performance upgrades."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Four-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The S5 Sportback combines coupe-like styling with a practical four-door liftback design, blending sportiness and utility."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Audi"
+brand_comments = "Audi, a premium German automaker, is known for its Quattro all-wheel-drive system and luxury performance vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The S5 Sportback is powered by a turbocharged 3.0L V6 gasoline engine with mild-hybrid technology (MHEV) for efficiency."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, with ample legroom and headroom for four adults."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "400~500L"
+trunk_volume_comments = "Trunk capacity is 480L (expandable to 1,300L with rear seats folded), ideal for luggage or sports equipment."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase measures 2,826mm, contributing to stable handling and rear-seat comfort."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is 140mm, optimized for sporty driving dynamics while maintaining practicality."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "Aggressive styling with a sloping roofline, S-specific bumpers, and quad exhaust tips."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Audi's signature sharp creases and flowing lines give the S5 a sleek, aerodynamic profile (Cd: 0.30)."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offers classic Audi hues like Daytona Gray and Navarra Blue, alongside bolder options like Turbo Blue."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Brushed aluminum inlays and carbon fiber options dominate, with optional Nappa leather seats."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) with sport tuning for dynamic driving."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, knee, and curtain airbags for all occupants."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Valcona leather sport seats with optional diamond-stitched Nappa leather."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and sound-deadening materials ensure a quiet cabin (62 dB at 120 km/h)."
+
+# voice_interfaction, candidate values: "Yes", "No"
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Audi MMI touch response supports natural-language voice commands for navigation/media."
+
+# ota_updates, candidate values: "Yes", "No"
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for MMI infotainment and select vehicle functions."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Audi Pre Sense with adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Adaptive Cruise Assist with stop-and-go functionality up to 250 km/h."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic Jam Assist manages steering, acceleration, and braking in congested traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front and rear collision avoidance with pedestrian/cyclist detection."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Assist with gentle steering corrections."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Not available on the S5 Sportback (reserved for Audi A8/Q7 models)."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Park Assist automates parallel and perpendicular parking maneuvers."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Side Assist with rear cross-traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Attention Monitor detects drowsiness via steering inputs."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L"
+engine_displacement = "2.5~3.5L"
+engine_displacement_comments = "2,995cc turbocharged V6 with 48V mild-hybrid system."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Mild-hybrid system provides 12kW boost but isn't classified as a primary motor."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh"
+battery_capacity = "None"
+battery_capacity_comments = "Mild-hybrid uses a small 0.5kWh lithium-ion battery, not a traction battery."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "58L fuel tank capacity (EPA-estimated 21 mpg city/30 mpg highway)."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "300~400hp"
+horsepower_comments = "349 hp @ 5,400-6,400 rpm (with 369 lb-ft torque @ 1,370-4,500 rpm)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "400~500N·m"
+torque_comments = "500 N·m (369 lb-ft) from 1,370 rpm, enabling strong low-end acceleration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 4.7 seconds (with Quattro all-wheel drive)."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph); optional Dynamic Package raises this to 280 km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA-rated 10.2L/100km (23 mpg) combined; real-world spirited driving may exceed 12L/100km."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is not a full electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 550-600 km on a full tank (58L) under mixed driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Quattro all-wheel drive with rear sport differential (40:60 front/rear torque split)."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Five-link front and rear suspension with adaptive dampers (optional)."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "2+3 seating, though the rear center position is cramped due to the drivetrain tunnel."
+
+# city_commuting, candidate values: "Yes", "No"
+city_commuting = "Yes"
+city_commuting_comments = "Comfort mode softens suspension, and mild-hybrid aids stop-start efficiency."
+
+# highway_long_distance, candidate values: "Yes", "No"
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent high-speed stability and adaptive cruise control for long journeys."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Quattro AWD aids traction but low ground clearance limits off-road use."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Liftback design allows bulky item loading (max cargo length: 2.1m with seats down)."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Tested to -30°C with heated components (mirrors, seats, windshield washer nozzles)."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Engine oil cooler and reinforced cooling systems for sustained performance in hot climates."
+
+
+[AmbibuousLabels]
+
+# size: candidate values: "Small", "Medium", "Large"
+size = "Medium"
+size_comments = "4,763mm length × 1,843mm width × 1,386mm height – a midsize luxury sports sedan."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balances sporty dynamics with daily practicality (e.g., usable rear seats and trunk)."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Sleek fastback profile with aggressive S-line styling cues (e.g., aluminum mirrors, quad exhaust)."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Moderate for its performance class (10.2L/100km combined)."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Premium materials, excellent NVH suppression, and optional massaging seats."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Virtual Cockpit, MMI touch, and extensive driver aids place it among tech leaders."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical liftback and AWD suit small families, though rear space is tighter than A6/A7."
+
+[KeyDetails]
+key_details = "The Audi S5 Sportback combines a 349hp turbocharged V6, Quattro AWD, and a sleek liftback design. Key features include: 12.3\" Virtual Cockpit, Bang & Olufsen 3D audio, adaptive suspension, and Matrix LED headlights. Its 0-100km/h time of 4.7s and 250km/h top speed (optionally 280km/h) make it a compelling alternative to the BMW M340i and Mercedes-AMG C43."
+key_details_comments = "The Audi S5 Sportback represents the perfect blend of performance and practicality in Audi's lineup. Its turbocharged 3.0L V6 produces 349 horsepower and 369 lb-ft of torque, paired with a quick-shifting 8-speed Tiptronic transmission and Quattro all-wheel drive with sport differential. The liftback design offers 480L of cargo space (expandable to 1,300L), making it more versatile than traditional sports sedans. Premium features include: 12.3\" Virtual Cockpit digital instrument cluster, 10.1\" MMI touch infotainment with navigation, available Bang & Olufsen 19-speaker 3D audio system, Matrix LED headlights with dynamic turn signals, and optional Nappa leather diamond-stitched seats. Performance highlights include 0-100 km/h acceleration in 4.7 seconds, an electronically limited top speed of 250 km/h (optionally 280 km/h with Dynamic Package), and adaptive damping suspension. This positions it as a compelling alternative to the BMW M340i Gran Coupe and Mercedes-AMG C43 4MATIC, offering superior interior quality and everyday usability."
+
+
+### Notes:

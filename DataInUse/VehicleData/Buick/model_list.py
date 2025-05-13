@@ -6,14 +6,19 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-    "Buick-Enclave Avenir 3.6L V6",
-    "Buick-Regal GS 2.0T",
-    "Buick-LaCrosse Premium II 3.6L",
-    "Buick-Encore GX Essence 1.3T",
-    "Buick-Cascada Premium 1.6T",
-    "Buick-Envision Preferred 2.0T",
-    "Buick-Verano Premium 2.4L",
-    "Buick-Rendezvous CXL 3.4L",
-    "Buick-Lucerne Super 4.6L V8",
-    "Buick-Park Avenue Ultra 3.8L Supercharged"
+  "Buick-Encore",
+  "Buick-Encore GX",
+  "Buick-Envision",
+  "Buick-Envision Avenir",
+  "Buick-Empower",
+  "Buick-Enclave",
+  "Buick-Enclave Avenir",
+  "Buick-Avista",
+  "Buick-LaCrosse",
+  "Buick-Regal",
+  "Buick-Regal Sportback",
+  "Buick-Regal GS",
+  "Buick-Grand National",
+  "Buick-Riviera",
+  "Buick-Premium SUV"
 ]

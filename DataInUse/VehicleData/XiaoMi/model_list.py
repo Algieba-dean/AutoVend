@@ -5,7 +5,11 @@ These are real car models across different price ranges
 """
 
 model_list = [
-    "XiaoMi-SU7",
-    "XiaoMi-SU7 Ultra",
-    "XiaoMi-Yu7",
+ "Xiaomi-SU7",
+  "Xiaomi-SU7 Standard Range",
+  "Xiaomi-SU7 Long Range",
+  "Xiaomi-SU7 Pro",
+  "Xiaomi-SU7 Max",
+  "Xiaomi-SU7 Max AWD",
+  "Xiaomi-SU7 Ultra AWD",
 ]
