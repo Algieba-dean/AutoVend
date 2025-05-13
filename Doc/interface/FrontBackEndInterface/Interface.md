@@ -1,4 +1,4 @@
-# Car Sales Website API Interface
+# AutoVend Interface Documentation
 
 ## Overview
 
