@@ -118,7 +118,7 @@ This document defines the API interface between the frontend and backend of Auto
       "session_id": "<uuid>",
       "created_at": "2025-06-01T12:34:56Z",
       "status": "active",
-      "welcome_message": {
+      "message": {
         "message_id": "<uuid>",
         "sender_type": "system",
         "sender_id": "agent_123",
@@ -177,12 +177,15 @@ This document defines the API interface between the frontend and backend of Auto
   - Body:
     ```json
     {
-      "user_message": {
+      "message": {
         "message_id": "<uuid>",
+        "sender_type": "user",
+        "sender_id": "<uuid>",
+        "content": "I'm looking for an electric SUV with good range",
         "timestamp": "2025-06-01T12:35:00Z",
         "status": "delivered"
       },
-      "system_response": {
+      "response": {
         "message_id": "<uuid>",
         "sender_type": "system",
         "sender_id": "agent_123",
