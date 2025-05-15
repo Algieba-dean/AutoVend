@@ -106,7 +106,8 @@ def send_chat_message():
         "profile": session.profile,
         "needs": session.needs,
         "stage": session.stage,
-        "reservation_info": session.reservation_info
+        "reservation_info": session.reservation_info,
+        "matched_car_models": session.matched_car_models,
     }
     
     return jsonify(response), 200
@@ -187,6 +188,7 @@ def generate_response(message, session):
         
         if "suv" in message.lower():
             session.needs["explicit"]["vehicle_category_bottom"] = "Compact SUV"
+            session.matched_car_models = ["Tesla Model Y", "Ford Mustang Mach-E"]
             return "I'd be happy to help you find an electric SUV with good range. Tesla Model Y offers around 330 miles of range, while Ford Mustang Mach-E offers up to 300 miles. Would you like more information about these models or would you prefer other options?"
     
     if "range" in message.lower():

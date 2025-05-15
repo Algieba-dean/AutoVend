@@ -63,43 +63,34 @@ class UserProfile:
         """
         errors = []
         
-        # Required fields
+        # Only phone_number is required
         if not self.phone_number:
             errors.append("Phone number is required")
         elif not self._validate_phone_number(self.phone_number):
             errors.append("Phone number must contain only digits, spaces, '+' or '-' characters")
             
-        if not self.age:
-            errors.append("Age is required")
-        elif not self._validate_age(self.age):
+        # Optional fields validation
+        if self.age and not self._validate_age(self.age):
             errors.append("Age must be a number between 18 and 120, or a range in format 'min-max' (e.g., '20-35')")
             
-        if not self.user_title:
-            errors.append("User title is required")
-        elif not self._validate_user_title(self.user_title):
+        if self.user_title and not self._validate_user_title(self.user_title):
             errors.append("User title must start with one of: Mr., Mrs., Miss., Ms.")
             
-        if not self.name:
-            errors.append("Name is required")
-        elif not self._validate_name(self.name):
+        if self.name and not self._validate_name(self.name):
             errors.append("Name must be between 2 and 50 characters")
             
-        if not self.target_driver:
-            errors.append("Target driver is required")
-        elif not self._validate_target_driver(self.target_driver):
+        if self.target_driver and not self._validate_target_driver(self.target_driver):
             errors.append("Target driver must be one of: self, spouse, child, parent, other")
             
-        if not self.expertise:
-            errors.append("Expertise is required")
-        elif not self._validate_expertise(self.expertise):
+        if self.expertise and not self._validate_expertise(self.expertise):
             errors.append("Expertise must be a number from 0 to 10")
             
-        # Validate additional information
-        if not self._validate_additional_information():
+        # Validate additional information if provided
+        if self.additional_information and not self._validate_additional_information():
             errors.append("Additional information must include: family_size, price_sensitivity, residence, parking_conditions")
             
-        # Validate connection information
-        if not self._validate_connection_information():
+        # Validate connection information if provided
+        if self.connection_information and not self._validate_connection_information():
             errors.append("Connection information must include: connection_phone_number, connection_id_relationship")
             
         return errors

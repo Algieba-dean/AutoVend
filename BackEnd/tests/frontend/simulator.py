@@ -25,6 +25,7 @@ class FrontendSimulator:
         self.client = ApiClient(base_url)
         self.current_profile = None
         self.conversation_log = []
+        self.current_session_id = None
         self.current_session_status = {
             "stage": None,
             "needs": None,
@@ -32,56 +33,73 @@ class FrontendSimulator:
             "reservation_info": None
         }
         
-    def log(self, message, data=None):
-        """Log a message with optional data"""
+    def log(self, message, is_error=False):
+        """Log a message with timestamp"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_entry = {
-            "timestamp": timestamp,
-            "message": message
-        }
+        prefix = "ERROR" if is_error else "INFO"
+        print(f"[{timestamp}] {prefix}: {message}")
         
-        if data:
-            log_entry["data"] = data
-            
-        self.conversation_log.append(log_entry)
-        print(f"[{timestamp}] {message}")
-        
-        # Update session status if data contains relevant information
-        if data and isinstance(data, dict):
-            if "stage" in data:
-                self.current_session_status["stage"] = data["stage"]
-            if "needs" in data:
-                self.current_session_status["needs"] = data["needs"]
-            if "matched_car_models" in data:
-                self.current_session_status["matched_car_models"] = data["matched_car_models"]
-            if "reservation_info" in data:
-                self.current_session_status["reservation_info"] = data["reservation_info"]
-            
-            # Print current session status
+        # Update session status if it's a response
+        if isinstance(message, dict) and 'session_id' in message:
+            self.current_session_id = message['session_id']
+            self.current_session_status = {
+                'status': message.get('status', 'N/A'),
+                'stage': message.get('stage', {}),
+                'needs': message.get('needs', {}),
+                'matched_car_models': message.get('matched_car_models', []),
+                'reservation_info': message.get('reservation_info', {})
+            }
             self.print_session_status()
+            
+        # Print error details if available
+        if isinstance(message, dict) and 'error' in message:
+            error_msg = message['error']
+            if 'details' in message:
+                error_msg += f"\nDetails: {message['details']}"
+            print(f"[{timestamp}] ERROR: {error_msg}")
     
     def print_session_status(self):
-        """Print the current session status"""
+        """Print current session status"""
         print("\n=== Session Status ===")
-        if self.current_session_status["stage"]:
-            print(f"Current Stage: {self.current_session_status['stage'].get('current_stage', 'N/A')}")
-            print(f"Previous Stage: {self.current_session_status['stage'].get('previous_stage', 'N/A')}")
+        print(f"Session ID: {self.current_session_id}")
+        print(f"Status: {self.current_session_status.get('status', 'N/A')}")
+        print(f"Stage: {self.current_session_status.get('stage', {}).get('current_stage', 'N/A')}")
         
-        if self.current_session_status["needs"]:
+        # Print needs information
+        needs = self.current_session_status.get('needs', {})
+        if needs:
             print("\nNeeds:")
-            print(f"Explicit: {json.dumps(self.current_session_status['needs'].get('explicit', {}), indent=2)}")
-            print(f"Implicit: {json.dumps(self.current_session_status['needs'].get('implicit', {}), indent=2)}")
+            if 'explicit' in needs and needs['explicit']:
+                print("Explicit:")
+                for key, value in needs['explicit'].items():
+                    print(f"- {key.replace('_', ' ').title()}: {value}")
+            if 'implicit' in needs and needs['implicit']:
+                print("Implicit:")
+                for key, value in needs['implicit'].items():
+                    print(f"- {key.replace('_', ' ').title()}: {value}")
+        else:
+            print("\nNeeds: None")
         
-        if self.current_session_status["matched_car_models"]:
+        # Print matched car models
+        matched_models = self.current_session_status.get('matched_car_models', [])
+        if matched_models:
             print("\nMatched Car Models:")
-            for car in self.current_session_status["matched_car_models"]:
-                print(f"- {car}")
-        
-        if self.current_session_status["reservation_info"]:
-            print("\nReservation Info:")
-            print(json.dumps(self.current_session_status["reservation_info"], indent=2))
-        
-        print("=====================\n")
+            for model in matched_models:
+                print(f"- {model}")
+        else:
+            print("\nMatched Car Models: None")
+            
+        # Print reservation info
+        reservation_info = self.current_session_status.get('reservation_info', {})
+        if reservation_info:
+            print("\nReservation Information:")
+            for key, value in reservation_info.items():
+                if value:  # Only print non-empty values
+                    print(f"- {key.replace('_', ' ').title()}: {value}")
+        else:
+            print("\nReservation Information: None")
+            
+        print("====================\n")
     
     def save_log(self, filename="conversation_log.json"):
         """Save the conversation log to a file"""

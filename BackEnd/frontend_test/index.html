@@ -485,6 +485,14 @@
                 infoHTML += '</ul>';
             }
             
+            if (data.matched_car_models && data.matched_car_models.length > 0) {
+                infoHTML += '<p><strong>Matched Car Models:</strong></p><ul>';
+                data.matched_car_models.forEach(model => {
+                    infoHTML += `<li>${model}</li>`;
+                });
+                infoHTML += '</ul>';
+            }
+            
             if (data.reservation_info) {
                 const reservationInfo = data.reservation_info;
                 if (reservationInfo.reservation_date || reservationInfo.reservation_time) {
