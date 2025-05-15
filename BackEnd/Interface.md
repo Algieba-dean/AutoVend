@@ -144,6 +144,7 @@ This document defines the API interface between the frontend and backend of Auto
           "connection_id_relationship": ""
         }
       },
+      "matched_car_models": [],
       "stage": {
         "previous_stage": "",
         "current_stage": "welcome"
@@ -211,6 +212,7 @@ This document defines the API interface between the frontend and backend of Auto
           "connection_id_relationship": ""
         }
       },
+      "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
       "needs": {
         "explicit": {
           "powertrain_type": "Battery Electric Vehicle",
@@ -288,6 +290,7 @@ This document defines the API interface between the frontend and backend of Auto
           "connection_id_relationship": ""
         }
       },
+      "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
       "needs": {
         "explicit": {
           "powertrain_type": "Battery Electric Vehicle",
@@ -347,6 +350,7 @@ This document defines the API interface between the frontend and backend of Auto
           "connection_id_relationship": ""
         }
       },
+      "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
       "needs": {
         "explicit": {
           "powertrain_type": "Battery Electric Vehicle",
@@ -577,6 +581,21 @@ sender_id: UUID or identifier string
 content: string
 timestamp: ISO 8601 datetime
 status: enum: "delivered", "read"
+```
+
+### Matched Car Models
+
+The matched_car_models field is a list of strings that represents the car models that match the user's requirements and preferences. This field is included in chat message responses to show which car models are currently being considered or recommended.
+
+```
+matched_car_models: Array of strings
+```
+
+Example:
+```json
+{
+  "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"]
+}
 ```
 
 ## Error Handling
