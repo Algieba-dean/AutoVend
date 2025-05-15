@@ -227,7 +227,7 @@ confort_level_comments = "Exceptionally comfortable with available multi-contour
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "BMW Operating System 7 with 12.3" display, gesture control, and extensive connectivity features."
+smartness_comments = "BMW Operating System 7 with 12.3\" display, gesture control, and extensive connectivity features."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"

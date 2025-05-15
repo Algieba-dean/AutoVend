@@ -227,7 +227,7 @@ confort_level_comments = "Sport seats with lumbar support; optional adaptive dam
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "BMW OS 8 with 12.3" digital cockpit and 14.9" touchscreen."
+smartness_comments = "BMW OS 8 with 12.3\" digital cockpit and 14.9\" touchscreen."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Low"

@@ -231,7 +231,8 @@ smartness_comments = "The BMW-iX is packed with advanced technology including th
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"
-family_friendliness_comments = "With its spacious interior, safety features, and practicality, the
+family_friendliness_comments = "With its spacious interior, safety features, and practicality, the"
+
 [KeyDetails]
 key_details=""
 key_details_comments = "The BMW-iX represents BMW's flagship electric SUV, combining cutting-edge technology with luxury. It features a revolutionary design with a minimalist interior, advanced driver assistance systems, and impressive performance. The vehicle showcases BMW's latest electric vehicle architecture with ultra-fast charging capability (up to 200 kW DC), allowing 10-80% charge in approximately 35 minutes. The iX also introduces BMW's next-generation iDrive 8 infotainment system with curved display and enhanced voice control. With its combination of range, performance, and luxury features, the iX positions itself as a strong competitor in the premium electric SUV segment."

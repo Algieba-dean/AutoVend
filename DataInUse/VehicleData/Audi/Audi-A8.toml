@@ -235,5 +235,5 @@ family_friendliness_comments = "While luxurious, the A8 is more suited for execu
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The Audi-A8 is the flagship luxury sedan of Audi, featuring cutting-edge technology like
+key_details="The Audi-A8 is the flagship luxury sedan of Audi, featuring cutting-edge technology"
 key_details_comments = "The Audi-A8 is Audi's flagship luxury sedan, representing the pinnacle of the brand's technology and craftsmanship. It features: 1) A 48V mild-hybrid system for improved efficiency, 2) Quattro all-wheel drive with sport differential, 3) Adaptive air suspension with predictive active suspension, 4) Audi's Virtual Cockpit digital instrument cluster, 5) MMI Touch Response infotainment with dual touchscreens, 6) Executive rear seating package with massaging seats, 7) Laser headlights (optional), 8) Bang & Olufsen 3D sound system, and 9) Level 3 autonomous driving capability in certain conditions. The A8 combines cutting-edge technology with traditional luxury, competing directly with the Mercedes S-Class and BMW 7 Series."

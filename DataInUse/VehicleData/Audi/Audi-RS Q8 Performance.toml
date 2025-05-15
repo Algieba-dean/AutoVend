@@ -76,7 +76,7 @@ noise_insulation_comments = "Excellent noise insulation with acoustic glass and 
 
 # voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
 voice_interfaction = "Yes"
-voice_interfaction_comments = "MMI touch response system with natural voice control using "Hey Audi" wake word."
+voice_interfaction_comments = "MMI touch response system with natural voice control using \"Hey Audi\" wake word."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"

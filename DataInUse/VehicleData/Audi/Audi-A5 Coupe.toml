@@ -227,7 +227,7 @@ comfort_level_comments = "Premium materials, excellent ergonomics, and available
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced MMI infotainment with 10.1" touchscreen, digital cockpit, and driver assistance tech."
+smartness_comments = "Advanced MMI infotainment with 10.1, touchscreen, digital cockpit, and driver assistance tech."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Low"
@@ -235,5 +235,5 @@ family_friendliness_comments = "2+2 seating and limited rear access make it less
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details = "The Audi A5 Coupe combines elegant design with sporty performance, featuring a 2.0L TFSI engine (261 hp), quattro AWD, and a premium interior with virtual cockpit. Notable options include sport differential, adaptive suspension, and Audi's 12.3" digital instrument cluster. Built on the MLB Evo platform, it offers excellent driving dynamics while maintaining Audi's signature refinement."
+key_details = "The Audi A5 Coupe combines elegant design with sporty performance, featuring a 2.0L TFSI engine (261 hp), quattro AWD, and a premium interior with virtual cockpit. Notable options include sport differential, adaptive suspension, and Audi's 12.3, digital instrument cluster. Built on the MLB Evo platform, it offers excellent driving dynamics while maintaining Audi's signature refinement."
 key_details_comments = "The Audi A5 Coupe represents the perfect blend of performance and luxury, featuring a 2.0L TFSI turbocharged engine delivering 261 hp paired with Audi's legendary quattro all-wheel-drive system. Built on the advanced MLB Evo platform, it offers exceptional driving dynamics with precise steering and balanced weight distribution. The interior showcases Audi's premium craftsmanship with available Valcona leather, aluminum trim, and the innovative 12.3\" Virtual Cockpit digital instrument cluster. Key technologies include the MMI touch response infotainment system with natural voice control, available adaptive damping suspension, and a comprehensive suite of driver assistance systems. The coupe's sleek design achieves a remarkable 0.25 drag coefficient while maintaining the brand's signature Singleframe grille and frameless door aesthetic. Optional sport differential enhances cornering performance, making it equally capable on winding roads and long highway journeys."

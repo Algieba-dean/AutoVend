@@ -230,7 +230,8 @@ smartness_comments = "The Q7 features advanced tech like MMI Touch Response, vir
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"
-family_friendliness_comments = "With
+family_friendliness_comments = "With"
+
 [KeyDetails]
 key_details=""
 key_details_comments = "The Audi Q7 is a flagship luxury SUV offering a blend of performance, technology, and comfort. Key highlights include: 3.0L turbocharged V6 (335hp/500N·m), Quattro AWD, 7-seat capacity, 1,971L max cargo space, adaptive air suspension, MMI infotainment with voice control, and Level 2 autonomous driving features. Its premium positioning competes with BMW X7 and Mercedes-Benz GLS."

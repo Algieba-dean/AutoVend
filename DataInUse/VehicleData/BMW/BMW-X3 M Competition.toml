@@ -207,7 +207,7 @@ heat_resistance_comments = "Robust cooling systems for sustained high-performanc
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
-size_comments = "Mid-size SUV dimensions: 4,708mm (185.4") long, 1,897mm (74.7") wide."
+size_comments = "Mid-size SUV dimensions: 4,708mm (185.4\") long, 1,897mm (74.7\") wide."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
 vehicle_usability = "Medium"
@@ -235,5 +235,5 @@ family_friendliness_comments = "Practical SUV form factor but performance-focuse
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The BMW X3 M Competition combines supercar-level performance (503hp S58 engine) with mid-size SUV practicality. Key features include: M xDrive AWD with rear bias, adaptive M suspension, M Sport differential, 20" wheels, quad exhaust, and comprehensive driver assistance systems. The interior features Vernasca leather, M Sport seats, and a 12.3" digital instrument cluster. Performance highlights include 0-100 km/h in 3.8s and a top speed of 285 km/h (with optional package)."
+key_details="The BMW X3 M Competition combines supercar-level performance (503hp S58 engine) with mid-size SUV practicality. Key features include: M xDrive AWD with rear bias, adaptive M suspension, M Sport differential, 20\" wheels, quad exhaust, and comprehensive driver assistance systems. The interior features Vernasca leather, M Sport seats, and a 12.3\" digital instrument cluster. Performance highlights include 0-100 km/h in 3.8s and a top speed of 285 km/h (with optional package)."
 key_details_comments = "The BMW X3 M Competition represents the pinnacle of performance SUVs, blending racetrack-ready capabilities with everyday usability. At its heart lies the award-winning S58 3.0L twin-turbo inline-6 producing 503hp and 600Nm of torque, paired with an 8-speed M Steptronic transmission. The Competition package adds enhanced cooling, specific tuning, and visual differentiation. The M xDrive all-wheel drive system features rear-wheel bias and an active M Differential for optimal traction. The adaptive M suspension with electronically controlled dampers offers both comfort and track modes. Interior highlights include M-specific instrumentation, carbon fiber trim, and available M Carbon bucket seats. Practical features include 550L cargo capacity, 5-seat configuration, and comprehensive driver assistance systems. Performance metrics include 0-100km/h in 3.8 seconds and an electronically limited top speed of 250km/h (optionally raised to 285km/h with M Driver's Package)."

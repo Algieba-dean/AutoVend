@@ -7,16 +7,11 @@ class CarModelQuery:
     def __init__(self):
         # 加载标签树和查询标签
         self.query_tree_path = './ModelQuery/LabelsTree.json'
-        self.query_labels_path = './ModelQuery/QueryLabels.json'
         self.vehicle_data_path = './DataInUse/VehicleData'
-        self.model_query_path = './ModelQuery/VehicelData'
         
         # 加载查询树和查询标签
         with open(self.query_tree_path, 'r', encoding='utf-8') as file_query_tree:
             self.query_tree = json.load(file_query_tree)
-        
-        with open(self.query_labels_path, 'r', encoding='utf-8') as file_query_labels:
-            self.query_labels = json.load(file_query_labels)
     
     def query_car_model(self, dict_query: dict) -> list:
         """
@@ -61,13 +56,6 @@ class CarModelQuery:
             for root, dirs, files in os.walk(self.vehicle_data_path):
                 for file in files:
                     if file.endswith('.toml') and file != 'CarLabels.toml':
-                        car_files.append(os.path.join(root, file))
-        
-        # 然后检查ModelQuery/VehicelData目录
-        if os.path.exists(self.model_query_path):
-            for root, dirs, files in os.walk(self.model_query_path):
-                for file in files:
-                    if file.endswith('.toml'):
                         car_files.append(os.path.join(root, file))
         
         return car_files

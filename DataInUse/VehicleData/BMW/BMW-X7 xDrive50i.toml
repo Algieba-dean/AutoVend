@@ -227,7 +227,7 @@ confort_level_comments = "Executive Lounge seating, 4-zone climate control, and 
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "iDrive 8 with 14.9" curved display, 5G connectivity, and augmented reality nav."
+smartness_comments = "iDrive 8 with 14.9\" curved display, 5G connectivity, and augmented reality nav."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"

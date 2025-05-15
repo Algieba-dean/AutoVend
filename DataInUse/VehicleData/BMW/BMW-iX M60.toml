@@ -207,7 +207,7 @@ heat_resistance_comments = "Advanced battery cooling system maintains optimal te
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"
-size_comments = "Length: 4,953mm (195"), Width: 1,967mm (77.4"), Height: 1,695mm (66.7")."
+size_comments = "Length: 4,953mm (195\"), Width: 1,967mm (77.4\"), Height: 1,695mm (66.7\")."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
 vehicle_usability = "Large"

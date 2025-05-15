@@ -227,7 +227,7 @@ confort_level_comments = "Multi-contour seats, 4-zone climate control, and air s
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "iDrive 7.0 with 12.3" touchscreen, gesture control, and 5G connectivity."
+smartness_comments = "iDrive 7.0 with 12.3\" touchscreen, gesture control, and 5G connectivity."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
