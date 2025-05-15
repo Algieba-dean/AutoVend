@@ -1,516 +1,111 @@
 {
-    "precise_needs":{
-        "prize":{
-            "below 10,000":"below 10,000",
-            "10,000 ~ 20,000":"10,000 ~ 20,000",
-            "20,000 ~ 30,000":"20,000 ~ 30,000",
-            "30,000 ~ 40,000":"30,000 ~ 40,000",
-            "40,000 ~ 60,000":"40,000 ~ 60,000",
-            "60,000 ~ 100,000":"60,000 ~ 100,000",
-            "above 100,000":"above 100,000"
-        },
-        "prize alias":{
-            "cheap":"below 10,000",
-            "economy":"10,000 ~ 20,000",
-            "mid-range low-end":"20,000 ~ 30,000",
-            "mid-range":"30,000 ~ 40,000",
-            "mid-range high-end":"40,000 ~ 60,000",
-            "high-end":"60,000 ~ 100,000",
-            "luxury":"above 100,000"
-        },
+    "precise needs":{
+        "prize":["below 10,000","10,000 ~ 20,000","20,000 ~ 30,000","30,000 ~ 40,000","40,000 ~ 60,000","60,000 ~ 100,000","above 100,000"],
+        "prize_alias":["cheap","economy","mid-range low-end","mid-range","mid-range high-end","high-end","luxury"],
         "vehicle_category":{
             "sedan":{
-                "small sedan":{
-                    "micro sedan":"micro sedan",
-                    "compact sedan":"compact sedan"
-                },
-                "mid-size sedan":{
-                    "b-segment sedan":"b-segment sedan"
-                },
-                "mid-large sedan":{
-                    "c-segment sedan":"c-segment sedan",
-                    "d-segment sedan":"d-segment sedan"
-                }
+                "small sedan":["micro sedan","compact sedan"],
+                "mid-size sedan":["b-segment sedan"],
+                "mid-large sedan":["c-segment sedan","d-segment sedan"]
             },
             "suv":{
-                "crossover suv":{
-                    "compact suv":"compact suv",
-                    "mid-size suv":"mid-size suv",
-                    "mid-to-large suv":"mid-to-large suv"
-                }
+                "crossover suv":["compact suv","mid-size suv","mid-to-large suv"],
+                "body-on-frame suv":["off-road suv","all-terrain suv"]
             },
             "mpv":{
-                "family mpv":{
-                    "compact mpv":"compact mpv",
-                    "mid-size mpv":"mid-size mpv",
-                    "large mpv":"large mpv"
-                },
-                "business mpv":{
-                    "mid-size business mpv":"mid-size business mpv",
-                    "large-size business mpv":"large-size business mpv"
-                }                    
+                "family mpv":["compact mpv","mid-size mpv","large mpv"],
+                "business mpv":["mid-size business mpv","large-size business mpv"]
             },
             "sports car":{
-                "convertible sports car":{
-                    "two-door convertible sports car":"two-door convertible sports car",
-                    "four-door convertible sports car":"four-door convertible sports car"
-                },
-                "hardtop sports car":{
-                    "two-door hardtop sports car":"two-door hardtop sports car",
-                    "four-door hardtop sports car":"four-door hardtop sports car"
-                }
+                "convertible sports car":["two-door convertible sports car", "four-door convertible sports car"],
+                "hardtop sports car":["two-door hardtop sports car","four-door hardtop sports car"]
             }
         },
         "brand":{
             "european":{
-                "germany":{
-                    "volkswagen":"volkswagen",
-                    "audi":"audi",
-                    "porsche":"porsche",
-                    "bentley":"bentley",
-                    "bugatti":"bugatti",
-                    "lamborghini":"lamborghini",
-                    "bmw":"bmw",
-                    "mercedes-benz":"mercedes-benz"
-                },
-                "france":{
-                    "peugeot":"peugeot",
-                    "renault":"renault"
-                },
-                "united kingdom":{
-                    "jaguar":"jaguar",
-                    "land rover":"land rover",
-                    "rolls-royce":"rolls-royce"
-                },
-                "sweden":{
-                    "volvo":"volvo"
-                }
+                "germany":["volkswagen","audi","porsche","bentley","bugatti","lamborghini","bmw","mercedes-benz"],
+                "france":["peugeot", "renault"],
+                "united kingdom":["jaguar","land rover","rolls-royce"],
+                "sweden":["volvo"]
             },
             "american":{
-                "usa":{
-                    "chevrolet":"chevrolet",
-                    "buick":"buick",
-                    "cadillac":"cadillac",
-                    "ford":"ford",
-                    "tesla":"tesla"
-                }
+                "usa":["chevrolet","buick","cadillac","ford","tesla"]
             },
             "asian":{
-                "japan":{
-                    "toyota":"toyota",
-                    "honda":"honda",
-                    "nissan":"nissan",
-                    "suzuki":"suzuki",
-                    "mazda":"mazda"
-                },
-                "korea":{
-                    "hyundai":"hyundai"
-                },
-                "china":{
-                    "byd":"byd",
-                    "geely":"geely",
-                    "changan":"changan",
-                    "great wall motor":"great wall motor",
-                    "nio":"nio",
-                    "xiaomi":"xiaomi",
-                    "xpeng":"xpeng"
-                }
+                "japan":["toyota","honda","nissan","suzuki","mazda"],
+                "korea":["hyundai"],
+                "china":["byd","geely","changan","great wall motor","nio","xiaomi","xpeng"]
             }
         },
-        "powertrain type":{
-            "fuel":{
-                "gasoline engine":"gasoline engine",
-                "diesel engine":"diesel engine"
-            },
-            "hybrid":{
-                "hybrid electric vehicle":"hybrid electric vehicle",
-                "plug-in hybrid electric vehicle":"plug-in hybrid electric vehicle",
-                "range-extended electric vehicle":"range-extended electric vehicle"
-            },
-            "battery electric":{
-                "battery electric vehicle":"battery electric vehicle"
-            }
-        },
-        "vehicle dimensions":{
-            "passenger space volume":{
-                "2.5-3.5 m³":"2.5-3.5 m³",
-                "3.5-4.5 m³":"3.5-4.5 m³",
-                "4.5-5.5 m³":"4.5-5.5 m³",
-                "above 5.5 m³":"above 5.5 m³"
-            },
-            "passenger space volume alias":{
-                "small":"2.5-3.5 m³",
-                "medium":"3.5-4.5 m³",
-                "large":"4.5-5.5 m³",
-                "luxury":"above 5.5 m³"
-            },
-            "trunk volume":{
-                "200 - 300l":"200 - 300l",
-                "300-400l":"300-400l",
-                "400-500l":"400-500l",
-                "above 500l":"above 500l"
-            },
-            "trunk volume alias":{
-                "small":"200 - 300l",
-                "medium":"300-400l",
-                "large":"400-500l",
-                "luxury":"above 500l"
-            },
-            "wheelbase":{
-                "2300-2650mm":"2300-2650mm",
-                "2650-2800mm":"2650-2800mm",
-                "2800-2950mm":"2800-2950mm",
-                "2950-3100mm":"2950-3100mm",
-                "above 3100mm":"above 3100mm"
-            },
-            "wheelbase alias":{
-                "small":"2300-2650mm",
-                "moderate":"2650-2800mm",
-                "spacious":"2800-2950mm",
-                "very spacious":"2950-3100mm",
-                "luxury spacious":"above 3100mm"
-            },
-            "chassis height":{
-                "100-130mm":"100-130mm",
-                "130-150mm":"130-150mm",
-                "150-200mm":"150-200mm",
-                "above 200mm":"above 200mm"
-            },
-            "chassis height alias":{
-                "low ride height":"100-130mm",
-                "medium ride height":"130-150mm",
-                "high ride height":"150-200mm",
-                "off-road chassis":"above 200mm"
-            }
-        },
-        "design style":{
-            "sporty":"sporty",
-            "business":"business"
-        },
-        "body line smoothness":{
-            "high":"high",
-            "medium":"medium",
-            "low":"low"
-        },
-        "color":{
-            "bright colors":"bright colors",
-            "neutral colors":"neutral colors",
-            "dark colors":"dark colors"
-        },
-        "interior material texture":{
-            "wood trim":"wood trim",
-            "metal trim":"metal trim"
-        },
-        "abs":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "esp":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "airbag count":{
-            "low trim":{
-                "2":"2",
-                "4":"4"
-            },
-            "mid trim":{
-                "6":"6",
-                "8":"8"
-            },
-            "high trim":{
-                "10":"10",
-                "above 10":"above 10"
-            }
-        },
-        "seat material":{
-            "leather":"leather",
-            "fabric":"fabric"
-        },
-        "noise insulation":{
-            "high":"high",
-            "medium":"medium",
-            "low":"low"
-        },
-        "voice interaction":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "ota updates":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "autonomous driving level":{
-            "l2":"l2",
-            "l3":"l3"
-        },
-        "adaptive cruise control":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "traffic jam assist":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "automatic emergency braking":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "lane keep assist":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "remote parking":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "auto parking":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "blind-spot detection":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "fatigue driving detection":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "smartphone integration":{
-            "carplay":"carplay",
-            "andriod auto":"andriod auto"
-        },
-        "engine displacement":{
-            "small":{
-                "below 1.0l":"below 1.0l",
-                "1.0-1.6l":"1.0-1.6l"
-            },
-            "medium":{
-                "1.6-2.0l":"1.6-2.0l",
-                "2.0-2.5l":"2.0-2.5l"
-            },
-            "large":{
-                "2.5-3.5l":"2.5-3.5l",
-                "3.5-6.0l":"3.5-6.0l"
-            },
-            "extra-large":{
-                "above 6.0l":"above 6.0l"
-            },
-            "none":"none"
-        },
-        "motor power":{
-            "below 70kw":"below 70kw",
-            "70-120kw":"70-120kw",
-            "120-180kw":"120-180kw",
-            "180-250kw":"180-250kw",
-            "250-400kw":"250-400kw",
-            "above 400kw":"above 400kw"
-        },
-        "motor power alias":{
-            "low":"below 70kw",
-            "lower-medium":"70-120kw",
-            "medium":"120-180kw",
-            "higher-medium":"180-250kw",
-            "high":"250-400kw",
-            "extra-high":"above 400kw"
-        },
-        "battery capacity":{
-            "30-50kwh":"30-50kwh",
-            "50-80kwh":"50-80kwh",
-            "80-100kwh":"80-100kwh",
-            "above 100kwh":"above 100kwh",
-            "none":"none"
-        },
-        "battery capacity alias":{
-            "small":"30-50kwh",
-            "medium":"50-80kwh",
-            "large":"80-100kwh",
-            "extra-large":"above 100kwh"
-        },
-        "fuel tank capacity":{
-            "30-50l":"30-50l",
-            "50-70l":"50-70l",
-            "above 70l":"above 70l",
-            "none":"none"
-        },
-        "fuel tank capacity alias":{
-            "small":"30-50l",
-            "medium":"50-70l",
-            "large":"above 70l",
-            "none":"none"
-        },
-        "horsepower":{
-            "below 100 hp":"below 100 hp",
-            "100-200 hp":"100-200 hp",
-            "200-300 hp":"200-300 hp",
-            "300-400 hp":"300-400 hp",
-            "above 400 hp":"above 400 hp"
-        },
-        "horsepower alias":{
-            "low":"below 100 hp",
-            "lower-medium":"100-200 hp",
-            "medium":"200-300 hp",
-            "high":"300-400 hp",
-            "extra-high":"above 400 hp"
-        },
-        "torque":{
-            "200n·m":"200n·m",
-            "200-300 n·m":"200-300 n·m",
-            "300-400 n·m":"300-400 n·m",
-            "400-500 n·m":"400-500 n·m",
-            "above 500 n·m":"above 500 n·m"
-        },
-        "torque alias":{
-            "low":"200n·m",
-            "lower-medium":"200-300 n·m",
-            "medium":"300-400 n·m",
-            "high":"400-500 n·m",
-            "extra-high":"above 500 n·m"
-        },
-        "0–100 km/h acceleration time":{
-            "above 10s":"above 10s",
-            "8-10s":"8-10s",
-            "6-8s":"6-8s",
-            "4-6s":"4-6s",
-            "below 4s":"below 4s"
-        },
-        "0–100 km/h acceleration time alias":{
-            "slow":"above 10s",
-            "medium":"8-10s",
-            "fast":"6-8s",
-            "very fast":"4-6s",
-            "extreme":"below 4s"
-        },
-        "top speed":{
-            "below 160km/h":"below 160km/h",
-            "160-200km/h":"160-200km/h",
-            "200-240km/h":"200-240km/h",
-            "240-300km/h":"240-300km/h",
-            "above 300km/h":"above 300km/h"
-        },
-        "top speed alias":{
-            "low":"below 160km/h",
-            "medium":"160-200km/h",
-            "high":"200-240km/h",
-            "very high":"240-300km/h",
-            "extreme":"above 300km/h"
-        },
-        "fuel consumption":{
-            "4-6l/100km":"4-6l/100km",
-            "6-8l/100km":"6-8l/100km",
-            "above 8l/100km":"above 8l/100km",
-            "none":"none"
-        },
-        "fuel consumption alias":{
-            "low":"4-6l/100km",
-            "medium":"6-8l/100km",
-            "high":"above 8l/100km"
-        },
-        "electric consumption":{
-            "10-12kwh/100km":"10-12kwh/100km",
-            "12-14kwh/100km":"12-14kwh/100km",
-            "above 14kwh/100km":"above 14kwh/100km",
-            "none":"none"
-        },
-        "electric consumption alias":{
-            "low":"10-12kwh/100km",
-            "medium":"12-14kwh/100km",
-            "high":"above 14kwh/100km"
-        },
-        "driving range":{
-            "300-400km":"300-400km",
-            "400-800km":"400-800km",
-            "above 800km":"above 800km"
-        },
-        "driving range alias":{
-            "short":"300-400km",
-            "medium":"400-800km",
-            "long":"above 800km"
-        },
-        "drive type":{
-            "front-wheel drive":"front-wheel drive",
-            "rear-wheel drive":"rear-wheel drive",
-            "all-wheel drive":"all-wheel drive"
-        },
-        "suspension":{
-            "suspension":"suspension",
-            "non-independent":"non-independent"
-        },
-        "passability":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "seat layout":{
-            "2-seat":"2-seat",
-            "4-seat":"4-seat",
-            "5-seat":"5-seat",
-            "6-seat":"6-seat",
-            "7-seat":"7-seat"
-        },
-        "city commuting":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "highway long-distance":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "off-road capability":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "cargo capability":{
-            "yes":"yes",
-            "no":"no"
-        },
-        "cold-resistance":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "heat-resistance":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        }
+        "powertrain_type":["gasoline engine","diesel engine","hybrid electric vehicle","plug-in hybrid electric vehicle","range-extended electric vehicle","battery electric vehicle"],
+        "passenger_space_volume":["2.5-3.5 m³","3.5-4.5 m³","4.5-5.5 m³","above 5.5 m³"],
+        "passenger_space_volume_alias":["small","medium","large","luxury"],
+        "trunk_volume":["200 - 300l","300-400l","400-500l","above 500l"],
+        "trunk_volume_alias":["small","medium","large","luxury"],
+        "wheelbase":["2300-2650mm","2650-2800mm","2800-2950mm","2950-3100mm","above 3100mm"],
+        "wheelbase_alias":["small","moderate","spacious","very spacious","luxury spacious"],
+        "chassis_height":["100-130mm","130-150mm","150-200mm","above 200mm"],
+        "chassis_height_alias":["low ride height","medium ride height","high ride height","off-road chassis"],
+        "design_style":["sporty","business"],
+        "body_line_smoothness":["high","medium","low"],
+        "color":["bright colors","neutral colors","dark colors"],
+        "interior_material_texture":["wood trim","metal trim"],
+        "abs":["yes","no"],
+        "esp":["yes","no"],
+        "airbag_count":["2","4","6","8","10","above 10"],
+        "seat_material":["leather","fabric"],
+        "noise_insulation":["high","medium","low"],
+        "voice_interaction":["yes","no"],
+        "ota_updates":["yes","no"],
+        "autonomous_driving_level":["l2","l3"],
+        "adaptive_cruise_control":["yes","no"],
+        "traffic_jam_assist":["yes","no"],
+        "automatic_emergency_braking":["yes","no"],
+        "lane_keep_assist":["yes","no"],
+        "remote_parking":["yes","no"],
+        "auto_parking":["yes","no"],
+        "blind-spot_detection":["yes","no"],
+        "fatigue_driving_detection":["yes","no"],
+        "smartphone_integration":["carplay","andriod auto"],
+        "engine_displacement":["below 1.0l","1.0-1.6l","1.6-2.0l","2.0-2.5l","2.5-3.5l","3.5-6.0l","above 6.0l","none"],
+        "motor_power":["below 70kw","70-120kw","120-180kw","180-250kw","250-400kw","above 400kw"],
+        "motor_power_alias":["low","lower-medium","medium","higher-medium","high","extra-high"],
+        "battery_capacity":["30-50kwh","50-80kwh","80-100kwh","above 100kwh","none"],
+        "battery_capacity_alias":["small","medium","large","extra-large"],
+        "fuel_tank_capacity":["30-50l","50-70l","above 70l","none"],
+        "fuel_tank_capacity_alias":["small","medium","large"],
+        "horsepower":["below 100 hp","100-200 hp","200-300 hp","300-400 hp","above 400 hp"],
+        "horsepower_alias":["low","lower-medium","medium","high","extra-high"],
+        "torque":["200n·m","200-300 n·m","300-400 n·m","400-500 n·m","above 500 n·m"],
+        "torque_alias":["low","lower-medium","medium","high","extra-high"],
+        "zero_to_one_hundred_km_h_acceleration_time":["above 10s","8-10s","6-8s","4-6s","below 4s"],
+        "zero_to_one_hundred_km_h_acceleration_time_alias":["slow","medium","fast","very fast","extreme"],
+        "top_speed":["below 160km/h","160-200km/h","200-240km/h","240-300km/h","above 300km/h"],
+        "top_speed_alias":["low","medium","high","very high","extreme"],
+        "fuel_consumption":["4-6l/100km","6-8l/100km","above 8l/100km","none"],
+        "fuel_consumption_alias":["low","medium","high"],
+        "electric_consumption":["10-12kwh/100km","12-14kwh/100km","above 14kwh/100km","none"],
+        "electric_consumption_alias":["low","medium","high"],
+        "driving_range":["300-400km","400-800km","above 800km"],
+        "driving_range_alias":["short","medium","long"],
+        "drive_type":["front-wheel drive","rear-wheel drive","all-wheel drive"],
+        "suspension":["suspension","non-independent"],
+        "passability":["low","medium","high"],
+        "seat layout":["2-seat","4-seat","5-seat","6-seat","7-seat"],
+        "city commuting":["yes","no"],
+        "highway_long-distance":["yes","no"],
+        "off-road_capability":["low","medium","high"],
+        "cargo_capability":["yes","no"],
+        "cold-resistance":["low","medium","high"],
+        "heat-resistance":["low","medium","high"]
     },
     "ambiguous_needs":{
-        "size":{
-            "small":"small",
-            "medium":"medium",
-            "large":"large"
-        },
-        "vehicle usability":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "aesthetics":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "energy consumption level":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "comfort level":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "smartness":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        },
-        "family-friendliness":{
-            "low":"low",
-            "medium":"medium",
-            "high":"high"
-        }
+        "size":["small","medium","large"],
+        "vehicle usability":["low","medium","high"],
+        "aesthetics":["low","medium","high"],
+        "energy consumption level":["low","medium","high"],
+        "comfort level":["low","medium","high"],
+        "smartness":["low","medium","high"],
+        "family-friendliness":["low","medium","high"]
     }
 }
