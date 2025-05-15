@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi pre sense city with adaptive cruise as
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive cruise control with stop&go function (0-150mph)."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic jam assist maintains lane and distance in stop-and-go traffic up to 40mph."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist maintains lane and distance in stop-and-go traffic up to 40mph."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Premium design with LED Matrix headlights and signature d
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Mild hybrid system improves efficiency but still a premium SUV."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Quiet cabin with available massaging seats and 4-zone climate control."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Quiet cabin with available massaging seats and 4-zone climate control."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

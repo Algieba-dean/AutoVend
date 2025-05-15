@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control, lane-keep
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Standard Audi Adaptive Cruise Assist with stop-and-go functionality."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Can handle stop-and-go traffic up to 60 km/h (37 mph)."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Can handle stop-and-go traffic up to 60 km/h (37 mph)."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Premium design with LED lighting, frameless doors, and sl
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but heavier than smaller EVs (2,490 kg curb weight)."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Air suspension, noise insulation, and massaging seats (optional) deliver luxury comfort."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Air suspension, noise insulation, and massaging seats (optional) deliver luxury comfort."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

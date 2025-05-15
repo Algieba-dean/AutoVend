@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise assist with lane g
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Audi adaptive cruise assist with stop&go function."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Assists with steering, acceleration and braking in slow-moving traffic up to 37 mph."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Assists with steering, acceleration and braking in slow-moving traffic up to 37 mph."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Premium Audi design with distinctive e-tron styling cues 
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class at ~16kWh/100km, though heavier than some competitors."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Premium materials, excellent NVH suppression, and adaptive suspension options."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Premium materials, excellent NVH suppression, and adaptive suspension options."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

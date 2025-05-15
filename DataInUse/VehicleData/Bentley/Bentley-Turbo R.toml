@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "The Turbo R does not feature autonomous dri
 adaptive_cruise_control = "No"
 adaptive_cruise_control_comments = "The Turbo R predates modern adaptive cruise control systems."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "No"
-traffic_jam_assit_comments = "Traffic jam assist is not available on this model."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "Traffic jam assist is not available on this model."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "No"
@@ -221,9 +221,9 @@ aesthetics_comments = "The Turbo R features timeless, elegant styling with excep
 energy_consumption_level = "High"
 energy_consumption_level_comments = "As a large luxury vehicle with a powerful engine, fuel consumption is high."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "The Turbo R offers exceptional comfort with premium materials and excellent ride quality."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "The Turbo R offers exceptional comfort with premium materials and excellent ride quality."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "Medium"

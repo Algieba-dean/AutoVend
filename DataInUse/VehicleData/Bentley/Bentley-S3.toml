@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "The Bentley-S3 features Level 2 autonomous 
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive cruise control maintains a set speed and distance from the vehicle ahead."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic jam assist helps in stop-and-go traffic by controlling acceleration and braking."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist helps in stop-and-go traffic by controlling acceleration and braking."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "The Bentley-S3 is renowned for its elegant and timeless d
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Given its powerful engine, the Bentley-S3 has a high energy consumption level."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "The Bentley-S3 provides an exceptionally comfortable ride with premium materials and advanced suspension."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "The Bentley-S3 provides an exceptionally comfortable ride with premium materials and advanced suspension."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi Pre Sense with adaptive cruise control
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Standard on Prestige trim, optional on others with stop-and-go functionality."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Works with adaptive cruise to handle stop-and-go traffic up to 65 km/h."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Works with adaptive cruise to handle stop-and-go traffic up to 65 km/h."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Clean, timeless Audi design with premium materials and ex
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but not class-leading (9.0 L/100km combined)."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Excellent NVH suppression, supportive seats, and compliant ride quality."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Excellent NVH suppression, supportive seats, and compliant ride quality."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

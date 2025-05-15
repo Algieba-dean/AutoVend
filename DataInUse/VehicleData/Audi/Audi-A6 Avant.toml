@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi AI includes adaptive cruise control, l
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Audi Adaptive Cruise Assist (ACA) with stop-and-go functionality."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Works at speeds up to 60 km/h, steering and braking automatically in congested traffic."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Works at speeds up to 60 km/h, steering and braking automatically in congested traffic."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Sleek LED lighting, premium paint options, and elegant pr
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but not a hybrid/electric leader."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Quiet cabin, adaptive suspension, and ergonomic seats."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Quiet cabin, adaptive suspension, and ergonomic seats."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

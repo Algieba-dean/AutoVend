@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Offers adaptive cruise control with lane ce
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Includes stop-and-go functionality for highway and urban driving."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Can handle stop-and-go traffic with minimal driver input up to 37 mph."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Can handle stop-and-go traffic with minimal driver input up to 37 mph."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Timeless, elegant design with perfect proportions and exq
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Significant fuel consumption expected from a 6.0L W12 engine."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Exceptional ride quality with premium materials throughout."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Exceptional ride quality with premium materials throughout."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

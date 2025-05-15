@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control, lane-keep
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive Cruise Assist with stop-and-go functionality for highway driving."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Assists with steering, acceleration, and braking in congested traffic up to 37 mph (60 km/h)."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Assists with steering, acceleration, and braking in congested traffic up to 37 mph (60 km/h)."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Sleek Sportback design with premium LED lighting and aggr
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but heavier than smaller EVs."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Quiet, smooth ride with premium materials and ergonomic seats."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Quiet, smooth ride with premium materials and ergonomic seats."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

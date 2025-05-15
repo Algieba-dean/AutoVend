@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Traffic Assist with hands-on lane centering
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Active Cruise Control with stop-and-go functionality."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist combines adaptive cruise and lane keeping below 37mph."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist combines adaptive cruise and lane keeping below 37mph."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Handcrafted with perfect panel gaps and mirror-like paint
 energy_consumption_level = "High"
 energy_consumption_level_comments = "W12 engine prioritizes performance over efficiency."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Massaging seats, 20-way adjustability, and near-silent cabin."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Massaging seats, 20-way adjustability, and near-silent cabin."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

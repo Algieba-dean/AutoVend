@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control and lane-k
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive cruise control with stop-and-go functionality is available."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic jam assist helps in low-speed congested traffic."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist helps in low-speed congested traffic."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Sleek, aggressive design with premium finishes."
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Moderate fuel consumption for a high-performance sports car."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "Medium"
-confort_level_comments = "Sport-tuned suspension sacrifices some comfort for handling."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "Sport-tuned suspension sacrifices some comfort for handling."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

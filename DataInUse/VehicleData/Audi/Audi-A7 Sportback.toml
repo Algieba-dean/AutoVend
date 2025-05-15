@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise assist with traffi
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Audi Adaptive Cruise Control (ACC) with stop&go function up to 250 km/h."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist manages acceleration, braking, and steering in congested traffic up to 65 km/h."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist manages acceleration, braking, and steering in congested traffic up to 65 km/h."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Widely praised for its sleek fastback design and premium 
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but less frugal than smaller engines or hybrids."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Quiet cabin, supportive seats, and adaptive suspension options deliver first-class comfort."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Quiet cabin, supportive seats, and adaptive suspension options deliver first-class comfort."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

@@ -64,9 +64,8 @@
         "lane_keep_assist":["yes","no"],
         "remote_parking":["yes","no"],
         "auto_parking":["yes","no"],
-        "blind-spot_detection":["yes","no"],
+        "blind_spot_detection":["yes","no"],
         "fatigue_driving_detection":["yes","no"],
-        "smartphone_integration":["carplay","andriod auto"],
         "engine_displacement":["below 1.0l","1.0-1.6l","1.6-2.0l","2.0-2.5l","2.5-3.5l","3.5-6.0l","above 6.0l","none"],
         "motor_power":["below 70kw","70-120kw","120-180kw","180-250kw","250-400kw","above 400kw"],
         "motor_power_alias":["low","lower-medium","medium","higher-medium","high","extra-high"],
@@ -91,21 +90,21 @@
         "drive_type":["front-wheel drive","rear-wheel drive","all-wheel drive"],
         "suspension":["suspension","non-independent"],
         "passability":["low","medium","high"],
-        "seat layout":["2-seat","4-seat","5-seat","6-seat","7-seat"],
-        "city commuting":["yes","no"],
-        "highway_long-distance":["yes","no"],
-        "off-road_capability":["low","medium","high"],
+        "seat_layout":["2-seat","4-seat","5-seat","6-seat","7-seat"],
+        "city_commuting":["yes","no"],
+        "highway_long_distance":["yes","no"],
+        "off_road_capability":["low","medium","high"],
         "cargo_capability":["yes","no"],
-        "cold-resistance":["low","medium","high"],
-        "heat-resistance":["low","medium","high"]
+        "cold_resistance":["low","medium","high"],
+        "heat_resistance":["low","medium","high"]
     },
     "ambiguous_needs":{
         "size":["small","medium","large"],
-        "vehicle usability":["low","medium","high"],
+        "vehicle_usability":["low","medium","high"],
         "aesthetics":["low","medium","high"],
-        "energy consumption level":["low","medium","high"],
-        "comfort level":["low","medium","high"],
+        "energy_consumption_level":["low","medium","high"],
+        "comfort_level":["low","medium","high"],
         "smartness":["low","medium","high"],
-        "family-friendliness":["low","medium","high"]
+        "family_friendliness":["low","medium","high"]
     }
 }

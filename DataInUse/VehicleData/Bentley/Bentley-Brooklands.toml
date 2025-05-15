@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Limited to basic cruise control and parking
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Available as part of the optional Driver Assistance Package."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "No"
-traffic_jam_assit_comments = "Not available in this model year."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "Not available in this model year."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "No"
@@ -221,9 +221,9 @@ aesthetics_comments = "Timeless Bentley design with handcrafted details and perf
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Significant fuel consumption typical of large-displacement luxury vehicles."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Exceptional comfort with massaging seats, premium materials, and air suspension."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Exceptional comfort with massaging seats, premium materials, and air suspension."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "Medium"

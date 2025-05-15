@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes Level 2 autonomous features like a
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Standard adaptive cruise control for highway driving."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic jam assist is available as part of the driver assistance package."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist is available as part of the driver assistance package."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Striking design with premium finishes and attention to de
 energy_consumption_level = "High"
 energy_consumption_level_comments = "High fuel consumption due to the powerful engine."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Luxurious interior with high-quality materials and advanced comfort features."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Luxurious interior with high-quality materials and advanced comfort features."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

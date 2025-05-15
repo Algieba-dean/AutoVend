@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Limited driver assistance features compared
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Available as an option on later models."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "No"
-traffic_jam_assit_comments = "Not available on this generation of Bentley vehicles."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "Not available on this generation of Bentley vehicles."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "No"
@@ -221,9 +221,9 @@ aesthetics_comments = "Timeless British luxury design with handcrafted details."
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Significant fuel consumption expected from the large displacement engine."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Exceptional ride comfort with premium materials throughout."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Exceptional ride comfort with premium materials throughout."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "Medium"

@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Offers Level 2 autonomy with adaptive cruis
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Includes stop-and-go functionality for traffic situations."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist combines adaptive cruise with steering assistance up to 65 km/h."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist combines adaptive cruise with steering assistance up to 65 km/h."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Premium design language with distinctive Audi styling cue
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but not class-leading."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Premium materials and refined ride quality for the segment."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Premium materials and refined ride quality for the segment."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

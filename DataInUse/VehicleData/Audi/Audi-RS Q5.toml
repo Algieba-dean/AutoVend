@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "The RS Q5 offers Level 2 autonomy with adap
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Includes adaptive cruise control with stop-and-go functionality for highway driving."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist helps with low-speed driving in congested conditions by controlling steering and acceleration."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist helps with low-speed driving in congested conditions by controlling steering and acceleration."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "The RS Q5 has a muscular, aggressive design with premium 
 energy_consumption_level = "High"
 energy_consumption_level_comments = "As a high-performance SUV, fuel consumption is higher than average."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Luxurious interior with premium materials, excellent seats, and a smooth ride in Comfort mode."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Luxurious interior with premium materials, excellent seats, and a smooth ride in Comfort mode."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

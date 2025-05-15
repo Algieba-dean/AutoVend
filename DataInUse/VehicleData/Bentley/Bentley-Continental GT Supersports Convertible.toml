@@ -70,8 +70,8 @@ autonomous_driving_level_comments = "Includes adaptive cruise control and lane-k
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Radar-based system with stop-and-go functionality."
 
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Assists in low-speed traffic conditions."
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Assists in low-speed traffic conditions."
 
 automatic_emergency_braking = "Yes"
 automatic_emergency_braking_comments = "Front collision warning with autonomous braking."
@@ -168,8 +168,8 @@ aesthetics_comments = "Timeless Bentley design with modern athleticism."
 energy_consumption_level = "High"
 energy_consumption_level_comments = "High fuel consumption due to W12 performance."
 
-confort_level = "High"
-confort_level_comments = "Luxury-focused with premium materials and ride quality."
+comfort_level = "High"
+comfort_level_comments = "Luxury-focused with premium materials and ride quality."
 
 smartness = "Medium"
 smartness_comments = "Advanced tech features but not as cutting-edge as EVs."

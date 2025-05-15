@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control with traff
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Audi adaptive cruise assist with stop&go function for highway driving."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic jam assist can handle stop-and-go traffic up to 65 km/h."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist can handle stop-and-go traffic up to 65 km/h."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Sleek four-door coupe styling with aggressive RS design e
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Performance-oriented vehicle with corresponding fuel consumption."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Premium materials and available adaptive suspension provide excellent comfort."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Premium materials and available adaptive suspension provide excellent comfort."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

@@ -70,8 +70,8 @@ autonomous_driving_level = ""
 # adaptive_cruise_control, candidate values: "Yes", "No"
 adaptive_cruise_control = ""
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = ""
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = ""
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = ""
@@ -169,8 +169,8 @@ aesthetics = ""
 # energy_consumption_level: candidate values: "Low", "Medium", "High"
 energy_consumption_level = ""
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = ""
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = ""
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = ""

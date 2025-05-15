@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control and lane-k
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Radar-based adaptive cruise control maintains a set distance from traffic."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist helps in stop-and-go traffic by controlling acceleration and braking."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist helps in stop-and-go traffic by controlling acceleration and braking."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Exquisite design with handcrafted details and timeless el
 energy_consumption_level = "High"
 energy_consumption_level_comments = "High fuel consumption due to the powerful W12 engine."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Unmatched luxury with premium materials and advanced comfort features."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Unmatched luxury with premium materials and advanced comfort features."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Offers adaptive cruise control and lane-kee
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Includes stop-and-go functionality in traffic."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Can autonomously handle stop-and-go traffic situations."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Can autonomously handle stop-and-go traffic situations."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Timeless design with perfect proportions and exquisite de
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Significant fuel consumption expected for this class."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Unmatched ride quality with massaging seats and premium materials."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Unmatched ride quality with massaging seats and premium materials."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "Medium"

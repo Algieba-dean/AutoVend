@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi Pre Sense City and Adaptive Cruise Ass
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive Cruise Control (ACC) with stop&go function up to 155 mph."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist manages acceleration, braking, and steering below 40 mph."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist manages acceleration, braking, and steering below 40 mph."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "S-specific design elements (aluminum mirrors, quad exhaus
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "21/30 mpg EPA rating is typical for performance luxury vehicles."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Standard sport seats with 12-way power adjustment and massage function optional."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Standard sport seats with 12-way power adjustment and massage function optional."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

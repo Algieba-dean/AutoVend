@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Basic driver assistance features like lane-
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Included but minimally used in track-focused driving."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "No"
-traffic_jam_assit_comments = "Not a priority for this performance-oriented vehicle."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "Not a priority for this performance-oriented vehicle."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Striking, aerodynamic design with premium finishes."
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Extremely high fuel consumption due to performance."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "Medium"
-confort_level_comments = "Race-inspired seating and minimal noise insulation."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "Race-inspired seating and minimal noise insulation."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "Medium"

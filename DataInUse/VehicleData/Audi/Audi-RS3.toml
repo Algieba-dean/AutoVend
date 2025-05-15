@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control with lane 
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Available as part of the Driver Assistance Package."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Includes stop-and-go functionality in traffic."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Includes stop-and-go functionality in traffic."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Aggressive, sporty design with premium Audi styling cues.
 energy_consumption_level = "High"
 energy_consumption_level_comments = "High-performance engine results in higher fuel consumption."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "Medium"
-confort_level_comments = "Sport-tuned suspension prioritizes handling over comfort."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "Sport-tuned suspension prioritizes handling over comfort."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

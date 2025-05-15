@@ -74,8 +74,8 @@ autonomous_driving_level_comments = "Audi Pre Sense suite with lane assist and a
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Included in the Driver Assistance Package (0-150 mph range)."
 
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Handles stop-and-go traffic up to 37 mph."
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Handles stop-and-go traffic up to 37 mph."
 
 automatic_emergency_braking = "Yes"
 automatic_emergency_braking_comments = "Front and rear collision avoidance."
@@ -174,8 +174,8 @@ aesthetics_comments = "Widely praised for its avant-garde EV design language."
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for performance class (2.4 mi/kWh)."
 
-confort_level = "High"
-confort_level_comments = "Massage seats, 4-zone climate, and premium NVH control."
+comfort_level = "High"
+comfort_level_comments = "Massage seats, 4-zone climate, and premium NVH control."
 
 smartness = "High"
 smartness_comments = "Virtual Cockpit Plus with dual touchscreens and 5G connectivity."

@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi Pre Sense with adaptive cruise control
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive Cruise Assist with stop-and-go functionality up to 250 km/h."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist manages steering, acceleration, and braking in congested traffic."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist manages steering, acceleration, and braking in congested traffic."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Sleek fastback profile with aggressive S-line styling cue
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Moderate for its performance class (10.2L/100km combined)."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Premium materials, excellent NVH suppression, and optional massaging seats."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Premium materials, excellent NVH suppression, and optional massaging seats."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

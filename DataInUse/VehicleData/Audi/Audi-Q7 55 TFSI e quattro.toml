@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "The Q7 offers Level 2 autonomous driving fe
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "The Q7 includes adaptive cruise control with stop-and-go functionality."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "The Q7 features traffic jam assist for low-speed driving in congested traffic."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "The Q7 features traffic jam assist for low-speed driving in congested traffic."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "The Q7 has a premium and elegant design with high-quality
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "The Q7's hybrid system balances performance and efficiency."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "The Q7 provides a luxurious and comfortable ride with premium features."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "The Q7 provides a luxurious and comfortable ride with premium features."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

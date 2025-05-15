@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi AI includes adaptive cruise assist wit
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Standard Audi adaptive cruise control with stop&go function (0-150 mph range)."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Part of the $2,500 Driver Assistance Package, works under 40 mph for hands-free steering."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Part of the $2,500 Driver Assistance Package, works under 40 mph for hands-free steering."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -224,9 +224,9 @@ aesthetics_comments = "Sleek LED lighting, frameless doors, and optional 22-inch
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Typical for performance-oriented luxury SUV; mild hybrid system improves stop-start efficiency."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Quiet cabin, massaging seats (optional), and quattro A
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Quiet cabin, massaging seats (optional), and quattro A
 [KeyDetails]
 key_details=""
 key_details_comments = "The Audi Q8 combines luxury SUV practicality with coupe styling, featuring a 3.0L TFSI V6 (335hp), quattro AWD, and 21.4 cu ft cargo space. Key highlights include the MMI touch response system, adaptive air suspension option, and available driver assistance packages with Level 2 autonomy."

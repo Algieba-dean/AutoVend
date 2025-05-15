@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi AI traffic jam assist enables hands-fr
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Standard adaptive cruise assist with stop&go functionality."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Included in the $2,000 Driver Assistance Package (steering/lane centering under 40 mph)."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Included in the $2,000 Driver Assistance Package (steering/lane centering under 40 mph)."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Consistently ranks high in design surveys for its balance
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Mild-hybrid helps, but still consumes more than compact hybrids (EPA combined 25 mpg)."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Quiet cabin, excellent seats, and smooth ride quality benchmark the segment."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Quiet cabin, excellent seats, and smooth ride quality benchmark the segment."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

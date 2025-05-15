@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Offers Audi AI traffic jam assist with adap
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Includes adaptive cruise assist with stop&go function up to 155 mph (250 km/h)."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Audi AI traffic jam pilot can handle stop-and-go traffic up to 37 mph (60 km/h)."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Audi AI traffic jam pilot can handle stop-and-go traffic up to 37 mph (60 km/h)."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Considered one of the most attractive luxury SUVs with it
 energy_consumption_level = "High"
 energy_consumption_level_comments = "As a performance-oriented large SUV, fuel consumption is relatively high."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Premium materials, excellent NVH control, and adaptive suspension provide exceptional comfort."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Premium materials, excellent NVH control, and adaptive suspension provide exceptional comfort."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

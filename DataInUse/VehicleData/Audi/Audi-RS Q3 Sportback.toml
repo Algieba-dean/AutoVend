@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control with traff
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Audi Adaptive Cruise Assist with stop&go function for highway and urban driving."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist combines adaptive cruise and lane guidance for low-speed congestion situations."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist combines adaptive cruise and lane guidance for low-speed congestion situations."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Striking RS design elements combined with the sleek Sport
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Performance-oriented powertrain results in higher fuel consumption than mainstream SUVs."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "RS sport seats are supportive yet comfortable, with premium materials throughout the cabin."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "RS sport seats are supportive yet comfortable, with premium materials throughout the cabin."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control with lane 
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive Cruise Assist with stop&go function up to 210 km/h."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Can handle stop-and-go traffic up to 60 km/h without driver input."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Can handle stop-and-go traffic up to 60 km/h without driver input."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Sleek, modern design with premium detailing and lighting 
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but higher than compact EVs due to size and performance."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Premium materials, air suspension, and excellent NVH make for a luxurious experience."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Premium materials, air suspension, and excellent NVH make for a luxurious experience."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Includes adaptive cruise control and lane c
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Radar-based system with stop-and-go functionality."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Semi-autonomous driving in heavy traffic up to 37mph."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Semi-autonomous driving in heavy traffic up to 37mph."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Timeless Bentley design with hand-finished details and pe
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Premium performance comes with significant fuel consumption."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Massage seats, premium materials, and exceptional NVH control."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Massage seats, premium materials, and exceptional NVH control."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "Medium"

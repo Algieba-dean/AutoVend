@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi pre sense city with adaptive cruise as
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive cruise control with stop&go function and traffic jam assist."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic jam assist works at speeds up to 65 km/h for semi-autonomous driving."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist works at speeds up to 65 km/h for semi-autonomous driving."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Premium Audi design language with Matrix LED headlights a
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Efficient for its class but still a large, powerful vehicle."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "Exceptionally comfortable with premium materials, excellent NVH, and air suspension option."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Exceptionally comfortable with premium materials, excellent NVH, and air suspension option."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

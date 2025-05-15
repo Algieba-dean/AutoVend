@@ -139,17 +139,13 @@
         "candidates":["yes","no"],
         "description":"the vehicle support auto parking or not"
     },
-    "blind-spot_detection":{
+    "blind_spot_detection":{
         "candidates":["yes","no"],
         "description":"the vehicle has blind-spot detection or not"
     },
     "fatigue_driving_detection":{
         "candidates":["yes","no"],
         "description":"the vehicle has fatigue driving detection or not"
-    },
-    "smartphone_integration":{
-        "candidates":["carplay","andriod auto"],
-        "description":"the available smart phone function that have been integrated"
     },
     "engine_displacement":{
         "candidates":["below 1.0l","1.0-1.6l","1.6-2.0l","2.0-2.5l","2.5-3.5l","3.5-6.0l","above 6.0l","none"],
@@ -255,11 +251,11 @@
         "candidates":["yes","no"],
         "description":"whether the vehicle is good at city commuting"
     },
-    "highway_long-distance":{
+    "highway_long_distance":{
         "candidates":["yes","no"],
         "description":"whether the vehicle is suitable for highway long-distance travel"
     },
-    "off-road_capability":{
+    "off_road_capability":{
         "candidates":["low","medium","high"],
         "description":"the off-road capability level of the vehicle"
     },

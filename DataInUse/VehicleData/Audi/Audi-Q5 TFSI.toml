@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "Audi Pre Sense City and Adaptive Cruise Ass
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Includes stop-and-go functionality for traffic jams."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Part of the Audi Driver Assistance Package (steers, accelerates, and brakes under 37 mph)."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Part of the Audi Driver Assistance Package (steers, accelerates, and brakes under 37 mph)."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "Sleek LED lighting and precision body gaps reflect Audi's
 energy_consumption_level = "Medium"
 energy_consumption_level_comments = "Typical for a turbocharged mid-size SUV (22-28 mpg)."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "12-way power seats, 3-zone climate control, and acoustic glass."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "12-way power seats, 3-zone climate control, and acoustic glass."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"

@@ -90,9 +90,9 @@ autonomous_driving_level_comments = "The Flying Spur features Level 2 autonomous
 adaptive_cruise_control = "Yes"
 adaptive_cruise_control_comments = "Adaptive cruise control maintains a set speed and distance from the vehicle ahead."
 
-# traffic_jam_assit, candidate values: "Yes", "No"
-traffic_jam_assit = "Yes"
-traffic_jam_assit_comments = "Traffic Jam Assist helps in stop-and-go traffic by controlling acceleration, braking, and steering."
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist helps in stop-and-go traffic by controlling acceleration, braking, and steering."
 
 # automatic_emergency_braking, candidate values: "Yes", "No"
 automatic_emergency_braking = "Yes"
@@ -221,9 +221,9 @@ aesthetics_comments = "The Flying Spur is renowned for its elegant and timeless 
 energy_consumption_level = "High"
 energy_consumption_level_comments = "Given its powerful engines, the car has higher fuel consumption."
 
-# confort_level: candidate values: "Low", "Medium", "High"
-confort_level = "High"
-confort_level_comments = "The Flying Spur provides exceptional comfort with premium materials and advanced suspension."
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "The Flying Spur provides exceptional comfort with premium materials and advanced suspension."
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
