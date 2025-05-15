@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoVend API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .section {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        #chatMessages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .user {
+            background-color: #e1f5fe;
+            text-align: right;
+            margin-left: 20%;
+        }
+        .system {
+            background-color: #f0f0f0;
+            margin-right: 20%;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>AutoVend API Test Interface</h1>
+    
+    <div class="container">
+        <!-- User Profile Section -->
+        <div class="section">
+            <h2>User Profile</h2>
+            <div>
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" placeholder="Example: 123456789">
+            </div>
+            <div>
+                <label for="age">Age Range:</label>
+                <select id="age">
+                    <option value="">Please select</option>
+                    <option value="18-25">18-25</option>
+                    <option value="26-35">26-35</option>
+                    <option value="36-45">36-45</option>
+                    <option value="46-60">46-60</option>
+                    <option value="60+">60+</option>
+                </select>
+            </div>
+            <div>
+                <label for="userTitle">Title:</label>
+                <select id="userTitle">
+                    <option value="">Please select</option>
+                    <option value="Mr.">Mr.</option>
+                    <option value="Mrs.">Mrs.</option>
+                    <option value="Miss.">Miss.</option>
+                    <option value="Ms.">Ms.</option>
+                </select>
+                <input type="text" id="userName" placeholder="Name">
+            </div>
+            <div>
+                <label for="targetDriver">Target Driver:</label>
+                <select id="targetDriver">
+                    <option value="">Please select</option>
+                    <option value="Self">Self</option>
+                    <option value="Family">Family</option>
+                    <option value="Friend">Friend</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="expertise">Expertise Level (0-10):</label>
+                <input type="number" id="expertise" min="0" max="10" value="5">
+            </div>
+            
+            <h3>Additional Information</h3>
+            <div>
+                <label for="familySize">Family Size:</label>
+                <input type="number" id="familySize" min="1" max="10" value="1">
+            </div>
+            <div>
+                <label for="priceSensitivity">Price Sensitivity:</label>
+                <select id="priceSensitivity">
+                    <option value="">Please select</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+            <div>
+                <label for="residence">Residence:</label>
+                <input type="text" id="residence" placeholder="Example: China+Beijing+Haidian">
+            </div>
+            <div>
+                <label for="parkingConditions">Parking Conditions:</label>
+                <select id="parkingConditions">
+                    <option value="">Please select</option>
+                    <option value="Allocated Parking Space">Allocated Parking Space</option>
+                    <option value="Street Parking">Street Parking</option>
+                    <option value="Public Parking Lot">Public Parking Lot</option>
+                    <option value="No Parking Available">No Parking Available</option>
+                </select>
+            </div>
+            
+            <div>
+                <button id="saveProfile">Save Profile</button>
+                <button id="loadProfile">Load Profile</button>
+            </div>
+            <div id="profileStatus"></div>
+        </div>
+        
+        <!-- Chat Section -->
+        <div class="section">
+            <h2>Chat Functionality</h2>
+            <button id="startChat">Start Chat</button>
+            <button id="endChat" disabled>End Chat</button>
+            <div id="chatMessages"></div>
+            <div>
+                <input type="text" id="messageInput" placeholder="Enter message..." disabled>
+                <button id="sendMessage" disabled>Send</button>
+            </div>
+            <div id="chatStatus"></div>
+            <div>
+                <h3>Session Status</h3>
+                <div id="sessionInfo"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API URL
+        const API_URL = 'http://localhost:5000';
+        
+        // Global variables
+        let currentSessionId = null;
+        
+        // DOM elements
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const ageSelect = document.getElementById('age');
+        const userTitleSelect = document.getElementById('userTitle');
+        const userNameInput = document.getElementById('userName');
+        const targetDriverSelect = document.getElementById('targetDriver');
+        const expertiseInput = document.getElementById('expertise');
+        const familySizeInput = document.getElementById('familySize');
+        const priceSensitivitySelect = document.getElementById('priceSensitivity');
+        const residenceInput = document.getElementById('residence');
+        const parkingConditionsSelect = document.getElementById('parkingConditions');
+        
+        const saveProfileButton = document.getElementById('saveProfile');
+        const loadProfileButton = document.getElementById('loadProfile');
+        const profileStatusDiv = document.getElementById('profileStatus');
+        
+        const startChatButton = document.getElementById('startChat');
+        const endChatButton = document.getElementById('endChat');
+        const chatMessagesDiv = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageButton = document.getElementById('sendMessage');
+        const chatStatusDiv = document.getElementById('chatStatus');
+        const sessionInfoDiv = document.getElementById('sessionInfo');
+        
+        // Event listeners
+        saveProfileButton.addEventListener('click', saveProfile);
+        loadProfileButton.addEventListener('click', loadProfile);
+        startChatButton.addEventListener('click', startChat);
+        endChatButton.addEventListener('click', endChat);
+        sendMessageButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Create/update user profile
+        async function saveProfile() {
+            const phoneNumber = phoneNumberInput.value.trim();
+            if (!phoneNumber) {
+                showError(profileStatusDiv, 'Phone number cannot be empty');
+                return;
+            }
+            
+            const userData = {
+                phone_number: phoneNumber,
+                age: ageSelect.value,
+                user_title: userTitleSelect.value + (userNameInput.value ? ' ' + userNameInput.value : ''),
+                name: userNameInput.value,
+                target_driver: targetDriverSelect.value,
+                expertise: expertiseInput.value,
+                additional_information: {
+                    family_size: familySizeInput.value,
+                    price_sensitivity: priceSensitivitySelect.value,
+                    residence: residenceInput.value,
+                    parking_conditions: parkingConditionsSelect.value
+                },
+                connection_information: {
+                    connection_phone_number: "",
+                    connection_id_relationship: ""
+                }
+            };
+            
+            try {
+                // Check if profile exists
+                const checkResponse = await fetch(`${API_URL}/api/profile/${phoneNumber}`);
+                
+                let response;
+                if (checkResponse.ok) {
+                    // Update existing profile
+                    response = await fetch(`${API_URL}/api/profile/${phoneNumber}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+                } else {
+                    // Create new profile
+                    response = await fetch(`${API_URL}/api/profile`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+                }
+                
+                if (response.ok) {
+                    showSuccess(profileStatusDiv, 'Profile saved successfully');
+                } else {
+                    const errorData = await response.json();
+                    showError(profileStatusDiv, `Save failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(profileStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Load user profile
+        async function loadProfile() {
+            const phoneNumber = phoneNumberInput.value.trim();
+            if (!phoneNumber) {
+                showError(profileStatusDiv, 'Please enter a phone number');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/profile/${phoneNumber}`);
+                
+                if (response.ok) {
+                    const profileData = await response.json();
+                    
+                    // Fill form
+                    ageSelect.value = profileData.age || '';
+                    
+                    if (profileData.user_title) {
+                        const titleParts = profileData.user_title.split(' ');
+                        userTitleSelect.value = titleParts[0] || '';
+                        userNameInput.value = titleParts.slice(1).join(' ') || profileData.name || '';
+                    } else {
+                        userTitleSelect.value = '';
+                        userNameInput.value = profileData.name || '';
+                    }
+                    
+                    targetDriverSelect.value = profileData.target_driver || '';
+                    expertiseInput.value = profileData.expertise || '5';
+                    
+                    if (profileData.additional_information) {
+                        familySizeInput.value = profileData.additional_information.family_size || '1';
+                        priceSensitivitySelect.value = profileData.additional_information.price_sensitivity || '';
+                        residenceInput.value = profileData.additional_information.residence || '';
+                        parkingConditionsSelect.value = profileData.additional_information.parking_conditions || '';
+                    }
+                    
+                    showSuccess(profileStatusDiv, 'Profile loaded successfully');
+                } else {
+                    const errorData = await response.json();
+                    showError(profileStatusDiv, `Load failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(profileStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Start chat session
+        async function startChat() {
+            const phoneNumber = phoneNumberInput.value.trim();
+            if (!phoneNumber) {
+                showError(chatStatusDiv, 'Please set a phone number and save user profile first');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/chat/session`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone_number: phoneNumber })
+                });
+                
+                if (response.ok) {
+                    const sessionData = await response.json();
+                    currentSessionId = sessionData.session_id;
+                    
+                    // Clear chat area
+                    chatMessagesDiv.innerHTML = '';
+                    
+                    // Add welcome message
+                    addMessage(sessionData.message.content, 'system');
+                    
+                    // Update session info
+                    updateSessionInfo(sessionData);
+                    
+                    // Enable chat functionality
+                    messageInput.disabled = false;
+                    sendMessageButton.disabled = false;
+                    endChatButton.disabled = false;
+                    startChatButton.disabled = true;
+                    
+                    showSuccess(chatStatusDiv, 'Chat session started');
+                } else {
+                    const errorData = await response.json();
+                    showError(chatStatusDiv, `Failed to start session: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(chatStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Send message
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) {
+                return;
+            }
+            
+            if (!currentSessionId) {
+                showError(chatStatusDiv, 'No active chat session');
+                return;
+            }
+            
+            try {
+                // Add user message to UI
+                addMessage(message, 'user');
+                
+                // Clear input box
+                messageInput.value = '';
+                
+                const response = await fetch(`${API_URL}/api/chat/message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        message: message
+                    })
+                });
+                
+                if (response.ok) {
+                    const messageData = await response.json();
+                    
+                    // Add system response
+                    addMessage(messageData.response.content, 'system');
+                    
+                    // Update session info
+                    updateSessionInfo(messageData);
+                } else {
+                    const errorData = await response.json();
+                    showError(chatStatusDiv, `Failed to send message: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(chatStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // End chat session
+        async function endChat() {
+            if (!currentSessionId) {
+                showError(chatStatusDiv, 'No active chat session');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/chat/session/${currentSessionId}/end`, {
+                    method: 'PUT'
+                });
+                
+                if (response.ok) {
+                    // Disable chat functionality
+                    messageInput.disabled = true;
+                    sendMessageButton.disabled = true;
+                    endChatButton.disabled = true;
+                    startChatButton.disabled = false;
+                    
+                    // Update status
+                    showSuccess(chatStatusDiv, 'Chat session ended');
+                    
+                    // Clear session ID
+                    currentSessionId = null;
+                } else {
+                    const errorData = await response.json();
+                    showError(chatStatusDiv, `Failed to end session: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(chatStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Add message to chat area
+        function addMessage(message, type) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', type);
+            messageElement.textContent = message;
+            chatMessagesDiv.appendChild(messageElement);
+            
+            // Scroll to bottom
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }
+        
+        // Update session info
+        function updateSessionInfo(data) {
+            let infoHTML = '';
+            
+            if (data.stage) {
+                infoHTML += `<p><strong>Current Stage:</strong> ${data.stage.current_stage}</p>`;
+            }
+            
+            if (data.needs) {
+                infoHTML += '<p><strong>Explicit Needs:</strong></p><ul>';
+                
+                const explicitNeeds = data.needs.explicit || {};
+                for (const [key, value] of Object.entries(explicitNeeds)) {
+                    infoHTML += `<li>${key}: ${value}</li>`;
+                }
+                
+                infoHTML += '</ul><p><strong>Implicit Needs:</strong></p><ul>';
+                
+                const implicitNeeds = data.needs.implicit || {};
+                for (const [key, value] of Object.entries(implicitNeeds)) {
+                    infoHTML += `<li>${key}: ${value}</li>`;
+                }
+                
+                infoHTML += '</ul>';
+            }
+            
+            if (data.reservation_info) {
+                const reservationInfo = data.reservation_info;
+                if (reservationInfo.reservation_date || reservationInfo.reservation_time) {
+                    infoHTML += '<p><strong>Reservation Info:</strong></p><ul>';
+                    
+                    for (const [key, value] of Object.entries(reservationInfo)) {
+                        if (value) {
+                            infoHTML += `<li>${key}: ${value}</li>`;
+                        }
+                    }
+                    
+                    infoHTML += '</ul>';
+                }
+            }
+            
+            sessionInfoDiv.innerHTML = infoHTML;
+        }
+        
+        // Show error message
+        function showError(element, message) {
+            element.innerHTML = `<div class="error">${message}</div>`;
+            
+            // Clear after 3 seconds
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 3000);
+        }
+        
+        // Show success message
+        function showSuccess(element, message) {
+            element.innerHTML = `<div class="success">${message}</div>`;
+            
+            // Clear after 3 seconds
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

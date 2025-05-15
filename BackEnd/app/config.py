@@ -1,4 +1,5 @@
 import os
+from app.storage.file_storage import FileStorage
 
 # Try to import dotenv, but don't fail if it's not available
 try:
@@ -14,10 +15,8 @@ class Config:
     DEBUG = False
     TESTING = False
     
-    # In-memory storage (would be replaced with real database in production)
-    USER_PROFILES = {}
-    CHAT_SESSIONS = {}
-    CHAT_MESSAGES = {}
+    # Initialize storage
+    storage = FileStorage(os.getenv('STORAGE_DIR', 'storage'))
 
 
 class DevelopmentConfig(Config):

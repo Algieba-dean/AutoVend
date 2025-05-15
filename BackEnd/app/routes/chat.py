@@ -18,15 +18,15 @@ def start_chat_session():
         return jsonify({"error": "Phone number is required"}), 400
         
     # Check if user profile exists
-    if phone_number not in Config.USER_PROFILES:
+    profile_data = Config.storage.get_profile(phone_number)
+    if not profile_data:
         return jsonify({"error": "Invalid phone_number"}), 400
         
     # Create chat session
-    profile = Config.USER_PROFILES[phone_number].to_dict()
-    session = ChatSession(phone_number, profile)
+    session = ChatSession(phone_number, profile_data)
     
     # Store session
-    Config.CHAT_SESSIONS[session.session_id] = session
+    Config.storage.save_session(session.session_id, session.to_dict())
     
     # Create welcome message
     welcome_message = ChatMessage.create_system_response(
@@ -35,9 +35,7 @@ def start_chat_session():
     )
     
     # Store message
-    if session.session_id not in Config.CHAT_MESSAGES:
-        Config.CHAT_MESSAGES[session.session_id] = []
-    Config.CHAT_MESSAGES[session.session_id].append(welcome_message)
+    Config.storage.save_message(session.session_id, welcome_message.to_dict())
     
     # Prepare response
     response = session.to_dict()
@@ -63,10 +61,11 @@ def send_chat_message():
         return jsonify({"error": "Message cannot be empty"}), 400
         
     # Check if session exists
-    if session_id not in Config.CHAT_SESSIONS:
+    session_data = Config.storage.get_session(session_id)
+    if not session_data:
         return jsonify({"error": "Chat session not found"}), 404
         
-    session = Config.CHAT_SESSIONS[session_id]
+    session = ChatSession.from_dict(session_data)
     
     # Check if session is active
     if session.status != "active":
@@ -80,16 +79,12 @@ def send_chat_message():
     )
     
     # Store user message
-    if session_id not in Config.CHAT_MESSAGES:
-        Config.CHAT_MESSAGES[session_id] = []
-    Config.CHAT_MESSAGES[session_id].append(user_message)
+    Config.storage.save_message(session_id, user_message.to_dict())
     
-    # Generate system response (this would be more complex in a real implementation)
-    # Here we're just simulating a response based on the user's message
+    # Generate system response
     response_content = generate_response(message_content, session)
     
-    # Update session state based on message (simplified)
-    # In a real implementation, this would involve NLP and state tracking
+    # Update session state based on message
     update_session_state(session, message_content)
     
     # Create system response
@@ -99,7 +94,10 @@ def send_chat_message():
     )
     
     # Store system response
-    Config.CHAT_MESSAGES[session_id].append(system_response)
+    Config.storage.save_message(session_id, system_response.to_dict())
+    
+    # Update session
+    Config.storage.save_session(session_id, session.to_dict())
     
     # Prepare response
     response = {
@@ -117,28 +115,26 @@ def send_chat_message():
 def get_chat_messages(session_id):
     """Get messages from a chat session"""
     # Check if session exists
-    if session_id not in Config.CHAT_SESSIONS:
+    session_data = Config.storage.get_session(session_id)
+    if not session_data:
         return jsonify({"error": "Chat session not found"}), 404
         
-    session = Config.CHAT_SESSIONS[session_id]
+    session = ChatSession.from_dict(session_data)
     
     # Get query parameters
     since_timestamp = request.args.get('since_timestamp', None)
     limit = int(request.args.get('limit', 50))
     
     # Get messages
-    messages = Config.CHAT_MESSAGES.get(session_id, [])
+    messages = Config.storage.get_messages(session_id, limit)
     
     # Filter messages by timestamp if provided
     if since_timestamp:
-        messages = [msg for msg in messages if msg.timestamp > since_timestamp]
-    
-    # Limit number of messages
-    messages = messages[-limit:] if limit > 0 else messages
+        messages = [msg for msg in messages if msg['timestamp'] > since_timestamp]
     
     # Prepare response
     response = {
-        "messages": [msg.to_dict() for msg in messages],
+        "messages": messages,
         "has_more": len(messages) >= limit,
         "profile": session.profile,
         "needs": session.needs,
@@ -152,10 +148,11 @@ def get_chat_messages(session_id):
 def end_chat_session(session_id):
     """End a chat session"""
     # Check if session exists
-    if session_id not in Config.CHAT_SESSIONS:
+    session_data = Config.storage.get_session(session_id)
+    if not session_data:
         return jsonify({"error": "Chat session not found"}), 404
         
-    session = Config.CHAT_SESSIONS[session_id]
+    session = ChatSession.from_dict(session_data)
     
     # Check if session is already ended
     if session.status == "closed":
@@ -163,6 +160,9 @@ def end_chat_session(session_id):
         
     # End session
     session.end_session()
+    
+    # Update session
+    Config.storage.save_session(session_id, session.to_dict())
     
     # Prepare response
     response = session.to_dict()
@@ -197,23 +197,8 @@ def generate_response(message, session):
         session.stage["previous_stage"] = session.stage["current_stage"] 
         session.stage["current_stage"] = "reservation4s"
         return "I'd be happy to help you schedule a test drive. Could you tell me which day works best for you?"
-        
-    if "confirm" in message.lower() and session.stage["current_stage"] == "reservation4s":
-        session.stage["previous_stage"] = "reservation4s"
-        session.stage["current_stage"] = "reservation_confirmation"
-        # Set some dummy reservation info
-        session.reservation_info["test_driver"] = session.profile.get("user_title", "")
-        future_date = datetime.now().date() + timedelta(days=3)
-        session.reservation_info["reservation_date"] = future_date.strftime("%Y-%m-%d")
-        session.reservation_info["reservation_time"] = "14:00"
-        session.reservation_info["reservation_location"] = "Tesla Beijing Haidian Store"
-        session.reservation_info["reservation_phone_number"] = session.profile.get("phone_number", "")
-        session.reservation_info["salesman"] = "David Chen"
-        
-        return f"Great! I've confirmed your test drive for {session.reservation_info['reservation_date']} at {session.reservation_info['reservation_time']} at {session.reservation_info['reservation_location']}. Your assigned salesperson will be {session.reservation_info['salesman']}. Is there anything else I can help you with?"
     
-    # Default response if no specific triggers are matched
-    return "Thank you for sharing that information. Could you tell me more about your specific requirements or preferences for your ideal vehicle?"
+    return "I understand you're interested in a car. Could you tell me more about your preferences and requirements?"
 
 def update_session_state(session, message):
     """Update the session state based on the message content"""

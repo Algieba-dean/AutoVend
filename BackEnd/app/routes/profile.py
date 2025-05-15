@@ -1,21 +1,21 @@
 from flask import Blueprint, request, jsonify
-from app.models.profile import UserProfile
-from app.config import Config
+from app.managers.profile_manager import ProfileManager
 
 profile_bp = Blueprint('profile', __name__)
 
 @profile_bp.route('/api/profile/default', methods=['GET'])
 def get_default_profile():
     """Get default user profile configuration"""
-    return jsonify(UserProfile.get_default_profile()), 200
+    profile_data = ProfileManager.get_default_profile()
+    return jsonify(profile_data), 200
 
 @profile_bp.route('/api/profile/<phone_number>', methods=['GET'])
 def get_profile(phone_number):
     """Get user profile by phone number"""
-    if phone_number not in Config.USER_PROFILES:
-        return jsonify({"error": "Profile not found"}), 404
-        
-    return jsonify(Config.USER_PROFILES[phone_number].to_dict()), 200
+    profile_data, error = ProfileManager.get_profile(phone_number)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(profile_data), 200
 
 @profile_bp.route('/api/profile', methods=['POST'])
 def create_profile():
@@ -25,52 +25,46 @@ def create_profile():
     if not data:
         return jsonify({"error": "No data provided"}), 400
         
-    # Check if phone number already exists
-    phone_number = data.get('phone_number', '')
-    if phone_number in Config.USER_PROFILES:
-        return jsonify({"error": "Phone number already exists"}), 409
+    profile_data, error, validation_errors = ProfileManager.create_profile(data)
+    if error:
+        if error == "Phone number already exists":
+            return jsonify({"error": error}), 409
+        if validation_errors:
+            return jsonify({
+                "error": error,
+                "details": validation_errors
+            }), 400
+        return jsonify({"error": error}), 400
         
-    # Create and validate profile
-    profile = UserProfile.from_dict(data)
-    validation_errors = profile.validate()
-    
-    if validation_errors:
-        return jsonify({
-            "error": "Validation error",
-            "details": validation_errors
-        }), 400
-        
-    # Store profile
-    Config.USER_PROFILES[phone_number] = profile
-    
-    return jsonify(profile.to_dict()), 201
+    return jsonify(profile_data), 201
 
 @profile_bp.route('/api/profile/<phone_number>', methods=['PUT'])
 def update_profile(phone_number):
     """Update an existing user profile"""
-    if phone_number not in Config.USER_PROFILES:
-        return jsonify({"error": "Profile not found"}), 404
-        
     data = request.get_json()
     
     if not data:
         return jsonify({"error": "No data provided"}), 400
         
-    # Ensure phone number in URL matches payload
-    if 'phone_number' in data and data['phone_number'] != phone_number:
-        return jsonify({"error": "Phone number in URL must match payload"}), 400
+    profile_data, error, validation_errors = ProfileManager.update_profile(phone_number, data)
+    if error:
+        if error == "Profile not found":
+            return jsonify({"error": error}), 404
+        if validation_errors:
+            return jsonify({
+                "error": error,
+                "details": validation_errors
+            }), 400
+        return jsonify({"error": error}), 400
         
-    # Update and validate profile
-    profile = UserProfile.from_dict(data)
-    validation_errors = profile.validate()
-    
-    if validation_errors:
-        return jsonify({
-            "error": "Validation error",
-            "details": validation_errors
-        }), 400
-        
-    # Update profile
-    Config.USER_PROFILES[phone_number] = profile
-    
-    return jsonify(profile.to_dict()), 200 
+    return jsonify(profile_data), 200
+
+@profile_bp.route('/api/profile/<phone_number>', methods=['DELETE'])
+def delete_profile(phone_number):
+    """Delete a user profile"""
+    success, error = ProfileManager.delete_profile(phone_number)
+    if not success:
+        if error == "Profile not found":
+            return jsonify({"error": error}), 404
+        return jsonify({"error": error}), 400
+    return jsonify({"message": "Profile deleted successfully"}), 200 

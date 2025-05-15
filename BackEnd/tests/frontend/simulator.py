@@ -25,6 +25,12 @@ class FrontendSimulator:
         self.client = ApiClient(base_url)
         self.current_profile = None
         self.conversation_log = []
+        self.current_session_status = {
+            "stage": None,
+            "needs": None,
+            "matched_car_models": None,
+            "reservation_info": None
+        }
         
     def log(self, message, data=None):
         """Log a message with optional data"""
@@ -39,6 +45,43 @@ class FrontendSimulator:
             
         self.conversation_log.append(log_entry)
         print(f"[{timestamp}] {message}")
+        
+        # Update session status if data contains relevant information
+        if data and isinstance(data, dict):
+            if "stage" in data:
+                self.current_session_status["stage"] = data["stage"]
+            if "needs" in data:
+                self.current_session_status["needs"] = data["needs"]
+            if "matched_car_models" in data:
+                self.current_session_status["matched_car_models"] = data["matched_car_models"]
+            if "reservation_info" in data:
+                self.current_session_status["reservation_info"] = data["reservation_info"]
+            
+            # Print current session status
+            self.print_session_status()
+    
+    def print_session_status(self):
+        """Print the current session status"""
+        print("\n=== Session Status ===")
+        if self.current_session_status["stage"]:
+            print(f"Current Stage: {self.current_session_status['stage'].get('current_stage', 'N/A')}")
+            print(f"Previous Stage: {self.current_session_status['stage'].get('previous_stage', 'N/A')}")
+        
+        if self.current_session_status["needs"]:
+            print("\nNeeds:")
+            print(f"Explicit: {json.dumps(self.current_session_status['needs'].get('explicit', {}), indent=2)}")
+            print(f"Implicit: {json.dumps(self.current_session_status['needs'].get('implicit', {}), indent=2)}")
+        
+        if self.current_session_status["matched_car_models"]:
+            print("\nMatched Car Models:")
+            for car in self.current_session_status["matched_car_models"]:
+                print(f"- {car}")
+        
+        if self.current_session_status["reservation_info"]:
+            print("\nReservation Info:")
+            print(json.dumps(self.current_session_status["reservation_info"], indent=2))
+        
+        print("=====================\n")
     
     def save_log(self, filename="conversation_log.json"):
         """Save the conversation log to a file"""
@@ -112,7 +155,11 @@ class FrontendSimulator:
         if session:
             self.log("Chat session started", {
                 "session_id": session.get("session_id"),
-                "welcome_message": session.get("message", {}).get("content", "")
+                "welcome_message": session.get("message", {}).get("content", ""),
+                "stage": session.get("stage"),
+                "needs": session.get("needs"),
+                "matched_car_models": session.get("matched_car_models", []),
+                "reservation_info": session.get("reservation_info", {})
             })
         else:
             self.log("Failed to start chat session")
@@ -130,11 +177,13 @@ class FrontendSimulator:
                 system_reply = response.get("response", {}).get("content", "")
                 self.log(f"Received response: {system_reply}")
                 
-                # Log the current needs and stage
-                needs = response.get("needs", {})
-                stage = response.get("stage", {}).get("current_stage", "")
-                self.log(f"Current stage: {stage}")
-                self.log("Current needs:", needs)
+                # Log the current session status
+                self.log("Session status updated", {
+                    "stage": response.get("stage"),
+                    "needs": response.get("needs"),
+                    "matched_car_models": response.get("matched_car_models", []),
+                    "reservation_info": response.get("reservation_info", {})
+                })
                 
                 last_response = response
             else:
@@ -144,18 +193,20 @@ class FrontendSimulator:
             # Add a delay to simulate real user interaction
             time.sleep(0.5)
         
-        # Verify reservation info if available
-        if last_response and "reservation_info" in last_response:
-            reservation = last_response["reservation_info"]
-            if any(reservation.values()):
-                self.log("Reservation details:", reservation)
-        
         # Get chat messages
         self.log("Retrieving chat messages")
         messages = self.client.get_messages()
         if messages:
             message_count = len(messages.get("messages", []))
             self.log(f"Retrieved {message_count} messages")
+            
+            # Update session status with the latest information
+            self.log("Final session status", {
+                "stage": messages.get("stage"),
+                "needs": messages.get("needs"),
+                "matched_car_models": messages.get("matched_car_models", []),
+                "reservation_info": messages.get("reservation_info", {})
+            })
         else:
             self.log("Failed to retrieve messages")
             return False
@@ -166,7 +217,11 @@ class FrontendSimulator:
         if end_result:
             self.log("Chat session ended", {
                 "status": end_result.get("status"),
-                "ended_at": end_result.get("ended_at")
+                "ended_at": end_result.get("ended_at"),
+                "stage": end_result.get("stage"),
+                "needs": end_result.get("needs"),
+                "matched_car_models": end_result.get("matched_car_models", []),
+                "reservation_info": end_result.get("reservation_info", {})
             })
         else:
             self.log("Failed to end chat session")

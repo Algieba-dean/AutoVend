@@ -9,3 +9,4 @@ DialogFlow/app/data/needs/*.json
 **/*.pywz
 **/*.pyzw
 **/*.env
+**/storage/**

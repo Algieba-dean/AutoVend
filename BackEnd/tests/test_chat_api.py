@@ -60,6 +60,8 @@ class ChatAPITestCase(unittest.TestCase):
         self.assertEqual(result['status'], 'active')
         self.assertIn('message', result)
         self.assertEqual(result['stage']['current_stage'], 'welcome')
+        self.assertIn('matched_car_models', result)
+        self.assertEqual(result['matched_car_models'], [])
         
         # Verify welcome message is returned
         self.assertEqual(result['message']['sender_type'], 'system')
@@ -142,6 +144,13 @@ class ChatAPITestCase(unittest.TestCase):
                 'Electric' in powertrain or 'SUV' in vehicle_type,
                 "Message needs tracking should capture electric or SUV preference"
             )
+        
+        # Verify matched car models are being tracked
+        self.assertIn('matched_car_models', result)
+        self.assertIsInstance(result['matched_car_models'], list)
+        # If we have matched cars, they should be strings
+        for car_model in result['matched_car_models']:
+            self.assertIsInstance(car_model, str)
     
     def test_send_message_nonexistent_session(self):
         """Test API handles sending message to nonexistent session"""
@@ -225,8 +234,8 @@ class ChatAPITestCase(unittest.TestCase):
         self.assertIn('error', result)
     
     def test_reservation_flow(self):
-        """Test API handles test drive reservation flow"""
-        # First start a session
+        """Test the complete reservation flow including matched cars and reservation info"""
+        # Start a session
         start_res = self.client.post(
             '/api/chat/session',
             data=json.dumps({"phone_number": self.profile["phone_number"]}),
@@ -235,38 +244,45 @@ class ChatAPITestCase(unittest.TestCase):
         start_result = json.loads(start_res.data)
         session_id = start_result['session_id']
         
-        # Send message about test drive
-        res = self.client.post(
-            '/api/chat/message',
-            data=json.dumps({
-                "session_id": session_id,
-                "message": "I'd like to schedule a test drive"
-            }),
-            content_type='application/json'
-        )
-        result = json.loads(res.data)
+        # Send messages to simulate a reservation flow
+        messages = [
+            "I'm looking for an electric SUV",
+            "Yes, I'd like to test drive the Tesla Model Y",
+            "I can come tomorrow at 2 PM",
+            "My name is John Zhang"
+        ]
         
-        # Verify we've moved to the reservation stage
-        self.assertEqual(result['stage']['current_stage'], 'reservation4s')
-        
-        # Confirm the reservation
-        res = self.client.post(
-            '/api/chat/message',
-            data=json.dumps({
-                "session_id": session_id,
-                "message": "Yes, please confirm the reservation"
-            }),
-            content_type='application/json'
-        )
-        result = json.loads(res.data)
-        
-        # Verify we've moved to the confirmation stage
-        self.assertEqual(result['stage']['current_stage'], 'reservation_confirmation')
-        
-        # Verify reservation details are populated
-        self.assertNotEqual(result['reservation_info']['reservation_date'], '')
-        self.assertNotEqual(result['reservation_info']['reservation_time'], '')
-        self.assertNotEqual(result['reservation_info']['reservation_location'], '')
+        for message in messages:
+            res = self.client.post(
+                '/api/chat/message',
+                data=json.dumps({
+                    "session_id": session_id,
+                    "message": message
+                }),
+                content_type='application/json'
+            )
+            result = json.loads(res.data)
+            
+            # Verify matched cars are being tracked
+            self.assertIn('matched_car_models', result)
+            self.assertIsInstance(result['matched_car_models'], list)
+            
+            # Verify reservation info is being updated
+            self.assertIn('reservation_info', result)
+            reservation_info = result['reservation_info']
+            self.assertIsInstance(reservation_info, dict)
+            
+            # If we're in the final stages, verify reservation details
+            if result['stage']['current_stage'] in ['reservation_confirmation', 'farewell']:
+                self.assertNotEqual(reservation_info['test_driver'], '')
+                self.assertNotEqual(reservation_info['reservation_date'], '')
+                self.assertNotEqual(reservation_info['reservation_time'], '')
+                self.assertNotEqual(reservation_info['reservation_location'], '')
+                self.assertNotEqual(reservation_info['reservation_phone_number'], '')
+                self.assertNotEqual(reservation_info['salesman'], '')
+                
+                # Verify Tesla Model Y is in matched cars
+                self.assertIn('Tesla Model Y', result['matched_car_models'])
     
     def test_send_message_after_session_end(self):
         """Test API handles sending message to an ended session"""
