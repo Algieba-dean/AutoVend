@@ -21,7 +21,7 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "3.0L turbocharged inline-6 (B58 engine) with 48V mild hybrid system."
 
 passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "Generous 5.8 cubic meters (205 cubic feet) of EPA-measured passenger volume. Long-wheelbase version offers 42.5" rear legroom in Executive Lounge configuration - limousine-class accommodations."
+passenger_sapce_volume_comments = "Generous 5.8 cubic meters (205 cubic feet) of EPA-measured passenger volume. Long-wheelbase version offers 42.5\" rear legroom in Executive Lounge configuration - limousine-class accommodations."
 passenger_sapce_comments = "Spacious cabin with 5.8 cubic meters of passenger volume (EPA measurement)."
 
 trunk_volume = "Above 500L"
@@ -193,12 +193,12 @@ confort_level_comments = "BMW's pinnacle of comfort with multi-contour seats fea
 confort_comments = "BMW's flagship with premium materials and isolation."
 
 smartness = "High"
-smartness_comments = "BMW OS 8 with 14.9" curved display and 5G connectivity."
+smartness_comments = "BMW OS 8 with 14.9\" curved display and 5G connectivity."
 
 family_friendliness = "Medium"
 family_friendliness_comments = "While spacious, the 7 Series prioritizes executive luxury over family utility. Lacks child-friendly features like integrated booster seats, though ISOFIX anchors are present."
 family_comments = "Spacious but luxury-focused rather than family-oriented."
 
 [KeyDetails]
-key_details = "The 2023 BMW 7 Series (G70) represents the seventh generation, featuring radical design changes, an available 31" Theater Screen rear entertainment system, and optional BMW Interaction Bar spanning the dashboard. The platform supports pure electric (i7), plug-in hybrid, and gasoline powertrains. Notable technologies include Automatic Door Opening function, BMW Crystal Headlights with Swarovski elements, and Executive Lounge rear seating with 42.5" legroom."
-key_details_comments = "The G70 generation 7 Series introduces BMW's most advanced luxury technologies, including optional 31.3" 8K Theater Screen, automatic soft-close doors with touchless operation, and crystal ambient lighting elements. Available with three powertrain types (gasoline, PHEV, and full electric i7) on the same CLAR platform."
+key_details = "The 2023 BMW 7 Series (G70) represents the seventh generation, featuring radical design changes, an available 31\" Theater Screen rear entertainment system, and optional BMW Interaction Bar spanning the dashboard. The platform supports pure electric (i7), plug-in hybrid, and gasoline powertrains. Notable technologies include Automatic Door Opening function, BMW Crystal Headlights with Swarovski elements, and Executive Lounge rear seating with 42.5\" legroom."
+key_details_comments = "The G70 generation 7 Series introduces BMW's most advanced luxury technologies, including optional 31.3\" 8K Theater Screen, automatic soft-close doors with touchless operation, and crystal ambient lighting elements. Available with three powertrain types (gasoline, PHEV, and full electric i7) on the same CLAR platform."
