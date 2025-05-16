@@ -227,7 +227,7 @@ confort_level_comments = "Premium interior materials and quiet EV operation prov
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced SYNC 4A system with 15.5" touchscreen and connected services."
+smartness_comments = "Advanced SYNC 4A system with 15.5\" touchscreen and connected services."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
@@ -235,5 +235,5 @@ family_friendliness_comments = "Practical for small families but lacks third-row
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The Mustang Mach-E Select represents Ford's first all-electric SUV, combining Mustang-inspired styling with zero-emissions performance. Key features include available extended range battery (EPA-estimated 483km), Ford Co-Pilot360 2.0 with hands-free highway driving, and a 15.5" portrait touchscreen with SYNC 4A. The Select trim offers RWD or AWD configurations with 266-346hp, balancing performance and value in the electric SUV segment."
+key_details="The Mustang Mach-E Select represents Ford's first all-electric SUV, combining Mustang-inspired styling with zero-emissions performance. Key features include available extended range battery (EPA-estimated 483km), Ford Co-Pilot360 2.0 with hands-free highway driving, and a 15.5\" portrait touchscreen with SYNC 4A. The Select trim offers RWD or AWD configurations with 266-346hp, balancing performance and value in the electric SUV segment."
 key_details_comments = "The Ford Mustang Mach-E Select is Ford's groundbreaking entry into the electric SUV market, blending iconic Mustang styling with zero-emissions technology. As the base trim, it offers an impressive balance of performance and value, featuring: a standard 70kWh battery (402km EPA range) with 91kWh extended range option (483km); Ford's next-gen SYNC 4A infotainment with 15.5\" touchscreen; and available BlueCruise hands-free highway driving. The Select trim delivers 266hp (RWD) or 346hp (AWD) with instant torque, 0-100km/h in 5.2-6.1 seconds, while maintaining practical SUV dimensions with 519L cargo capacity. It represents an accessible gateway to premium EV ownership with Mustang's performance heritage."

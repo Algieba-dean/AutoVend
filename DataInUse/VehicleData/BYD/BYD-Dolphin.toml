@@ -227,7 +227,7 @@ confort_level_comments = "Premium NVH control, ergonomic seats, and dual-zone cl
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "DiPilot L2 ADAS, 12.8" rotating touchscreen, and V2L (vehicle-to-load) capability."
+smartness_comments = "DiPilot L2 ADAS, 12.8\" rotating touchscreen, and V2L (vehicle-to-load) capability."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
@@ -236,4 +236,4 @@ family_friendliness_comments = "Good safety features and space, though lacks thi
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
 key_details="The BYD Dolphin features BYD's proprietary Blade Battery technology offering exceptional thermal stability, with a 60.5 kWh LFP battery providing up to 620 km CLTC range. It supports 80kW DC fast charging (30-80% in 30 mins) and includes vehicle-to-load (V2L) functionality. The e-platform 3.0 architecture enables front trunk storage and optimized weight distribution. Distinctive design elements include ocean-inspired styling cues and customizable ambient lighting."
-key_details_comments = "The BYD Dolphin represents a technological showcase with its e-platform 3.0 architecture, featuring ultra-safe Blade Battery technology that passes nail penetration tests without fire. Its 60.5 kWh LFP battery delivers superior cycle life (3,000+ cycles) while maintaining 80% capacity in extreme cold (-30°C). The platform enables a remarkable 66.3% interior space utilization rate and 50:50 weight distribution. Unique features include 3.3kW V2L capability (powering appliances for 24+ hours), a 12.8" adaptive rotating touchscreen with 5G connectivity, and 360° transparent chassis visualization. The thermal management system uses direct cooling for 20% better temperature control versus conventional designs."
+key_details_comments = "The BYD Dolphin represents a technological showcase with its e-platform 3.0 architecture, featuring ultra-safe Blade Battery technology that passes nail penetration tests without fire. Its 60.5 kWh LFP battery delivers superior cycle life (3,000+ cycles) while maintaining 80% capacity in extreme cold (-30°C). The platform enables a remarkable 66.3% interior space utilization rate and 50:50 weight distribution. Unique features include 3.3kW V2L capability (powering appliances for 24+ hours), a 12.8\" adaptive rotating touchscreen with 5G connectivity, and 360° transparent chassis visualization. The thermal management system uses direct cooling for 20% better temperature control versus conventional designs."

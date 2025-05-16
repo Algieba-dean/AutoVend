@@ -229,7 +229,7 @@ confort_level_comments = "Premium NVH control, ergonomic seats, and air purifica
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced DiPilot 3.0 ADAS and 15.6" rotating touchscreen."
+smartness_comments = "Advanced DiPilot 3.0 ADAS and 15.6\" rotating touchscreen."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"
@@ -237,5 +237,5 @@ family_friendliness_comments = "ISOFIX anchors, rear seat reminders, and child l
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The BYD-Atlantis EV features BYD's proprietary Blade Battery technology offering superior safety with LFP chemistry. It supports 150kW DC fast charging (10-80% in 25 minutes) and vehicle-to-load (V2L) capability. The interior boasts a 15.6" rotating touchscreen with 5G connectivity and NFC key functionality."
+key_details="The BYD-Atlantis EV features BYD's proprietary Blade Battery technology offering superior safety with LFP chemistry. It supports 150kW DC fast charging (10-80% in 25 minutes) and vehicle-to-load (V2L) capability. The interior boasts a 15.6\" rotating touchscreen with 5G connectivity and NFC key functionality."
 key_details_comments = "The BYD-Atlantis EV represents cutting-edge EV technology with its 800V high-voltage platform enabling ultra-fast charging (10-80% in 22 minutes at 150kW stations). It features BYD's revolutionary Cell-to-Body battery integration for enhanced structural rigidity and safety. The vehicle includes a premium Harman Kardon 12-speaker audio system, augmented reality HUD, and 5G-connected infotainment with dual-zone voice recognition. Unique features include vehicle-to-load (V2L) capability with 3.3kW output and a heat pump system for improved winter range efficiency."

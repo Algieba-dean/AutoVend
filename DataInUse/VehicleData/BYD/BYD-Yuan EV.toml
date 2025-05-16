@@ -227,7 +227,7 @@ confort_level_comments = "Premium interior materials, quiet cabin, and supportiv
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced DiLink 4.0 infotainment with 12.8" rotating display and 5G connectivity."
+smartness_comments = "Advanced DiLink 4.0 infotainment with 12.8\" rotating display and 5G connectivity."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"

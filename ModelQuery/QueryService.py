@@ -156,7 +156,8 @@ class CarModelQuery:
             return False
         
         # get vehicle data
-        vehicle_data = car_data['PriciseLabels']|car_data['AmbibuousLabels']
+        pp(car_data["car_model"])
+        vehicle_data = car_data['PriciseLabels']|car_data['AmbiguousLabels']
 
         for query_key,query_value in query.items():
             if query_key.endswith('_alias'):

@@ -227,7 +227,7 @@ confort_level_comments = "Platinum trim offers premium leather, massaging seats,
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced SYNC 4A infotainment with 15.5" touchscreen and OTA updates."
+smartness_comments = "Advanced SYNC 4A infotainment with 15.5\" touchscreen and OTA updates."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"

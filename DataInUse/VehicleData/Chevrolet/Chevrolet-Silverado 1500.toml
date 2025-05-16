@@ -227,7 +227,7 @@ confort_level_comments = "High Country trim rivals luxury SUVs with perforated l
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced tech including 13.4" infotainment, digital rearview mirror, and Super Cruise."
+smartness_comments = "Advanced tech including 13.4\" infotainment, digital rearview mirror, and Super Cruise."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
@@ -235,5 +235,5 @@ family_friendliness_comments = "Crew Cab offers rear seat space but lacks slidin
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The Silverado 1500 is Chevrolet's flagship pickup, offering multiple cab/bed configurations, powertrains (including a fuel-efficient 3.0L turbodiesel), and trim levels from work-focused (WT) to luxury (High Country). Standout features include the Multi-Flex Tailgate, available Super Cruise hands-free driving, and ZR2 off-road variant with front/rear lockers. Towing capacity reaches
+key_details="The Silverado 1500 is Chevrolet's flagship pickup, offering multiple cab/bed configurations, powertrains (including a fuel-efficient 3.0L turbodiesel), and trim levels from work-focused (WT) to luxury (High Country). Standout features include the Multi-Flex Tailgate, available Super Cruise hands-free driving, and ZR2 off-road variant with front/rear lockers. Towing capacity reaches"
 key_details_comments = "The Chevrolet Silverado 1500 is a full-size pickup truck offering exceptional versatility with multiple cab configurations (Regular, Double, Crew), three bed lengths (5'8\", 6'6\", 8'), and diverse powertrains including gasoline V8s and a turbo-diesel option. The lineup spans from work-oriented WT trim to luxurious High Country, featuring advanced technologies like Super Cruise hands-free driving and the Multi-Flex Tailgate with six functions. Off-road capability peaks with the ZR2 model featuring Multimatic DSSV dampers and front/rear locking differentials, while towing capacity reaches 5,443kg when properly equipped. The interior combines truck functionality with premium amenities in higher trims, including a 13.4\" infotainment system with Google built-in and available massaging seats."

@@ -188,7 +188,7 @@ highway_long_distance_comments = "Comfortable for long trips but less efficient 
 
 # off_road_capability, candidate values: "Low", "Medium", "High"
 off_road_capability = "High"
-off_road_capability_comments = "Best-in-class off-road features like G.O.A.T. modes, locking differentials, and 35" tire capability."
+off_road_capability_comments = "Best-in-class off-road features like G.O.A.T. modes, locking differentials, and 35\" tire capability."
 
 # cargo_capability, candidate values: "Yes", "No"
 cargo_capability = "Yes"
@@ -234,7 +234,7 @@ family_friendliness_comments = "Practical for families but lacks minivan/MPV fea
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details = "The Bronco Big Bend balances off-road prowess with daily usability. Key features include: standard 4x4, removable doors/roof, terrain management system (G.O.A.T. modes), and available Sasquatch Package (35" tires, lifted suspension)."
+key_details = "The Bronco Big Bend balances off-road prowess with daily usability. Key features include: standard 4x4, removable doors/roof, terrain management system (G.O.A.T. modes), and available Sasquatch Package (35\" tires, lifted suspension)."
 key_details_comments = "The Ford Bronco Big Bend is a purpose-built off-road SUV that combines rugged capability with modern features. Its body-on-frame construction, available 35-inch tires (Sasquatch Package), and advanced 4x4 systems make it exceptionally capable off-road. The vehicle offers unique features like removable doors and roof panels for open-air driving, along with Ford's G.O.A.T. (Goes Over Any Terrain) drive modes to optimize performance across different surfaces. While designed for adventure, it maintains daily usability with SYNC® 4 infotainment, comfortable seating for five, and modern safety tech like Ford Co-Pilot360™. The Big Bend trim specifically targets off-road enthusiasts who want capable hardware (standard 4x4, high ground clearance) without the premium price of higher trims."
 
 

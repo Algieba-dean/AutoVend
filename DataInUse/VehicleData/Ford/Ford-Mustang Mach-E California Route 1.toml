@@ -227,7 +227,7 @@ confort_level_comments = "Premium interior with available massaging seats and pr
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Advanced SYNC 4A system with 15.5" touchscreen and connected services."
+smartness_comments = "Advanced SYNC 4A system with 15.5\" touchscreen and connected services."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
@@ -235,5 +235,5 @@ family_friendliness_comments = "Good for small families but lacks third-row seat
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The Mustang Mach-E California Route 1 is the long-range variant of Ford's electric SUV, featuring extended battery capacity (91 kWh), eAWD, and unique styling elements. It offers 491 km (305 miles) EPA-estimated range, 480 hp, and 634 Nm torque. Key features include BlueCruise hands-free driving, 15.5" SYNC 4A touchscreen, and Ford Power-Up OTA updates. The California Route 1 edition prioritizes range efficiency with aerodynamic wheels and unique interior trim."
+key_details="The Mustang Mach-E California Route 1 is the long-range variant of Ford's electric SUV, featuring extended battery capacity (91 kWh), eAWD, and unique styling elements. It offers 491 km (305 miles) EPA-estimated range, 480 hp, and 634 Nm torque. Key features include BlueCruise hands-free driving, 15.5\" SYNC 4A touchscreen, and Ford Power-Up OTA updates. The California Route 1 edition prioritizes range efficiency with aerodynamic wheels and unique interior trim."
 key_details_comments = "The Mustang Mach-E California Route 1 represents Ford's commitment to electric performance, combining Mustang's sporty heritage with cutting-edge EV technology. As the long-range variant, it features an extended 91 kWh battery (98 kWh gross) enabling an EPA-estimated 491 km (305 miles) range. The eAWD system delivers 480 hp and 634 Nm of instant torque, achieving 0-100 km/h in 4.8 seconds. Unique to this trim are aerodynamic 18-inch wheels, specialized battery chemistry for efficiency, and California-themed interior accents. The vehicle showcases Ford's latest tech including: a 15.5-inch SYNC 4A touchscreen with natural voice control, BlueCruise hands-free highway driving (via OTA update), and Ford Power-Up software updates that continuously improve vehicle functionality. The California Route 1 prioritizes touring capability with its optimized range, while maintaining the Mach-E's signature fastback SUV proportions and available features like panoramic glass roof and Bang & Olufsen sound system."

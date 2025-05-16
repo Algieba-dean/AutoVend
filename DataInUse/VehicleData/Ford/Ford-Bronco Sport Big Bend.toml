@@ -180,7 +180,7 @@ seat_layout_comments = "Standard 5-passenger configuration with 60/40 split rear
 
 # city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
 city_commuting = "Yes"
-city_commuting_comments = "Compact dimensions (172.7" length) suitable for urban driving."
+city_commuting_comments = "Compact dimensions (172.7\" length) suitable for urban driving."
 
 # highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
 highway_long_distance = "Yes"
@@ -207,7 +207,7 @@ heat_resistance_comments = "Engine cooling system designed for high-temperature 
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
-size_comments = "Compact SUV dimensions (172.7" L x 74.3" W x 70.1" H)."
+size_comments = "Compact SUV dimensions (172.7\" L x 74.3\" W x 70.1\" H)."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
 vehicle_usability = "Medium"
@@ -235,5 +235,5 @@ family_friendliness_comments = "Good safety ratings and practical features for f
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The Bronco Sport Big Bend offers rugged capability in a compact package, featuring standard AWD, 8.8" ground clearance, and available Trail Control (low-speed cruise control for off-roading). It combines Ford's SYNC 3 infotainment with available 360-degree camera system for both urban and outdoor adventures."
+key_details="The Bronco Sport Big Bend offers rugged capability in a compact package, featuring standard AWD, 8.8\" ground clearance, and available Trail Control (low-speed cruise control for off-roading). It combines Ford's SYNC 3 infotainment with available 360-degree camera system for both urban and outdoor adventures."
 key_details_comments = "The Ford Bronco Sport Big Bend combines rugged off-road capability with everyday practicality in a compact SUV package. Key features include standard intelligent all-wheel drive with torque vectoring, 8.8 inches of ground clearance, and available Trail Control (a low-speed cruise control system for off-roading). The vehicle offers Ford's SYNC 3 infotainment system with smartphone integration, available 360-degree camera system, and multiple G.O.A.T. (Goes Over Any Terrain) drive modes. With its Trail Rated certification, the Bronco Sport is designed to handle challenging terrain while maintaining comfortable on-road manners for daily driving. The interior features durable materials, ample cargo space (32.5 cu ft behind rear seats), and available rubberized flooring for outdoor enthusiasts."

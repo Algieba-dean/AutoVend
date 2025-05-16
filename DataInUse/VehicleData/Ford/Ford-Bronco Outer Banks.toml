@@ -172,7 +172,7 @@ suspension_comments = "Front independent suspension with solid rear axle for opt
 
 # passibility, candidate values: "Low", "Medium", "High"
 passibility = "High"
-passibility_comments = "Exceptional off-road capability with up to 33.5" water fording, 29-degree breakover angle."
+passibility_comments = "Exceptional off-road capability with up to 33.5\" water fording, 29-degree breakover angle."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -235,5 +235,5 @@ family_friendliness_comments = "Great for adventurous families but less practica
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details="The Ford Bronco Outer Banks combines premium comfort features with serious off-road capability. It features body-on-frame construction, available 35" tires, and up to 11.6" ground clearance. The model distinguishes itself with marine-grade vinyl seats, signature LED lighting, and exclusive exterior accents. Advanced 4x4 systems include G.O.A.T. Modes (Goes Over Any Terrain) and available front stabilizer bar disconnect for extreme articulation."
+key_details="The Ford Bronco Outer Banks combines premium comfort features with serious off-road capability. It features body-on-frame construction, available 35\" tires, and up to 11.6\" ground clearance. The model distinguishes itself with marine-grade vinyl seats, signature LED lighting, and exclusive exterior accents. Advanced 4x4 systems include G.O.A.T. Modes (Goes Over Any Terrain) and available front stabilizer bar disconnect for extreme articulation."
 key_details_comments = "The Ford Bronco Outer Banks represents the premium off-road trim in the Bronco lineup, blending rugged capability with upscale comfort features. It features body-on-frame construction for maximum durability, with available 35-inch tires and up to 11.6 inches of ground clearance (with Sasquatch Package). Distinctive features include marine-grade vinyl seats that resist water and mildew, signature LED lighting, and exclusive exterior accents like body-color door handles and mirror caps. The advanced 4x4 system includes G.O.A.T. Modes (Goes Over Any Terrain) with seven selectable drive modes, while the available front stabilizer bar disconnect provides extreme wheel articulation for challenging trails. The model also offers unique interior touches like a leather-wrapped steering wheel and upgraded 12-inch SYNC 4 infotainment system, making it equally capable for both serious off-roading and comfortable daily driving."

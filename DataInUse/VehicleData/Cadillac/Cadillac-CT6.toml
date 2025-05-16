@@ -227,7 +227,7 @@ confort_level_comments = "Massaging seats, quad-zone climate control, and near-s
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Super Cruise, 10.2" touchscreen, and 5G connectivity."
+smartness_comments = "Super Cruise, 10.2\" touchscreen, and 5G connectivity."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
