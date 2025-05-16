@@ -1,0 +1,18 @@
+{
+  "phone_number": "1",
+  "age": "60+",
+  "user_title": "Mr. 1241",
+  "name": "1241",
+  "target_driver": "Family",
+  "expertise": "2",
+  "additional_information": {
+    "family_size": "1",
+    "price_sensitivity": "",
+    "residence": "",
+    "parking_conditions": ""
+  },
+  "connection_information": {
+    "connection_phone_number": "",
+    "connection_id_relationship": ""
+  }
+}
