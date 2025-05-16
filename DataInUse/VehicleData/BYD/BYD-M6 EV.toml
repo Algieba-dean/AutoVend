@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "BYD-M6 EV"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The BYD-M6 EV is priced between $45,000 and $55,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Mid-Size MPV"
+vehicle_category_bottom_comments = "The BYD-M6 EV is a mid-size multi-purpose vehicle (MPV) with a focus on family and business use."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BYD"
+brand_comments = "BYD (Build Your Dreams) is a leading Chinese manufacturer of electric vehicles and batteries."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The BYD-M6 EV is a pure electric vehicle with no internal combustion engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 4.8 cubic meters, offering ample room for 7 passengers."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The trunk offers 520L of cargo space, expandable to 1,600L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The wheelbase is 3,000mm, providing a stable and comfortable ride."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "The chassis height is 170mm, balancing comfort and ground clearance."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The design is sleek and professional, suitable for business and family use."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body features smooth, aerodynamic lines for reduced drag and improved efficiency."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available in neutral colors like silver, gray, and white, with optional darker shades."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "The interior features high-quality wood trim for a premium feel."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system for improved safety."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is included for enhanced control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Six airbags are standard, including front, side, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Premium leather seats are standard, with optional ventilated and heated seats."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Excellent noise insulation with acoustic glass and sound-deadening materials."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Supports voice commands for navigation, media, and climate control."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for the infotainment system and vehicle software."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Level 2 autonomous driving with adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes full-speed adaptive cruise control with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic jam assist helps in low-speed, congested driving conditions."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking with pedestrian detection."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist helps maintain the vehicle within the lane markings."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "Yes"
+remote_parking_comments = "Remote parking via smartphone app is available."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Automatic parking system for parallel and perpendicular spaces."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver fatigue detection system alerts when signs of drowsiness are detected."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as the BYD-M6 EV is a pure electric vehicle."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "180~250kW"
+motor_power_comments = "The electric motor delivers 218kW (292hp) of power."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "The battery capacity is 86.4kWh, providing a long driving range."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable as the BYD-M6 EV is a pure electric vehicle."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "The electric motor produces 292hp (218kW)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "Instant torque of 520N·m provides strong acceleration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates from 0-100 km/h in 7.5 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The top speed is electronically limited to 180 km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable as the BYD-M6 EV is a pure electric vehicle."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "Average energy consumption is 13.5kWh/100km under mixed driving conditions."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "The NEDC-rated range is 600km on a full charge."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
+drive_type_comments = "Front-wheel drive configuration for efficiency and space optimization."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson strut and rear multi-link independent suspension for comfort."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Suitable for urban and highway driving, with moderate ground clearance."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "7-seat"
+seat_layout_comments = "2+2+3 seating configuration with captain chairs in the second row."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Ideal for city commuting with good maneuverability and charging infrastructure."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable for long-distance travel with a long driving range."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use; optimized for paved roads."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Versatile cargo space with foldable seats for larger items."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Battery performs well in cold weather with a heat pump system."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Battery cooling system maintains performance in hot climates."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "The BYD-M6 EV is a large MPV with dimensions of 5,150mm (L) x 1,835mm (W) x 1,720mm (H)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Highly versatile for family and business use with spacious interior."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Modern and sleek design with premium finishes."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its size with 13.5kWh/100km consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Premium comfort with leather seats, quiet cabin, and smooth ride."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Advanced tech features including voice control, OTA updates, and L2 autonomy."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "Excellent for families with 7 seats, safety features, and spacious interior."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The BYD-M6 EV is a premium all-electric MPV with a focus on comfort, technology, and efficiency. It features a 86.4kWh LFP battery, 600km NEDC range, and advanced driver assistance systems. Ideal for families and business use."
+key_details_comments = "The BYD-M6 EV is a premium all-electric MPV designed for both family and business use, featuring a spacious 7-seat layout with premium materials. It boasts an 86.4kWh LFP (Lithium Iron Phosphate) battery, providing a NEDC-rated range of 600km on a single charge. The vehicle offers advanced technology including Level 2 autonomous driving, voice interaction, and over-the-air updates. With 292hp (218kW) and 520N·m of torque, it delivers strong performance while maintaining efficiency (13.5kWh/100km). The MPV includes comprehensive safety features like 6 airbags, ABS, ESP, and driver assistance systems. Its dimensions (5,150mm L x 1,835mm W x 1,720mm H) and 3,000mm wheelbase provide exceptional interior space and comfort."

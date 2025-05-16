@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Ford-Puma Titanium"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "30,000~40,000"
+prize_comments = "The Ford-Puma Titanium is priced between $32,000 and $38,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact SUV"
+vehicle_category_bottom_comments = "The Ford-Puma Titanium is classified as a compact SUV with a sporty design and elevated ride height."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Ford"
+brand_comments = "Ford is a well-known American automaker with a strong presence in the global market."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Ford-Puma Titanium is equipped with a turbocharged gasoline engine, with an optional mild-hybrid system available."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, providing ample room for five adults."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "400~500L"
+trunk_volume_comments = "The exact trunk capacity is 456L, expandable to 1,216L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase measures 2,588mm, contributing to stable handling and interior space."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "The ground clearance is 170mm, offering a good balance between stability and off-road capability."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Puma Titanium features a sleek, sporty design with aggressive lines and a coupe-like roofline."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body features smooth, aerodynamic lines that enhance both aesthetics and efficiency."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available colors include Magnetic Grey, Frozen White, and Desert Island Blue."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The Titanium trim features brushed metal accents and soft-touch materials."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system for improved control during hard braking."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard, helping maintain control in slippery conditions."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes front, side, and curtain airbags for comprehensive protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Premium leather upholstery with contrast stitching in the Titanium trim."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Good cabin insulation with some road noise noticeable at highway speeds."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "SYNC 3 infotainment system supports voice commands for navigation and media."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "SYNC 3 does not support over-the-air updates; requires dealer visits for major updates."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Offers adaptive cruise control with lane centering for limited autonomous capability."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes adaptive cruise with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic Jam Assist helps maintain lane position and following distance in slow traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard Pre-Collision Assist with Automatic Emergency Braking."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keeping System provides steering inputs to help maintain lane position."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Does not offer remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Includes Active Park Assist for parallel and perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Information System with cross-traffic alert is standard."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Alert system monitors steering patterns for signs of fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "1.0~1.6L"
+engine_displacement_comments = "1.0L EcoBoost turbocharged 3-cylinder engine (125hp or 155hp options)."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is a conventional gasoline model (mild-hybrid option available)."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable for the gasoline engine variant (mild-hybrid uses small 48V battery)."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "42L fuel tank capacity provides good range between fill-ups."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "100~200hp"
+horsepower_comments = "Available in 125hp or 155hp configurations from the 1.0L EcoBoost engine."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "200~300N·m"
+torque_comments = "Produces 210N·m of torque (155hp version) with strong low-end response."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100km/h in 9.0 seconds for the 155hp version."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 195km/h for the 155hp version."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "4~6L/100km"
+fuel_consumption_comments = "Official combined consumption is 5.3L/100km for the mild-hybrid version."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline engine variant."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650km range on a full tank (42L capacity)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive configuration with torque vectoring for improved handling."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts and rear torsion beam setup."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "170mm ground clearance allows for light off-road use but not serious terrain."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard five-seat configuration with 60:40 split-folding rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions and good visibility make it ideal for city driving."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable cruiser with good high-speed stability and driver assists."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Primarily designed for paved roads despite SUV styling."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Flexible cargo space with underfloor storage compartment (MegaBox)."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Performs well in cold climates but not specifically designed for extreme conditions."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Effective cooling systems maintain performance in hot weather."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "Compact SUV dimensions (4,207mm length) with surprisingly spacious interior."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced size for both city driving and family use."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Distinctive styling with coupe-like proportions and premium details."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Efficient turbocharged engine with mild-hybrid assistance."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Premium interior materials and well-tuned suspension provide excellent comfort."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Good tech features but lacks some cutting-edge connectivity options."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical for small families but limited by compact rear seat space."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Ford Puma Titanium combines sporty SUV styling with premium features, including leather upholstery, advanced driver assists, and Ford's innovative MegaBox underfloor storage. Its efficient 1.0L EcoBoost engine delivers surprising performance while maintaining excellent fuel economy. The Titanium trim adds premium touches like 18-inch alloys, ambient lighting, and full LED headlights."
+key_details_comments = "The Ford Puma Titanium represents Ford's premium compact SUV offering, blending sporty coupe-inspired styling with practical SUV functionality. Its standout features include the segment-exclusive MegaBox underfloor storage (providing 80L of waterproof storage), premium leather-trimmed seats with contrast stitching, and full LED lighting. The Titanium trim adds 18-inch alloy wheels, ambient interior lighting, and Ford's SYNC 3 infotainment with an 8-inch touchscreen. Powered by a surprisingly capable 1.0L EcoBoost turbocharged engine (available in 125hp or 155hp outputs), it delivers spirited performance while maintaining excellent fuel efficiency (5.3L/100km combined for the mild-hybrid version). Advanced safety features like Pre-Collision Assist, Lane Keeping System, and Adaptive Cruise Control make it a well-rounded package for urban and highway driving. The elevated ride height (170mm ground clearance) and torque vectoring technology provide confident handling, while the carefully tuned suspension balances comfort and agility."

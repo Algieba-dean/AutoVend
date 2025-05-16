@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Ford-F-150 Raptor"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Ford-F-150 Raptor is priced between $76,000 and $98,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Off-road SUV"
+vehicle_category_bottom_comments = "The Ford-F-150 Raptor is a high-performance off-road pickup truck designed for rugged terrain."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Ford"
+brand_comments = "Ford is an American automaker known for its trucks and performance vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Ford-F-150 Raptor is powered by a high-output gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "The Ford-F-150 Raptor offers a spacious cabin with approximately 5.8 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The Ford-F-150 Raptor has a bed volume of approximately 1,530L (54.1 cubic feet)."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The Ford-F-150 Raptor has a wheelbase of 3,690mm (145.4 inches)."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "The Ford-F-150 Raptor has a ground clearance of 330mm (13 inches)."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Ford-F-150 Raptor features aggressive styling with flared fenders and a bold grille."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The Ford-F-150 Raptor has a muscular design with angular body lines."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "The Ford-F-150 Raptor is available in colors like Oxford White, Iconic Silver, and Agate Black."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The Ford-F-150 Raptor features aluminum and brushed metal accents."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The Ford-F-150 Raptor comes standard with anti-lock braking system."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "The Ford-F-150 Raptor includes electronic stability control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "The Ford-F-150 Raptor has six airbags: front, side, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The Ford-F-150 Raptor features premium leather-trimmed seats."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "The Ford-F-150 Raptor has active noise cancellation and acoustic glass."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The Ford-F-150 Raptor supports SYNC 4 with voice recognition."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The Ford-F-150 Raptor supports over-the-air updates for its SYNC 4 system."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The Ford-F-150 Raptor offers Level 2 autonomy with features like lane centering and adaptive cruise control."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "The Ford-F-150 Raptor includes adaptive cruise control with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "The Ford-F-150 Raptor features traffic jam assist for low-speed congestion."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "The Ford-F-150 Raptor includes automatic emergency braking with pedestrian detection."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "The Ford-F-150 Raptor has lane-keeping assist to help prevent unintentional lane departures."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "The Ford-F-150 Raptor does not offer remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "The Ford-F-150 Raptor includes active park assist for parallel and perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "The Ford-F-150 Raptor has blind-spot monitoring with trailer coverage."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "The Ford-F-150 Raptor includes a driver alert system to detect signs of fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "The Ford-F-150 Raptor is powered by a 3.5L EcoBoost V6 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "The Ford-F-150 Raptor is not an electric vehicle, so it does not have an electric motor."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "The Ford-F-150 Raptor is not an electric vehicle, so it does not have a battery pack."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "The Ford-F-150 Raptor has a 36-gallon (136L) fuel tank."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The Ford-F-150 Raptor produces 450 horsepower."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "The Ford-F-150 Raptor generates 510 lb-ft (691 N·m) of torque."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The Ford-F-150 Raptor accelerates from 0-100 km/h in approximately 6.5 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The Ford-F-150 Raptor has an electronically limited top speed of 180 km/h (112 mph)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "The Ford-F-150 Raptor has an EPA-estimated fuel economy of 15 mpg city/18 mpg highway (15.7-13.1 L/100km)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "The Ford-F-150 Raptor is not an electric vehicle, so it does not have an electric consumption rating."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "The Ford-F-150 Raptor has a driving range of approximately 640 km (400 miles) on a full tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The Ford-F-150 Raptor features a full-time four-wheel-drive system with selectable drive modes."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The Ford-F-150 Raptor has an independent front suspension and a solid rear axle with long-travel Fox shocks."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "High"
+passibility_comments = "The Ford-F-150 Raptor is designed for high-speed off-road performance with excellent ground clearance and approach/departure angles."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The Ford-F-150 Raptor is available in a SuperCrew configuration with seating for five."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "The Ford-F-150 Raptor can be used for city commuting, though its size may be challenging in tight urban spaces."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The Ford-F-150 Raptor is comfortable for long highway drives with its spacious cabin and advanced driver aids."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "High"
+off_road_capability_comments = "The Ford-F-150 Raptor is purpose-built for off-road performance with specialized suspension and terrain management systems."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The Ford-F-150 Raptor has a durable bed with tie-downs and available cargo management systems."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "The Ford-F-150 Raptor performs well in cold climates with features like heated seats and remote start."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The Ford-F-150 Raptor's cooling systems are designed to handle high temperatures during demanding off-road use."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "The Ford-F-150 Raptor is a full-size pickup truck with substantial dimensions."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "The Ford-F-150 Raptor offers excellent utility for both work and recreation."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The Ford-F-150 Raptor has a bold, aggressive design that stands out."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "The Ford-F-150 Raptor's powerful engine results in higher fuel consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "The Ford-F-150 Raptor offers a comfortable ride with premium materials and advanced suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "The Ford-F-150 Raptor features advanced technology including SYNC 4 and driver assistance systems."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "While spacious, the Ford-F-150 Raptor's performance focus may not be ideal for all family needs."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Ford-F-150 Raptor is a high-performance off-road version of the F-150, featuring a 3.5L EcoBoost V6 engine, specialized off-road suspension, and aggressive styling. It's designed for both high-speed desert running and technical trail capability, while maintaining daily dr
+key_details_comments = "The Ford-F-150 Raptor is Ford's flagship off-road performance truck, featuring a high-output 3.5L EcoBoost V6 producing 450hp and 510 lb-ft of torque. It comes with specialized FOX Live Valve shocks providing 13 inches of front travel, 14 inches in rear, and features like Trail Control (off-road cruise control) and seven selectable drive modes including Baja mode for high-speed desert running. The Raptor maintains Ford's tough truck DNA while adding premium interior features like leather seats, SYNC 4 infotainment, and advanced driver assistance systems, making it both a capable off-roader and comfortable daily driver."

@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Ford-Expedition Max King Ranch"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Ford Expedition Max King Ranch is priced between $78,000 and $92,000 USD depending on options and dealer pricing."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Large MPV"
+vehicle_category_bottom_comments = "The Expedition Max King Ranch is a full-size SUV with extended wheelbase, offering 3 rows of seating and premium features."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Ford"
+brand_comments = "Ford is an American automaker known for trucks and SUVs like the Expedition."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Expedition Max King Ranch is powered by a 3.5L EcoBoost V6 gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "The Expedition Max offers 5.8 cubic meters of passenger space with 3 rows of seating."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 524L behind the 3rd row, expanding to 2,526L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "Above 3100mm"
+wheelbase_comments = "Extended wheelbase of 3,340mm (131.6 inches) for added rear legroom."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "Ground clearance is 209mm (8.2 inches), suitable for light off-roading."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "Premium styling with King Ranch-specific leather and chrome accents."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "Boxy SUV design with some aerodynamic sculpting."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offers colors like Stone Gray, Star White, and Antimatter Blue."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "King Ranch trim includes genuine Santos Mahogany wood accents."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included in Ford’s AdvanceTrac system."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "King Ranch-exclusive Mesa Brown leather seats with contrast stitching."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Active noise cancellation and acoustic glass for quiet cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Ford SYNC 4 supports natural voice commands for navigation/media."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "SYNC 4 supports over-the-air software updates."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Ford Co-Pilot360 offers lane-centering and adaptive cruise control."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes stop-and-go functionality for highway use."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Part of Ford Co-Pilot360 Assist+ package."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Pre-Collision Assist with AEB standard."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Includes lane-centering for highway driving."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Not available on Expedition models."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Active Park Assist 2.0 for parallel/perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "BLIS (Blind Spot Information System) with trailer coverage."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Alert System monitors steering patterns."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "3.5L EcoBoost V6 twin-turbo gasoline engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - gasoline powertrain only."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable - conventional gasoline vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "23.3-gallon (88.2L) fuel tank for extended range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "440 hp @ 5,500 rpm (with premium fuel)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "510 lb-ft (691 N·m) @ 3,000 rpm - massive low-end torque."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-60 mph in 6.4 seconds per independent tests."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 112 mph (180 km/h)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA rated at 17 mpg city/22 highway (13.8-10.7 L/100km)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - gasoline powertrain."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 500 miles (800 km) highway range with 23.3-gallon tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Intelligent 4WD with Terrain Management System."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front independent short/long arm; rear multilink setup."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "9.8-inch ground clearance with selectable off-road modes."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "7-seat"
+seat_layout_comments = "2-2-3 configuration with optional second-row captain’s chairs."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Large size but includes 360-degree cameras for urban maneuverability."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with adaptive cruise and massaging seats."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "4WD with sand/mud/snow modes but not a hardcore off-roader."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Max cargo capacity of 2,526L with seats folded."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Proven performance in -30°C with heated components."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling system tested in 50°C desert conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "Full-size SUV measuring 5,336mm long and 2,029mm wide."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Designed for large families with maximum utility."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Premium King Ranch styling with distinctive Western motifs."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Large V6 turbo engine consumes more fuel than smaller SUVs."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Plush leather seats, quad-zone climate control, and adaptive suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "SYNC 4 with 12-inch touchscreen, Alexa integration, and OTA updates."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "7 seats, rear entertainment options, and top safety ratings."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The Ford Expedition Max King Ranch combines Texas-sized luxury with serious capability. Its 3.5L EcoBoost V6 delivers 440 hp, while the extended wheelbase provides limousine-like rear legroom. The King Ranch package adds exclusive leather, wood trim, and Western-inspired design cues. Advanced tech includes Ford Co-Pilot360 with hands-free highway driving, while the Terrain Management System offers 7 selectable drive modes. With max towing of 9,300 lbs and seating for 7, it's equally suited for family road trips or heavy-duty work."
+key_details_comments = "The Ford Expedition Max King Ranch represents the pinnacle of Ford's full-size SUV lineup, blending Texas ranch-inspired luxury with serious capability. Its 3.5L EcoBoost V6 twin-turbo engine delivers class-leading 440 horsepower and 510 lb-ft of torque, enabling 9,300 lbs of towing capacity. The extended Max version adds 12 inches of wheelbase over standard Expedition, creating limousine-like rear legroom and 2,526L of maximum cargo space. The exclusive King Ranch package features Mesa Brown leather seats with contrast stitching, genuine Santos Mahogany wood trim, and Western-themed design elements. Advanced technologies include Ford's Co-Pilot360 2.0 with hands-free BlueCruise highway driving, 12-inch SYNC 4 touchscreen with Alexa integration, and Pro Trailer Backup Assist. The Terrain Management System offers 7 selectable drive modes (including Sand/Mud/Rock modes) while the independent rear suspension provides car-like ride quality. With available features like 22-inch wheels, panoramic sunroof, rear seat entertainment, and massaging front seats, it competes with luxury SUVs while maintaining Ford's work-ready DNA."

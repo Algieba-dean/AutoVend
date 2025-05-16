@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "BYD-Dolphin"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "30,000~40,000"
+prize_comments = "The BYD-Dolphin is priced between $32,000 and $38,000 USD depending on the trim level and regional market."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The BYD-Dolphin is classified as a compact sedan with a focus on urban mobility and efficiency."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BYD"
+brand_comments = "BYD (Build Your Dreams) is a leading Chinese manufacturer specializing in electric vehicles and batteries."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The BYD-Dolphin is a pure electric vehicle (BEV) with no internal combustion engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering ample room for five adults."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "300~400L"
+trunk_volume_comments = "The trunk capacity is 345L, expandable to 1,310L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,700mm, contributing to stable handling and interior space."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The ground clearance is 140mm, optimized for urban driving."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Dolphin features a sleek, aerodynamic design with youthful styling cues."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body features fluid, wind-tunnel-optimized curves with a 0.29 Cd drag coefficient."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Bright Colors"
+color_comments = "Vibrant color options include Coral Pink, Surf Blue, and Ski White."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The cabin features brushed aluminum accents and soft-touch synthetic materials."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-channel ABS with EBD (Electronic Brakeforce Distribution)."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program with traction control is standard across all trims."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side, and curtain airbags for comprehensive protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Premium vegan leather upholstery with perforated inserts for breathability."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials result in 38 dB at 60 km/h."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BYD's DiLink system supports natural language commands for navigation, media, and climate."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment, battery management, and driver assistance systems."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes adaptive cruise, lane centering, and traffic sign recognition."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Full-speed range ACC (0-150 km/h) with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Automatically maintains speed and distance in congested traffic below 60 km/h."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with pedestrian/cyclist detection up to 85 km/h."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active lane keeping with gentle steering corrections above 60 km/h."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Does not support smartphone-controlled parking maneuvers."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Automated parallel and perpendicular parking via 12 ultrasonic sensors."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Radar-based BSD with lane change assist and rear cross-traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Monitors steering patterns and facial cues via driver-facing camera."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable - this is a pure electric vehicle with no combustion engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "70~120kW"
+motor_power_comments = "Single permanent magnet synchronous motor producing 95 kW (127 hp) in standard trim."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "50~80kWh"
+battery_capacity_comments = "LFP Blade Battery with 60.5 kWh usable capacity (64.8 kWh total)."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable - this is a pure electric vehicle."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "100~200hp"
+horsepower_comments = "127 hp (95 kW) in base configuration; 174 hp (130 kW) in performance trim."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "200~300N·m"
+torque_comments = "Instant torque of 290 N·m available from 0 rpm in all variants."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Base model achieves 0-100 km/h in 9.8 seconds; performance trim does 7.0s."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 160 km/h for efficiency and safety."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable - this is a pure electric vehicle."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "Rated at 12.9 kWh/100km under CLTC testing conditions."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "CLTC-rated range of 490 km (standard battery) to 620 km (extended range)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-mounted motor driving the front wheels for packaging efficiency."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "MacPherson strut front and multi-link rear suspension for comfort and handling."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "140mm ground clearance suits urban roads but not rough terrain."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Conventional 2+3 seating configuration with 60:40 split-folding rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions (4.29m length) and tight 10.2m turning circle ideal for urban use."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "400+ km real-world range and DC fast charging (30-80% in 30 minutes) enable trips."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low clearance and FWD configuration."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "345L trunk plus underfloor storage; max 1,310L with seats folded."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "LFP battery maintains >80% capacity at -20°C with intelligent thermal management."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Battery cooling system maintains optimal temps up to 45°C ambient."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "4,290mm length positions it between compact and mid-size sedans."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced dimensions offer urban maneuverability while accommodating five adults."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Ocean-inspired design language with distinctive lighting signatures and color options."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Among most efficient EVs in class at 12.9 kWh/100km (CLTC)."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Premium NVH control, ergonomic seats, and dual-zone climate control."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "DiPilot L2 ADAS, 12.8" rotating touchscreen, and V2L (vehicle-to-load) capability."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Good safety features and space, though lacks third-row seating of larger SUVs."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The BYD Dolphin features BYD's proprietary Blade Battery technology offering exceptional thermal stability, with a 60.5 kWh LFP battery providing up to 620 km CLTC range. It supports 80kW DC fast charging (30-80% in 30 mins) and includes vehicle-to-load (V2L) functionality. The e-platform 3.0 architecture enables front trunk storage and optimized weight distribution. Distinctive design elements include ocean-inspired styling cues and customizable ambient lighting."
+key_details_comments = "The BYD Dolphin represents a technological showcase with its e-platform 3.0 architecture, featuring ultra-safe Blade Battery technology that passes nail penetration tests without fire. Its 60.5 kWh LFP battery delivers superior cycle life (3,000+ cycles) while maintaining 80% capacity in extreme cold (-30°C). The platform enables a remarkable 66.3% interior space utilization rate and 50:50 weight distribution. Unique features include 3.3kW V2L capability (powering appliances for 24+ hours), a 12.8" adaptive rotating touchscreen with 5G connectivity, and 360° transparent chassis visualization. The thermal management system uses direct cooling for 20% better temperature control versus conventional designs."

@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Geely-Boyue"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "20,000~30,000"
+prize_comments = "The Geely-Boyue is priced between $22,000 and $28,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The Geely-Boyue is classified as a mid-size SUV with a spacious interior and robust design."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Geely"
+brand_comments = "Geely is a leading Chinese automotive manufacturer known for its affordable and feature-rich vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Geely-Boyue is equipped with a turbocharged gasoline engine, offering a balance of power and efficiency."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 4.8 cubic meters, providing ample room for five adults."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The trunk offers 580L of cargo space, expandable to 1,620L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase measures 2,870mm, contributing to a stable and comfortable ride."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "The chassis height is 180mm, providing good ground clearance for urban and light off-road use."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The design is sleek and professional, suitable for both family and business use."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body features fluid, aerodynamic lines for reduced drag and a premium look."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available in neutral tones like silver, white, and gray, appealing to a broad audience."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features brushed metal accents for a modern and upscale feel."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Equipped with Anti-lock Braking System for enhanced safety during hard braking."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard, improving control in slippery conditions."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side, and curtain airbags for comprehensive protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Premium leather upholstery is available in higher trims for added comfort and luxury."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Effective noise damping materials reduce road and wind noise for a quieter cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Supports voice commands for navigation, media, and climate control via the GKUI system."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates keep the infotainment and vehicle systems current."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Offers Level 2 autonomy with adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes radar-based adaptive cruise control for highway driving."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic jam assist helps in stop-and-go traffic by maintaining distance and lane position."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking detects pedestrians and vehicles to prevent collisions."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist gently steers the car back into the lane if drifting is detected."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available on this model."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Semi-autonomous parking assist helps with parallel and perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring alerts the driver to vehicles in adjacent lanes."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Monitors driving patterns and alerts if signs of fatigue are detected."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "The turbocharged 1.8L engine delivers 181 horsepower and 300N·m of torque."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "The fuel tank holds 60 liters, providing a range of approximately 600km."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "100~200hp"
+horsepower_comments = "The 1.8L turbo engine produces 181 horsepower (135 kW)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "300~400N·m"
+torque_comments = "Peak torque of 300N·m is available from 1,750 to 4,000 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates from 0-100 km/h in 9.5 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The electronically limited top speed is 195 km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "Combined fuel economy is rated at 7.5L/100km under NEDC conditions."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "With a full tank, the range is approximately 600km in mixed driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive is standard, with optional all-wheel drive in select markets."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson strut and rear multi-link independent suspension for comfort and handling."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Suitable for urban and light off-road use with 180mm ground clearance."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard configuration includes five seats with ample legroom."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions and good visibility make it ideal for city driving."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride and advanced driver aids suit long-distance travel."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Primarily designed for paved roads, with limited off-road capability."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Spacious trunk and foldable rear seats enhance cargo versatility."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Performs well in cold climates with reliable cold-start performance."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling and climate control systems are effective in hot conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The Geely-Boyue is a mid-size SUV with balanced dimensions for urban and family use."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Offers a good balance of passenger space, cargo capacity, and maneuverability."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Modern design with premium styling cues and attention to detail."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Fuel efficiency is competitive for its class, with moderate consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "High-quality materials, spacious interior, and advanced features ensure comfort."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Equipped with advanced connectivity, voice control, and driver assistance systems."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "Spacious, safe, and practical, making it ideal for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Geely-Boyue is a well-rounded mid-size SUV offering a blend of comfort, technology, and value. Key highlights include its turbocharged 1.8L engine, advanced safety features like adaptive cruise control and lane-keeping assist, and a premium interior with leather seats and metal trim. Its spacious cabin and large trunk make it practical for families, while its modern design and smart features appeal to tech-savvy buyers."
+key_details_comments = "The Geely-Boyue stands out as a compelling mid-size SUV that combines modern Chinese automotive engineering with global standards. Its turbocharged 1.8L gasoline engine delivers 181hp and 300N·m of torque, striking a balance between performance and fuel efficiency (7.5L/100km). The vehicle excels in safety with 6 airbags, ABS, ESP, and advanced driver assistance systems including adaptive cruise control and lane keep assist. The interior boasts premium features like leather seats and metal trim accents, while the 4.8m³ passenger space and 580L trunk (expandable to 1,620L) offer exceptional practicality. With its GKUI infotainment supporting voice control and OTA updates, along with a comfortable 2,870mm wheelbase and independent suspension, the Boyue represents excellent value in the $22,000-$28,000 USD range, particularly for families seeking a feature-rich SUV."

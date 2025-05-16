@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Bugatti-Chiron Sport"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The Bugatti Chiron Sport is priced at approximately $3.26 million USD, making it one of the most expensive production cars in the world."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Chiron Sport is a high-performance, two-door hypercar with a fixed roof, designed for extreme speed and luxury."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Bugatti"
+brand_comments = "Bugatti is a French luxury hypercar manufacturer known for producing some of the fastest and most exclusive cars in the world."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Chiron Sport is powered by a quad-turbocharged W16 gasoline engine, delivering unparalleled performance."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The Chiron Sport offers a compact but luxurious passenger space, optimized for driver-focused performance."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "The trunk capacity is approximately 280L, sufficient for small luggage but prioritized for performance and aerodynamics."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2711mm, providing stability at high speeds while maintaining agility."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "The Chiron Sport has a low-slung chassis with a ground clearance of approximately 120mm, optimized for aerodynamics."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Chiron Sport features an aggressive, aerodynamic design with a focus on high-speed performance and luxury."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body lines are meticulously designed for aerodynamic efficiency, with a drag coefficient of 0.38."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Bright Colors"
+color_comments = "Bugatti offers a wide range of customizable colors, including vibrant options like Bugatti Blue and Racing Red."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features premium materials like aluminum, carbon fiber, and leather, with metal accents for a sporty feel."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The Chiron Sport is equipped with advanced ABS for superior braking performance."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard, ensuring control at high speeds."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "The car includes dual front, side, and curtain airbags for occupant safety."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The seats are upholstered in premium leather with optional custom stitching and embroidery."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "While the cabin is well-insulated, the engine and exhaust notes are intentionally audible for a sporty experience."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The infotainment system supports voice commands for navigation and media control."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "The Chiron Sport does not support over-the-air updates; updates require dealer service."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The car features Level 2 autonomy with adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Adaptive cruise control is included, maintaining speed and distance from vehicles ahead."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic jam assist is available, providing semi-autonomous driving in congested conditions."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "The system can apply brakes automatically to prevent collisions."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane-keeping assist helps maintain the vehicle's position within the lane."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available on the Chiron Sport."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "The car does not feature automated parking assistance."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind-spot monitoring is included for safer lane changes."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "The system monitors driver behavior for signs of fatigue and issues alerts."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "Above 6.0L"
+engine_displacement_comments = "The Chiron Sport is powered by an 8.0L quad-turbocharged W16 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable; the Chiron Sport does not have an electric motor."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable; the Chiron Sport is not a hybrid or electric vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "The fuel tank capacity is 100L, supporting long-range high-speed driving."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The Chiron Sport produces 1,500 hp, making it one of the most powerful production cars."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "The engine delivers 1,600 N·m of torque, enabling explosive acceleration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The Chiron Sport accelerates from 0-100 km/h in just 2.4 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "The electronically limited top speed is 420 km/h (261 mph)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Fuel consumption is approximately 22.5 L/100 km under combined conditions."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable; the Chiron Sport is not an electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "300~400km"
+driving_range_comments = "The driving range is approximately 350 km on a full tank under performance driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The Chiron Sport features an advanced all-wheel-drive system for maximum traction."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The car uses a sophisticated independent suspension system for superior handling."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "The low ground clearance and sporty setup limit off-road capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "The Chiron Sport is a two-seater hypercar, prioritizing driver and passenger comfort."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "No"
+city_commuting_comments = "The Chiron Sport is designed for high-performance driving, not daily city commuting."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The car excels on highways, with exceptional stability and comfort at high speeds."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The Chiron Sport is not designed for off-road use due to its low ground clearance and performance focus."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "No"
+cargo_capability_comments = "The trunk is small, and the car is not suited for cargo transport."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The car performs well in cold conditions but is not optimized for extreme cold."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The cooling systems are highly effective, even under extreme performance conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The Chiron Sport is a mid-sized hypercar, measuring 4,544 mm in length."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Small"
+vehicle_usability_comments = "The car is highly specialized for performance, limiting everyday usability."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The Chiron Sport is renowned for its striking design and attention to detail."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "The W16 engine consumes fuel at a high rate due to its extreme performance."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Despite its performance focus, the Chiron Sport offers a luxurious and comfortable ride."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "The car features advanced tech but prioritizes performance over smart features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "The two-seat layout and performance focus make it unsuitable for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The Bugatti Chiron Sport is a limited-production hypercar featuring an 8.0L quad-turbo W16 engine, producing 1,500 hp and 1,600 N·m of torque. It accelerates from 0-100 km/h in 2.4 seconds and has a top speed of 420 km/h (electronically limited). The car includes advanced aerodynamics, all-wheel drive, and a luxurious interior with premium materials. Only a limited number of units are produced, making it one of the most exclusive cars in the world."
+key_details_comments = "The Bugatti Chiron Sport is an ultra-exclusive hypercar powered by an 8.0L quad-turbocharged W16 engine producing 1,500 horsepower and 1,600 N·m of torque. It features a carbon fiber monocoque chassis, advanced aerodynamics, and all-wheel drive for exceptional performance. The car accelerates from 0-100 km/h in just 2.4 seconds and has an electronically limited top speed of 420 km/h (261 mph). The interior showcases handcrafted luxury with premium leather, aluminum, and carbon fiber trim. Only a limited number are produced annually, with each vehicle requiring months of meticulous craftsmanship at Bugatti's Molsheim factory. The Chiron Sport represents the pinnacle of automotive engineering, combining extreme performance with bespoke luxury."

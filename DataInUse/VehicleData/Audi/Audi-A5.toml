@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Engine cooling and cabin A/C optimized for +50°C climates."
 
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 # size: candidate values: "Small", "Medium", "Large"
 size = "Medium"

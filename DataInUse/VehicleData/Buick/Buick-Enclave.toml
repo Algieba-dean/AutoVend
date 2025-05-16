@@ -1,0 +1,177 @@
+title = "CarLabels"
+
+car_model = "Buick-Enclave"
+
+[PriciseLabels]
+prize = "40,000~60,000"
+prize_comments = "The Buick Enclave is priced between $43,000 and $58,000 USD depending on the trim level (Preferred, Essence, Avenir) and options."
+
+vehicle_category_bottom = "Mid-to-Large SUV"
+vehicle_category_bottom_comments = "The Enclave is a 3-row SUV with premium positioning in Buick's lineup, competing with vehicles like the Honda Pilot and Ford Explorer."
+
+brand = "Buick"
+brand_comments = "Buick is a General Motors brand known for comfortable, premium-oriented vehicles."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Enclave is powered exclusively by a V6 gasoline engine with no hybrid or electric variants currently available."
+
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "Total passenger volume is approximately 5.8 cubic meters (153 cubic feet) with three rows of seating."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 584L (20.6 cu ft) behind the third row, 1,266L (44.5 cu ft) behind the second row, and 2,487L (97.6 cu ft) with both rear rows folded."
+
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The Enclave has a long 3,063mm (120.9-inch) wheelbase for improved ride comfort and interior space."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is approximately 180mm (7.1 inches), typical for a crossover SUV."
+
+design_style = "Business"
+design_style_comments = "The Enclave features Buick's premium design language with elegant proportions and upscale detailing."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Features flowing body lines with aerodynamic sculpting, achieving a 0.33 drag coefficient."
+
+color = "Neutral Colors"
+color_comments = "Available in conservative colors like White Frost Tricoat, Ebony Twilight Metallic, and Dark Moon Blue Metallic."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Higher trims feature genuine wood accents, while lower trims use wood-patterned materials."
+
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Standard electronic stability program with traction control."
+
+airbag_count = "8"
+airbag_count_comments = "Includes dual front, front side-impact, rear side-impact, and side curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Leather-appointed seats standard on all trims, with premium leather in Avenir trim."
+
+noise_insulation = "High"
+noise_insulation_comments = "Features Buick's QuietTuning technology with acoustic glass and extensive sound-deadening materials."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Standard Buick Infotainment System with voice recognition for navigation, media, and climate controls."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for the infotainment system via Buick's connected services."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Offers hands-free driving assist on compatible highways with Super Cruise (available on Avenir trim)."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available with stop-and-go capability as part of the Driver Confidence Package."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Included with Super Cruise system, provides steering assist in heavy traffic."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard forward collision alert with automatic emergency braking."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Standard lane keep assist with lane departure warning."
+
+remote_parking = "No"
+remote_parking_comments = "Does not offer remote parking functionality."
+
+auto_parking = "Yes"
+auto_parking_comments = "Available parallel and perpendicular parking assist on higher trims."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Standard blind zone alert with rear cross-traffic alert."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver attention alert system monitors driving behavior for signs of fatigue."
+
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "3.6L V6 engine (310 hp, 266 lb-ft torque) with direct injection and cylinder deactivation."
+
+motor_power = "None"
+motor_power_comments = "Not applicable as this is not an electric vehicle."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as this is not an electric vehicle."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "19.4-gallon (73.4L) fuel tank capacity."
+
+horsepower = "300~400hp"
+horsepower_comments = "310 horsepower at 6,800 rpm."
+
+torque = "300~400N·m"
+torque_comments = "266 lb-ft (361 N·m) of torque at 2,800 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-60 mph in approximately 6.7 seconds."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h (112 mph)."
+
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA-rated at 11.2L/100km (21 mpg) combined city/highway."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is not an electric vehicle."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650 km (404 miles) on a full tank."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Front-wheel drive standard with available twin-clutch all-wheel drive system."
+
+suspension = "Independent Suspension"
+suspension_comments = "MacPherson strut front and five-link rear suspension with available continuous damping control."
+
+passibility = "Medium"
+passibility_comments = "Capable for light off-road use but primarily designed for paved roads."
+
+seat_layout = "7-seat"
+seat_layout_comments = "Standard 2-2-3 seating configuration with available second-row captain's chairs (6-seat layout)."
+
+city_commuting = "Yes"
+city_commuting_comments = "Comfortable for daily commuting with good visibility and maneuverability despite its size."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with comfortable ride and available driver assistance features."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for serious off-road use, though AWD provides some capability in light conditions."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Excellent cargo capacity with flexible seating configurations."
+
+clod_resistance = "High"
+clod_resistance_comments = "Proven cold-weather performance with available heated seats, steering wheel, and remote start."
+
+heat_resistance = "High"
+heat_resistance_comments = "Effective climate control system with available ventilated seats for hot weather."
+
+[AmbiguousLabels]
+size = "Large"
+size_comments = "One of Buick's largest vehicles at 5,182mm (204 inches) long."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Excellent family vehicle with spacious interior and versatile cargo space."
+
+aesthetics = "High"
+aesthetics_comments = "Premium exterior styling with elegant proportions and upscale interior materials."
+
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Relatively high fuel consumption due to large size and V6 engine."
+
+confort_level = "High"
+confort_level_comments = "Exceptionally comfortable with available premium features like massaging seats."
+
+smartness = "Medium"
+smartness_comments = "Good technology features but not class-leading in terms of advanced driver aids."
+
+family_friendliness = "High"
+family_friendliness_comments = "Excellent family vehicle with three rows of seating and numerous child safety features."
+
+[KeyDetails]
+key_details = "The Buick Enclave is a premium three-row SUV offering spacious seating for up to seven, a refined ride, and upscale features. Key highlights include available Super Cruise hands-free driving technology, QuietTuning cabin isolation, and flexible cargo configurations. Powered by a 3.6L V6 producing 310 hp, it balances performance with comfort. The Avenir trim adds luxury touches like premium leather and unique styling elements."
+key_details_comments = "The Buick Enclave is a premium three-row SUV that combines spacious family-friendly utility with upscale comfort features. As Buick's flagship SUV, it offers seating for up to seven passengers across three rows, with available second-row captain's chairs reducing capacity to six for enhanced comfort. The 3.6L V6 engine delivers 310 horsepower, providing confident acceleration while maintaining respectable fuel efficiency for its class through cylinder deactivation technology. Notable features include Buick's QuietTuning acoustic package for exceptional cabin quietness, available Super Cruise hands-free highway driving system (on Avenir trim), and a versatile cargo area that expands from 584L behind the third row to 2,487L with all rear seats folded. The Avenir trim elevates the experience with premium leather, genuine wood accents, and exclusive styling details, positioning the Enclave as a compelling alternative to luxury-branded three-row SUVs at a more accessible price point."

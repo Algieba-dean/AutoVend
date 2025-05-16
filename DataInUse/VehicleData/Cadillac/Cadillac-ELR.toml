@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Cadillac-ELR"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Cadillac-ELR had a base price of approximately $75,000 USD at launch, with higher trims reaching up to $85,000 USD."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The ELR is a luxury coupe with a sleek, sporty design and a hardtop roof."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Cadillac"
+brand_comments = "Cadillac is General Motors' luxury vehicle division, known for premium craftsmanship and advanced technology."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Plug-in Hybird Electric Vehicle"
+powertrain_type_comments = "The ELR features a plug-in hybrid system combining a 1.4L gasoline engine with an electric motor for extended range."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The ELR offers 2.8 cubic meters of passenger space, optimized for two occupants with limited rear seating."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "Trunk capacity is 237L (8.4 cubic feet), reduced due to the battery placement."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The ELR has a wheelbase of 2,695mm (106.1 inches), providing a stable ride."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is approximately 140mm, typical for a low-slung coupe."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The ELR features aggressive lines, a fastback roofline, and Cadillac's Art & Science design language."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The ELR has a sculpted, aerodynamic profile with a drag coefficient of 0.305."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available colors included premium metallic finishes like Black Raven, Radiant Silver, and Crystal Red Tintcoat."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Opulent interior with genuine wood accents, leather upholstery, and brushed aluminum details."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program with traction control is standard."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, front side-impact, and full-length side-curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard premium leather seating surfaces with available semi-aniline leather upgrades."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Active noise cancellation and acoustic laminated glass provide a quiet cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Cadillac CUE system with natural language voice recognition."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "The 2014-2016 ELR predates widespread OTA update capability in GM vehicles."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Offered adaptive cruise control and lane keep assist, qualifying as Level 2 autonomy."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available with full-speed range following capability."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "No"
+traffic_jam_assit_comments = "Did not offer dedicated traffic jam assist feature."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Included forward collision alert with automatic braking."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Departure Warning with Lane Keep Assist was optional."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "No remote parking capability was offered."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "Did not feature automatic parking assist."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind zone alert with cross-traffic detection was available."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver drowsiness monitoring system."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "1.0~1.6L"
+engine_displacement_comments = "1.4L Ecotec DOHC I4 (84hp) range-extender engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "120~180kW"
+motor_power_comments = "Primary electric motor produces 154kW (207hp) and 295 lb-ft of torque."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "30~50kWh"
+battery_capacity_comments = "16.5kWh T-shaped lithium-ion battery pack (actual 10.5kWh usable)."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "30~50L"
+fuel_tank_capacity_comments = "7.2-gallon (27.3L) fuel tank for the range-extender engine."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "Combined system output of 217hp (electric motor + range extender)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "400~500N·m"
+torque_comments = "Instant electric torque of 295 lb-ft (400N·m) from standstill."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-60mph in 7.8 seconds (0-100km/h in ~8.5s)."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 106mph (171km/h)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "4~6L/100km"
+fuel_consumption_comments = "EPA rated at 35mpg combined (6.7L/100km) in hybrid mode."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "EPA rated at 54kWh/100mi (33.6kWh/100km) in electric mode."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "300~400km"
+driving_range_comments = "Total range of 340 miles (547km) with combined electric (37mi/60km) and gasoline power."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive configuration with electric motor driving the front wheels."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts and rear compound crank with Watts link suspension."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "Low ground clearance and sport-tuned suspension limit rough terrain capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "4-seat"
+seat_layout_comments = "2+2 seating configuration with limited rear seat space."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Excellent for urban use with 37 miles of electric-only range."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Range-extender engine enables long-distance travel beyond pure EV range."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low clearance and performance tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Limited but usable trunk space for a luxury coupe."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Battery thermal management system maintains performance in cold weather."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling systems protect battery and electronics in hot conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "Compact luxury coupe dimensions: 186.0 inches long, 72.7 inches wide."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Practical for daily use but limited by coupe body style and small rear seats."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Striking, angular Cadillac design with premium materials and attention to detail."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for a luxury vehicle but heavier than non-hybrid competitors."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Premium interior with heated/cooled seats, magnetic ride control, and quiet cabin."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Advanced for its time but lacks some modern connectivity features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Limited rear seat space makes it impractical for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Cadillac ELR (2014-2016) was a luxury plug-in hybrid coupe based on the Chevrolet Volt's technology but with premium materials and distinctive styling. It featured a 1.4L range-extender engine supporting a 16.5kWh battery and 154kW electric motor. Notable for its dramatic design, handcrafted interior, and advanced suspension, it offered 37 miles of electric range and 340 miles total range. Production was limited, making it a rare collector's item today."
+key_details_comments = "The Cadillac ELR (2014-2016) was a groundbreaking luxury plug-in hybrid coupe that combined GM's Voltec powertrain technology with Cadillac's premium craftsmanship. Based on the Chevrolet Volt's architecture but significantly upgraded, it featured a 1.4L range-extender gasoline engine supporting a 16.5kWh lithium-ion battery (10.5kWh usable) and a 154kW electric motor. The ELR stood out with its dramatic Art & Science design language, featuring angular lines, LED lighting signatures, and a sleek fastback profile. The interior showcased hand-stitched leather, real wood accents, and cutting-edge technology like the Cadillac User Experience (CUE) infotainment system. With 37 miles (60km) of pure electric range and 340 miles (547km) total range, it offered both eco-friendly commuting and long-distance capability. The ELR's advanced features included Magnetic Ride Control suspension, regenerative braking, and available driver assistance systems. Limited production (under 3,000 units total) and its unique positioning as a luxury electrified coupe make it a rare collector's item today, representing Cadillac's early foray into premium electrified vehicles."

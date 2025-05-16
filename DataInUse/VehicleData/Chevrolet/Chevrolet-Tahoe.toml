@@ -1,0 +1,240 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Chevrolet-Tahoe"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The Chevrolet Tahoe is priced between $50,000 and $70,000 USD depending on the trim level (LS, LT, Z71, RST, Premier, or High Country) and optional features."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Mid-to-Large SUV"
+vehicle_category_bottom_comments = "The Tahoe is a full-size SUV with body-on-frame construction, offering three rows of seating and robust towing capabilities."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Chevrolet"
+brand_comments = "Chevrolet is a mainstream American brand under General Motors, known for trucks, SUVs, and performance vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Tahoe is powered by a 5.3L or 6.2L V8 gasoline engine, with an optional 3.0L Duramax turbo-diesel (not hybrid or electric)."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "The Tahoe offers 144.7 cubic feet (4.1 cubic meters) of maximum passenger volume with seats folded, but its spacious cabin feels larger due to its width and headroom."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 25.5 cu. ft. (722L) behind the third row, 72.6 cu. ft. (2,056L) behind the second row, and 122.9 cu. ft. (3,480L) with all rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The Tahoe's wheelbase is 120.9 inches (3,071 mm), contributing to its stable ride and interior space."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "Ground clearance is 9.7 inches (246 mm) for 4WD models, allowing moderate off-road capability."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The Tahoe has a bold, traditional SUV design with chrome accents and upright proportions, prioritizing presence over sportiness."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The design features angular lines and a boxy silhouette, with some aerodynamic smoothing at the front."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Common colors include Summit White, Silver Ice Metallic, and Dark Ash Metallic, though brighter options like Red Hot are available."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Higher trims (Premier, High Country) feature genuine woodgrain accents, while lower trims use synthetic materials."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock brakes with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Standard StabiliTrak electronic stability control with traction control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, front side-impact, and roof-rail side-impact airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Leather-appointed seats standard on LT and above; cloth on base LS trim."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Active Noise Cancellation and acoustic laminated glass available on higher trims."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Chevrolet Infotainment 3 Plus system supports natural-language voice commands for navigation, media, and phone."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for infotainment system via GM's Connected Services."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Offers Super Cruise (on certain trims) with hands-free driving on mapped highways."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available with stop-and-go functionality as part of the Advanced Trailering Package."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Included with Super Cruise, which handles stop-and-go traffic autonomously."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard Forward Collision Alert with Automatic Emergency Braking."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Standard Lane Keep Assist with Lane Departure Warning."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Does not offer remote parking assist features."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "No automated parking system available."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Standard Blind Zone Alert with Rear Cross Traffic Alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Attention Alert system monitors steering patterns for fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "Standard 5.3L EcoTec3 V8 (355 hp) or optional 6.2L V8 (420 hp); diesel is 3.0L I6 (277 hp)."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - this is a conventional gasoline/diesel vehicle without electric motors."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Conventional 12V battery only - no high-voltage traction battery."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "24-gallon (91L) tank for gasoline models; 21-gallon (79L) for diesel."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "300~400hp"
+horsepower_comments = "5.3L V8 produces 355 hp; 6.2L V8 makes 420 hp; 3.0L diesel makes 277 hp."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "6.2L V8 produces 460 lb-ft (624 N·m); 3.0L diesel makes 460 lb-ft (623 N·m)."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "6.2L models achieve 0-60 mph (0-97 km/h) in ~6.1 seconds per manufacturer tests."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 112 mph (180 km/h) for all models."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA estimates: 14-16 mpg city (14.7-17.6 L/100km), 19-22 mpg highway (10.7-12.4 L/100km)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - this is not an electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 500 miles (805 km) highway range with 24-gallon tank and 22 mpg."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "RWD standard; 4WD optional with two-speed transfer case (not full-time AWD)."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Independent rear suspension (IRS) on all four corners, with available Magnetic Ride Control."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "9.7-inch clearance and 4WD capability allow for light off-roading, but not rock-crawling."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "7-seat"
+seat_layout_comments = "Standard 3-row seating for 7 (2-2-3) or optional 8 (2-3-3) with bench second row."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Manageable in cities despite size, with good visibility and available parking sensors."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with comfortable seats, quiet cabin, and long range."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "Z71 package adds off-road tuned suspension, skid plates, and all-terrain tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Max cargo capacity of 122.9 cu. ft. (3,480L) and towing up to 8,400 lbs (3,810 kg)."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "The Tahoe performs well in cold climates with features like heated seats/steering wheel (available), engine block heater (for diesel models), and GM's cold-weather testing validation. The 4WD system with Auto mode automatically adjusts torque distribution for slippery conditions. However, fuel economy decreases significantly in extreme cold due to the large displacement engines."
+cold_resistance_comments = "Proven reliability in extreme cold with block heaters available for diesel models."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Robust cooling systems for engine and transmission, validated in desert conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "Full-size SUV: 210.7 inches (5,352 mm) long, 80.5 inches (2,045 mm) wide, 74.4 inches (1,890 mm) tall."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Excellent for families and hauling, but parking can be challenging in tight spaces."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "Medium"
+aesthetics_comments = "Traditional, rugged SUV styling that prioritizes function over avant-garde design."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Typical for large V8 SUVs - not fuel efficient compared to smaller vehicles."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Plush seats, quiet cabin, and smooth ride quality, especially in higher trims."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Good tech features but lacks some cutting-edge innovations found in luxury brands."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "Excellent for families with abundant space, safety features, and durability."
+
+[KeyDetails]
+key_details=""
+key_details_comments = "The Chevrolet Tahoe is a full-size SUV known for its powerful V8 engine options, robust towing capacity up to 8,400 lbs, and spacious three-row seating. It features advanced technologies like Super Cruise hands-free driving (on select trims), a 10.2-inch touchscreen with wireless Apple CarPlay/Android Auto, and available Magnetic Ride Control suspension for superior ride comfort. The Tahoe is built on GM's T1 platform with independent rear suspension, offering improved handling over previous generations."
+# key_details, a value to introduce more

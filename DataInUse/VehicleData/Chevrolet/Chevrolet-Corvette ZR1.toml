@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Chevrolet-Corvette ZR1"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The Chevrolet-Corvette ZR1 is priced between $120,000 and $150,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Corvette ZR1 is a high-performance two-door coupe with a fixed roof."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Chevrolet"
+brand_comments = "The Corvette ZR1 is a flagship performance model from Chevrolet, a division of General Motors."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The ZR1 is powered by a supercharged 6.2L V8 gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The ZR1 has a compact passenger space optimized for driver-focused performance."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "The exact trunk capacity is 270L, which is modest for a sports car."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The ZR1 has a wheelbase of 2711mm, providing a balanced stance for performance handling."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "The ZR1 has a low-slung chassis with a ground clearance of approximately 120mm for aerodynamic performance."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The ZR1 features aggressive aerodynamic styling with a large rear wing and vented hood."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The ZR1 has sleek, flowing body lines optimized for aerodynamics and high-speed stability."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Bright Colors"
+color_comments = "The ZR1 is often offered in bold colors like Torch Red and Accelerate Yellow."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The ZR1 features carbon fiber and aluminum trim for a performance-oriented interior."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The ZR1 comes standard with anti-lock braking system for improved control during hard braking."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard to help maintain control during aggressive driving."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "The ZR1 includes dual front, side-impact, and knee airbags for occupant protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The ZR1 features premium Nappa leather seats with suede microfiber inserts."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "The ZR1 has moderate noise insulation to balance cabin comfort with engine/exhaust sound."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The Chevrolet Infotainment 3 system includes voice recognition for navigation and media."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The infotainment system supports over-the-air updates for software improvements."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The ZR1 offers Level 2 autonomy with features like lane keep assist and adaptive cruise."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available with the optional Performance Data Recorder package."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "No"
+traffic_jam_assit_comments = "The ZR1 does not offer specific traffic jam assist functionality."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard forward collision alert with automatic emergency braking."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Available as part of the Driver Assistance package."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "The ZR1 does not offer remote parking capability."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "No automatic parking system is available on the ZR1."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind zone alert with rear cross traffic alert is available."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "The ZR1 does not have driver fatigue monitoring."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "The ZR1 features a supercharged 6.2L LT5 V8 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "The ZR1 has a 18.5-gallon (70L) fuel tank capacity."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The supercharged V8 produces 755 horsepower at 6300 rpm."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "Produces 715 lb-ft (969 N·m) of torque at 4400 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The ZR1 accelerates 0-100 km/h in approximately 2.85 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "The ZR1 has a top speed of 212 mph (341 km/h) with the ZTK performance package."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA estimates are 15 mpg city/22 mpg highway (15.7-10.7 L/100km)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Estimated range is approximately 500 km on a full tank under mixed driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "The ZR1 uses a rear-wheel-drive layout with an electronic limited-slip differential."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Features Magnetic Ride Control 4.0 with Performance Traction Management."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "The low ground clearance limits rough terrain capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "The ZR1 is a strict two-seater sports car."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "While capable, the stiff suspension and low profile tires make it less ideal for daily commuting."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with comfortable seats and good high-speed stability."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance and performance tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Limited but usable trunk space for a sports car."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Performs adequately in cold weather but not optimized for extreme conditions."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling system is robust for high-performance operation in hot conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The ZR1 has compact dimensions for a sports car but is larger than true exotics."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Offers reasonable usability for a high-performance sports car."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The ZR1 features striking, aggressive styling with functional aerodynamics."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "The high-performance engine results in significant fuel consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "Surprisingly comfortable for a supercar but still firm compared to luxury vehicles."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Offers modern tech features but prioritizes performance over cutting-edge smart features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Two-seat configuration and performance focus make it unsuitable for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Chevrolet Corvette ZR1 is the most powerful production Corvette ever, featuring a supercharged 6.2L LT5 V8 engine producing 755 hp. It includes advanced aerodynamics with a large rear wing, carbon ceramic brakes, and Magnetic Ride Control 4.0. The ZR1 holds the Nürburgring lap record for front-engine production cars at 7:04.3."
+key_details_comments = "The Chevrolet Corvette ZR1 represents the pinnacle of Corvette performance, featuring a hand-built supercharged 6.2L LT5 V8 engine that delivers 755 horsepower - making it the most powerful production Corvette ever. It incorporates race-derived technologies including an advanced aerodynamic package with a large rear wing generating significant downforce, carbon ceramic Brembo brakes for exceptional stopping power, and Magnetic Ride Control 4.0 suspension for precise handling. The ZR1 set a Nürburgring Nordschleife lap record of 7:04.3 for front-engine production cars, demonstrating its track capabilities. The interior blends premium materials like Nappa leather with performance-focused features including a Performance Data Recorder system. Available with either a 7-speed manual or 8-speed automatic transmission, the ZR1 offers supercar performance at a fraction of European exotic car prices."

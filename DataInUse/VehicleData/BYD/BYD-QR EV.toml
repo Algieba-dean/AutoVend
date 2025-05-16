@@ -1,0 +1,191 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "BYD-QR EV"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "30,000~40,000"
+prize_comments = "The BYD-QR EV is priced between $35,000 and $38,000 USD, competitive in the mid-range EV segment."
+
+vehicle_category_bottom = "C-Segment Sedan"
+vehicle_category_bottom_comments = "A midsize electric sedan with premium features and spacious interior."
+
+brand = "BYD"
+brand_comments = "BYD (Build Your Dreams), a leading Chinese EV manufacturer."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "Pure electric drivetrain with no combustion engine."
+
+# Space and dimensions
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Generous cabin space of 4.8 cubic meters, comparable to luxury sedans."
+
+trunk_volume = "400~500L"
+trunk_volume_comments = "450L trunk capacity, expandable to 1,100L with rear seats folded."
+
+wheelbase = "2800~2950mm"
+wheelbase_comments = "2920mm wheelbase for stable handling and rear legroom."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "140mm ground clearance, optimized for urban driving."
+
+# Design and aesthetics
+design_style = "Business"
+design_style_comments = "Elegant, aerodynamic design with premium finishes."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Sleek, wind-tunnel-tested body with 0.23 Cd drag coefficient."
+
+color = "Neutral Colors"
+color_comments = "Offered in Silver, Gray, and Deep Blue metallic options."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Brushed aluminum accents with vegan leather upholstery."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included."
+
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Synthetic leather seats with heating/ventilation."
+
+noise_insulation = "High"
+noise_insulation_comments = "Double-layer acoustic glass reduces cabin noise to 35 dB at 60 km/h."
+
+# Tech and autonomy
+voice_interfaction = "Yes"
+voice_interfaction_comments = "BYD DiLink 5.0 supports natural language commands."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment and battery management."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Advanced driver assistance with lane centering and adaptive cruise."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Radar-based system with stop-and-go functionality."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Automatically follows traffic under 60 km/h."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front and rear collision avoidance."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active steering correction for lane departure."
+
+remote_parking = "Yes"
+remote_parking_comments = "Smartphone-controlled parking assist."
+
+auto_parking = "Yes"
+auto_parking_comments = "Fully automated perpendicular/parallel parking."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Radar and camera-based monitoring."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver monitoring via facial recognition."
+
+# Powertrain (EV-specific)
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable for pure EVs."
+
+motor_power = "180~250kW"
+motor_power_comments = "Dual-motor AWD setup with 230kW total output."
+
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "82.5 kWh Blade LFP battery for safety and longevity."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable for pure EVs."
+
+horsepower = "300~400hp"
+horsepower_comments = "308 hp (230 kW) combined output."
+
+torque = "400~500N·m"
+torque_comments = "460 N·m instant torque for rapid acceleration."
+
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 5.2 seconds (AWD model)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable for pure EVs."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "13.5 kWh/100km combined (WLTP cycle)."
+
+driving_range = "400~800km"
+driving_range_comments = "520 km (WLTP) on a full charge."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual-motor AWD with torque vectoring."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front double-wishbone, rear multi-link setup."
+
+passibility = "Medium"
+passibility_comments = "Optimized for urban roads and light gravel."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 2+3 seating configuration."
+
+# Usage scenarios
+city_commuting = "Yes"
+city_commuting_comments = "Ideal for urban use with one-pedal driving mode."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "800V fast charging (10-80% in 25 minutes)."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for serious off-roading."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "60:40 split-folding rear seats."
+
+clod_resistance = "High"
+clod_resistance_comments = "Battery heating system maintains -30°C to 60°C operation."
+
+heat_resistance = "High"
+heat_resistance_comments = "Liquid-cooled battery with thermal management."
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "4,870mm length × 1,910mm width × 1,495mm height."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior with premium tech features."
+
+aesthetics = "High"
+aesthetics_comments = "Award-winning design with premium finishes."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Efficient LFP battery technology."
+
+confort_level = "High"
+confort_level_comments = "NVH-optimized cabin with massaging seats."
+
+smartness = "High"
+smartness_comments = "5G connectivity and V2X capability."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "ISOFIX anchors but limited rear headroom."
+
+[KeyDetails]
+key_details = "The BYD-QR EV features BYD's Blade Battery technology for enhanced safety, 800V fast charging (10-80% in 25 minutes), and a 15.6-inch rotating touchscreen. It competes with Tesla Model 3 and Nio ET5 in the premium EV segment."
+key_details_comments = "The BYD-QR EV represents cutting-edge EV technology with BYD's proprietary Blade Battery system, offering superior thermal stability and safety. Its 800V ultra-fast charging architecture enables a 10-80% charge in just 25 minutes, significantly reducing downtime. The vehicle features a futuristic cockpit with a 15.6-inch adaptive rotating touchscreen running BYD's DiLink 5.0 system. With premium build quality, advanced driver assistance systems (ADAS) at L2+ level, and competitive range, it directly challenges established players like Tesla Model 3 in the global EV market. The vehicle's e-Platform 3.0 architecture provides excellent structural rigidity while optimizing interior space."
+
+
+### Notes:

@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Buick-Grand National"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "20,000~30,000"
+prize_comments = "The Buick Grand National is a classic muscle car, with prices ranging from $25,000 to $30,000 USD for well-maintained examples."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Grand National is a two-door coupe with a sporty, performance-oriented design."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Buick"
+brand_comments = "The Grand National is a high-performance variant of the Buick Regal, produced by General Motors."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Grand National is powered by a turbocharged 3.8L V6 gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The Grand National offers approximately 2.8 cubic meters of passenger space, typical for a two-door coupe."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "300~400L"
+trunk_volume_comments = "The trunk capacity is 340 liters, sufficient for weekend getaways."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase measures 2743 mm, providing a balanced ride and handling."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The Grand National has a sport-tuned suspension with a ground clearance of approximately 140 mm."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Grand National features aggressive styling with blacked-out trim and a muscular stance."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The body features angular, aerodynamic lines characteristic of 1980s performance cars."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Dark Colors"
+color_comments = "The Grand National is famously available only in black, with subtle gray accents."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features brushed aluminum accents and a driver-focused cockpit."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "No"
+ABS_comments = "The Grand National predates widespread ABS adoption, relying on traditional braking systems."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "No"
+ESP_comments = "Electronic Stability Control was not available on this vintage performance car."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "2"
+airbag_count_comments = "Early model years had no airbags; later versions included basic driver/passenger airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard leather upholstery with bolstered sport seats for lateral support."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Typical 1980s insulation - noticeable road noise but better than contemporary muscle cars."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "No"
+voice_interfaction_comments = "No voice interaction - features a basic AM/FM stereo system."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "No over-the-air updates - all systems are analog/mechanical."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "No"
+autonomous_driving_level_comments = "No autonomous driving features - requires full driver control."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "No"
+adaptive_cruise_control_comments = "No adaptive cruise - features conventional cruise control."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "No"
+traffic_jam_assit_comments = "No traffic assistance systems - manual driving only."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "No"
+automatic_emergency_braking_comments = "No automatic braking systems - driver must apply brakes."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "No"
+lane_keep_assist_comments = "No lane keeping assistance - requires active steering input."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "No remote parking capability - manual parking only."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "No automatic parking systems - driver must park manually."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "No"
+blind_spot_detection_comments = "No blind spot monitoring - relies on mirrors and shoulder checks."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No fatigue detection systems - driver must self-monitor."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "3.8L (231 cu in) turbocharged V6 engine - large displacement for forced induction."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - pure internal combustion powertrain."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable - conventional gasoline powertrain."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "16.1 gallon (61 liter) fuel tank capacity."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "245 hp (183 kW) in standard form, up to 276 hp (206 kW) in GNX trim."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "400~500N·m"
+torque_comments = "330 lb-ft (447 N·m) of torque - exceptional low-end grunt."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-60 mph (0-97 km/h) in 6.5 seconds - quick for its era."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 124 mph (200 km/h), though capable of higher speeds."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA rated at 17 mpg city/25 mpg highway (13.8-9.4 L/100km) - thirsty performance."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - conventional gasoline powertrain."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 400 miles (644 km) range on highway driving."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "Traditional RWD layout with limited-slip differential for performance driving."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts and rear independent suspension with torque arm."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Good road manners but limited by sport suspension tuning."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "4-seat"
+seat_layout_comments = "2+2 seating configuration with limited rear legroom."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Suitable for city driving though fuel economy suffers in stop-and-go traffic."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with comfortable ride and good high-speed stability."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use - low ground clearance and performance tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Moderate cargo space with fold-down rear seats for additional capacity."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Turbocharged engine requires proper warm-up in cold conditions."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Robust cooling system handles high temperatures well."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "Mid-size coupe dimensions - 200.9 inches (5,103 mm) long."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Practical enough for daily use but focused on performance."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Iconic 1980s muscle car styling with timeless blacked-out appearance."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Significant fuel consumption due to powerful turbocharged engine."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "Firm sport suspension but with comfortable seating and decent noise insulation."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Low"
+smartness_comments = "Minimal technology by modern standards - pure analog driving experience."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Limited rear seat space makes it impractical for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Buick Grand National (1982-1987) was a high-performance version of the Buick Regal, featuring a turbocharged 3.8L V6 engine. The GNX (Grand National Experimental) variant produced 276 hp and 360 lb-ft of torque, making it one of the fastest American cars of its era. Known as the 'Darth Vader' of muscle cars due to its all-black appearance, it could out-accelerate contemporary Corvettes and Porsches. Production was limited, with only 547 GNX models made in 1987."
+key_details_comments = "The Buick Grand National (1982-1987) represents a unique chapter in American muscle car history, being one of the few performance vehicles from GM's Buick division. Its turbocharged 3.8L V6 was revolutionary for its time, offering Corvette-beating acceleration from an unlikely source. The GNX variant, developed with McLaren Performance Technologies, featured upgraded turbocharger, intercooler, and suspension components that pushed output to 276 hp and 360 lb-ft of torque - remarkable figures for a production V6 in the 1980s. The car's menacing all-black appearance earned it nicknames like 'Darth Vader' and 'Black Arrow,' while its limited production (particularly the 547-unit GNX run) has made it a highly collectible modern classic. Performance figures included 0-60 mph in 4.7 seconds and quarter-mile times in the low 13s, making it one of the quickest American production cars of its era."

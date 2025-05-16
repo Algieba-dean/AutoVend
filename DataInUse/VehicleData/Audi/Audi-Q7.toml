@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -202,7 +202,7 @@ clod_resistance_comments = "The Q7 performs well in cold climates, with heated s
 heat_resistance = "High"
 heat_resistance_comments = "The Q7's cooling systems and cabin materials are designed to withstand high temperatures without degradation."
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"

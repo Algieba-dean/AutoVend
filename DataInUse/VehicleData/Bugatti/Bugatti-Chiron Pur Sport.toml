@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Bugatti-Chiron Pur Sport"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The Bugatti Chiron Pur Sport is priced at approximately $3.6 million USD, making it one of the most expensive production cars in the world."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Chiron Pur Sport is a high-performance, two-door hypercar with a fixed roof."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Bugatti"
+brand_comments = "Bugatti is a French luxury hypercar manufacturer known for extreme performance and exclusivity."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Chiron Pur Sport uses a quad-turbocharged 8.0L W16 gasoline engine without hybrid assistance."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin is compact, optimized for driver focus rather than passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "Exact trunk capacity is approximately 280L, sufficient for small luggage."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase measures 2711mm, providing stability at high speeds."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "Ground clearance is approximately 120mm, optimized for aerodynamics."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "Aggressive aerodynamic styling with large intakes and a fixed rear wing."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Sculpted carbon fiber body with seamless panel gaps for optimal airflow."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Bright Colors"
+color_comments = "Often seen in bold colors like Bugatti's signature French Racing Blue."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Premium aluminum and titanium accents dominate the cabin."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Advanced ABS system for high-speed braking stability."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program tuned for track performance."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Dual front, side, and curtain airbags for occupant protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Full-grain leather with optional carbon fiber bucket seats."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Some engine and road noise is intentionally present for driver engagement."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Basic voice commands for infotainment functions."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "No over-the-air update capability; requires dealer visits."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Basic lane-keeping and adaptive cruise control only."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "High-speed capable adaptive cruise system."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "No"
+traffic_jam_assit_comments = "Not designed for stop-and-go traffic situations."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "High-speed automatic braking system."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Basic lane-keeping assistance at highway speeds."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "No remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "No automated parking systems."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver fatigue monitoring system."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "Above 6.0L"
+engine_displacement_comments = "8.0L quad-turbocharged W16 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - pure internal combustion powertrain."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "No high-voltage battery - conventional 12V system only."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "100L fuel tank capacity for extended range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "1,500 PS (1,103 kW) in standard configuration."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "1,600 N·m (1,180 lb-ft) from 2,000 to 6,000 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "2.3 seconds 0-100 km/h acceleration."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "Electronically limited to 350 km/h (217 mph) in Pur Sport configuration."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Approximately 22.5 L/100km combined (EPA estimate)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - no electric propulsion system."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "300~400km"
+driving_range_comments = "Approximately 350km range at moderate speeds."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Permanent all-wheel drive with Haldex clutch."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Double wishbone front and rear with adaptive dampers."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "Low ground clearance limits rough terrain capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "Strict two-seat configuration with no rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "No"
+city_commuting_comments = "Not designed for daily commuting - extreme performance focus."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable at high speeds but limited by fuel range."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use - track-focused."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "No"
+cargo_capability_comments = "Minimal storage space - performance prioritized."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Requires careful warm-up in cold conditions."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling systems for track use."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "Wide but relatively short hypercar dimensions."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Small"
+vehicle_usability_comments = "Limited practicality - focused on performance."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Iconic Bugatti design with exquisite detailing."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Extremely high fuel consumption."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "Surprisingly comfortable for a hypercar but firm."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Some advanced features but not tech-focused."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Not suitable for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Bugatti Chiron Pur Sport is a track-focused variant of the Chiron, featuring a 1,500 PS W16 engine, reduced weight, optimized aerodynamics, and a shorter gear ratio for improved acceleration. It represents the pinnacle of Bugatti's road-legal hypercar technology with a top speed limited to 350 km/h."
+key_details_comments = "The Bugatti Chiron Pur Sport represents the ultimate expression of Bugatti's hypercar philosophy, optimized for maximum agility and track performance. It features a 1,500 PS (1,103 kW) quad-turbocharged 8.0L W16 engine with revised gear ratios for quicker acceleration, extensive use of lightweight materials (saving 50kg vs standard Chiron), and aggressive aerodynamics including a fixed rear wing generating increased downforce. The Pur Sport variant trades ultimate top speed for enhanced cornering capability, with a 350 km/h (217 mph) electronically limited top speed and specially developed Michelin Cup 2 R tires. Every component is engineered for extreme performance, from its titanium exhaust system to its motorsport-inspired suspension tuning, making it one of the most capable road-legal track cars ever produced."

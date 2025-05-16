@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "GWM-Haval H9"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The GWM-Haval H9 is priced between $45,000 and $55,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Off-road SUV"
+vehicle_category_bottom_comments = "The Haval H9 is a body-on-frame SUV designed for off-road capability with rugged construction."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Great Wall Motor"
+brand_comments = "GWM (Great Wall Motor) is a Chinese automotive manufacturer known for its SUVs and pickup trucks."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Haval H9 is powered by a turbocharged gasoline engine with no hybrid or electric variants currently available."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The Haval H9 offers a spacious interior with approximately 4.8 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The trunk capacity is 747L, expandable to 1,456L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase measures 2,800mm, providing stability and interior space."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "The ground clearance is 206mm, enhancing off-road capability."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The H9 features a rugged, utilitarian design with premium touches for a business-oriented appeal."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The body lines are balanced between angular off-road styling and smooth curves."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available colors include white, silver, gray, and black, with no bright options."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "The interior features wood grain trim accents for a premium feel."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard ABS (Anti-lock Braking System) is included on all variants."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard across the range."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side, and curtain airbags for all rows."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Premium leather upholstery is standard on higher trims, with fabric optional on base models."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Excellent cabin quietness with acoustic glass and extensive sound deadening."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The infotainment system supports voice commands for navigation and media."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates are supported for the infotainment system."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Level 2 autonomy with adaptive cruise control and lane centering."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes full-speed adaptive cruise control with stop-and-go functionality."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic jam assist is part of the autonomous driving package."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "AEB with pedestrian detection is standard."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist with lane departure warning is included."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available on this model."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Automatic parallel and perpendicular parking assist is available."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert is standard."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver attention monitoring system is included."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "2.0L turbocharged gasoline engine producing 224hp."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is a gasoline-only model."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as this is a gasoline-only model."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "80L fuel tank capacity for extended range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "224 horsepower at 5,500 rpm."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "300~400N·m"
+torque_comments = "385 N·m of torque available from 1,800-3,600 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 9.3 seconds due to heavy body-on-frame construction."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Combined fuel consumption is 10.5L/100km due to heavy weight and off-road capability."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is a gasoline-only model."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650km range on a full tank under mixed driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Full-time 4WD system with low-range gearing for off-road use."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front double wishbone and rear multi-link independent suspension."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "High"
+passibility_comments = "Excellent off-road capability with 206mm ground clearance and 700mm wading depth."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "7-seat"
+seat_layout_comments = "Standard 7-seat configuration with 2-3-2 layout."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "While large, it's manageable in urban environments with good visibility."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with comfortable seating and good noise insulation."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "High"
+off_road_capability_comments = "Serious off-road credentials with low-range transfer case, locking rear differential, and terrain management system."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Substantial cargo space even with all seats in use."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Proven performance in extreme cold with block heater and cold-weather package available."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling system and AC designed for hot climate operation up to 50°C."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "Full-size body-on-frame SUV measuring 4,856mm long, 1,926mm wide, and 1,900mm tall."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Highly capable for both family use and serious off-road adventures."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "Medium"
+aesthetics_comments = "Rugged, utilitarian styling with some premium design elements."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Relatively high fuel consumption due to heavy weight and full-time 4WD system."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Excellent ride comfort with premium interior materials and quiet cabin."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Good tech features but not class-leading in connectivity or autonomous features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "Excellent family vehicle with 7 seats, good safety features, and durable construction."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The GWM-Haval H9 is a body-on-frame SUV offering serious off-road capability with premium features. Key highlights include: BorgWarner 4WD system with low-range gearing, rear differential lock, terrain management system, 700mm wading depth, and 206mm ground clearance. The interior features Nappa leather seats, wood trim, and a 12.3-inch touchscreen with voice control. Safety features include AEB, lane keep assist, blind spot monitoring, and 6 airbags. Powered by a 2.0L turbocharged engine producing 224hp and 385N·m, paired with an 8-speed automatic transmission."
+key_details_comments = "The GWM-Haval H9 is a rugged, body-on-frame SUV that combines serious off-road capability with premium features. Its BorgWarner 4WD system with low-range gearing and rear differential lock makes it competent in challenging terrain, while the terrain management system simplifies operation. With 700mm wading depth and 206mm ground clearance, it can handle extreme conditions. The luxurious interior features Nappa leather seats, wood trim accents, and a modern 12.3-inch touchscreen with voice control. Safety is comprehensive with automatic emergency braking, lane keep assist, blind spot monitoring, and six airbags. Power comes from a 2.0L turbocharged gasoline engine delivering 224hp and 385N·m of torque, paired with a smooth 8-speed automatic transmission. This combination makes the H9 equally capable as a family hauler, long-distance tourer, and serious off-roader."

@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Thermal management systems ensure reliability in hot conditions (tested up to 50°C)."
 
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 # size: candidate values: "Small", "Medium", "Large"
 size = "Large"

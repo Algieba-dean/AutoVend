@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "BYD-F3 EV"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "10,000~20,000"
+prize_comments = "The BYD-F3 EV is priced between $15,000 and $18,000 USD, making it an affordable electric sedan option."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The BYD-F3 EV is classified as a compact sedan with a length of 4,533mm and a wheelbase of 2,600mm."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BYD"
+brand_comments = "BYD (Build Your Dreams) is a Chinese automaker specializing in electric vehicles and battery technology."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The BYD-F3 EV is a pure electric vehicle powered by a lithium-ion battery pack."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering comfortable seating for five adults."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "300~400L"
+trunk_volume_comments = "The trunk offers 360L of cargo space, suitable for everyday use."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,600mm, providing stable handling and a comfortable ride."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The chassis height is 140mm, balancing ground clearance and stability."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The design is conservative and practical, suited for business and family use."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The body lines are smooth but not overly aerodynamic, focusing on practicality."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available colors include silver, white, and gray, typical for a business-oriented sedan."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features metal trim accents for a modern look."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Anti-lock Braking System (ABS) is standard for improved safety."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is included to enhance driving stability."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "4"
+airbag_count_comments = "The car is equipped with dual front airbags and side airbags for front passengers."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Fabric"
+seat_material_comments = "Standard fabric seats are durable and comfortable for daily use."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Moderate noise insulation reduces road and wind noise effectively."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "No"
+voice_interfaction_comments = "The infotainment system does not support voice interaction."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "Over-the-air updates are not supported for the infotainment system."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The car offers Level 2 autonomous driving features like adaptive cruise control."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Adaptive cruise control is available for highway driving."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "No"
+traffic_jam_assit_comments = "Traffic jam assist is not included in this model."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking is standard for collision avoidance."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist helps maintain lane position on highways."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not supported."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "Automatic parking assist is not available."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "No"
+blind_spot_detection_comments = "Blind spot detection is not included."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "Fatigue driving detection is not supported."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as this is a pure electric vehicle."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "70~120kW"
+motor_power_comments = "The electric motor delivers 95 kW (127 hp) of power."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "50~80kWh"
+battery_capacity_comments = "The lithium-ion battery has a capacity of 60 kWh."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable as this is a pure electric vehicle."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "100~200hp"
+horsepower_comments = "The electric motor produces 127 hp (95 kW)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "200~300N·m"
+torque_comments = "The motor delivers 250 N·m of torque, providing strong acceleration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The 0-100 km/h acceleration time is 9.5 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The top speed is electronically limited to 180 km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable as this is a pure electric vehicle."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "The energy consumption is 13.5 kWh/100 km under mixed driving conditions."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "300~400km"
+driving_range_comments = "The NEDC-rated range is 350 km on a full charge."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "The BYD-F3 EV uses front-wheel drive for efficiency and simplicity."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson strut and rear multi-link independent suspension provide a comfortable ride."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "The car handles urban roads well but is not designed for off-road use."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard seating for five passengers (2 front, 3 rear)."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Ideal for city commuting with its compact size and electric efficiency."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Suitable for highway driving with stable handling and adequate range."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance and FWD."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The 360L trunk and foldable rear seats offer practical cargo space."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The battery performs adequately in cold weather but with reduced range."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The battery and cooling system are designed to handle high temperatures effectively."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The BYD-F3 EV is a mid-sized sedan with balanced dimensions for urban and highway use."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Offers a good balance of passenger and cargo space for daily use."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "Medium"
+aesthetics_comments = "The design is functional and conservative, with no standout styling features."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Electric consumption is efficient at 13.5 kWh/100 km."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "Comfortable for daily commuting but lacks premium features."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Includes basic smart features like adaptive cruise control but lacks advanced connectivity."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical for families with decent space and safety features, but not luxurious."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The BYD-F3 EV is an affordable, practical electric sedan with a 350 km range, 127 hp motor, and standard safety features like ABS and ESP. It is ideal for urban commuting and offers a comfortable ride with independent suspension."
+key_details_comments = "The BYD-F3 EV is a budget-friendly electric sedan designed for practical urban and highway use. It features a 60 kWh lithium-ion battery providing a 350 km NEDC range, powered by a 127 hp (95 kW) electric motor with 250 N·m torque for adequate acceleration (0-100 km/h in 9.5s). Standard safety includes ABS, ESP, 4 airbags, and L2 autonomous features like adaptive cruise control and lane-keep assist. With a 360L trunk, 5-seat capacity, and independent suspension, it balances comfort and utility. However, it lacks advanced tech like OTA updates or voice interaction, positioning it as an entry-level EV focused on affordability and reliability."

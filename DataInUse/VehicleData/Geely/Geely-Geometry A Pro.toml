@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Geely-Geometry A Pro"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "20,000~30,000"
+prize_comments = "The Geely-Geometry A Pro is priced between $22,000 and $28,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The Geely-Geometry A Pro is a compact electric sedan with a sleek design and modern features."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Geely"
+brand_comments = "Geely is a Chinese automotive manufacturer known for producing affordable and technologically advanced vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The Geely-Geometry A Pro is a pure electric vehicle with no internal combustion engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, providing ample room for five occupants."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "400~500L"
+trunk_volume_comments = "The exact trunk capacity is 430L, expandable to 1,200L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,700mm, contributing to a stable and comfortable ride."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The chassis height is 140mm, balancing aerodynamics and ground clearance."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Geely-Geometry A Pro features a sporty and aerodynamic design with sharp lines and a modern aesthetic."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body lines are smooth and aerodynamic, contributing to a low drag coefficient of 0.237."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Bright Colors"
+color_comments = "The car is available in bright colors like white, blue, and silver, emphasizing its modern and youthful appeal."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features metal trim accents, giving it a sleek and modern feel."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The car is equipped with an Anti-lock Braking System (ABS) for improved safety during braking."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is included to enhance vehicle stability and control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "The car includes six airbags: front, side, and curtain airbags for comprehensive protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The seats are upholstered in high-quality synthetic leather for comfort and durability."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "The car features excellent noise insulation, providing a quiet and comfortable cabin."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The infotainment system supports voice interaction for hands-free control of various functions."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The car supports Over-The-Air (OTA) updates for the infotainment system and other software."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The car features Level 2 autonomous driving capabilities, including adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Adaptive cruise control is available, maintaining a set distance from the vehicle ahead."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic jam assist is included, providing semi-autonomous driving in congested traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking helps prevent collisions by applying the brakes if a potential impact is detected."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist helps maintain the vehicle within its lane by providing steering inputs."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available on the Geely-Geometry A Pro."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "The car features automatic parking assist, helping with parallel and perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot detection alerts the driver to vehicles in the blind spots."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Fatigue driving detection monitors driver behavior and alerts if signs of fatigue are detected."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "The Geely-Geometry A Pro is a pure electric vehicle and does not have an internal combustion engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "120~180kW"
+motor_power_comments = "The electric motor produces 150kW (201hp) of power, providing strong acceleration and performance."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "50~80kWh"
+battery_capacity_comments = "The car is equipped with a 70kWh lithium-ion battery pack."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "The Geely-Geometry A Pro is a pure electric vehicle and does not have a fuel tank."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "100~200hp"
+horsepower_comments = "The electric motor delivers 201hp, providing brisk acceleration and responsive performance."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "300~400N·m"
+torque_comments = "The motor produces 310N·m of torque, ensuring strong low-end acceleration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The car accelerates from 0 to 100 km/h in 6.9 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The top speed is electronically limited to 180km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "The Geely-Geometry A Pro is a pure electric vehicle and does not consume fuel."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "The car consumes approximately 13.5kWh per 100km under mixed driving conditions."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "The car offers a range of 600km on a single charge (NEDC cycle)."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "The Geely-Geometry A Pro is front-wheel drive, providing good traction and efficiency."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The car features independent MacPherson strut front suspension and torsion beam rear suspension for a comfortable ride."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "The car has moderate ground clearance, suitable for urban and highway driving."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The car has a standard five-seat layout with ample space for all occupants."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "The compact size and electric powertrain make it ideal for city commuting."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The long driving range and comfortable ride make it suitable for highway long-distance travel."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The car is designed for urban and highway use, with limited off-road capability."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The car offers decent cargo space, especially with the rear seats folded."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The battery performs reasonably well in cold weather, with some range reduction at very low temperatures."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The battery and cooling system are designed to handle high temperatures effectively."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The Geely-Geometry A Pro is a medium-sized compact sedan, balancing space and maneuverability."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "The car offers a good balance of passenger and cargo space, suitable for most daily needs."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The car features a modern and stylish design with high-quality finishes."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "The electric powertrain is highly efficient, with low energy consumption per kilometer."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "The car offers a comfortable ride with well-tuned suspension and quiet cabin."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "The car is equipped with advanced infotainment, connectivity, and driver-assistance features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "The car is practical for families, though it may lack some space for larger families."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Geely-Geometry A Pro is a compact electric sedan with a modern design, advanced technology, and a range of 600km. It features a 150kW electric motor, 70kWh battery, and Level 2 autonomous driving capabilities. The car is priced competitively and offers a comfortable and efficient driving experience."
+key_details_comments = "The Geely-Geometry A Pro is a technologically advanced compact electric sedan offering a compelling package for eco-conscious drivers. Its 600km NEDC range (approximately 500km real-world) makes it practical for both daily commutes and longer trips. The 150kW (201hp) electric motor delivers responsive acceleration (0-100km/h in 6.9s) while the 70kWh battery supports DC fast charging. Modern features include a minimalist interior with metal trim, comprehensive safety systems (6 airbags, ABS, ESP), and Level 2 autonomous driving with adaptive cruise control and lane-keeping assist. The sporty exterior design achieves an impressive 0.237 drag coefficient, while the comfortable cabin offers 3.8m³ of passenger space and 430L trunk capacity. Priced between $22,000-$28,000 USD, it represents excellent value in the growing EV market."

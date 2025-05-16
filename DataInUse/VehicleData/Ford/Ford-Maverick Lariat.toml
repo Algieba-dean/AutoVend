@@ -1,0 +1,180 @@
+title = "CarLabels"
+
+car_model = "Ford-Maverick Lariat"
+
+[PriciseLabels]
+prize = "30,000~40,000"
+prize_comments = "The Ford Maverick Lariat is priced between $32,000 and $38,000 USD depending on options and packages."
+
+vehicle_category_bottom = "Compact Pickup Truck"
+vehicle_category_bottom_comments = "The Maverick Lariat is classified as a compact pickup truck with unibody construction."
+
+brand = "Ford"
+brand_comments = "Manufactured by Ford Motor Company, a leading American automaker."
+
+powertrain_type = "Hybrid Electric Vehicle"
+powertrain_type_comments = "The Lariat trim offers a standard 2.5L hybrid powertrain with an optional 2.0L EcoBoost gasoline engine."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Passenger volume is approximately 4.9 cubic meters (173.6 cubic feet)."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Bed volume is 1,337L (33.3 cubic feet) with the tailgate down; interior cabin storage is flexible."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "Exact wheelbase is 2,706mm (106.6 inches)."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 178mm (7.0 inches) for the FWD hybrid model."
+
+design_style = "Sporty"
+design_style_comments = "Features a rugged yet modern design with black accents and available FX4 off-road package."
+
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "Balanced aerodynamics with pronounced wheel arches and a flat cargo bed."
+
+color = "Neutral Colors"
+color_comments = "Offers colors like Alto Blue, Carbonized Gray, and Oxford White."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Lariat trim includes brushed metal accents and soft-touch surfaces."
+
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included across all trims."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side-impact, and side-curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Lariat features standard ActiveX faux leather seats with 8-way power adjustment."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Active noise cancellation on hybrid models; laminated windshield."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "SYNC 3 system supports voice commands for navigation, phone, and audio."
+
+ota_updates = "Yes"
+ota_updates_comments = "Ford Power-Up software updates delivered over-the-air."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes Ford Co-Pilot360 with lane-centering and adaptive cruise control."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard on Lariat with stop-and-go functionality."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Part of Ford Co-Pilot360 Assist+ package."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Pre-Collision Assist with AEB standard."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane-Keeping System with road edge detection."
+
+remote_parking = "No"
+remote_parking_comments = "Not available on the Maverick lineup."
+
+auto_parking = "No"
+auto_parking_comments = "No self-parking feature offered."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "BLIS (Blind Spot Information System) with cross-traffic alert."
+
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver drowsiness monitoring."
+
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "2.5L Atkinson-cycle I4 hybrid (191 hp combined) or 2.0L EcoBoost I4 (250 hp)."
+
+motor_power = "70~120kW"
+motor_power_comments = "Hybrid electric motor produces 94 kW (126 hp)."
+
+battery_capacity = "30~50kWh"
+battery_capacity_comments = "1.1 kWh lithium-ion battery in hybrid models."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "16.5-gallon (62.5L) tank for gasoline models."
+
+horsepower = "200~300hp"
+horsepower_comments = "2.0L EcoBoost makes 250 hp; hybrid makes 191 hp combined."
+
+torque = "200~300N·m"
+torque_comments = "2.0L EcoBoost produces 277 lb-ft (375 N·m); hybrid makes 155 lb-ft (210 N·m)."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "2.0L EcoBoost accelerates 0-60 mph in ~7.0 sec; hybrid in ~7.7 sec."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 112 mph (180 km/h)."
+
+fuel_consumption = "4~6L/100km"
+fuel_consumption_comments = "Hybrid achieves 5.9L/100km (40 mpg) city; 2.0L EcoBoost gets 8.7L/100km (27 mpg)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is not a full BEV."
+
+driving_range = "400~800km"
+driving_range_comments = "Hybrid range is ~800 km (500 miles); EcoBoost ~640 km (400 miles)."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "AWD optional with 2.0L EcoBoost; FWD standard on hybrid."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts; rear twist-beam (FWD) or multi-link (AWD)."
+
+passibility = "Medium"
+passibility_comments = "FX4 package adds skid plates and all-terrain tires for off-road use."
+
+seat_layout = "5-seat"
+seat_layout_comments = "SuperCrew cab configuration with 5-passenger seating."
+
+city_commuting = "Yes"
+city_commuting_comments = "Compact size and hybrid efficiency ideal for urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride and ample storage for road trips."
+
+off_road_capability = "Medium"
+off_road_capability_comments = "FX4 package enhances capability with trail control and off-road suspension."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "1,500 lb payload capacity; 4,000 lb towing with 2.0L EcoBoost."
+
+clod_resistance = "Medium"
+clod_resistance_comments = "Hybrid battery performs well in cold weather with thermal management."
+
+heat_resistance = "High"
+heat_resistance_comments = "Tested for durability in extreme heat conditions."
+
+[AmbiguousLabels]
+size = "Medium"
+size_comments = "Compact pickup dimensions: 199.7 inches long, 72.6 inches wide."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced for daily driving and light utility tasks."
+
+aesthetics = "High"
+aesthetics_comments = "Stylish exterior with LED lighting and upscale Lariat trim details."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Hybrid model excels in fuel efficiency."
+
+confort_level = "High"
+confort_level_comments = "Spacious interior with premium materials and ergonomic design."
+
+smartness = "Medium"
+smartness_comments = "SYNC 3 infotainment and Co-Pilot360 provide modern tech."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "5-seat capacity but limited rear legroom compared to SUVs."
+
+[KeyDetails]
+key_details = "The Maverick Lariat combines truck utility with hybrid efficiency, featuring a standard 2.5L hybrid powertrain (191 hp), available AWD, Ford Co-Pilot360 safety suite, and a versatile 4.5-foot bed with innovative storage solutions like the FlexBed system. The interior includes an 8-inch touchscreen, B&O audio, and dual-zone climate control."
+key_details_comments = "The Ford Maverick Lariat represents an innovative fusion of pickup truck utility and hybrid efficiency, positioning itself as a practical yet eco-conscious choice in the compact truck segment. Its standard 2.5L hybrid powertrain delivers 191 combined horsepower while achieving exceptional fuel economy (up to 40 mpg city), making it uniquely positioned as the only hybrid pickup in its class. The available Intelligent All-Wheel Drive system with the 2.0L EcoBoost engine (250 hp/375 N·m) provides enhanced capability when needed. The truck stands out with its thoughtful FlexBed system featuring built-in storage solutions, 12V outlets, and adjustable cleats in the 4.5-foot bed. Inside, the Lariat trim elevates the experience with premium ActiveX faux leather seats, 8-way power adjustment, dual-zone automatic climate control, and a B&O sound system. Advanced safety comes standard through Ford's Co-Pilot360 suite including adaptive cruise control with stop-and-go, lane centering, and evasive steering assist. The SYNC 3 infotainment system with an 8-inch touchscreen supports both Apple CarPlay and Android Auto, while over-the-air updates ensure the vehicle stays current. With a maximum payload of 1,500 lbs and towing up to 4,000 lbs (with the 4K Tow Package), it maintains legitimate truck capability while offering car-like maneuverability ideal for urban environments."
+
+
+### Notes:

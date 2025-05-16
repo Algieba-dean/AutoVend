@@ -1,0 +1,191 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Cadillac-CTS V"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "60,000~100,000"
+prize_comments = "The Cadillac CTS-V is priced between $85,000 and $95,000 USD (new) depending on options and trim."
+
+vehicle_category_bottom = "Four-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The CTS-V is a high-performance luxury sedan with sports car capabilities."
+
+brand = "Cadillac"
+brand_comments = "Cadillac is General Motors' luxury division, known for premium vehicles."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The CTS-V features a supercharged V8 gasoline engine."
+
+# Space and dimensions
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Spacious interior with 99.5 cubic feet (2.82 cubic meters) of passenger volume."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 13.7 cubic feet (388L), slightly below 500L but categorized here due to luxury sedan standards."
+
+wheelbase = "2950~3100mm"
+wheelbase_comments = "Exact wheelbase is 2,910mm (114.6 inches)."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is approximately 140mm, optimized for performance handling."
+
+# Design and aesthetics
+design_style = "Sporty"
+design_style_comments = "Aggressive styling with a muscular stance, hood vent, and rear spoiler."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Sculpted body lines with aerodynamic efficiency."
+
+color = "Dark Colors"
+color_comments = "Offers colors like Black Raven, Dark Adriatic Blue, and Phantom Gray."
+
+interior_material_texture = "Leather"
+interior_material_texture_comments = "Handcrafted semi-aniline leather seats with suede microfiber accents."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included."
+
+airbag_count = "8"
+airbag_count_comments = "Includes dual front, side-impact, knee, and curtain airbags."
+
+seat_material = "Leather"
+seat_material_comments = "Performance seats with leather and microfiber suede inserts."
+
+noise_insulation = "High"
+noise_insulation_comments = "Active noise cancellation and acoustic laminated glass."
+
+# Tech and autonomy
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Cadillac User Experience (CUE) with voice recognition."
+
+ota_updates = "No"
+ota_updates_comments = "No over-the-air updates; requires dealer visits for software upgrades."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes Super Cruise (on compatible roads) with lane-centering and adaptive cruise."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard with full-speed range and stop/go capability."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Part of Super Cruise, works in stop-and-go traffic."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front automatic braking with pedestrian detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keep Assist with Lane Departure Warning."
+
+remote_parking = "No"
+remote_parking_comments = "No remote parking feature available."
+
+auto_parking = "Yes"
+auto_parking_comments = "Automatic parking assist with perpendicular and parallel parking."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Zone Alert with cross-traffic monitoring."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Attention Alert system."
+
+# Powertrain and performance
+engine_displacement = "6.0~6.0L"
+engine_displacement_comments = "6.2L supercharged V8 (LT4 engine)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable; gasoline engine only."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable; gasoline engine only."
+
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "19-gallon (72L) fuel tank."
+
+horsepower = "Above 400hp"
+horsepower_comments = "640 horsepower at 6,400 rpm."
+
+torque = "Above 500N·m"
+torque_comments = "630 lb-ft (854 N·m) of torque at 3,600 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 3.7 seconds."
+
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 200 mph (322 km/h)."
+
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA-rated at 14 mpg city / 21 mpg highway (16.8L/100km combined)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable; gasoline engine only."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 500 km (310 miles) on a full tank."
+
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "Standard RWD; AWD not available for the CTS-V."
+
+suspension = "Independent Suspension"
+suspension_comments = "Magnetic Ride Control 4.0 with adaptive damping."
+
+passibility = "Low"
+passibility_comments = "Low ground clearance limits off-road capability."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Four-door sedan with seating for five."
+
+# Usability
+city_commuting = "Yes"
+city_commuting_comments = "Suitable for city driving but optimized for performance."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable for long trips with adaptive cruise and luxury amenities."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low suspension and performance tires."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Trunk space is adequate for luggage but not oversized items."
+
+clod_resistance = "High"
+clod_resistance_comments = "Performs well in cold climates with heated seats and steering wheel."
+
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling and ventilated seats handle high temperatures."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "Full-size luxury sedan with a commanding presence."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior and trunk, suitable for families or long trips."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, aggressive design with premium materials."
+
+energy_consumption_level = "High"
+energy_consumption_level_comments = "High fuel consumption due to the powerful V8 engine."
+
+confort_level = "High"
+confort_level_comments = "Premium materials, adaptive suspension, and noise insulation."
+
+smartness = "Medium"
+smartness_comments = "Advanced tech but lacks OTA updates and full autonomy."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Spacious but performance-focused; not ideal for young families."
+
+[KeyDetails]
+key_details = "The Cadillac CTS-V is a high-performance luxury sedan with a 6.2L supercharged V8, producing 640 hp. It features Magnetic Ride Control, Brembo brakes, and a top speed of 200 mph. The interior includes leather/suede seats, a 12.3-inch digital cluster, and Super Cruise semi-autonomous driving."
+key_details_comments = "The Cadillac CTS-V represents the pinnacle of American performance luxury, combining a hand-built 6.2L supercharged LT4 V8 engine (shared with the Corvette Z06) with track-capable chassis dynamics and premium appointments. Its 640 horsepower output makes it one of the most powerful production sedans ever built by GM, while features like Magnetic Ride Control 4.0 suspension and Brembo carbon-ceramic brakes (optional) provide exceptional handling. The interior blends performance with luxury through features like 16-way adjustable performance seats with microfiber suede inserts, a configurable 12.3-inch digital instrument cluster, and Cadillac's Premium Surround Sound audio system. The inclusion of Super Cruise (GM's hands-free driving assist) adds advanced driver assistance while maintaining its focus as a driver's car."
+
+
+### Notes:

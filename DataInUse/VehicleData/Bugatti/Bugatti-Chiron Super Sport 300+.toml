@@ -1,0 +1,183 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Bugatti-Chiron Super Sport 300+"
+car_model_comments = "The Bugatti Chiron Super Sport 300+ is a limited-edition hypercar designed for extreme speed, with only 30 units produced."
+
+[PriciseLabels]
+
+prize = "Above 100,000"
+prize_comments = "The Bugatti Chiron Super Sport 300+ is priced at approximately $3.9 million USD, making it one of the most expensive production cars in the world."
+
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Chiron Super Sport 300+ is a high-performance, two-door coupe with a fixed roof, designed for ultimate speed and aerodynamics."
+
+brand = "Bugatti"
+brand_comments = "Bugatti is a French luxury hypercar manufacturer known for producing some of the fastest and most exclusive cars in the world."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Chiron Super Sport 300+ is powered by a quad-turbocharged W16 gasoline engine, delivering unparalleled performance."
+
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin is designed for two occupants, with a focus on driver-centric ergonomics and minimalistic luxury."
+
+trunk_volume = "200~300L"
+trunk_volume_comments = "The trunk capacity is approximately 280L, sufficient for limited luggage given the car's performance focus."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase measures 2711mm, providing stability at ultra-high speeds."
+
+chassis_height = "100~130mm"
+chassis_height_comments = "The chassis height is approximately 120mm, optimized for aerodynamics and ground-hugging performance."
+
+design_style = "Sporty"
+design_style_comments = "The design is aggressively sporty, with aerodynamic enhancements like a longtail rear and extensive carbon fiber use."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body features ultra-smooth lines and curves to minimize drag, achieving a drag coefficient of 0.38."
+
+color = "Bright Colors"
+color_comments = "The car is often seen in bold, bright colors like Bugatti's signature 'Racing Blue' or custom finishes."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features high-end metal trims, carbon fiber, and premium leather for a luxurious yet sporty feel."
+
+ABS = "Yes"
+ABS_comments = "Advanced ABS system ensures optimal braking performance even at extreme speeds."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is included to maintain control during high-speed maneuvers."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side, and curtain airbags for occupant protection."
+
+seat_material = "Lether"
+seat_material_comments = "Seats are upholstered in premium leather with optional custom stitching and embroidery."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "While some engine and road noise is present for an immersive experience, sound insulation is still premium."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Includes a voice-controlled infotainment system for navigation and media."
+
+ota_updates = "No"
+ota_updates_comments = "OTA updates are not supported; software updates require dealer visits."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Limited Level 2 autonomy with adaptive cruise control and lane-keeping assist."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Advanced adaptive cruise control for highway driving."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Traffic jam assist helps in stop-and-go traffic conditions."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking is included for collision avoidance."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane-keeping assist helps maintain lane position at high speeds."
+
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available due to the car's performance-focused design."
+
+auto_parking = "No"
+auto_parking_comments = "Auto-parking is not included, as the car is driver-centric."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind-spot monitoring is included for safer lane changes."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Fatigue detection alerts the driver if signs of drowsiness are detected."
+
+engine_displacement = "Above 6.0L"
+engine_displacement_comments = "The engine is an 8.0L quad-turbocharged W16, one of the largest in production cars."
+
+motor_power = "None"
+motor_power_comments = "Not applicable as the car is not electric or hybrid."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as the car is not electric or hybrid."
+
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "The fuel tank holds 100L to support long-range high-speed driving."
+
+horsepower = "Above 400hp"
+horsepower_comments = "Produces 1,578 hp (1,177 kW), making it one of the most powerful production cars."
+
+torque = "Above 500N·m"
+torque_comments = "Generates 1,600 N·m of torque, delivered seamlessly across the rev range."
+
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates from 0-100 km/h in just 2.4 seconds."
+
+top_speed = "Above 300km/h"
+top_speed_comments = "Limited to 440 km/h (273 mph), making it one of the fastest production cars ever."
+
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Fuel consumption is approximately 22.5 L/100 km under combined conditions."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as the car is not electric or hybrid."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 500 km on a full tank under mixed driving conditions."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Permanent all-wheel drive ensures maximum traction and performance."
+
+suspension = "Independent Suspension"
+suspension_comments = "Features an advanced independent suspension system with adaptive damping."
+
+passibility = "Low"
+passibility_comments = "Low ground clearance limits off-road capability, as expected for a hypercar."
+
+seat_layout = "2-seat"
+seat_layout_comments = "Strictly a two-seater, with a focus on the driver and passenger experience."
+
+city_commuting = "No"
+city_commuting_comments = "Not designed for city commuting due to its size, performance, and fuel consumption."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excels on highways and long-distance high-speed driving."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use; strictly a performance road car."
+
+cargo_capability = "No"
+cargo_capability_comments = "Limited cargo space due to the car's performance and design priorities."
+
+clod_resistance = "High"
+clod_resistance_comments = "Engine and systems are tested for reliability in cold conditions, though extreme cold may affect performance."
+
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling systems ensure performance even in high-temperature environments."
+
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "The Chiron Super Sport 300+ is a large hypercar, measuring 4,544 mm in length."
+
+vehicle_usability = "Small"
+vehicle_usability_comments = "Limited usability due to its extreme performance focus and two-seat layout."
+
+aesthetics = "High"
+aesthetics_comments = "The design is universally acclaimed for its beauty and aerodynamic efficiency."
+
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Extremely high fuel consumption due to the powerful W16 engine."
+
+confort_level = "High"
+confort_level_comments = "Despite its performance focus, the cabin offers high comfort with premium materials."
+
+smartness = "Medium"
+smartness_comments = "Includes modern tech but lacks some advanced smart features found in luxury sedans."
+
+family_friendliness = "Low"
+family_friendliness_comments = "Not family-friendly due to its two-seat layout and performance focus."
+
+[KeyDetails]
+key_details="The Bugatti Chiron Super Sport 300+ is a limited-edition hypercar built to celebrate Bugatti's 300+ mph (483+ km/h) speed record. It features an 8.0L quad-turbo W16 engine producing 1,578 hp, a longtail aerodynamic design, and extensive use of lightweight materials. Only 30 units were produced, each priced at ~$3.9 million USD."
+key_details_comments = "The Bugatti Chiron Super Sport 300+ is an ultra-exclusive hypercar created to commemorate Bugatti's historic achievement of being the first manufacturer to break the 300 mph (483 km/h) barrier with a modified Chiron prototype. This limited production version features an enhanced version of Bugatti's legendary 8.0L quad-turbocharged W16 engine, now producing 1,578 horsepower. The car incorporates extensive aerodynamic modifications including a distinctive longtail rear design, optimized cooling systems, and extensive use of lightweight carbon fiber. Only 30 units were hand-built, each representing the pinnacle of automotive engineering and carrying a price tag of approximately $3.9 million USD. The Super Sport 300+ represents the ultimate expression of Bugatti's philosophy of combining extreme performance with luxury and exclusivity."

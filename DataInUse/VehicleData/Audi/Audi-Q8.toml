@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -202,7 +202,7 @@ clod_resistance_comments = "Tested to -30°C; heated components include mirrors,
 heat_resistance = "High"
 heat_resistance_comments = "Cooled seats, solar-absorbing glass, and auxiliary coolant pump maintain performance."
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 smartness = ""
 smartness_comments = "The Q8 features advanced tech including 12.3\" virtual cockpit, natural voice control, and LTE connectivity. However, its driver assistance systems trail newer EV competitors, offering SAE Level 2 autonomy rather than more advanced self-driving capabilities."
 family_friendliness = ""

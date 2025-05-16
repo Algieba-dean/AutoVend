@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "The RS Q8's cooling systems are designed to maintain performance even in high-temperature conditions."
 
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Large"

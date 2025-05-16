@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -202,7 +202,7 @@ clod_resistance_comments = "Proven reliability in cold climates with winter tire
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling systems optimized for track use."
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 # size: candidate values: "Small", "Medium", "Large"
 size = "Medium"

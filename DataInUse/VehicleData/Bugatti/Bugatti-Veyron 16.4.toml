@@ -1,0 +1,240 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Bugatti-Veyron 16.4"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The Bugatti Veyron 16.4 had an original MSRP of approximately $1.7 million USD when new (2005-2015)."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Veyron is a mid-engine, two-seat hypercar with a fixed hardtop (Grand Sport versions had removable roof)."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Bugatti"
+brand_comments = "Bugatti is a French luxury hypercar manufacturer owned by Volkswagen Group."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Veyron uses a quad-turbocharged W16 gasoline engine with no hybrid assistance."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The two-seat cabin has approximately 2.8 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "Front trunk capacity is exactly 250 liters (8.8 cubic feet)."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The Veyron has a wheelbase of 2710mm (106.7 inches)."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "Ground clearance is 120mm in standard mode, reduces to 65mm in top speed mode."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "Extreme aerodynamic hypercar design focused on performance."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Wind-tunnel optimized shape with Cd of 0.36 despite massive cooling needs."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Bright Colors"
+color_comments = "Often seen in signature Bugatti two-tone schemes with bright primary colors."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Premium aluminum and carbon fiber dominate the interior with leather accents."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Advanced ABS system capable of handling 400+ km/h braking."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Highly sophisticated electronic stability program for such a powerful car."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Dual front, side, and knee airbags for both occupants."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Full premium leather upholstery standard, with extensive customization options."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Remarkably quiet for a hypercar at cruising speeds, but loud at full throttle."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "No"
+voice_interfaction_comments = "No voice control system was offered in the Veyron's era."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "The Veyron predates modern OTA update capabilities."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "No"
+autonomous_driving_level_comments = "No autonomous driving features - pure driver's car."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "No"
+adaptive_cruise_control_comments = "Traditional cruise control only."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "No"
+traffic_jam_assit_comments = "No traffic assist systems available."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "No"
+automatic_emergency_braking_comments = "Not equipped with AEB technology."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "No"
+lane_keep_assist_comments = "No lane keeping assistance."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "No remote parking capability."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "No automatic parking system."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "No"
+blind_spot_detection_comments = "No blind spot monitoring."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver fatigue detection."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "Above 6.0L"
+engine_displacement_comments = "8.0-liter quad-turbocharged W16 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable - pure internal combustion powertrain."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "No high-voltage battery - conventional 12V system only."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "100-liter (26.4 gallon) fuel tank to feed the thirsty W16."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "987hp (standard) to 1,200hp (Super Sport version)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "1,250 N·m (922 lb-ft) of torque in standard models."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "2.5 seconds for standard model, 2.2s for Super Sport."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "Electronically limited to 415 km/h (258 mph) for Super Sport version."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Extreme consumption - approximately 24.1 L/100km combined, 40.4 L/100km at top speed."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - no electric drive system."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "300~400km"
+driving_range_comments = "Approximately 350km range at normal driving speeds."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Permanent all-wheel drive with Haldex clutch."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Double-wishbone suspension front and rear."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "Very low ground clearance and long front overhang limit passability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "Strict two-seat configuration (driver and passenger)."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "No"
+city_commuting_comments = "Extremely impractical for daily commuting due to size, visibility, and fuel consumption."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Surprisingly comfortable GT car at highway speeds, despite extreme performance."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Absolutely not designed for off-road use."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "No"
+cargo_capability_comments = "Minimal storage space - front trunk only."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The Veyron's complex W16 engine with quad turbochargers requires careful warm-up procedures in cold conditions. While the all-wheel drive system provides good traction, the low ground clearance (120mm standard) and wide tires make winter driving impractical. The car's extreme performance focus means cold weather operation was not a primary design consideration, though it can function in moderate cold with proper care. Owners in cold climates typically store the vehicle during winter months."
+cold_resistance_comments = "Complex engine requires careful warm-up in cold conditions."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Extensive cooling system with 10 radiators handles extreme heat."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "Wide (1995mm) but relatively short (4462mm) footprint."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Small"
+vehicle_usability_comments = "Extremely limited daily usability despite its size."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Iconic design that represents the pinnacle of automotive engineering."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "One of the most fuel-thirsty production cars ever made."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "Surprisingly comfortable for a hypercar, but still firm."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Low"
+smartness_comments = "Minimal smart features - focused purely on driving experience."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Two seats only, no child seat provisions, completely impractical for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The Bugatti Veyron 16.4 redefined hypercar performance with its quad-turbo W16 engine, all-wheel drive system, and unprecedented top speed. It was the first production car to exceed 400 km/h (250 mph) and required extensive engineering to manage aerodynamics, tire technology, and cooling at these extreme speeds. The Veyron's development reportedly cost Volkswagen over $1.6 billion, with each car sold at a significant loss despite its multi-million dollar price tag."
+key_details_comments = "The Bugatti Veyron 16.4 was a groundbreaking hypercar that pushed automotive engineering boundaries with its quad-turbo W16 engine producing up to 1,200hp in Super Sport trim. It featured advanced aerodynamics with an active rear wing, specially developed Michelin tires rated for 400+ km/h, and a sophisticated all-wheel drive system. The car's development famously required solving unprecedented challenges in cooling (with 10 radiators), braking (carbon-ceramic brakes), and structural integrity at extreme speeds. Each Veyron took approximately 300 hours to assemble by hand at Bugatti's Molsheim factory."

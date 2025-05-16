@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Ford-Mustang Mach-E Rally"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Ford Mustang Mach-E Rally is priced between $65,000 and $75,000 USD depending on options and packages."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "All-terrain SUV"
+vehicle_category_bottom_comments = "The Mach-E Rally is a high-performance electric SUV designed for both on-road and off-road driving."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Ford"
+brand_comments = "Ford is an American automaker known for its performance vehicles, including the Mustang lineup."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The Mach-E Rally is a pure electric vehicle with dual motors and all-wheel drive."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The Mach-E Rally offers 4.8 cubic meters of passenger space, providing ample room for five adults."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The cargo capacity is 519 liters (18.3 cubic feet) behind the rear seats, expandable to 1,420 liters (50.1 cubic feet) with the rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The wheelbase is 2,984 mm (117.5 inches), contributing to stable handling and a spacious interior."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "The Rally model features a raised suspension with 203 mm (8 inches) of ground clearance for off-road capability."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Mach-E Rally has an aggressive, performance-oriented design with rally-inspired styling cues."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The design balances aerodynamic efficiency with muscular Mustang styling, featuring some sharp creases."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Bright Colors"
+color_comments = "Available in vibrant colors like Grabber Blue and Cyber Orange, with optional rally-inspired graphics."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features brushed aluminum accents and performance-oriented materials."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with performance calibration for rally driving."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program with rally mode for controlled slides on loose surfaces."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags for comprehensive protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Performance seats with leather and suede upholstery, featuring Rally branding."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Balanced insulation with some road noise noticeable in rally mode for driver feedback."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Ford's SYNC 4A system includes natural voice control for navigation, media, and vehicle functions."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for software improvements and new features."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Ford BlueCruise enables hands-free driving on approved highways (L2 automation)."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes stop-and-go adaptive cruise control with speed sign recognition."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Can assist with steering, acceleration, and braking in slow-moving traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Includes pedestrian and cyclist detection with automatic emergency braking."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Centering Assist helps keep the vehicle centered in its lane."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Does not offer remote parking feature, focusing instead on driver engagement."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Includes Active Park Assist 2.0 for parallel and perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Information System with cross-traffic alert and trailer coverage."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Alert System monitors behavior for signs of fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable - this is a pure electric vehicle with no combustion engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "Above 400kW"
+motor_power_comments = "Dual electric motors produce a combined 480 kW (650 hp) in peak performance mode."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "Above 100kWh"
+battery_capacity_comments = "91 kWh usable capacity (extended-range battery) with 400V architecture."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable - this is a pure electric vehicle with no fuel tank."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "Produces 650 horsepower in peak performance mode (with overboost function)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "Instant torque of 813 N·m (600 lb-ft) available from 0 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates 0-100 km/h (0-62 mph) in 3.5 seconds in peak performance mode."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 225 km/h (140 mph) for safety with rally suspension."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable - this is a pure electric vehicle with no fuel consumption."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "Approximately 18-20 kWh/100 km in normal driving, higher during performance driving."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "EPA-estimated 418 km (260 miles) range, or up to 480 km (300 miles) under ideal conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual-motor AWD with torque vectoring and rally-tuned traction control."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "MagneRide damping system with rally-tuned springs and unique stabilizer bars."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "High"
+passibility_comments = "Excellent ground clearance and approach/departure angles for an electric vehicle."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Five-passenger capacity with performance front seats and 60/40 split rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "One-pedal driving mode and compact dimensions make it suitable for urban use."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "BlueCruise hands-free driving and DC fast charging support long trips."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "High"
+off_road_capability_comments = "Rally-inspired with gravel mode, underbody protection, and all-terrain tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Generous cargo space with front trunk (frunk) and rear storage area."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management maintains performance in temperatures as low as -30°C."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling systems prevent performance degradation in high temperatures."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "Compact SUV dimensions with a length of 4,724 mm (186 inches)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balances daily practicality with performance capabilities."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Distinctive Mustang styling with rally-inspired design elements."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Higher than standard EVs due to performance focus, but still efficient."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "High"
+confort_level_comments = "Premium materials and adaptive suspension provide excellent comfort."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Advanced connectivity, driver assists, and over-the-air updates."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical for families but optimized for performance driving."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Ford Mustang Mach-E Rally is a high-performance electric SUV with rally-inspired features including raised suspension (203mm ground clearance), underbody protection, rally-tuned stability control, and specially developed Michelin CrossClimate2 tires. It features a dual-motor AWD system producing 650 hp (with overboost), MagneRide damping, and unique rally drive modes for loose surfaces. The interior includes performance seats with Rally branding, while exterior highlights include rally-inspired graphics, a front splitter, and rear spoiler."
+key_details_comments = "The Ford Mustang Mach-E Rally represents Ford's bold electrification of performance, combining Mustang's iconic heritage with rally-bred capability. Its 203mm (8-inch) raised suspension and underbody protection enable serious off-road adventures, while the dual-motor AWD system delivers 650hp (with overboost) and 813 N·m torque for exhilarating acceleration. Unique rally drive modes optimize stability control for loose surfaces, complemented by MagneRide damping and specially developed Michelin CrossClimate2 tires. The exterior features rally-inspired graphics, a functional front splitter, and rear spoiler, while the cabin boasts performance seats with Rally branding. With DC fast charging (10-80% in ~36 minutes) and Ford's BlueCruise hands-free driving, it blends extreme performance with everyday usability."

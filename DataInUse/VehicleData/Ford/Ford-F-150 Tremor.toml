@@ -1,0 +1,190 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Ford-F-150 Tremor"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "40,000~60,000"
+prize_comments = "The Ford F-150 Tremor is priced between $45,000 and $58,000 USD depending on trim and options."
+
+vehicle_category_bottom = "Off-road SUV"
+vehicle_category_bottom_comments = "The Tremor is a high-performance off-road variant of the F-150, designed for rugged terrain."
+
+brand = "Ford"
+brand_comments = "Ford is the manufacturer of the F-150 Tremor, a flagship off-road pickup."
+
+# Powertrain and performance
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The F-150 Tremor is powered by a turbocharged gasoline engine (EcoBoost)."
+
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "Spacious cabin with approximately 5.8 cubic meters of passenger volume (crew cab configuration)."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Bed volume is 1,852L (5.5-ft bed), with additional under-seat storage in the cabin."
+
+wheelbase = "Above 3100mm"
+wheelbase_comments = "Wheelbase is 3,370mm (132.8 inches) for the SuperCrew configuration."
+
+chassis_height = "Above 200mm"
+chassis_height_comments = "Ground clearance is 244mm (9.6 inches), optimized for off-road use."
+
+design_style = "Sporty"
+design_style_comments = "Aggressive styling with Tremor-specific accents, blacked-out trim, and off-road tires."
+
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "Muscular body lines with functional off-road design elements (e.g., flared fenders)."
+
+color = "Dark Colors"
+color_comments = "Offered in shades like Agate Black, Antimatter Blue, and Rapid Red (optional)."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Tremor-specific interior with metallic accents and durable surfaces."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included."
+
+airbag_count = "6"
+airbag_count_comments = "Includes front, side, and curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Optional leather-trimmed seats with Tremor branding."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Enhanced cabin insulation but slightly noisier due to off-road tires."
+
+# Tech and autonomy
+voice_interfaction = "Yes"
+voice_interfaction_comments = "SYNC 4 system with voice control for navigation, media, and climate."
+
+ota_updates = "Yes"
+ota_updates_comments = "Ford Power-Up over-the-air updates for software improvements."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Ford Co-Pilot360 2.0 with lane-centering and adaptive cruise."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Included in Co-Pilot360 Assist+ package."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Stop-and-go adaptive cruise control for congested traffic."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard forward collision warning with AEB."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane-keeping system included in Co-Pilot360."
+
+remote_parking = "No"
+remote_parking_comments = "Not available on the Tremor trim."
+
+auto_parking = "No"
+auto_parking_comments = "No self-parking feature due to off-road focus."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "BLIS (Blind Spot Information System) standard."
+
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver drowsiness monitoring."
+
+# Engine and performance specs
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "3.5L EcoBoost V6 (400 hp, 500 lb-ft torque)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable (gasoline engine only)."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable (non-hybrid powertrain)."
+
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "23-gallon (87L) tank standard; 26-gallon (98L) optional."
+
+horsepower = "300~400hp"
+horsepower_comments = "400 hp @ 5,500 rpm (3.5L EcoBoost V6)."
+
+torque = "Above 500N·m"
+torque_comments = "500 lb-ft (678 N·m) @ 3,000 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Approx. 6.5s 0-100 km/h (tested with 4WD)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h (112 mph)."
+
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA-estimated 17 mpg combined (13.8L/100km)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable (gasoline engine)."
+
+driving_range = "400~800km"
+driving_range_comments = "Approx. 640 km (400 miles) with 23-gallon tank."
+
+# Chassis and utility
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Standard 4WD with Tremor off-road tuning."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front independent suspension; rear solid axle with off-road dampers."
+
+passibility = "High"
+passibility_comments = "Approach angle: 27.6°, departure angle: 24.3°, water fording: 33 inches."
+
+seat_layout = "5-seat"
+seat_layout_comments = "SuperCrew cab configuration with 5 seats."
+
+city_commuting = "Yes"
+city_commuting_comments = "Suitable but optimized for off-road use."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable for long trips with adaptive cruise control."
+
+off_road_capability = "High"
+off_road_capability_comments = "Tremor package includes off-road tires, skid plates, and trail control."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Max payload: 1,705 lbs; towing: 11,200 lbs (when properly equipped)."
+
+clod_resistance = "High"
+clod_resistance_comments = "Tested for cold starts at -30°C; optional engine block heater."
+
+heat_resistance = "High"
+heat_resistance_comments = "Radiator and cooling system optimized for high-temperature off-roading."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "Full-size pickup truck with SuperCrew cab configuration."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "High versatility for work, off-roading, and daily use."
+
+aesthetics = "High"
+aesthetics_comments = "Aggressive Tremor styling with unique badging and black accents."
+
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Typical for a high-performance off-road truck."
+
+confort_level = "Medium"
+confort_level_comments = "Comfortable but firmer suspension due to off-road tuning."
+
+smartness = "Medium"
+smartness_comments = "Modern tech but not as advanced as luxury EVs."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Spacious but less practical than SUVs for family use."
+
+[KeyDetails]
+key_details = "The Ford F-150 Tremor is a factory-built off-road variant of the F-150, featuring a 3.5L EcoBoost V6, 4WD with off-road tuning, 33-inch all-terrain tires, and unique suspension. It bridges the gap between the standard F-150 and the Raptor, offering serious off-road capability while maintaining daily drivability."
+key_details_comments = "The Ford F-150 Tremor is a purpose-built off-road variant of America's best-selling pickup, featuring a 3.5L EcoBoost V6 producing 400 hp and 500 lb-ft of torque. It comes standard with 4WD featuring a Torsen front differential, off-road tuned suspension with position-sensitive Bilstein dampers, and 33-inch Goodyear Wrangler Territory all-terrain tires. The Tremor package includes unique styling cues like blacked-out trim, Tremor badging, and orange accents, along with functional upgrades including skid plates, trail control, and enhanced water fording capability (33 inches). While not as extreme as the Raptor, it offers superior off-road performance over standard F-150s with a 27.6° approach angle and 24.3° departure angle, making it ideal for both work sites and recreational off-roading while maintaining daily drivability."
+
+
+### Notes:

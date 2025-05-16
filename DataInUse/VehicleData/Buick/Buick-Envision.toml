@@ -1,0 +1,191 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Buick-Envision"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "30,000~40,000"
+prize_comments = "The Buick Envision is priced between $32,000 and $39,000 USD depending on the trim level (Preferred, Essence, Avenir)."
+
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The Envision is classified as a mid-size luxury SUV with a focus on comfort and premium features."
+
+brand = "Buick"
+brand_comments = "Buick is a premium American brand under General Motors, known for refined vehicles."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Envision is powered by a turbocharged gasoline engine; no hybrid or electric variant is currently offered."
+
+# Space and dimensions
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Passenger volume is approximately 5.0 cubic meters, offering ample legroom and headroom."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 527L (18.6 cu ft) behind the rear seats, expandable to 1,581L (55.8 cu ft) with seats folded."
+
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase is 2,863 mm (112.7 inches), contributing to stable handling and interior space."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is approximately 180 mm (7.1 inches), suitable for urban and light off-road use."
+
+# Design and aesthetics
+design_style = "Business"
+design_style_comments = "The Envision features a sophisticated, upscale design with chrome accents and a quiet cabin."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Sleek, aerodynamic lines with a 0.33 drag coefficient for reduced wind noise."
+
+color = "Neutral Colors"
+color_comments = "Offers colors like White Pearl, Dark Moon Blue, and Ebony Twilight—mostly neutral tones."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Avenir trim includes real wood accents; lower trims use faux wood."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system on all trims."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard for enhanced control."
+
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Leather upholstery standard on Essence and Avenir trims; Preferred has leatherette."
+
+noise_insulation = "High"
+noise_insulation_comments = "Active Noise Cancellation and acoustic glass provide a quiet ride."
+
+# Tech and autonomy
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Supports Buick Infotainment System with Google Assistant and Amazon Alexa."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment and select modules."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes adaptive cruise control and lane-keeping assist."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard on Avenir, optional on lower trims."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Part of the Driver Confidence Package (low-speed follow)."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard across all trims."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Includes lane departure warning and correction."
+
+remote_parking = "No"
+remote_parking_comments = "Not available on the Envision."
+
+auto_parking = "Yes"
+auto_parking_comments = "Available as part of the Advanced Parking Assist package."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Standard on Essence and Avenir trims."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Uses driver attention monitoring via steering input."
+
+# Powertrain and performance
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "2.0L turbocharged I4 engine (228 hp, 258 lb-ft torque)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable—gasoline engine only."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable—no hybrid or electric variant."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "60L (15.9-gallon) tank capacity."
+
+horsepower = "200~300hp"
+horsepower_comments = "228 horsepower at 5,000 rpm."
+
+torque = "200~300N·m"
+torque_comments = "258 lb-ft (350 N·m) torque at 1,500–4,000 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0–60 mph in ~7.5 seconds (FWD models)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 120 mph (193 km/h)."
+
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA-rated at 22 mpg city / 29 mpg highway (FWD)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable—gasoline engine only."
+
+driving_range = "Above 800km"
+driving_range_comments = "Approximately 870 km (540 miles) on a full tank (highway)."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "AWD optional on all trims; FWD standard."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts, rear 5-link independent suspension."
+
+passibility = "Medium"
+passibility_comments = "Competent for light off-road use but optimized for paved roads."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-passenger seating; no third-row option."
+
+# Usability
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions and maneuverability suit urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride and adaptive cruise ideal for highways."
+
+off_road_capability = "Low"
+off_road_capability_comments = "AWD provides traction but lacks dedicated off-road features."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "1,581L max cargo space with seats folded."
+
+clod_resistance = "High"
+clod_resistance_comments = "Tested for reliable cold starts down to -30°C."
+
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling and cabin materials rated for extreme heat."
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "Length: 4,846 mm (190.8 in); width: 1,883 mm (74.1 in)."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced for families and commuters with premium features."
+
+aesthetics = "High"
+aesthetics_comments = "Premium styling with LED lighting and chrome details."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Typical for a turbocharged mid-size SUV."
+
+confort_level = "High"
+confort_level_comments = "QuietTuning technology and adaptive suspension (Avenir)."
+
+smartness = "Medium"
+smartness_comments = "Includes modern tech but lacks advanced autonomy."
+
+family_friendliness = "High"
+family_friendliness_comments = "Top Safety Pick+ rating and spacious rear seats."
+
+[KeyDetails]
+key_details = "The Buick Envision is a mid-size luxury SUV with a 2.0L turbo engine, offering premium comfort, advanced safety tech (L2 autonomy), and a refined interior. Notable for its QuietTuning cabin and competitive pricing in the segment."
+key_details_comments = "The Buick Envision is a well-equipped mid-size luxury SUV that strikes a balance between premium features and value. Powered by a responsive 2.0L turbocharged engine (228 hp), it offers confident acceleration while maintaining respectable fuel efficiency. The Envision stands out with its QuietTuning technology—featuring active noise cancellation and acoustic glass—for a library-quiet cabin. It achieves Level 2 autonomous driving capability through standard features like adaptive cruise control, lane keep assist, and automatic emergency braking. With 527L of cargo space (expandable to 1,581L), it's practical for families while maintaining upscale appointments like available real wood trim and leather seats. The AWD option enhances all-weather capability, though it remains primarily road-focused. Positioned competitively against the Acura RDX and Lincoln Corsair, the Envision delivers a compelling package of comfort, technology, and Buick's signature refined ride quality."
+
+
+### Notes:

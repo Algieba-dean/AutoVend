@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -203,7 +203,7 @@ heat_resistance = "High"
 heat_resistance_comments = "Engine cooling systems validated at +50°C ambient, with UV-resistant interior materials."
 
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 energy_consumption_level = ""
 energy_consumption_level_comments = "With EPA ratings of 9.4-10.7L/100km (22-25 mpg) for gasoline models, the X4's consumption is typical for performance-oriented luxury SUVs. The 48V mild hybrid system in the M40i improves efficiency during coasting and stop-start situations."
 confort_level = ""

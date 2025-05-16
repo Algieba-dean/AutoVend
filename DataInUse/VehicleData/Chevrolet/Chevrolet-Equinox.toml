@@ -1,0 +1,176 @@
+title = "CarLabels"
+
+car_model = "Chevrolet-Equinox"
+
+[PriciseLabels]
+prize = "30,000~40,000"
+prize_comments = "The Chevrolet Equinox is priced between $31,800 and $39,300 USD for the 2023 model year, depending on trim (LS, LT, RS, Premier)."
+
+vehicle_category_bottom = "Compact SUV"
+vehicle_category_bottom_comments = "The Equinox is classified as a compact crossover SUV with 5-passenger seating."
+
+brand = "Chevrolet"
+brand_comments = "Manufactured by General Motors under the Chevrolet brand."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "Equinox offers a 1.5L turbocharged gasoline engine (LTG) as standard, with a 2.0L turbo option available."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Passenger volume measures exactly 5.02 cubic meters (177.5 cu ft)."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 637L (22.5 cu ft) behind rear seats, expandable to 1,869L (66 cu ft) with seats folded."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "Wheelbase measures 2,725mm (107.3 inches)."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 172mm (6.8 inches) for FWD models."
+
+design_style = "Sporty"
+design_style_comments = "Features Chevrolet's contemporary design language with RS trim offering sportier aesthetics."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Aerodynamic coefficient of 0.34 Cd with flowing character lines."
+
+color = "Neutral Colors"
+color_comments = "Offers colors like Summit White, Silver Ice Metallic, and Mosaic Black Metallic."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Premium trim levels feature brushed aluminum accents."
+
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Control with traction control."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side-impact, and side-curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Leatherette upholstery standard on LT and above; genuine leather available."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Active noise cancellation on Premier trim."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Chevrolet Infotainment 3 Plus system with Google Assistant integration."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for infotainment system."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Available Super Cruise on Premier trim (hands-free highway driving)."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available as part of Driver Confidence II Package."
+
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Included with adaptive cruise control on Premier trim."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard Forward Collision Alert with Automatic Emergency Braking."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Standard Lane Keep Assist with Lane Departure Warning."
+
+remote_parking = "No"
+remote_parking_comments = "Not available on this model."
+
+auto_parking = "No"
+auto_parking_comments = "No automated parking assist features."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Available Blind Zone Alert with Rear Cross Traffic Alert."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Standard Driver Attention Alert system."
+
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "1.5L turbo (LTG) standard; 2.0L turbo (LSY) optional (both 4-cylinder)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable for gasoline-only variant."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable for gasoline-only variant."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "56.7L (15-gallon) fuel tank capacity."
+
+horsepower = "200~300hp"
+horsepower_comments = "1.5L produces 175 hp; 2.0L produces 252 hp (at 5,500 rpm)."
+
+torque = "200~300N·m"
+torque_comments = "1.5L makes 203 lb-ft (275 N·m); 2.0L makes 260 lb-ft (353 N·m)."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "2.0L models achieve 0-100 km/h in 7.9s (Car and Driver testing)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 193 km/h (120 mph)."
+
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA-rated at 8.1L/100km (29 mpg) combined for FWD 1.5L models."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline-only variant."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 700km (435 miles) range with 1.5L engine."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "FWD standard; AWD available with torque vectoring."
+
+suspension = "Independent Suspension"
+suspension_comments = "MacPherson strut front, 4-link independent rear suspension."
+
+passibility = "Medium"
+passibility_comments = "Competent for light off-road use with AWD."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-passenger seating (2 front, 3 rear)."
+
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions (4,652mm length) ideal for urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride quality and available driver assists."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Primarily designed for paved roads despite AWD availability."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "60/40 split-folding rear seats enhance cargo versatility."
+
+clod_resistance = "High"
+clod_resistance_comments = "Proven performance in cold climates with available heated features."
+
+heat_resistance = "Medium"
+heat_resistance_comments = "Standard air conditioning with available ventilated seats."
+
+[AmbiguousLabels]
+size = "Medium"
+size_comments = "Dimensions: 4,652mm (L) x 1,843mm (W) x 1,684mm (H)."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced for both urban and highway use."
+
+aesthetics = "Medium"
+aesthetics_comments = "Contemporary but conservative styling typical of mainstream SUVs."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Typical for class with turbocharged engines."
+
+confort_level = "High"
+confort_level_comments = "Quiet cabin and available premium features on higher trims."
+
+smartness = "Medium"
+smartness_comments = "Offers basic connectivity but lacks advanced autonomous features."
+
+family_friendliness = "High"
+family_friendliness_comments = "Top Safety Pick+ rating and practical cabin layout."
+
+[KeyDetails]
+key_details = """

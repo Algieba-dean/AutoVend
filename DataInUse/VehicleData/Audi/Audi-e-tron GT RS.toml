@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -160,7 +160,7 @@ clod_resistance_comments = "Heat pump system maintains battery efficiency down t
 heat_resistance = "High"
 heat_resistance_comments = "Battery thermal management sustains performance in +50°C."
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 size = "Large"
 size_comments = "Length: 4,990mm; Width: 1,960mm (excluding mirrors)."

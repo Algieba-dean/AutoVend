@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -160,7 +160,7 @@ clod_resistance_comments = "Tested to -40°C with heated components (mirrors, wa
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling system maintains performance up to +50°C ambient."
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 size = "Large"
 size_comments = "Length: 5,091mm; Width: 1,902mm (with mirrors)."

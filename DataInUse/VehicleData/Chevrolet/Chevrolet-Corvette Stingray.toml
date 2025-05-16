@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Chevrolet-Corvette Stingray"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Chevrolet-Corvette Stingray starts at $65,000 USD for the base model and can exceed $90,000 USD for the high-performance Z51 trim with premium options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Corvette Stingray is a high-performance two-door sports car with a hardtop coupe design, featuring a mid-engine layout for optimal weight distribution."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Chevrolet"
+brand_comments = "The Corvette Stingray is Chevrolet's flagship sports car, known for its performance and American engineering heritage."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Corvette Stingray is powered by a naturally aspirated or supercharged V8 gasoline engine, depending on the trim level."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The Corvette Stingray offers a compact passenger space of approximately 2.8 cubic meters, optimized for a two-seat sports car layout."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "The trunk capacity is 357L (12.6 cubic feet) in the coupe version, with additional storage in the front trunk (frunk)."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The Corvette Stingray has a wheelbase of 2,722mm (107.2 inches), contributing to its stable handling characteristics."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "The ground clearance is approximately 120mm (4.7 inches), optimized for performance driving with a low center of gravity."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Corvette Stingray features aggressive aerodynamic styling with sharp lines and a low-slung profile typical of high-performance sports cars."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body features smooth, flowing lines with integrated aerodynamic elements that reduce drag while maintaining visual appeal."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Bright Colors"
+color_comments = "The Corvette Stingray is often offered in vibrant colors like Torch Red, Accelerate Yellow, and Elkhart Lake Blue, though more subdued options are available."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features aluminum and carbon fiber accents, with premium leather upholstery options."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard, with multiple performance-oriented modes."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front airbags, side-impact airbags, and knee airbags for both occupants."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard Nappa leather seats with optional competition-style seats featuring additional bolstering."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "The cabin features moderate noise insulation, allowing some engine and exhaust note to enter for a sporty driving experience."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Chevrolet Infotainment 3 system includes natural language voice recognition for navigation, media, and phone functions."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for the infotainment system and select vehicle modules."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Offers Level 2 autonomy with available Super Cruise system on certain trims, providing hands-free driving on compatible highways."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available with automatic speed adjustment based on traffic conditions."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "Yes"
+traffic_jam_assit_comments = "Included with the adaptive cruise control system, can handle stop-and-go traffic situations."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard forward collision alert with automatic emergency braking."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Standard lane keep assist with lane departure warning."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Does not offer remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "Does not feature automated parking assistance."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Standard blind zone alert with rear cross traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver attention alert system monitors driving behavior for signs of fatigue."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "6.2L"
+engine_displacement_comments = "The standard LT2 V8 engine displaces 6.2 liters (376 cubic inches)."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "18.5-gallon (70-liter) fuel tank capacity."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "Produces 495 hp (369 kW) in standard trim, with the Z06 model reaching 670 hp (500 kW)."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "Generates 637 N·m (470 lb-ft) of torque in standard configuration."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates from 0-100 km/h (0-62 mph) in approximately 3.0 seconds with the Z51 performance package."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "Electronically limited to 312 km/h (194 mph) in the high-performance Z06 variant."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "EPA-rated at 15 mpg city/27 mpg highway (15.7-8.7 L/100km), with actual performance driving consuming significantly more."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is a gasoline-powered vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 480-640 km (300-400 miles) range on a full tank depending on driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "Traditional rear-wheel drive layout, with available electronic limited-slip differential."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front and rear short/long arm (SLA) double wishbone suspension with available Magnetic Ride Control 4.0."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "Low ground clearance and performance-oriented suspension limit rough terrain capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "Strict two-seat configuration with no rear seating."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "While capable, the low ride height and performance focus make it less ideal for daily city driving than more practical vehicles."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with comfortable touring modes and good fuel economy at steady speeds."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance and performance tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Limited but usable cargo space with front and rear trunks totaling approximately 357L."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "Performs adequately in cold weather with proper tires, though summer performance tires may limit winter usability."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Engine and cooling systems are designed to maintain performance in high-temperature conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "While low to the ground, the Corvette Stingray has a substantial footprint with a length of 4,630mm (182.3 inches)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Offers reasonable daily usability for a sports car, with decent storage and comfort features."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Widely regarded as one of the most visually striking American sports cars, with aggressive yet balanced proportions."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "As a high-performance V8 sports car, fuel consumption is significant, especially during spirited driving."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "Surprisingly comfortable for a sports car, with available GT2 seats and magnetic ride control, though firmer than luxury sedans."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Features advanced driver assistance systems and cutting-edge performance technologies."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Two-seat configuration and limited practicality make it unsuitable for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Chevrolet Corvette Stingray represents the eighth generation of America's sports car, featuring a revolutionary mid-engine design for the first time in the model's history. Key highlights include a 6.2L LT2 V8 engine producing 495 hp (369 kW), available with an 8-speed dual-clutch transmission, and a lightweight aluminum frame. The Stingray offers supercar performance at a fraction of European competitors' prices, with a 0-60 mph time of 2.9 seconds in Z51 trim. The interior features a driver-focused cockpit with a 12-inch digital gauge cluster and available performance data recorder. The car's aerodynamic design includes functional vents and a rear spoiler that automatically deploys at speed."
+key_details_comments = "The Chevrolet Corvette Stingray represents a revolutionary shift in American sports car design, marking the first production Corvette with a mid-engine layout. This eighth-generation model combines cutting-edge engineering with accessible supercar performance, featuring a 6.2L LT2 V8 engine that delivers 495 horsepower (369 kW) in standard configuration. The lightweight aluminum frame and advanced aerodynamics contribute to exceptional handling, while the available Z51 performance package reduces 0-60 mph times to just 2.9 seconds. The interior showcases a driver-focused cockpit with a 12-inch configurable digital display and available Performance Data Recorder. Notable innovations include the rear-mounted transaxle for optimal weight distribution, an electronic limited-slip differential, and available Magnetic Ride Control 4.0 suspension. The Stingray maintains Corvette's tradition of offering exotic car performance at a fraction of European competitors' prices, while introducing new levels of refinement and technology."

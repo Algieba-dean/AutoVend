@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -173,7 +173,7 @@ clod_resistance_comments = "Tested to -40°C with heated components throughout."
 heat_resistance = "High"
 heat_resistance_comments = "Cooled seats and solar-reflective glass options."
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 size = "Large"
 size_comments = "Overall length: 5,391mm (212.2 inches)."

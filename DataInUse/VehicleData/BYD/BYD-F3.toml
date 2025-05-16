@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "BYD-F3"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "10,000~20,000"
+prize_comments = "The BYD-F3 is priced between $12,000 and $18,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The BYD-F3 is a compact sedan with a length of 4,533mm, width of 1,705mm, and height of 1,490mm."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "BYD"
+brand_comments = "BYD (Build Your Dreams) is a Chinese automaker known for affordable and reliable vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The BYD-F3 is powered by a 1.5L naturally aspirated gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering comfortable seating for five adults."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "400~500L"
+trunk_volume_comments = "The trunk capacity is 430L, providing ample space for luggage."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,600mm, contributing to stable handling and a comfortable ride."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "130~150mm"
+chassis_height_comments = "The chassis height is 140mm, suitable for urban driving conditions."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The BYD-F3 features a conservative and practical design suitable for business and family use."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The body lines are moderately smooth, with a balanced aesthetic."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available colors include silver, beige, and gray, which are neutral and versatile."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features metal trim accents for a modern look."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Anti-lock Braking System (ABS) is standard for improved safety."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "No"
+ESP_comments = "Electronic Stability Program (ESP) is not available on the BYD-F3."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "2"
+airbag_count_comments = "The BYD-F3 comes with dual front airbags as standard."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Fabric"
+seat_material_comments = "The seats are upholstered in durable fabric."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "The cabin offers moderate noise insulation, suitable for city driving."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "No"
+voice_interfaction_comments = "The infotainment system does not support voice interaction."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "Over-the-air (OTA) updates are not supported."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "None"
+autonomous_driving_level_comments = "The BYD-F3 does not support autonomous driving features."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "No"
+adaptive_cruise_control_comments = "Adaptive cruise control is not available."
+
+# traffic_jam_assit, candidate values: "Yes", "No"
+traffic_jam_assit = "No"
+traffic_jam_assit_comments = "Traffic jam assist is not available."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "No"
+automatic_emergency_braking_comments = "Automatic emergency braking is not available."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "No"
+lane_keep_assist_comments = "Lane keep assist is not available."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "Auto parking is not available."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "No"
+blind_spot_detection_comments = "Blind spot detection is not available."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "Fatigue driving detection is not available."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "1.0~1.6L"
+engine_displacement_comments = "The BYD-F3 is equipped with a 1.5L naturally aspirated gasoline engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as the BYD-F3 is not an electric vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as the BYD-F3 is not an electric vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "The fuel tank capacity is 50L, providing a decent range."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "100~200hp"
+horsepower_comments = "The 1.5L engine produces 109 horsepower."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Below 200N·m"
+torque_comments = "The engine delivers 145N·m of torque."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Above 10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The 0-100 km/h acceleration time is approximately 12.5 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The top speed is 170 km/h."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "The combined fuel consumption is 7.2L/100km."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as the BYD-F3 is not an electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "None"
+driving_range_comments = "Not applicable as the BYD-F3 is not an electric vehicle."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "The BYD-F3 is front-wheel drive, which is typical for compact sedans."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The front suspension is MacPherson strut, and the rear is torsion beam."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "The ground clearance is suitable for urban and light rural roads."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The BYD-F3 seats five passengers with a 2+3 configuration."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "The compact size and fuel efficiency make it ideal for city commuting."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The stable handling and decent fuel economy make it suitable for highway driving."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The BYD-F3 is not designed for off-road use."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The trunk and foldable rear seats provide adequate cargo space."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The car performs adequately in cold weather but may require additional care in extreme conditions."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "Medium"
+heat_resistance_comments = "The cooling system is effective in moderate to high temperatures."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The BYD-F3 is a medium-sized compact sedan."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "It offers a good balance of space and maneuverability."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "Medium"
+aesthetics_comments = "The design is functional and conservative, with moderate aesthetic appeal."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "The fuel efficiency is average for its class."
+
+# confort_level: candidate values: "Low", "Medium", "High"
+confort_level = "Medium"
+confort_level_comments = "The ride comfort is decent, with adequate seating and suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Low"
+smartness_comments = "The BYD-F3 lacks advanced smart features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "It is practical for small families but lacks some modern family-oriented features."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The BYD-F3 is an affordable compact sedan with a focus on practicality and reliability. It features a 1.5L gasoline engine, front-wheel drive, and a spacious interior for its class. While it lacks advanced technology and luxury features, it offers good value for budget-conscious buyers."
+key_details_comments = "The BYD-F3 is a budget-friendly compact sedan designed for practicality and reliability. It features a 1.5L naturally aspirated gasoline engine delivering 109 horsepower, paired with front-wheel drive for efficient urban and highway driving. With dimensions of 4,533mm in length and a 2,600mm wheelbase, it offers a comfortable interior space for five passengers and a 430L trunk capacity. While it lacks advanced driver-assistance systems and smart features, its simple mechanical layout ensures lower maintenance costs. The car is best suited for city commuting and occasional long-distance travel, offering decent fuel economy at 7.2L/100km. Its conservative design and neutral color options appeal to buyers seeking basic transportation without frills."

@@ -32,7 +32,7 @@ brand_list = [
     "BYD", 
     "Geely", 
     "Changan",
-    "Great Wall Motor", 
+    "GWM", 
     "Nio", 
     "XiaoMi",
     "XPeng",

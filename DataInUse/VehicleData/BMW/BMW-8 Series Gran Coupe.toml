@@ -1,4 +1,4 @@
-# The Car Information Labels, contains PriciseLabels and AmbibuousLabels
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
 
 title = "CarLabels"
 
@@ -159,7 +159,7 @@ clod_resistance_comments = "Proven performance in cold climates with available h
 heat_resistance = "High"
 heat_resistance_comments = "Robust cooling systems for high-performance variants even in hot conditions."
 
-[AmbibuousLabels]
+[AmbiguousLabels]
 
 size = "Large"
 size_comments = "Length: 200.2 inches (5,086mm); width: 76.1 inches (1,933mm)."
