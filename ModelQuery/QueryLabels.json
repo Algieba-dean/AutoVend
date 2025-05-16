@@ -27,7 +27,7 @@
         "candidates":["germany","france","united kingdom","sweden","usa","japan","korea","china"],
         "description":"the country of the brand"
     },
-    "brand_name":{
+    "brand":{
         "candidates":["volkswagen","audi","porsche","bentley","bugatti","lamborghini","bmw","mercedes-benz","peugeot","renault","jaguar","land rover","rolls-royce","volvo","chevrolet","buick","cadillac","ford","tesla","toyota","honda","nissan","suzuki","mazda","hyundai","byd","geely","changan","great wall motor","nio","xiaomi","xpeng"],
         "description":"the name of the brand"
     },

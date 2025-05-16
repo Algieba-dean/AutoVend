@@ -1,74 +1,119 @@
 import tomllib as tomli
 import json
 import os
-from pprint import pp
+#from pprint import pp
 
 class CarModelQuery:
     def __init__(self):
-        # 加载标签树和查询标签
-        self.query_tree_path = './ModelQuery/LabelsTree.json'
-        self.vehicle_data_path = './DataInUse/VehicleData'
-        
-        # 加载查询树和查询标签
-        with open(self.query_tree_path, 'r', encoding='utf-8') as file_query_tree:
-            self.query_tree = json.load(file_query_tree)
+        # query tree and vehicle date configure path
+        self.label_tree_path = './ModelQuery/LabelsTree.json'
+        self.vehicle_file_dir = './DataInUse/VehicleData'
+
+        self.vehicle_data_list =[]
+        self.precise_labels={}
+        self.ambiguous_labels={}
+        self.vehicle_category_tree={
+            "sedan":["micro sedan","compact sedan","b-segment sedan","c-segment sedan","d-segment sedan"],
+            "suv":["compact suv","mid-size suv","mid-to-large suv","off-road suv","all-terrain suv"],
+            "mpv":["compact mpv","mid-size mpv","large mpv","mid-size business mpv","large-size business mpv"],
+            "sports car":["two-door convertible sports car","four-door convertible sports car","two-door hardtop sports car","four-door hardtop sports car"],
+            "small sedan":["micro sedan","compact sedan"],
+            "mid-size sedan":["b-segment sedan"],
+            "mid-large sedan":["c-segment sedan","d-segment sedan"],
+            "crossover suv":["compact suv","mid-size suv","mid-to-large suv"],
+            "body-on-frame suv":["off-road suv","all-terrain suv"],
+            "family mpv":["compact mpv","mid-size mpv","large mpv"],
+            "business mpv":["mid-size business mpv","large-size business mpv"],
+            "convertible sports car":["two-door convertible sports car","four-door convertible sports car"],
+            "hardtop sports car":["two-door hardtop sports car","four-door hardtop sports car"]
+            }
+        self.brand_tree={
+            "european":["volkswagen","audi","porsche","bentley","bugatti","lamborghini","bmw","mercedes-benz","peugeot","renault","jaguar","land rover","rolls-royce","volvo"],
+            "american":["chevrolet","buick","cadillac","ford","tesla"],
+            "asian":["toyota","honda","nissan","suzuki","mazda","hyundai","byd","geely","changan","great wall motor","nio","xiaomi","xpeng"],            
+            "germany":["volkswagen","audi","porsche","bentley","bugatti","lamborghini","bmw","mercedes-benz"],            
+            "france":["peugeot","renault"],
+            "united kingdom":["jaguar","land rover","rolls-royce"],
+            "sweden":["volvo"],
+            "usa":["chevrolet","buick","cadillac","ford","tesla"],
+            "japan":["toyota","honda","nissan","suzuki","mazda"],
+            "korea":["hyundai"],
+            "china":["byd","geely","changan","great wall motor","nio","xiaomi","xpeng"],
+        }
+
+        # load query tree data
+        with open(self.label_tree_path, 'r', encoding='utf-8') as query_tree_file:
+            self.query_tree = json.load(query_tree_file)
+            self.precise_labels=self.query_tree["precise_needs"]
+            self.ambiguous_labels=self.query_tree["ambiguous_needs"]
+
+        # load vehicle data
+        vehicle_files = self._get_all_vehicle_files_path()
+        for vehicle_file in vehicle_files:
+            vehicle_data = self._load_car_data(vehicle_file)
+            self.vehicle_data_list.append(vehicle_data)
+            
     
     def query_car_model(self, dict_query: dict) -> list:
         """
-        根据输入的查询条件，返回匹配的车型列表
+        based on the input query dict returen matched car model dict
         
         Args:
-            dict_query: 查询条件字典，键为标签名，值为标签值
+            dict_query: query dict, key is label name, value is label value
             
         Returns:
-            匹配的车型列表
+            matched car model
         """
-        # 如果查询字典为空，返回空列表
+        # if dict_query empty return
         if not dict_query:
             return []
-        
-        # 标准化查询条件（转换为小写）
-        normalized_query = {k.lower(): v.lower() if isinstance(v, str) else v for k, v in dict_query.items()}
-        
-        # 获取所有车型文件
-        car_model_files = self._get_all_car_model_files()
-        
-        # 匹配车型
         matched_models = []
-        for car_file in car_model_files:
-            car_data = self._load_car_data(car_file)
-            if self._match_car_with_query(car_data, normalized_query):
-                matched_models.append(car_data.get('car_model', os.path.basename(car_file).replace('.toml', '')))
+
+        # firstly match with all dict_query
+        for car_data in self.vehicle_data_list:
+            if self._match_car_with_query(car_data, dict_query):
+                matched_models.append(car_data["car_model"])
         
-        return matched_models
+        # if no matched, match with precise_query only
+        if matched_models:
+            return matched_models,dict_query
+        else:
+            precise_query= self._query_dispatch(dict_query)
+            if precise_query:
+                for car_data in self.vehicle_data_list:
+                    if self._match_car_with_query(car_data, precise_query):
+                        matched_models.append(car_data["car_model"])
+        if matched_models:
+            return matched_models,precise_query
+
+        return matched_models,dict_query
     
-    def _get_all_car_model_files(self):
+    def _get_all_vehicle_files_path(self):
         """
-        获取所有车型文件路径
+        get all car model file path
         
         Returns:
-            车型文件路径列表
+            dict of all car model file path
         """
-        car_files = []
+        vehicle_files_path = []
         
-        # 首先检查DataInUse/VehicleData目录
-        if os.path.exists(self.vehicle_data_path):
-            for root, dirs, files in os.walk(self.vehicle_data_path):
+        if os.path.exists(self.vehicle_file_dir):
+            for root, _, files in os.walk(self.vehicle_file_dir):
                 for file in files:
                     if file.endswith('.toml') and file != 'CarLabels.toml':
-                        car_files.append(os.path.join(root, file))
+                        vehicle_files_path.append(os.path.join(root, file))
         
-        return car_files
+        return vehicle_files_path
     
     def _load_car_data(self, car_file):
         """
-        加载车型数据
+        load car data from the path
         
         Args:
-            car_file: 车型文件路径
+            car_file: the car data path
             
         Returns:
-            车型数据字典
+            car datas list, key=label, value=label value
         """
         try:
             with open(car_file, 'rb') as f:
@@ -77,83 +122,99 @@ class CarModelQuery:
         except Exception as e:
             print(f"Error loading car data from {car_file}: {e}")
             return {}
-    
-    def _match_car_with_query(self, car_data, query):
+
+    def _query_dispatch(self,dict_query):
         """
-        判断车型是否匹配查询条件
+        based on the input query, return only precise query
         
         Args:
-            car_data: 车型数据字典
-            query: 查询条件字典
+            dict_query: the request query data
             
         Returns:
-            是否匹配
+            precise qury dict
         """
-        if not car_data or 'PriciseLabels' not in car_data:
+        precise_query={}
+
+        for query_key,query_value in dict_query.items():
+            if query_key not in ["size","vehicle_usability","aesthetics","energy_consumption_level","comfort_level","smartness","family_friendliness"]:
+                precise_query[query_key]=query_value
+
+        return precise_query
+
+    def _match_car_with_query(self, car_data, query):
+        """
+        check if car data match the query condition
+        
+        Args:
+            car_data: the dict of car data
+            query: the query data dict
+            
+        Returns:
+            wether the car data matched
+        """
+        if not car_data:
             return False
         
-        # 获取车型的精确标签
-        precise_labels = car_data['PriciseLabels']
-        # 获取车型的模糊标签
-        ambiguous_labels = car_data.get('AmbibuousLabels', {})
-        
-        # 检查每个查询条件
-        for key, value in query.items():
-            # 标准化键名（去除_alias后缀）
-            base_key = key.replace('_alias', '')
-            
-            # 检查精确标签
-            if base_key in precise_labels:
-                car_value = precise_labels[base_key].lower() if precise_labels[base_key] else ""
-                if car_value and value and value != car_value:
+        # get vehicle data
+        vehicle_data = car_data['PriciseLabels']|car_data['AmbibuousLabels']
+
+        for query_key,query_value in query.items():
+            if query_key.endswith('_alias'):
+                # convert alias query
+                query_value=self._get_actual_value_from_alias(query_key,query_value)
+                query_key=query_key.replace('_alias', '')
+            # check vehicle data with query value
+            if query_key in vehicle_data:
+                if vehicle_data[query_key].lower()!=query_value:
                     return False
-            # 检查模糊标签
-            elif base_key in ambiguous_labels:
-                car_value = ambiguous_labels[base_key].lower() if ambiguous_labels[base_key] else ""
-                if car_value and value and value != car_value:
-                    return False
-            # 如果是别名查询，需要转换为实际值进行比较
-            elif key.endswith('_alias') and base_key in precise_labels:
-                # 获取别名对应的实际值
-                actual_value = self._get_actual_value_from_alias(base_key, value)
-                car_value = precise_labels[base_key].lower() if precise_labels[base_key] else ""
-                if car_value and actual_value and actual_value != car_value:
-                    return False
-        
+            else:
+                #check vehicle category and brand key
+                match query_key:
+                    case "vehicle_category_top" | "vehicle_category_middle":
+                        if vehicle_data["vehicle_category_bottom"].lower() not in self.vehicle_category_tree[query_value]:
+                            return False
+                    case "brand_area" | "brand_country":
+                        if vehicle_data["brand"].lower() not in self.brand_tree[query_value]:
+                            return False
+                    case _:
+                        return False
+
         return True
     
     def _get_actual_value_from_alias(self, key, alias_value):
         """
-        根据别名获取实际值
+        get actual value from alias label
         
         Args:
-            key: 标签键名
-            alias_value: 别名值
+            key: label name
+            alias_value: alias value
             
         Returns:
-            实际值
+            actual value
         """
-        # 检查查询标签中是否有该键的别名定义
-        alias_key = f"{key}_alias"
-        if alias_key in self.query_labels:
-            alias_candidates = self.query_labels[alias_key].get('candidates', [])
-            key_candidates = self.query_labels[key].get('candidates', [])
+        # check if input key exist
+        alias_key=key.replace('_alias', '')
+
+        if self.precise_labels[alias_key]:
+            alias_candidates = self.precise_labels[key]
+            key_candidates = self.precise_labels[alias_key]
             
-            # 找到别名在列表中的索引
+            # find the index and convert
             try:
-                index = [c.lower() for c in alias_candidates].index(alias_value.lower())
-                # 使用相同索引获取实际值
+                index = alias_candidates.index(alias_value)
+                # use the index to get actual value
                 if index < len(key_candidates):
-                    return key_candidates[index].lower()
+                    actual_value = key_candidates[index]
+                    return actual_value
             except ValueError:
                 pass
         
-        return None
+        return ""
 
-# 测试代码
-if __name__ == "__main__":
-    c = CarModelQuery()
-    # 测试查询
-    result = c.query_car_model({"prize": "40,000~60,000", "brand": "Volvo"})
-    print("查询结果:")
-    pp(result)
+# test code
+#if __name__ == "__main__":
+#    c = CarModelQuery()
+    # test query
+#    result = c.query_car_model({"vehicle_category_middle": "suv","brand":"bmw"})
+#    print("query results:")
+#    pp(result)
