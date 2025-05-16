@@ -79,7 +79,7 @@ class ChatMessage:
         self.message_id = str(uuid.uuid4())
         self.session_id = session_id
         self.sender_type = sender_type  # "user" or "system"
-        self.sender_id = sender_id or (str(uuid.uuid4()) if sender_type == "user" else "agent_123")
+        self.sender_id = sender_id or (str(uuid.uuid4()) if sender_type == "user" else "AutoVend")
         self.content = content
         self.timestamp = datetime.now(UTC).isoformat()
         self.status = "delivered"
@@ -102,5 +102,5 @@ class ChatMessage:
             session_id=session_id,
             content=content,
             sender_type="system",
-            sender_id="agent_123"
+            sender_id="AutoVend"
         ) 

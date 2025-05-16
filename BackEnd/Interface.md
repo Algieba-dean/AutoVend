@@ -121,7 +121,7 @@ This document defines the API interface between the frontend and backend of Auto
       "message": {
         "message_id": "<uuid>",
         "sender_type": "system",
-        "sender_id": "agent_123",
+        "sender_id": "AutoVend",
         "content": "Hi I'm AutoVend, your smart assistant! How can I assist you in finding your ideal vehicle today?",
         "timestamp": "2025-06-01T12:34:56Z",
         "status": "delivered"
@@ -189,7 +189,7 @@ This document defines the API interface between the frontend and backend of Auto
       "response": {
         "message_id": "<uuid>",
         "sender_type": "system",
-        "sender_id": "agent_123",
+        "sender_id": "AutoVend",
         "content": "I'd be happy to help you find an electric SUV with good range. Tesla Model Y offers around 330 miles of range, while Ford Mustang Mach-E offers up to 300 miles. Would you like more information about these models or would you prefer other options?",
         "timestamp": "2025-06-01T12:35:05Z",
         "status": "delivered"
@@ -266,7 +266,7 @@ This document defines the API interface between the frontend and backend of Auto
         {
           "message_id": "<uuid>",
           "sender_type": "system",
-          "sender_id": "agent_123",
+          "sender_id": "AutoVend",
           "content": "I'd be happy to help you find an electric SUV. Could you tell me your typical daily commute distance?",
           "timestamp": "2025-06-01T12:35:10Z"
         }

@@ -9,7 +9,8 @@ class ProfileManager:
     @staticmethod
     def get_default_profile() -> Dict[str, Any]:
         """Get the default user profile configuration"""
-        return UserProfile.get_default_profile()
+        defalt_user_phone_number = "13888888888"
+        return ProfileManager.get_profile(defalt_user_phone_number)
     
     @staticmethod
     def get_profile(phone_number: str) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
