@@ -1,15 +1,15 @@
 from flask import Blueprint, request, jsonify
 from app.managers.profile_manager import ProfileManager
 
-profile_bp = Blueprint('profile', __name__)
+profile_bp = Blueprint("profile", __name__)
 
-@profile_bp.route('/api/profile/default', methods=['GET'])
+@profile_bp.route("/api/profile/default", methods=["GET"])
 def get_default_profile():
     """Get default user profile configuration"""
     profile_data = ProfileManager.get_default_profile()
     return jsonify(profile_data), 200
 
-@profile_bp.route('/api/profile/<phone_number>', methods=['GET'])
+@profile_bp.route("/api/profile/<phone_number>", methods=["GET"])
 def get_profile(phone_number):
     """Get user profile by phone number"""
     profile_data, error = ProfileManager.get_profile(phone_number)
@@ -17,7 +17,7 @@ def get_profile(phone_number):
         return jsonify({"error": error}), 404
     return jsonify(profile_data), 200
 
-@profile_bp.route('/api/profile', methods=['POST'])
+@profile_bp.route("/api/profile", methods=["POST"])
 def create_profile():
     """Create a new user profile"""
     data = request.get_json()
@@ -38,7 +38,7 @@ def create_profile():
         
     return jsonify(profile_data), 201
 
-@profile_bp.route('/api/profile/<phone_number>', methods=['PUT'])
+@profile_bp.route("/api/profile/<phone_number>", methods=["PUT"])
 def update_profile(phone_number):
     """Update an existing user profile"""
     data = request.get_json()
@@ -59,7 +59,7 @@ def update_profile(phone_number):
         
     return jsonify(profile_data), 200
 
-@profile_bp.route('/api/profile/<phone_number>', methods=['DELETE'])
+@profile_bp.route("/api/profile/<phone_number>", methods=["DELETE"])
 def delete_profile(phone_number):
     """Delete a user profile"""
     success, error = ProfileManager.delete_profile(phone_number)

@@ -20,7 +20,7 @@ def import_module_from_path(path):
 def main():
     """Execute manual tests from the test directory"""
     # Get the path to the manual test script
-    manual_test_path = os.path.join('tests', 'utils', 'manual_test.py')
+    manual_test_path = os.path.join("tests", "utils", "manual_test.py")
     
     if not os.path.exists(manual_test_path):
         print(f"Error: Could not find manual test script at {manual_test_path}")

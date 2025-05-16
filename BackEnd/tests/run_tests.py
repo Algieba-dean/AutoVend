@@ -72,23 +72,23 @@ def run_tests_with_report():
     }
     
     # Save report to file
-    report_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'report', 'test_report.json')
+    report_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "report", "test_report.json")
     
-    # Create report directory if it doesn't exist
+    # Create report directory if it doesn"t exist
     os.makedirs(os.path.dirname(report_path), exist_ok=True)
     
-    with open(report_path, 'w') as f:
+    with open(report_path, "w") as f:
         json.dump(report, f, indent=2)
     
     # Print summary
     print("\n" + "="*50)
     print("TEST REPORT SUMMARY")
     print("="*50)
-    print(f"Total Tests: {report['total_tests']}")
-    print(f"Passed: {report['passed']}")
-    print(f"Failed: {report['failures']}")
-    print(f"Errors: {report['errors']}")
-    print(f"Success Rate: {report['success_rate']}")
+    print(f"Total Tests: {report["total_tests"]}")
+    print(f"Passed: {report["passed"]}")
+    print(f"Failed: {report["failures"]}")
+    print(f"Errors: {report["errors"]}")
+    print(f"Success Rate: {report["success_rate"]}")
     print("="*50)
     print(f"Full report saved to {report_path}")
     
@@ -107,6 +107,6 @@ def run_tests_with_report():
     
     return result.wasSuccessful()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     success = run_tests_with_report()
     sys.exit(0 if success else 1) 

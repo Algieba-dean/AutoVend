@@ -20,7 +20,7 @@ def import_module_from_path(path):
 def main():
     """Execute tests from the test directory"""
     # Get the path to the test runner
-    test_runner_path = os.path.join('tests', 'run_tests.py')
+    test_runner_path = os.path.join("tests", "run_tests.py")
     
     if not os.path.exists(test_runner_path):
         print(f"Error: Could not find test runner at {test_runner_path}")

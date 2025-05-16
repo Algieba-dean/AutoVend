@@ -39,49 +39,49 @@ class FrontendSimulator:
         prefix = "ERROR" if is_error else "INFO"
         print(f"[{timestamp}] {prefix}: {message}")
         
-        # Update session status if it's a response
-        if isinstance(message, dict) and 'session_id' in message:
-            self.current_session_id = message['session_id']
+        # Update session status if it"s a response
+        if isinstance(message, dict) and "session_id" in message:
+            self.current_session_id = message["session_id"]
             self.current_session_status = {
-                'status': message.get('status', 'N/A'),
-                'stage': message.get('stage', {}),
-                'needs': message.get('needs', {}),
-                'matched_car_models': message.get('matched_car_models', []),
-                'reservation_info': message.get('reservation_info', {})
+                "status": message.get("status", "N/A"),
+                "stage": message.get("stage", {}),
+                "needs": message.get("needs", {}),
+                "matched_car_models": message.get("matched_car_models", []),
+                "reservation_info": message.get("reservation_info", {})
             }
             self.print_session_status()
             
         # Print error details if available
-        if isinstance(message, dict) and 'error' in message:
-            error_msg = message['error']
-            if 'details' in message:
-                error_msg += f"\nDetails: {message['details']}"
+        if isinstance(message, dict) and "error" in message:
+            error_msg = message["error"]
+            if "details" in message:
+                error_msg += f"\nDetails: {message["details"]}"
             print(f"[{timestamp}] ERROR: {error_msg}")
     
     def print_session_status(self):
         """Print current session status"""
         print("\n=== Session Status ===")
         print(f"Session ID: {self.current_session_id}")
-        print(f"Status: {self.current_session_status.get('status', 'N/A')}")
-        print(f"Stage: {self.current_session_status.get('stage', {}).get('current_stage', 'N/A')}")
+        print(f"Status: {self.current_session_status.get("status", "N/A")}")
+        print(f"Stage: {self.current_session_status.get("stage", {}).get("current_stage", "N/A")}")
         
         # Print needs information
-        needs = self.current_session_status.get('needs', {})
+        needs = self.current_session_status.get("needs", {})
         if needs:
             print("\nNeeds:")
-            if 'explicit' in needs and needs['explicit']:
+            if "explicit" in needs and needs["explicit"]:
                 print("Explicit:")
-                for key, value in needs['explicit'].items():
-                    print(f"- {key.replace('_', ' ').title()}: {value}")
-            if 'implicit' in needs and needs['implicit']:
+                for key, value in needs["explicit"].items():
+                    print(f"- {key.replace("_", " ").title()}: {value}")
+            if "implicit" in needs and needs["implicit"]:
                 print("Implicit:")
-                for key, value in needs['implicit'].items():
-                    print(f"- {key.replace('_', ' ').title()}: {value}")
+                for key, value in needs["implicit"].items():
+                    print(f"- {key.replace("_", " ").title()}: {value}")
         else:
             print("\nNeeds: None")
         
         # Print matched car models
-        matched_models = self.current_session_status.get('matched_car_models', [])
+        matched_models = self.current_session_status.get("matched_car_models", [])
         if matched_models:
             print("\nMatched Car Models:")
             for model in matched_models:
@@ -90,12 +90,12 @@ class FrontendSimulator:
             print("\nMatched Car Models: None")
             
         # Print reservation info
-        reservation_info = self.current_session_status.get('reservation_info', {})
+        reservation_info = self.current_session_status.get("reservation_info", {})
         if reservation_info:
             print("\nReservation Information:")
             for key, value in reservation_info.items():
                 if value:  # Only print non-empty values
-                    print(f"- {key.replace('_', ' ').title()}: {value}")
+                    print(f"- {key.replace("_", " ").title()}: {value}")
         else:
             print("\nReservation Information: None")
             
@@ -103,7 +103,7 @@ class FrontendSimulator:
     
     def save_log(self, filename="conversation_log.json"):
         """Save the conversation log to a file"""
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             json.dump(self.conversation_log, f, indent=2)
         print(f"Log saved to {filename}")
     
@@ -124,7 +124,7 @@ class FrontendSimulator:
         profile_index = random.randint(0, len(VALID_PROFILES) - 1)
         test_profile = VALID_PROFILES[profile_index]
         
-        self.log(f"Creating new profile with phone number {test_profile['phone_number']}")
+        self.log(f"Creating new profile with phone number {test_profile["phone_number"]}")
         created_profile = self.client.create_profile(test_profile)
         if created_profile:
             self.log("Profile created successfully", created_profile)
@@ -134,7 +134,7 @@ class FrontendSimulator:
             return False
         
         # Get the profile
-        self.log(f"Retrieving profile with phone number {test_profile['phone_number']}")
+        self.log(f"Retrieving profile with phone number {test_profile["phone_number"]}")
         retrieved_profile = self.client.get_profile()
         if retrieved_profile:
             self.log("Profile retrieved successfully", retrieved_profile)
@@ -145,7 +145,7 @@ class FrontendSimulator:
         # Update the profile
         update_data = test_profile.copy()
         update_data["expertise"] = str(min(int(update_data["expertise"]) + 2, 10))
-        self.log(f"Updating profile expertise to {update_data['expertise']}")
+        self.log(f"Updating profile expertise to {update_data["expertise"]}")
         
         updated_profile = self.client.update_profile(update_data)
         if updated_profile:
@@ -281,9 +281,9 @@ def main():
         simulator.run_full_user_journey()
         
         # Save the log
-        log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'report')
+        log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "report")
         os.makedirs(log_dir, exist_ok=True)
-        log_file = os.path.join(log_dir, f"frontend_simulation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+        log_file = os.path.join(log_dir, f"frontend_simulation_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json")
         simulator.save_log(log_file)
         
         print("\nSimulation completed.")

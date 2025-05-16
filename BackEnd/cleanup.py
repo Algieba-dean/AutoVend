@@ -8,9 +8,9 @@ import sys
 
 # Files that should be removed after the reorganization
 files_to_remove = [
-    'test_data.py',
-    'tests_README.md',
-    'test_report.json'
+    "test_data.py",
+    "tests_README.md",
+    "test_report.json"
 ]
 
 def main():

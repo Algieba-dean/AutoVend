@@ -51,10 +51,10 @@ class StageManager:
         
         # Store current stage in history
         self.stage_history.append({
-            'from_stage': self.current_stage.value,
-            'to_stage': new_stage.value,
-            'timestamp': datetime.now(UTC).isoformat(),
-            'data': data
+            "from_stage": self.current_stage.value,
+            "to_stage": new_stage.value,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "data": data
         })
         
         # Update stages
@@ -70,9 +70,9 @@ class StageManager:
     def get_current_stage(self) -> Dict[str, Any]:
         """Get current stage information"""
         return {
-            'previous_stage': self.previous_stage.value if self.previous_stage else '',
-            'current_stage': self.current_stage.value,
-            'stage_data': self.stage_data.get(self.current_stage.value, {})
+            "previous_stage": self.previous_stage.value if self.previous_stage else "",
+            "current_stage": self.current_stage.value,
+            "stage_data": self.stage_data.get(self.current_stage.value, {})
         }
     
     def get_stage_history(self) -> list:
@@ -91,10 +91,10 @@ class StageManager:
         # Example validation rules for different stages
         validation_rules = {
             Stage.RESERVATION_CONFIRMATION: {
-                'required_fields': ['test_driver', 'reservation_date', 'reservation_time', 'reservation_location']
+                "required_fields": ["test_driver", "reservation_date", "reservation_time", "reservation_location"]
             },
             Stage.CAR_SELECTION: {
-                'required_fields': ['matched_car_models']
+                "required_fields": ["matched_car_models"]
             }
         }
         
@@ -102,6 +102,6 @@ class StageManager:
             return True
         
         rules = validation_rules[stage]
-        required_fields = rules.get('required_fields', [])
+        required_fields = rules.get("required_fields", [])
         
         return all(field in data and data[field] for field in required_fields) 

@@ -40,7 +40,7 @@ class ProfileManager:
             return None, "No data provided", None
             
         # Check if phone number already exists
-        phone_number = profile_data.get('phone_number', '')
+        phone_number = profile_data.get("phone_number", "")
         if not phone_number:
             return None, "Phone number is required", None
             
@@ -77,7 +77,7 @@ class ProfileManager:
             return None, "Profile not found", None
             
         # Ensure phone number in data matches the one in URL
-        if 'phone_number' in profile_data and profile_data['phone_number'] != phone_number:
+        if "phone_number" in profile_data and profile_data["phone_number"] != phone_number:
             return None, "Phone number in URL must match payload", None
             
         # Update and validate profile

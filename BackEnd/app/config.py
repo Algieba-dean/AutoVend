@@ -11,12 +11,12 @@ except ImportError:
 
 class Config:
     """Base configuration class for AutoVend API"""
-    SECRET_KEY = os.getenv('SECRET_KEY', 'default-dev-key')
+    SECRET_KEY = os.getenv("SECRET_KEY", "default-dev-key")
     DEBUG = False
     TESTING = False
     
     # Initialize storage
-    storage = FileStorage(os.getenv('STORAGE_DIR', 'storage'))
+    storage = FileStorage(os.getenv("STORAGE_DIR", "storage"))
 
 
 class DevelopmentConfig(Config):
@@ -37,8 +37,8 @@ class ProductionConfig(Config):
 
 # Configuration dictionary
 config = {
-    'development': DevelopmentConfig,
-    'testing': TestingConfig,
-    'production': ProductionConfig,
-    'default': DevelopmentConfig
+    "development": DevelopmentConfig,
+    "testing": TestingConfig,
+    "production": ProductionConfig,
+    "default": DevelopmentConfig
 } 

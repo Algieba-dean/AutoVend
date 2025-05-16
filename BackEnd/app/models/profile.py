@@ -28,31 +28,31 @@ class UserProfile:
         self.updated_at = datetime.utcnow().isoformat()
         
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'UserProfile':
+    def from_dict(cls, data: Dict[str, Any]) -> "UserProfile":
         """Create a UserProfile from a dictionary"""
         return cls(
-            phone_number=data.get('phone_number', ''),
-            age=data.get('age', ''),
-            user_title=data.get('user_title', ''),
-            name=data.get('name', ''),
-            target_driver=data.get('target_driver', ''),
-            expertise=data.get('expertise', ''),
-            additional_information=data.get('additional_information', {}),
-            connection_information=data.get('connection_information', {})
+            phone_number=data.get("phone_number", ""),
+            age=data.get("age", ""),
+            user_title=data.get("user_title", ""),
+            name=data.get("name", ""),
+            target_driver=data.get("target_driver", ""),
+            expertise=data.get("expertise", ""),
+            additional_information=data.get("additional_information", {}),
+            connection_information=data.get("connection_information", {})
         )
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert the profile to a dictionary"""
         return {
-            'phone_number': self.phone_number,
-            'age': self.age,
-            'user_title': self.user_title,
-            'name': self.name,
-            'target_driver': self.target_driver,
-            'expertise': self.expertise,
-            'additional_information': self.additional_information,
-            'connection_information': self.connection_information,
-            'updated_at': self.updated_at
+            "phone_number": self.phone_number,
+            "age": self.age,
+            "user_title": self.user_title,
+            "name": self.name,
+            "target_driver": self.target_driver,
+            "expertise": self.expertise,
+            "additional_information": self.additional_information,
+            "connection_information": self.connection_information,
+            "updated_at": self.updated_at
         }
     
     def validate(self) -> List[str]:
@@ -67,7 +67,7 @@ class UserProfile:
         if not self.phone_number:
             errors.append("Phone number is required")
         elif not self._validate_phone_number(self.phone_number):
-            errors.append("Phone number must contain only digits, spaces, '+' or '-' characters")
+            errors.append("Phone number must contain only digits, spaces, "+" or "-" characters")
             
         # Optional fields validation
         if self.age and not self._validate_age(self.age):
@@ -98,7 +98,7 @@ class UserProfile:
     def _validate_phone_number(self, phone: str) -> bool:
         """Validate phone number format"""
         # Basic phone number validation (can be enhanced based on specific requirements)
-        return bool(phone and phone.replace('+', '').replace('-', '').replace(' ', '').isdigit())
+        return bool(phone and phone.replace("+", "").replace("-", "").replace(" ", "").isdigit())
     
     def _validate_age(self, age: str) -> bool:
         """Validate age format and range
@@ -108,8 +108,8 @@ class UserProfile:
         - Age range: "20-35"
         """
         try:
-            if '-' in age:
-                min_age, max_age = map(int, age.split('-'))
+            if "-" in age:
+                min_age, max_age = map(int, age.split("-"))
                 return 18 <= min_age <= max_age <= 120
             else:
                 age_val = int(age)
@@ -120,7 +120,7 @@ class UserProfile:
     def _validate_user_title(self, title: str) -> bool:
         """Validate user title format"""
         valid_titles = ["Mr.", "Mrs.", "Miss.", "Ms."]
-        title_part = title.split(' ')[0] if ' ' in title else title
+        title_part = title.split(" ")[0] if " " in title else title
         return title_part in valid_titles
     
     def _validate_name(self, name: str) -> bool:

@@ -33,15 +33,15 @@ class ChatSession:
     @classmethod
     def from_dict(cls, data):
         """Create a ChatSession instance from a dictionary"""
-        session = cls(data.get('phone_number', ''), data.get('profile', {}))
-        session.session_id = data.get('session_id', session.session_id)
-        session.created_at = data.get('created_at', session.created_at)
-        session.ended_at = data.get('ended_at', session.ended_at)
-        session.status = data.get('status', session.status)
-        session.stage = data.get('stage', session.stage)
-        session.needs = data.get('needs', session.needs)
-        session.matched_car_models = data.get('matched_car_models', session.matched_car_models)
-        session.reservation_info = data.get('reservation_info', session.reservation_info)
+        session = cls(data.get("phone_number", ""), data.get("profile", {}))
+        session.session_id = data.get("session_id", session.session_id)
+        session.created_at = data.get("created_at", session.created_at)
+        session.ended_at = data.get("ended_at", session.ended_at)
+        session.status = data.get("status", session.status)
+        session.stage = data.get("stage", session.stage)
+        session.needs = data.get("needs", session.needs)
+        session.matched_car_models = data.get("matched_car_models", session.matched_car_models)
+        session.reservation_info = data.get("reservation_info", session.reservation_info)
         return session
     
     def to_dict(self):

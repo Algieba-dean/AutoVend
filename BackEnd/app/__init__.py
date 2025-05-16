@@ -3,7 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from app.config import Config
 
-def create_app(config_name='default'):
+def create_app(config_name="default"):
     """Create and configure the Flask application"""
     app = Flask(__name__)
     
@@ -21,7 +21,7 @@ def create_app(config_name='default'):
     app.register_blueprint(chat_bp)
     
     # Simple index route
-    @app.route('/')
+    @app.route("/")
     def index():
         return {"message": "Welcome to AutoVend API", "status": "running"}
     

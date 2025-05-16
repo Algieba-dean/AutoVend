@@ -183,7 +183,7 @@ class ApiClient:
     def _handle_error(self, exception):
         """Handle API request exceptions"""
         print(f"API Error: {exception}")
-        if hasattr(exception, 'response') and exception.response is not None:
+        if hasattr(exception, "response") and exception.response is not None:
             print(f"Status code: {exception.response.status_code}")
             try:
                 error_data = exception.response.json()

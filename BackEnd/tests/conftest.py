@@ -8,12 +8,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app import create_app
 from app.config import Config
-from app.models.profile import UserProfile
 
 @pytest.fixture
 def app():
     """Create and configure a Flask app for testing"""
-    app = create_app('testing')
+    app = create_app("testing")
     
     # Establish application context
     with app.app_context():
@@ -55,9 +54,9 @@ def sample_profile():
 def registered_profile(client, sample_profile):
     """Create a profile and return the data"""
     response = client.post(
-        '/api/profile',
+        "/api/profile",
         data=json.dumps(sample_profile),
-        content_type='application/json'
+        content_type="application/json"
     )
     return sample_profile
 
@@ -65,8 +64,8 @@ def registered_profile(client, sample_profile):
 def chat_session(client, registered_profile):
     """Create a chat session and return the session ID"""
     response = client.post(
-        '/api/chat/session',
+        "/api/chat/session",
         data=json.dumps({"phone_number": registered_profile["phone_number"]}),
-        content_type='application/json'
+        content_type="application/json"
     )
     return json.loads(response.data)["session_id"] 
