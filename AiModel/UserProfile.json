@@ -1,0 +1,60 @@
+{
+    "BasicInformation": {
+        "age": {
+            "description": "Required",
+            "value": "20-35"
+        },
+        "user_title": {
+            "candidates": ["Mr.", "Mrs.", "Miss.", "Ms."],
+            "description": "Required, should be the like \"Mr. Zhang\"",
+            "value": ""
+        },
+        "name": {
+            "description": "Optional, the name of the user",
+            "value": ""
+        },
+        "target_driver": {
+            "candidates": ["Self", "Wife", "Parents"],
+            "description": "Required, the person who will drive the car",
+            "value": ""
+        },
+        "expertise": {
+            "description": "Required, number from 0 to 10 to mark how deep user know cars",
+            "value": ""
+        }
+    },
+    "AdditionalInformation": {
+        "family_size": {
+            "description": "Optional, the family size of user, should be a number",
+            "value": ""
+        },
+        "price_sensitivy": {
+            "candidates": ["High", "Medium", "Low"],
+            "description": "Optional, the price sensitivy of the user for buying a car",
+            "value": ""
+        },
+        "residence": {
+            "description": "Optional, where the user live, format should be \"country+province+city\"",
+            "value": ""
+        },
+        "parking_conditions": {
+            "candidates": ["Allocated Parking Space", "Temporary Parking Alllowed", "Charging Pile Facilites Available"],
+            "description": "Optional, the parking conditions of the user",
+            "value": ""
+        }
+    },
+    "ConnectionInformation": {
+        "connection_id": {
+            "description": "Optional, the user id for another connection user",
+            "value": ""
+        },
+        "connection_phone_number": {
+            "description": "Optional, the phone number of the connection",
+            "value": ""
+        },
+        "connection_id_relationship": {
+            "description": "the relastionship of connection",
+            "value": ""
+        }
+    }
+} 
