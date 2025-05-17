@@ -78,4 +78,13 @@ class PromptManager:
         Returns:
             str: Stage-specific prompt
         """
-        return self.templates.get("stages", {}).get(stage, "") 
+        return self.templates.get("stages", {}).get(stage, "")
+        
+    def get_module_decision_prompt(self):
+        """
+        Get the module decision maker prompt.
+        
+        Returns:
+            str: Module decision prompt
+        """
+        return self.templates.get("module_decision", {}).get("content", "") 
