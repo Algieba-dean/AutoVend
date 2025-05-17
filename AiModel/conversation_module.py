@@ -1,12 +1,14 @@
 import json
-import openai
+import random
 import os
 from utils import get_openai_client, get_openai_model
+from prompt_manager import PromptManager
 
 class ConversationModule:
     """
     Module for handling conversations with users during the car sales process.
     Uses OpenAI to generate contextually appropriate responses based on various inputs.
+    Optimized with external prompt templates for better performance.
     """
     
     # Define conversation stages
@@ -19,6 +21,15 @@ class ConversationModule:
         "reservation_confirmation": "Confirming test drive reservation details",
         "farewell": "Conversation closing stage"
     }
+    
+    # Predefined welcome messages
+    WELCOME_MESSAGES = [
+        "Hello! This is AutoVend, your intelligent car purchasing assistant. How can I help you find your ideal vehicle today?",
+        "Hi there! I'm AutoVend, an AI-powered car consultant. I'm here to make your car shopping experience easier. What kind of vehicle are you looking for?",
+        "Welcome to our virtual showroom! I'm AutoVend, your smart car assistant. I can help with everything from finding the right model to booking a test drive. How may I assist you?",
+        "Thank you for contacting us! This is AutoVend, your personal car shopping guide. I'm here to help you find the perfect vehicle for your needs. What brings you to our service today?",
+        "Good day! AutoVend at your service. I'm specialized in helping customers find their perfect car match. What type of vehicle are you interested in exploring?"
+    ]
     
     def __init__(self, api_key=None, model=None):
         """
@@ -33,6 +44,9 @@ class ConversationModule:
         
         # Initialize conversation history
         self.conversation_history = []
+        
+        # Initialize prompt manager
+        self.prompt_manager = PromptManager()
     
     def generate_response(self, user_message, user_profile={}, explicit_needs={}, 
                            implicit_needs={}, test_drive_info={}, matched_car_models={}, 
@@ -52,26 +66,33 @@ class ConversationModule:
         Returns:
             str: Generated assistant response
         """
+        # For welcome stage with first interaction, use predefined welcome message
+        if current_stage == "welcome" and not self.conversation_history:
+            return random.choice(self.WELCOME_MESSAGES)
+            
         # Add user message to conversation history
         self.conversation_history.append({"role": "user", "content": user_message})
         
-        # Prepare system message with instructions and context
-        system_message = self._create_system_message(user_profile, explicit_needs, 
-                                                    implicit_needs, test_drive_info, 
-                                                    matched_car_models, current_stage)
+        # Create simplified system message with optimized prompts
+        system_message = self._create_simplified_system_message(
+            user_profile, explicit_needs, implicit_needs, 
+            test_drive_info, matched_car_models, current_stage
+        )
         
         # Prepare the conversation for the API call
         messages = [
             {"role": "system", "content": system_message}
         ]
         
-        # Add conversation history (limited to last 10 messages to save tokens)
-        messages.extend(self.conversation_history[-10:])
+        # Add only the most relevant conversation history (last 6 messages to save tokens)
+        messages.extend(self.conversation_history[-6:])
         
-        # Call OpenAI API
+        # Call OpenAI API with optimized parameters
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=messages
+            messages=messages,
+            temperature=0.7,  # Add temperature for more consistent responses
+            max_tokens=800    # Limit response length
         )
         
         # Get assistant response
@@ -82,51 +103,74 @@ class ConversationModule:
         
         return assistant_response
     
-    def _create_system_message(self, user_profile, explicit_needs, implicit_needs, 
-                              test_drive_info, matched_car_models, current_stage):
-        """Create the system message with instructions and context for the AI."""
-        # Convert dictionaries to JSON strings for the prompt
-        profile_json = json.dumps(user_profile, indent=2, ensure_ascii=False)
-        explicit_needs_json = json.dumps(explicit_needs, indent=2, ensure_ascii=False)
-        implicit_needs_json = json.dumps(implicit_needs, indent=2, ensure_ascii=False)
-        test_drive_json = json.dumps(test_drive_info, indent=2, ensure_ascii=False)
-        matched_cars_json = json.dumps(matched_car_models, indent=2, ensure_ascii=False)
-        
-        # Get stage description
-        stage_description = self.STAGES.get(current_stage, "Unknown stage")
-        
-        return f"""
-        You are AutoVend, an AI car sales assistant helping customers find their ideal vehicle.
-        You should sound professional, knowledgeable, and friendly.
-        
-        CURRENT CONTEXT:
-        - Current stage: {current_stage} - {stage_description}
-        - User profile information: {profile_json}
-        - User's explicit car requirements: {explicit_needs_json}
-        - User's inferred car requirements: {implicit_needs_json}
-        - Test drive information: {test_drive_json}
-        - Matched car models: {matched_cars_json}
-        
-        STAGE-SPECIFIC INSTRUCTIONS:
-        - welcome: Greet the user professionally and ask about their car needs. If profile information is lacking, try to collect basic details in a conversational manner.
-        - profile_analysis: Focus on gathering more information about the user, their lifestyle, and car usage patterns.
-        - needs_analysis: Inquire about specific car requirements, preferences, and deal-breakers.
-        - car_selection_confirmation: Present car recommendations based on gathered information and confirm if they meet expectations. Refer specifically to the matched car models in your response and highlight their features.
-        - reservation4s: Help the user schedule a test drive, collecting necessary information in a friendly way.
-        - reservation_confirmation: Confirm test drive details and provide next steps.
-        - farewell: Thank the user, summarize the interaction, and provide closure with contact information.
-        
-        WHEN DISCUSSING CAR MODELS:
-        - Only refer to car models that are in the "matched_car_models" list
-        - Highlight features that specifically match the user's requirements
-        - If asked about a specific model, provide accurate information about it
-        - If uncertain about specific details of a car model, suggest the user verify with the dealership
-        
-        Please keep your response concise, conversational, and focused on the current stage.
-        Your expertise level should match the user's assessed expertise level.
-        
-        Respond in the same language as the user's message.
+    def _create_simplified_system_message(self, user_profile, explicit_needs, implicit_needs, 
+                                         test_drive_info, matched_car_models, current_stage):
         """
+        Create a simplified system message with optimized prompts.
+        
+        Args:
+            user_profile (dict): User profile information
+            explicit_needs (dict): Explicitly stated car requirements
+            implicit_needs (dict): Inferred car requirements
+            test_drive_info (dict): Test drive reservation information
+            matched_car_models (dict): Matched car models based on user requirements
+            current_stage (str): Current conversation stage
+            
+        Returns:
+            str: System message for the OpenAI API
+        """
+        # Get base prompt from prompt manager
+        base_prompt = self.prompt_manager.get_base_prompt()
+        
+        # Extract expertise level (default to 3 if not provided)
+        expertise_level = int(user_profile.get("expertise", 3))
+        
+        # Get expertise-specific prompt
+        expertise_prompt = self.prompt_manager.get_expertise_prompt(expertise_level)
+        
+        # Get stage-specific prompt
+        stage_prompt = self.prompt_manager.get_stage_prompt(current_stage)
+        
+        # Create simplified context information
+        context = {
+            "stage": current_stage,
+            "stage_description": self.STAGES.get(current_stage, "Unknown stage"),
+            "expertise_level": expertise_level
+        }
+        
+        # Only include the most important user profile fields
+        important_profile_fields = ["name", "user_title", "age", "occupation", "family_size"]
+        filtered_profile = {k: v for k, v in user_profile.items() if k in important_profile_fields}
+        context["user_profile"] = filtered_profile
+        
+        # Include only keys of needs rather than full content to save tokens
+        context["explicit_needs_keys"] = list(explicit_needs.keys())[:5]  # Limit to top 5
+        context["implicit_needs_keys"] = list(implicit_needs.keys())[:5]  # Limit to top 5
+        
+        # Include only essential test drive information
+        if test_drive_info:
+            context["has_test_drive_info"] = True
+            context["test_drive_count"] = len(test_drive_info)
+        
+        # Include only model names from matched car models
+        if matched_car_models and "matched_models" in matched_car_models:
+            context["car_models"] = [
+                model.get("car_model", "") for model in matched_car_models.get("matched_models", [])
+            ]
+        
+        # Convert context to JSON string
+        context_json = json.dumps(context, ensure_ascii=False)
+        
+        # Personal greeting based on profile info if available
+        personalized_greeting = ""
+        name = user_profile.get("name", "")
+        title = user_profile.get("user_title", "")
+        
+        if current_stage == "profile_analysis" and (name or title):
+            personalized_greeting = f"\n\nUse the customer's {'title ' + title if title else ''}{'name ' + name if name else ''} when greeting them."
+        
+        # Combine all prompts efficiently
+        return f"{base_prompt}\n\nCONTEXT: {context_json}\n\n{expertise_prompt}\n\n{stage_prompt}{personalized_greeting}"
     
     def clear_history(self):
         """Clear the conversation history."""

@@ -9,6 +9,7 @@ from implicit_needs_inferrer import ImplicitNeedsInferrer
 from test_drive_extractor import TestDriveExtractor
 from model_query_module import CarModelQuery
 from conversation_module import ConversationModule
+from prompt_manager import PromptManager
 
 class AutoVend:
     """
