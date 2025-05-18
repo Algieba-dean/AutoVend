@@ -12,7 +12,6 @@ All prompts have been extracted from code into JSON template files in the `promp
 - `expertise.json`: Customer expertise level-specific prompts (novice, intermediate, advanced, expert)
 - `stages.json`: Conversation stage-specific prompts
 - `examples.json`: Example conversations for different scenarios
-- `module_decision.json`: Prompts for the module decision maker
 
 ### 2. Added Prompt Manager
 
@@ -37,15 +36,6 @@ Context information sent to the API is now:
 - Shortened to include only essential test drive information
 - Optimized to include only car model names rather than full details
 
-### 5. Added Module Decision Maker
-
-Created a new `ModuleDecisionMaker` class that:
-- Uses LLM to intelligently determine which modules to activate for each message
-- Considers current conversation stage and message content
-- Avoids unnecessary API calls by only activating relevant modules
-- Includes stage-specific rules to ensure critical modules are always activated
-- Provides fallback mechanisms for robustness
-
 ## How to Use the New Structure
 
 1. **Adding or Modifying Prompts**:
@@ -60,13 +50,6 @@ Created a new `ModuleDecisionMaker` class that:
    - Add a new entry to `stages.json`
    - Update the `STAGES` dictionary in `ConversationModule`
    - Update the `_update_stage()` method in `AutoVend` class
-   - Update the `_adjust_by_stage()` method in `ModuleDecisionMaker` class
-
-4. **Using the Module Decision Maker**:
-   - The module is automatically used in the main process flow
-   - Debug output shows which modules were activated for each message
-   - Adjust decision thresholds in the `_adjust_by_stage()` method if needed
-   - Modify `module_decision.json` to change decision criteria
 
 ## Performance Benefits
 
@@ -76,8 +59,6 @@ This refactoring provides several performance improvements:
 2. **Faster Response Time**: Due to smaller payloads and optimized processing
 3. **Better Consistency**: Through temperature parameter and example templates
 4. **Lower Memory Usage**: By loading only necessary prompt components
-5. **Selective Module Activation**: Only running necessary modules based on context
-6. **Parallelized Processing**: Still maintaining parallel processing for activated modules
 
 ## Future Improvements
 
@@ -86,6 +67,4 @@ Potential next steps for further optimization:
 1. Implement caching for frequently used prompt combinations
 2. Create a prompt versioning system
 3. Add metrics collection to track prompt performance
-4. Implement A/B testing for different prompt strategies
-5. Add learning capability to the module decision maker for better accuracy over time
-6. Create hybrid rule-based and ML-based module activation strategies 
+4. Implement A/B testing for different prompt strategies 
