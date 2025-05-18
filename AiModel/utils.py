@@ -1,5 +1,17 @@
 import os
 import openai
+from datetime import datetime
+
+def get_current_time():
+    """
+    Get the current time in the format of YYYY-MM-DD HH:MM:SS
+    """
+    return datetime.now().time().strftime("%H:%M:%S")
+def get_current_date():
+    """
+    Get the current date in the format of YYYY-MM-DD
+    """
+    return datetime.now().strftime("%Y-%m-%d")
 
 def get_openai_client():
     """
