@@ -164,10 +164,16 @@ class AutoVend:
             if self.current_stage in ["car_selection_confirmation", "needs_analysis"] and len(
                     results["test_drive_info"]) > 0:
                 self.current_stage = "reservation4s"
+
     def query_matched_car_models(self):
-        ...
-    
-    def process_message(self, user_message, profile:dict, needs:dict,matched_car_models:dict,stage:dict,reservation_info:dict):
+        if self.explicit_needs or self.implicit_needs:
+            # Combine explicit and implicit needs
+            combined_needs = {**self.explicit_needs, **self.implicit_needs}
+            # Construct matched car models information
+            self.matched_car_models = self.car_model_query.query_car_model(combined_needs)
+            self.matched_car_model_infos = [ self.car_model_query.get_car_model_info(model_name) for model_name in self.matched_car_models]
+
+    def process_message(self, user_message, profile:dict, needs:dict, matched_car_models:list,stage:dict,reservation_info:dict):
         """
         Process a user message through all modules in parallel and generate a response.
         
@@ -265,10 +271,9 @@ class AutoVend:
 
         # Once we have needs information, query matching car models
         self.update_extraction(results)
+        # This depends on the results of the extractors, so it cannot be parallelized with them
 
-        # query matched car models according both explict and implicit needs
         self.query_matched_car_models()
-
         # Determine next stage based on current information
         self._update_stage()
         
@@ -280,6 +285,7 @@ class AutoVend:
             self.implicit_needs,
             self.test_drive_info,
             self.matched_car_models,
+            self.matched_car_model_infos,
             self.current_stage
         )
         
@@ -364,6 +370,13 @@ class AutoVend:
 
 # Example usage
 if __name__ == "__main__":
+    test_cases = [
+        "Hi AutoVend, I'm David, David Wang, you can call me Mr.Wang.",
+        "I wanna buy a car for my father",
+        "I wanna buy a SUV, with large size, any suggestion?",
+        "bye",
+    ]
+    case_index = 0
     # Initialize the AutoVend assistant
     assistant = AutoVend(use_streaming=False)
     
@@ -374,28 +387,67 @@ if __name__ == "__main__":
     print("-" * 50)
     
     while True:
-        user_input = input("\nYou: ")
-        if user_input.lower() == 'exit':
-            break
+        user_input = test_cases[case_index]
+        case_index+=1
+        # user_input = input("\nYou: ")
+        # if user_input.lower() == 'exit':
+        #     break
         
-        # Handle streaming mode commands
-        if user_input.lower() == 'stream on':
-            assistant.use_streaming = True
-            assistant.conversation_module.use_streaming = True
-            print("Streaming mode enabled.")
-            continue
-        elif user_input.lower() == 'stream off':
-            assistant.use_streaming = False
-            assistant.conversation_module.use_streaming = False
-            print("Streaming mode disabled.")
-            continue
+        # # Handle streaming mode commands
+        # if user_input.lower() == 'stream on':
+        #     assistant.use_streaming = True
+        #     assistant.conversation_module.use_streaming = True
+        #     print("Streaming mode enabled.")
+        #     continue
+        # elif user_input.lower() == 'stream off':
+        #     assistant.use_streaming = False
+        #     assistant.conversation_module.use_streaming = False
+        #     print("Streaming mode disabled.")
+        #     continue
             
         # Start timing
         start_time = time.time()
         
         # Process the message and get results
-        result = assistant.process_message(user_input)
-        
+        default_user_profile = {
+            "phone_number": "123456789",
+            "age": "20-35",
+            "user_title": "Mr.",
+            "name": "Wang Ming",
+            "target_driver": "Father",
+            "expertise": "6",
+            "additional_information": {
+                "family_size": "3",
+                "price_sensitivity": "Medium",
+                "residence": "China+Beijing+Haidian",
+                "parking_conditions": "Allocated Parking Space"
+            },
+            "connection_information": {
+                "connection_phone_number": "",
+                "connection_id_relationship": ""
+            }
+        }
+        default_needs = {}
+        default_matched_car_models = []
+        default_matched_model_infos = []
+        default_reservation_info = {}
+        stage = {
+            "previous_stage" :"",
+            "current_stage":"",
+        }
+
+
+
+
+        result = assistant.process_message(
+                user_input,
+                default_user_profile,
+                default_needs,
+                default_matched_car_models,
+                stage,
+                default_reservation_info,
+            )
+
         # End timing (note: with streaming, response appears earlier)
         total_time = time.time() - start_time
         
@@ -404,7 +456,10 @@ if __name__ == "__main__":
         print(f"Stage: {result['current_stage']}")
         print(f"Processing time: {result['processing_time']:.2f}s (total: {total_time:.2f}s)")
         print(f"Activated modules: {json.dumps(result['activated_modules'], indent=2)}")
-        
+
+        if result["response"]:
+            print(f"response:{result['response']}")
+        print(result)
         if result['extracted_profile']:
             print(f"Extracted Profile: {json.dumps(result['extracted_profile'], ensure_ascii=False)}")
         
@@ -419,8 +474,9 @@ if __name__ == "__main__":
             
         if result['test_drive_info']:
             print(f"Test Drive Info: {json.dumps(result['test_drive_info'], ensure_ascii=False)}")
-        
-        if result.get('matched_car_models', {}).get('matched_models'):
-            print(f"Matched Car Models: {json.dumps(result['matched_car_models']['matched_models'], ensure_ascii=False)[:200]}...")
+
+
+        if result.get('matched_car_models', list()):
+            print(f"Matched Car Models: {json.dumps(result['matched_car_models'], ensure_ascii=False)[:200]}...")
             
         print("-" * 50) 

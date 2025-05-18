@@ -27,11 +27,11 @@ class BatchProcessor:
         # Create a specialized prompt for module decisions
         prompt = f"""You are analyzing a user message to determine which processing modules should be activated. Based on the message content and conversation stage, determine which of the following modules need to be activated:
 
-1. PROFILE_EXTRACTOR: Extract user profile information (name, age, occupation, family size, etc.)
-2. EXPERTISE_EVALUATOR: Evaluate user's car knowledge level
-3. EXPLICIT_NEEDS_EXTRACTOR: Extract directly stated car requirements
-4. IMPLICIT_NEEDS_INFERRER: Infer implied car requirements
-5. TEST_DRIVE_EXTRACTOR: Extract test drive reservation information
+1. profile_extractor: Extract user profile information (name, age, user_title, target_driver, family size, price_sensitivity, residence, parking_condition)
+2. expertise_evaluator: Evaluate user's car knowledge level, it should be activated when anything mentioned about cars
+3. explicit_needs_extractor: Extract directly stated car requirements
+4. implicit_needs_extractor: Infer implied car requirements
+5. test_drive_extractor: Extract test drive reservation information, (like test_driver, reservation date, reservation time, reservation location, reservation phone number, salesman, selected model)
 
 Current conversation stage: {current_stage}
 
@@ -65,6 +65,7 @@ Respond with a JSON object containing true/false values for each module:
             decisions = self._get_default_decisions()
             
         # Ensure all required keys are present
+        # why? here seems wrong
         for key in ["profile_extractor", "expertise_evaluator", "explicit_needs_extractor", 
                    "implicit_needs_inferrer", "test_drive_extractor"]:
             if key not in decisions:

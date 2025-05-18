@@ -1,5 +1,6 @@
 import sys
-from typing import Callable, Optional, Dict, Any
+import json
+from typing import Callable, Optional, Dict, Any, Iterator
 
 class StreamingResponseHandler:
     """
@@ -34,9 +35,13 @@ class StreamingResponseHandler:
         self.is_complete = False
         
         # Process each chunk in the stream
-        for chunk in stream_response:
-            if hasattr(chunk.choices[0].delta, "content"):
-                content = chunk.choices[0].delta.content
+        if stream_response is None:
+            return ""
+            
+        try:
+            # Process each chunk in the stream
+            for chunk in stream_response:
+                content = self._extract_content(chunk)
                 if content:
                     self.full_response += content
                     if self.callback:
@@ -45,6 +50,10 @@ class StreamingResponseHandler:
                         # Default implementation: print to stdout without newline
                         sys.stdout.write(content)
                         sys.stdout.flush()
+        except Exception as e:
+            # Log error but continue
+            sys.stderr.write(f"Error processing stream: {str(e)}\n")
+            sys.stderr.flush()
         
         if not self.callback:
             # Print a newline at the end if using default implementation
@@ -54,6 +63,62 @@ class StreamingResponseHandler:
         self.is_streaming = False
         self.is_complete = True
         return self.full_response
+    
+    def _extract_content(self, chunk) -> str:
+        """
+        Extract content from a chunk, supporting multiple formats.
+        
+        Args:
+            chunk: Response chunk from different API formats
+            
+        Returns:
+            str: Extracted content or empty string if none found
+        """
+        # OpenAI standard format
+        if hasattr(chunk, 'choices') and len(chunk.choices) > 0:
+            if hasattr(chunk.choices[0], 'delta') and hasattr(chunk.choices[0].delta, 'content'):
+                content = chunk.choices[0].delta.content
+                return content if content else ""
+            elif hasattr(chunk.choices[0], 'message') and hasattr(chunk.choices[0].message, 'content'):
+                content = chunk.choices[0].message.content
+                return content if content else ""
+                
+        # Tuple format (id, content)
+        elif isinstance(chunk, tuple) and len(chunk) >= 2:
+            content = chunk[1]
+            if isinstance(content, str):
+                return content
+            elif isinstance(content, list):
+                return ' '.join([str(item) for item in content])
+            else:
+                return str(content) if content else ""
+            
+        # Dict format
+        elif isinstance(chunk, dict):
+            if 'choices' in chunk and len(chunk['choices']) > 0:
+                if 'delta' in chunk['choices'][0] and 'content' in chunk['choices'][0]['delta']:
+                    content = chunk['choices'][0]['delta']['content']
+                    return content if isinstance(content, str) else str(content) if content else ""
+                elif 'message' in chunk['choices'][0] and 'content' in chunk['choices'][0]['message']:
+                    content = chunk['choices'][0]['message']['content']
+                    return content if isinstance(content, str) else str(content) if content else ""
+            elif 'content' in chunk:
+                content = chunk['content']
+                return content if isinstance(content, str) else str(content) if content else ""
+                
+        # Simple string format
+        elif isinstance(chunk, str):
+            return chunk
+            
+        # For any other format, stringify if possible
+        try:
+            if chunk is not None:
+                return str(chunk)
+        except:
+            pass
+            
+        # Unknown format
+        return ""
         
     def get_full_response(self):
         """
