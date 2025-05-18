@@ -1,7 +1,7 @@
 import json
 import random
 import os
-from utils import get_openai_client, get_openai_model
+from utils import get_openai_client, get_openai_model, timer_decorator
 from prompt_manager import PromptManager
 
 class ConversationModule:
@@ -14,10 +14,10 @@ class ConversationModule:
     # Define conversation stages
     STAGES = {
         "welcome": "Initial greeting stage",
-        "profile_analysis": "Collecting or analyzing user profile information",
-        "needs_analysis": "Collecting or analyzing car requirements",
+        "profile_analysis": "Collecting or analyzing user profile information name, name title, target driver, and use the profile to generate a personalized greeting. Specially, if the user is a new customer, you should ask for the user's name and title. And ask their target driver",
+        "needs_analysis": "Collecting or analyzing car requirements, if the user has not provided the car requirements, you should ask for the car requirements",
         "car_selection_confirmation": "Confirming selected car models",
-        "reservation4s": "Setting up 4S store test drive",
+        "reservation4s": "Setting up 4S store test drive,  ",
         "reservation_confirmation": "Confirming test drive reservation details",
         "farewell": "Conversation closing stage"
     }
@@ -47,10 +47,21 @@ class ConversationModule:
         
         # Initialize prompt manager
         self.prompt_manager = PromptManager()
+    def get_initial_response(self, user_profile:dict):
+        """
+        Get the initial response , for warning the user that the chat will be recorded for training and improvement, randomly pick one from the WELCOME_MESSAGES.
+        If user name and title are provided, use them to generate a personalized greeting.
+        """
+        if user_profile.get("name") and user_profile.get("user_title"):
+            # TODO, not ok, let's update it later
+            return f"Hello! This is AutoVend, your intelligent car purchasing assistant. Current chat will be recorded for training and improvement. Continue means you agree to this. Use the customer's {'title ' + user_profile.get("user_title")} {'name ' + user_profile.get("name")} when greeting them."
+        else:
+            return random.choice(self.WELCOME_MESSAGES)
     
-    def generate_response(self, user_message, user_profile={}, explicit_needs={}, 
-                           implicit_needs={}, test_drive_info={}, matched_car_models={}, 
-                           current_stage="welcome"):
+    @timer_decorator
+    def generate_response(self, user_message, user_profile, explicit_needs, 
+                           implicit_needs, test_drive_info, matched_car_models, matched_car_model_infos,
+                           current_stage):
         """
         Generate a response based on the user message and contextual information.
         
@@ -66,6 +77,7 @@ class ConversationModule:
         Returns:
             str: Generated assistant response
         """
+
         # For welcome stage with first interaction, use predefined welcome message
         if current_stage == "welcome" and not self.conversation_history:
             return random.choice(self.WELCOME_MESSAGES)
@@ -76,7 +88,7 @@ class ConversationModule:
         # Create simplified system message with optimized prompts
         system_message = self._create_simplified_system_message(
             user_profile, explicit_needs, implicit_needs, 
-            test_drive_info, matched_car_models, current_stage
+            test_drive_info, matched_car_models, matched_car_model_infos, current_stage
         )
         
         # Prepare the conversation for the API call
@@ -92,7 +104,7 @@ class ConversationModule:
             model=self.model,
             messages=messages,
             temperature=0.7,  # Add temperature for more consistent responses
-            max_tokens=800    # Limit response length
+            max_tokens=200 # Limit response length
         )
         
         # Get assistant response
@@ -104,7 +116,7 @@ class ConversationModule:
         return assistant_response
     
     def _create_simplified_system_message(self, user_profile, explicit_needs, implicit_needs, 
-                                         test_drive_info, matched_car_models, current_stage):
+                                         test_drive_info, matched_car_models, matched_car_model_infos, current_stage):
         """
         Create a simplified system message with optimized prompts.
         
@@ -113,7 +125,8 @@ class ConversationModule:
             explicit_needs (dict): Explicitly stated car requirements
             implicit_needs (dict): Inferred car requirements
             test_drive_info (dict): Test drive reservation information
-            matched_car_models (dict): Matched car models based on user requirements
+            matched_car_models (list): Matched car models based on user requirements
+            matched_car_model_infos (list): Matched car model infos based on user requirements
             current_stage (str): Current conversation stage
             
         Returns:
@@ -144,7 +157,7 @@ class ConversationModule:
         context["user_profile"] = filtered_profile
         
         # Include only keys of needs rather than full content to save tokens
-        context["explicit_needs_keys"] = list(explicit_needs.keys())[:5]  # Limit to top 5
+        context["explicit_needs_keys"] = list(explicit_needs.keys())
         context["implicit_needs_keys"] = list(implicit_needs.keys())[:5]  # Limit to top 5
         
         # Include only essential test drive information
@@ -153,10 +166,12 @@ class ConversationModule:
             context["test_drive_count"] = len(test_drive_info)
         
         # Include only model names from matched car models
-        if matched_car_models and "matched_models" in matched_car_models:
-            context["car_models"] = [
-                model.get("car_model", "") for model in matched_car_models.get("matched_models", [])
-            ]
+        if len(matched_car_models) <=0:
+            context["car_models"] = []
+        elif len(matched_car_models) > 3:
+            context["car_models"] = matched_car_models[:3] # pick the top 3 car models
+        else:
+            context["car_models"] = matched_car_models
         
         # Convert context to JSON string
         context_json = json.dumps(context, ensure_ascii=False)

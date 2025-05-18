@@ -1,7 +1,7 @@
 import json
 import openai
 import os
-from utils import get_openai_client, get_openai_model
+from utils import get_openai_client, get_openai_model, timer_decorator
 
 class ImplicitNeedsInferrer:
     """
@@ -24,6 +24,7 @@ class ImplicitNeedsInferrer:
         with open("QueryLabels.json", "r") as f:
             self.query_labels = json.load(f)
     
+    @timer_decorator
     def infer_implicit_needs(self, user_message):
         """
         Infer implicit car needs from a user message.
@@ -46,7 +47,6 @@ class ImplicitNeedsInferrer:
             ],
             response_format={"type": "json_object"}
         )
-        
         # Parse and return the inferred needs
         try:
             inferred_needs = json.loads(response.choices[0].message.content)

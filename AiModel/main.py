@@ -1,7 +1,7 @@
 import os
 import json
 import concurrent.futures
-from utils import get_openai_client, get_openai_model
+from utils import get_openai_client, get_openai_model, timer_decorator
 from profile_extractor import ProfileExtractor
 from expertise_evaluator import ExpertiseEvaluator
 from explicit_needs_extractor import ExplicitNeedsExtractor
@@ -43,11 +43,13 @@ class AutoVend:
         self.explicit_needs = {}
         self.implicit_needs = {}
         self.test_drive_info = {}
-        self.matched_car_models = {}
+        self.matched_car_models = []
+        self.matched_car_model_infos = []
         
         # Create a thread pool executor
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
     
+    @timer_decorator
     def process_message(self, user_message):
         """
         Process a user message through all modules in parallel and generate a response.
@@ -99,11 +101,8 @@ class AutoVend:
             # Use existing query_car_model method
             car_models = self.car_model_query.query_car_model(combined_needs)
             # Construct matched car models information
-            self.matched_car_models = {
-                "matched_models": [
-                    self.car_model_query.get_car_model_info(model) for model in car_models
-                ]
-            }
+            self.matched_car_models = car_models
+            self.matched_car_model_infos = [self.car_model_query.get_car_model_info(model) for model in car_models]
                 
         # Determine next stage based on current information
         self._update_stage()
@@ -116,6 +115,7 @@ class AutoVend:
             self.implicit_needs,
             self.test_drive_info,
             self.matched_car_models,
+            self.matched_car_model_infos,
             self.current_stage
         )
         
@@ -182,7 +182,8 @@ class AutoVend:
         self.explicit_needs = {}
         self.implicit_needs = {}
         self.test_drive_info = {}
-        self.matched_car_models = {}
+        self.matched_car_models = []
+        self.matched_car_model_infos = []
         self.conversation_module.clear_history()
     
     def __del__(self):
@@ -229,7 +230,7 @@ if __name__ == "__main__":
         if result['test_drive_info']:
             print(f"Test Drive Info: {json.dumps(result['test_drive_info'], ensure_ascii=False)}")
         
-        if result.get('matched_car_models', {}).get('matched_models'):
-            print(f"Matched Car Models: {json.dumps(result['matched_car_models']['matched_models'], ensure_ascii=False)[:200]}...")
+        if result.get('matched_car_models'):
+            print(f"Matched Car Models: {json.dumps(result['matched_car_models'], ensure_ascii=False)[:200]}...")
             
         print("-" * 50) 

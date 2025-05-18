@@ -73,7 +73,7 @@ class ProfileExtractor:
         
         EXAMPLE RESPONSES:
         - For "My name is Zhang Wei, you can call me Mr. Zhang", return: {{"name": "Zhang Wei", "user_title": "Mr."}}
-        - For "I want to buy a car for my son", return: {{"target_driver": "Self"}}
+        - For "I want to buy a car for my son", return: {{"target_driver": "Son"}}
         - For "My budget is limited", return: {{"price_sensitivity": "High"}}
         
         Only return the JSON object with extracted information. Do not include explanations.

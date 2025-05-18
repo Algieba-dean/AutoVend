@@ -1,7 +1,7 @@
 import json
 import openai
 import os
-from utils import get_openai_client, get_openai_model
+from utils import get_openai_client, get_openai_model, timer_decorator
 
 class ExplicitNeedsExtractor:
     """
@@ -24,6 +24,7 @@ class ExplicitNeedsExtractor:
         with open("QueryLabels.json", "r") as f:
             self.query_labels = json.load(f)
     
+    @timer_decorator
     def extract_explicit_needs(self, user_message):
         """
         Extract explicit car needs from a user message.

@@ -6,7 +6,7 @@
         },
         "user_title": {
             "candidates": ["Mr.", "Mrs.", "Miss.", "Ms."],
-            "description": "Required, should be the like \"Mr. Zhang\"",
+            "description": "Required, should be the like \"Mr.\" or \"Mrs.\"",
             "value": ""
         },
         "name": {
@@ -14,7 +14,7 @@
             "value": ""
         },
         "target_driver": {
-            "candidates": ["Self", "Wife", "Parents"],
+            "candidates": ["Self", "Wife", "Husband", "Parents", "Father","Mother","Son", "Daughter", "Grandparents", "Grandchildren", "Brother", "Sister", "Uncle", "Aunt", "Cousin", "Friend", "Other"],
             "description": "Required, the person who will drive the car",
             "value": ""
         },

@@ -1,7 +1,7 @@
 import json
 import openai
 import os
-from utils import get_openai_client, get_openai_model
+from utils import get_openai_client, get_openai_model, timer_decorator
 
 class ExpertiseEvaluator:
     """
@@ -19,11 +19,13 @@ class ExpertiseEvaluator:
         """
         self.client = get_openai_client()
         self.model = model or get_openai_model()
+        self.max_expertise_level = 3
         
         # Load car specification data for reference
         with open("QueryLabels.json", "r") as f:
             self.car_specs = json.load(f)
     
+    @timer_decorator
     def evaluate_expertise(self, user_message):
         """
         Evaluate user's car expertise from their message.
@@ -46,13 +48,16 @@ class ExpertiseEvaluator:
             ],
             response_format={"type": "json_object"}
         )
-        
         # Parse and return the expertise score
         try:
             expertise_data = json.loads(response.choices[0].message.content)
+            if "expertise" in expertise_data:
+                self.max_expertise_level = max(self.max_expertise_level, int(expertise_data["expertise"]))
+            expertise_data["expertise"] = self.max_expertise_level
+
             return expertise_data
         except json.JSONDecodeError:
-            return {"expertise": "0"}
+            return {"expertise": self.max_expertise_level}
     
     def _create_system_message(self):
         """Create the system message with instructions for the AI."""
