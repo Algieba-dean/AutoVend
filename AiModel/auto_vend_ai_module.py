@@ -2,7 +2,9 @@ import os
 import json
 import time
 import concurrent.futures
-from utils import get_openai_client, get_openai_model
+from utils import Config, clear_cache
+from prompt_manager import PromptManager
+from batch_processor import BatchProcessor
 from profile_extractor import ProfileExtractor
 from expertise_evaluator import ExpertiseEvaluator
 from explicit_needs_extractor import ExplicitNeedsExtractor
@@ -10,15 +12,13 @@ from implicit_needs_inferrer import ImplicitNeedsInferrer
 from test_drive_extractor import TestDriveExtractor
 from model_query_module import CarModelQuery
 from conversation_module import ConversationModule
-from prompt_manager import PromptManager
 from module_decision_maker import ModuleDecisionMaker
-from batch_processor import BatchProcessor
-from streaming_response_handler import ConsoleStreamHandler
 
 class AutoVend:
     """
     Main AutoVend AI car sales assistant class.
     Integrates all modules to process user messages and generate responses.
+    Uses lazy loading for better memory usage and faster initialization.
     """
     
     def __init__(self, api_key=None, model=None, use_streaming=False):
@@ -30,40 +30,144 @@ class AutoVend:
             model (str, optional): OpenAI model to use. Defaults to environment variable.
             use_streaming (bool): Whether to use streaming responses. Defaults to False.
         """
-        # Get OpenAI model name
-        self.model = model or get_openai_model()
+        # Get configuration instance
+        self.config = Config.get_instance()
+        self.config.use_streaming = use_streaming
         
-        # Initialize all modules
-        self.profile_extractor = ProfileExtractor(api_key=api_key, model=self.model)
-        self.expertise_evaluator = ExpertiseEvaluator(api_key=api_key, model=self.model)
-        self.explicit_needs_extractor = ExplicitNeedsExtractor(api_key=api_key, model=self.model)
-        self.implicit_needs_inferrer = ImplicitNeedsInferrer(api_key=api_key, model=self.model)
-        self.test_drive_extractor = TestDriveExtractor(api_key=api_key, model=self.model)
-        self.car_model_query = CarModelQuery()
-        self.conversation_module = ConversationModule(api_key=api_key, model=self.model, use_streaming=use_streaming)
-        
-        # Initialize the module decision maker
-        self.module_decision_maker = ModuleDecisionMaker(api_key=api_key, model=self.model)
-        
-        # Initialize batch processor
-        self.batch_processor = BatchProcessor()
+        # Set model if provided
+        self.model = model or self.config.model
         
         # Initialize state
         self.current_stage = "welcome"
-        self.user_profile = {}
-        self.explicit_needs = {}
-        self.implicit_needs = {}
-        self.test_drive_info = {}
-        self.matched_car_models = {}
+        self.previous_stage = ""
+        self.user_profile = {
+            "phone_number": "",
+            "age": "",
+            "user_title": "",
+            "name": "",
+            "target_driver": "",
+            "expertise": "",
+            "additional_information": {
+                "family_size": "",
+                "price_sensitivity": "",
+                "residence": "",
+                "parking_conditions": ""
+            },
+            "connection_information": {
+                "connection_phone_number": "",
+                "connection_id_relationship": ""
+            }
+        }
+        self.explicit_needs = dict()
+        self.implicit_needs = dict()
+        self.needs = {
+            "explicit": self.explicit_needs,
+            "implicit": self.implicit_needs
+        }
+        self.test_drive_info = {
+            "test_driver": "",
+            "reservation_date": "",
+            "reservation_time": "",
+            "reservation_location": "",
+            "reservation_phone_number": "",
+            "salesman": ""
+        }
+        # matched_car_models should not be accumulated updated, only use current latest list
+        self.matched_car_models = list()
+
+        # matched car infos should be updated here, and use only for conversation agent
+        self.matched_car_model_infos = list()
         
         # Performance configuration
         self.use_streaming = use_streaming
-        self.use_batch_processing = True
+        self.use_batch_processing = self.config.use_batch
         
-        # Create a thread pool executor
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
+        # Initialize batch processor (lightweight)
+        self._batch_processor = BatchProcessor()
+        
+        self._profile_extractor = ProfileExtractor(model=self.model)
+        self._expertise_evaluator = ExpertiseEvaluator(model=self.model)
+        self._explicit_needs_extractor = ExplicitNeedsExtractor(model=self.model)
+        self._implicit_needs_inferrer = ImplicitNeedsInferrer(model=self.model)
+        self._test_drive_extractor = TestDriveExtractor(model=self.model)
+        self._car_model_query = CarModelQuery()
+        self._conversation_module = ConversationModule(model=self.model, use_streaming=self.use_streaming)
+        self._module_decision_maker = ModuleDecisionMaker(model=self.model)
+        
+        # Create a thread pool executor with optimal worker count
+        self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.config.max_workers)
+    @property
+    def profile_extractor(self):
+        return self._profile_extractor
     
-    def process_message(self, user_message):
+    @property
+    def expertise_evaluator(self):
+        return self._expertise_evaluator
+    
+    @property
+    def explicit_needs_extractor(self):
+        return self._explicit_needs_extractor
+    
+    @property
+    def implicit_needs_inferrer(self):
+        return self._implicit_needs_inferrer
+    
+    @property
+    def test_drive_extractor(self):
+        return self._test_drive_extractor
+    
+    @property
+    def car_model_query(self):
+        return self._car_model_query
+    
+    @property
+    def conversation_module(self):
+        return self._conversation_module
+    
+    @property
+    def module_decision_maker(self):
+        return self._module_decision_maker
+    @property
+    def batch_processor(self):
+        return self._batch_processor
+    
+    @property
+    def executor(self):
+        return self._executor
+
+    def update_extraction(self, results:dict):
+        """
+        Process a user message through all modules in parallel and generate a response.
+
+        Args:
+            results (dict): the extracted result after multi information extraction
+
+        Returns:
+        """
+        # Update state with results
+        if results["profile_info"]:
+            self.user_profile.update(results["profile_info"])
+
+        # use max expertise value, no need to use current expertise value
+        if "expertise" in results["expertise_info"]:
+            self.user_profile["expertise"] = results["expertise_info"]["expertise"]
+
+        if results["explicit_needs_info"]:
+            self.explicit_needs.update(results["explicit_needs_info"])
+
+        if results["implicit_needs_info"]:
+            self.implicit_needs.update(results["implicit_needs_info"])
+
+        if results["test_drive_info"]:
+            self.test_drive_info.update(results["test_drive_info"])
+            # If test drive info is being collected, update stage
+            if self.current_stage in ["car_selection_confirmation", "needs_analysis"] and len(
+                    results["test_drive_info"]) > 0:
+                self.current_stage = "reservation4s"
+    def query_matched_car_models(self):
+        ...
+    
+    def process_message(self, user_message, profile:dict, needs:dict,matched_car_models:dict,stage:dict,reservation_info:dict):
         """
         Process a user message through all modules in parallel and generate a response.
         
@@ -76,6 +180,8 @@ class AutoVend:
         start_time = time.time()
         
         # First, decide which modules to activate - using batch processor for better performance
+
+        # current stage, means stage before response
         if self.use_batch_processing:
             module_decisions = self.batch_processor.process_module_decisions(user_message, self.current_stage)
         else:
@@ -95,8 +201,11 @@ class AutoVend:
             "test_drive_info": {}
         }
         
-        # If batch processing is enabled, try to batch compatible extractions
-        if self.use_batch_processing and sum(1 for v in module_decisions.values() if v) >= 2:
+        # Count how many modules are activated
+        activated_count = sum(1 for v in module_decisions.values() if v)
+        
+        # If batch processing is enabled and multiple modules are activated, use batch
+        if self.use_batch_processing and activated_count >= 2:
             # Extract data using batch processor
             batch_results = self.batch_processor.process_extraction_batch(
                 user_message, 
@@ -104,87 +213,62 @@ class AutoVend:
             )
             
             # Update results with batch results
-            if "profile_extractor" in batch_results:
-                results["profile_info"] = batch_results["profile_extractor"]
-                
-            if "expertise_evaluator" in batch_results:
-                results["expertise_info"] = batch_results["expertise_evaluator"]
-                
-            if "explicit_needs_extractor" in batch_results:
-                results["explicit_needs_info"] = batch_results["explicit_needs_extractor"]
-                
-            if "implicit_needs_inferrer" in batch_results:
-                results["implicit_needs_info"] = batch_results["implicit_needs_inferrer"]
-                
-            if "test_drive_extractor" in batch_results:
-                results["test_drive_info"] = batch_results["test_drive_extractor"]
+            for module, result in batch_results.items():
+                if module == "profile_extractor":
+                    results["profile_info"] = result
+                elif module == "expertise_evaluator":
+                    results["expertise_info"] = result
+                elif module == "explicit_needs_extractor": 
+                    results["explicit_needs_info"] = result
+                elif module == "implicit_needs_inferrer":
+                    results["implicit_needs_info"] = result
+                elif module == "test_drive_extractor":
+                    results["test_drive_info"] = result
         else:
-            # Fall back to individual module processing for more complex cases
-            # Only activate modules as determined by the decision maker
+            # Fall back to individual module processing 
+            # Use a dictionary to map module names to their processing functions
+            extraction_functions = {}
+            
+            # Only prepare functions for activated modules
             if module_decisions.get("profile_extractor", True):
-                futures["profile"] = self.executor.submit(self.profile_extractor.extract_profile, user_message)
+                extraction_functions["profile"] = lambda: self.profile_extractor.extract_profile(user_message)
             
             if module_decisions.get("expertise_evaluator", True):
-                futures["expertise"] = self.executor.submit(self.expertise_evaluator.evaluate_expertise, user_message)
+                extraction_functions["expertise"] = lambda: self.expertise_evaluator.evaluate_expertise(user_message)
             
             if module_decisions.get("explicit_needs_extractor", True):
-                futures["explicit_needs"] = self.executor.submit(self.explicit_needs_extractor.extract_explicit_needs, user_message)
+                extraction_functions["explicit_needs"] = lambda: self.explicit_needs_extractor.extract_explicit_needs(user_message)
             
             if module_decisions.get("implicit_needs_inferrer", True):
-                futures["implicit_needs"] = self.executor.submit(self.implicit_needs_inferrer.infer_implicit_needs, user_message)
+                extraction_functions["implicit_needs"] = lambda: self.implicit_needs_inferrer.infer_implicit_needs(user_message)
             
             if module_decisions.get("test_drive_extractor", True):
-                futures["test_drive"] = self.executor.submit(self.test_drive_extractor.extract_test_drive_info, user_message)
+                extraction_functions["test_drive"] = lambda: self.test_drive_extractor.extract_test_drive_info(user_message)
             
-            # Collect results from the futures
-            if "profile" in futures:
-                results["profile_info"] = futures["profile"].result()
+            # Submit all functions to the executor
+            for name, func in extraction_functions.items():
+                futures[name] = self.executor.submit(func)
             
-            if "expertise" in futures:
-                results["expertise_info"] = futures["expertise"].result() or {}
-            
-            if "explicit_needs" in futures:
-                results["explicit_needs_info"] = futures["explicit_needs"].result()
-            
-            if "implicit_needs" in futures:
-                results["implicit_needs_info"] = futures["implicit_needs"].result()
-            
-            if "test_drive" in futures:
-                results["test_drive_info"] = futures["test_drive"].result()
+            # Collect results from futures
+            for name, future in futures.items():
+                if name == "profile":
+                    results["profile_info"] = future.result() or {}
+                elif name == "expertise":
+                    results["expertise_info"] = future.result() or {}
+                elif name == "explicit_needs":
+                    results["explicit_needs_info"] = future.result() or {}
+                elif name == "implicit_needs":
+                    results["implicit_needs_info"] = future.result() or {}
+                elif name == "test_drive":
+                    results["test_drive_info"] = future.result() or {}
         
-        # Update state with results
-        if results["profile_info"]:
-            self.user_profile.update(results["profile_info"])
-        
-        if "expertise" in results["expertise_info"]:
-            self.user_profile["expertise"] = results["expertise_info"]["expertise"]
-        
-        if results["explicit_needs_info"]:
-            self.explicit_needs.update(results["explicit_needs_info"])
-        
-        if results["implicit_needs_info"]:
-            self.implicit_needs.update(results["implicit_needs_info"])
-        
-        if results["test_drive_info"]:
-            self.test_drive_info.update(results["test_drive_info"])
-            # If test drive info is being collected, update stage
-            if self.current_stage in ["car_selection_confirmation", "needs_analysis"] and len(results["test_drive_info"]) > 0:
-                self.current_stage = "reservation4s"
-        
+
         # Once we have needs information, query matching car models
-        # This depends on the results of the extractors, so it cannot be parallelized with them
-        if self.explicit_needs or self.implicit_needs:
-            # Combine explicit and implicit needs
-            combined_needs = {**self.explicit_needs, **self.implicit_needs}
-            # Use existing query_car_model method
-            car_models = self.car_model_query.query_car_model(combined_needs)
-            # Construct matched car models information
-            self.matched_car_models = {
-                "matched_models": [
-                    self.car_model_query.get_car_model_info(model) for model in car_models
-                ]
-            }
-                
+        self.update_extraction(results)
+
+        # query matched car models according both explict and implicit needs
+        self.query_matched_car_models()
+
         # Determine next stage based on current information
         self._update_stage()
         
@@ -268,11 +352,14 @@ class AutoVend:
         self.implicit_needs = {}
         self.test_drive_info = {}
         self.matched_car_models = {}
-        self.conversation_module.clear_history()
+        clear_cache()
+        if self._conversation_module:
+            self.conversation_module.clear_history()
     
     def __del__(self):
         """Clean up resources on object deletion."""
-        self.executor.shutdown(wait=False)
+        if self._executor:
+            self._executor.shutdown(wait=False)
 
 
 # Example usage
