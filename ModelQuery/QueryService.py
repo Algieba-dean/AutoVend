@@ -156,7 +156,6 @@ class CarModelQuery:
             return False
         
         # get vehicle data
-        pp(car_data["car_model"])
         vehicle_data = car_data['PriciseLabels']|car_data['AmbiguousLabels']
 
         for query_key,query_value in query.items():
