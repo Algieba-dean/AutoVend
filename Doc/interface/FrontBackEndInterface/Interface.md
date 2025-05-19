@@ -152,6 +152,7 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_info": {
         "test_driver": "",
         "reservation_date": "",
+        "selected_car_model":"",
         "reservation_time": "",
         "reservation_location": "",
         "reservation_phone_number": "",
@@ -232,6 +233,7 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_date": "",
         "reservation_time": "",
         "reservation_location": "",
+        "selected_car_model":"",
         "reservation_phone_number": "",
         "salesman": ""
       }
@@ -308,6 +310,7 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_info": {
         "test_driver": "",
         "reservation_date": "",
+        "selected_car_model":"Tesla Model Y",
         "reservation_time": "",
         "reservation_location": "",
         "reservation_phone_number": "",
@@ -372,6 +375,7 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_info": {
         "test_driver": "Mr. Zhang",
         "reservation_date": "2025-06-05",
+        "selected_car_model":"Tesla Model Y",
         "reservation_time": "14:00",
         "reservation_location": "Tesla Beijing Haidian Store",
         "reservation_phone_number": "123456789",
