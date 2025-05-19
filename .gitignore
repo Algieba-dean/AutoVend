@@ -9,4 +9,9 @@ DialogFlow/app/data/needs/*.json
 **/*.pywz
 **/*.pyzw
 **/*.env
-**/storage/**
+**/storage/messages/** 
+**/storage/profiles/**
+**/storage/sessions/** 
+**/.idea/**
+**/.vscode/**
+**/.DS_Store
