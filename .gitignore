@@ -1,6 +1,8 @@
 **/venv/**
 DialogFlow/app/data/vehicles/*.json
 DialogFlow/app/data/needs/*.json
+frontend/node_modules/**
+frontend/package-lock.json
 **/*.pyc
 **/*.pyo
 **/*.pyd
@@ -15,3 +17,8 @@ DialogFlow/app/data/needs/*.json
 **/.idea/**
 **/.vscode/**
 **/.DS_Store
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local

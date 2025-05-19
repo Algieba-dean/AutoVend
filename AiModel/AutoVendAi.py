@@ -111,6 +111,7 @@ class AutoVend:
             # Combine explicit and implicit needs
             combined_needs = {**self.explicit_needs, **self.implicit_needs}
             # Use existing query_car_model method
+            # TODO: filter_needs is not used yet
             car_models, filter_needs = self.car_model_query.query_car_model(combined_needs)
             # Construct matched car models information
             self.matched_car_models = car_models
