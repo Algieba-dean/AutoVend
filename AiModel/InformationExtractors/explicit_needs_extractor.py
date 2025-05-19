@@ -462,53 +462,85 @@ class ExplicitNeedsExtractor:
     def _extract_numeric_values(self, text):
         """
         Extract numeric values with potential units from text.
+        Recognizes various expressions of the same unit type.
         
         Args:
             text (str): The text to analyze
             
         Returns:
-            list: List of tuples (value, context) where context is the surrounding text
+            list: List of tuples (value, context, unit_type) where context is the surrounding text
+                  and unit_type helps identify the measurement type
         """
+        # Normalize text for better matching (remove extra spaces, lowercase)
+        text = ' '.join(text.lower().split())
+        
         # Patterns for different formats of numeric values with potential units
         patterns = [
-            # Price with currency symbol: $25,000, 25,000$, 25,000 dollars
-            r'(?:[$€¥£])\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?)|(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?)\s*(?:[$€¥£]|\bdollars\b|\beuro\b|\byuan\b|\bpound\b)',
+            # Price with various formats
+            # $25,000, 25,000$, 25,000 dollars, 25k, 25 grand, 25,000 USD
+            (r'(?:[$€¥£])\s*(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?)|(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?)\s*(?:[$€¥£]|\bdollars?\b|\beuro\b|\byuan\b|\bpounds?\b|\busd\b|\beur\b|\bcny\b|\bjpy\b|\bgbp\b|\bk\b|\bgrand\b|\bthousand\b)', "prize"),
             
-            # Distance/Length: 300mm, 2.8m, 2800 mm, 2.8 meters
-            r'(\d+(?:\.\d+)?)\s*(?:mm\b|millimeters\b|millimetres\b)|(\d+(?:\.\d+)?)\s*(?:m\b|meters\b|metres\b)',
+            # Passenger space volume or trunk volume
+            # 3.5m³, 3.5 cubic meters, 350L, 350 liters
+            (r'(\d+(?:\.\d+)?)\s*(?:m[³3]|cubic\s*m(?:eters?|etres?)?|cu\.?\s*m)', "volume_cubic_meters"),
+            (r'(\d+(?:\.\d+)?)\s*(?:l\b|liters?\b|litres?\b)', "volume_liters"),
             
-            # Volume: 3.5m³, 350l, 350 liters
-            r'(\d+(?:\.\d+)?)\s*(?:m3\b|m³\b|cubic\s+meters\b|cubic\s+metres\b)|(\d+(?:\.\d+)?)\s*(?:l\b|liters\b|litres\b)',
+            # Wheelbase and chassis height - length measurements
+            # 2800mm, 2.8m, 280cm, 2800 millimeters
+            (r'(\d+(?:\.\d+)?)\s*(?:mm\b|millimeters?\b|millimetres?\b)', "length_mm"),
+            (r'(\d+(?:\.\d+)?)\s*(?:cm\b|centimeters?\b|centimetres?\b)', "length_cm"),
+            (r'(\d+(?:\.\d+)?)\s*(?:m\b|meters?\b|metres?\b)(?!\s*[³3])', "length_m"),
             
-            # Power: 150kW, 150 kilowatts, 200hp, 200 horsepower
-            r'(\d+(?:\.\d+)?)\s*(?:kw\b|kilowatts\b)|(\d+(?:\.\d+)?)\s*(?:hp\b|horsepower\b)',
+            # Engine displacement
+            # 2.0L, 2000cc, 2.0 liters, 2000 cubic centimeters
+            (r'(\d+(?:\.\d+)?)\s*(?:l\b|liters?\b|litres?\b|ltr\b)', "engine_displacement"),
+            (r'(\d+(?:\.\d+)?)\s*(?:cc\b|cm[³3]\b|cubic\s*centimeters?\b|cubic\s*centimetres?\b)', "engine_displacement_cc"),
             
-            # Energy: 60kWh, 60 kilowatt hours
-            r'(\d+(?:\.\d+)?)\s*(?:kwh\b|kilowatt\s*hours\b)',
+            # Motor power
+            # 150kW, 150 kilowatts, 150 kW
+            (r'(\d+(?:\.\d+)?)\s*(?:kw\b|kilowatts?\b|kilo\s*watts?\b)', "motor_power"),
             
-            # Force: 400Nm, 400 newton meters
-            r'(\d+(?:\.\d+)?)\s*(?:nm\b|newton\s*meters\b)',
+            # Battery capacity
+            # 60kWh, 60 kilowatt hours, 60 kWh
+            (r'(\d+(?:\.\d+)?)\s*(?:kwh\b|kilowatt[\s-]*hours?\b|kw[\s-]*h\b)', "battery_capacity"),
             
-            # Speed: 200km/h, 200 kilometers per hour
-            r'(\d+(?:\.\d+)?)\s*(?:km/h\b|kilometers\s+per\s+hour\b|kph\b)',
+            # Fuel tank capacity
+            # 60L, 60 liters, 60 liter tank
+            (r'(\d+(?:\.\d+)?)\s*(?:l\b|liters?\b|litres?\b)(?:\s+tank)?\b', "fuel_tank_capacity"),
             
-            # Consumption: 7l/100km, 7 liters per 100 kilometers
-            r'(\d+(?:\.\d+)?)\s*(?:l/100km\b|liters\s+per\s+100\s+kilometers\b)',
+            # Horsepower
+            # 200hp, 200 horsepower, 200bhp, 200 PS
+            (r'(\d+(?:\.\d+)?)\s*(?:hp\b|horsepower\b|bhp\b|ps\b)', "horsepower"),
             
-            # Acceleration: 6s, 6 seconds (in context of acceleration)
-            r'(\d+(?:\.\d+)?)\s*(?:s\b|seconds\b)(?=\s+(?:0-100|0-60|acceleration|zero\s+to|from\s+standstill))|(?:0-100|0-60|acceleration)\s+(?:in\s+)?(\d+(?:\.\d+)?)\s*(?:s\b|seconds\b)',
+            # Torque
+            # 400Nm, 400 newton meters, 400 N·m
+            (r'(\d+(?:\.\d+)?)\s*(?:nm\b|n[\s·-]*m\b|newton[\s-]*meters?\b|newton[\s-]*metres?\b)', "torque"),
             
-            # Range: 400km, 400 kilometers range
-            r'(?:range\s+of\s+)?(\d+(?:\.\d+)?)\s*(?:km\b|kilometers\b|kilometres\b)(?:\s+range)?',
+            # Acceleration time
+            # 0-100 in 6s, accelerates to 100 km/h in 6 seconds, 0 to 60 mph in 6 seconds
+            (r'(?:0[\s-]*to[\s-]*100|0[\s-]*100|zero[\s-]*to[\s-]*(?:100|hundred)|acceleration)(?:\s+(?:km/h|kph))?\s+(?:in\s+)?(\d+(?:\.\d+)?)\s*(?:s\b|sec(?:ond)?s?\b)|(\d+(?:\.\d+)?)\s*(?:s\b|sec(?:ond)?s?\b)(?:\s+(?:0[\s-]*to[\s-]*100|acceleration|zero[\s-]*to))', "acceleration_time"),
             
-            # Just numbers (context needed)
-            r'\b(\d+(?:\.\d+)?)\b'
+            # Top speed
+            # 200km/h, 200 kilometers per hour, 200 kph, max speed 200
+            (r'(\d+(?:\.\d+)?)\s*(?:km/h\b|kmph\b|kph\b|kilometers?\s+per\s+hour\b|kilometres?\s+per\s+hour\b)|(?:top|max(?:imum)?|highest)\s+speed\s+(?:of\s+)?(\d+(?:\.\d+)?)', "top_speed"),
+            
+            # Fuel consumption
+            # 7L/100km, 7 liters per 100 kilometers, 7 liters/100km, fuel economy of 7
+            (r'(\d+(?:\.\d+)?)\s*(?:l/100\s*km\b|liters?\s+per\s+100\s+kilometers?\b|litres?\s+per\s+100\s+kilometres?\b|liters?/100\s*km\b|litres?/100\s*km\b)|(?:fuel\s+consumption|fuel\s+economy|gas\s+mileage)\s+(?:of\s+)?(\d+(?:\.\d+)?)', "fuel_consumption"),
+            
+            # Electric consumption
+            # 18kWh/100km, 18 kWh per 100 km
+            (r'(\d+(?:\.\d+)?)\s*(?:kwh/100\s*km\b|kilowatt[\s-]*hours?\s+per\s+100\s+kilometers?\b|kilowatt[\s-]*hours?/100\s*km\b|kw[\s-]*h/100\s*km\b)', "electric_consumption"),
+            
+            # Driving range
+            # 400km, 400 kilometer range, range of 400, 400 km on a single charge
+            (r'(?:range\s+(?:of\s+)?)?(\d+(?:\.\d+)?)\s*(?:km\b|kilometers?\b|kilometres?\b)(?:\s+range)?|(?:range|distance)\s+(?:of\s+)?(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)\s*(?:km\b|kilometers?\b|kilometres?\b)\s+(?:on\s+a|per|with\s+one)\s+(?:single\s+)?(?:charge|tank)', "driving_range")
         ]
         
         extracted_values = []
         
-        for pattern in patterns:
-            matches = re.finditer(pattern, text.lower())
+        for pattern, unit_type in patterns:
+            matches = re.finditer(pattern, text)
             for match in matches:
                 # Get the capturing group that matched
                 value = next((g for g in match.groups() if g is not None), None)
@@ -516,29 +548,63 @@ class ExplicitNeedsExtractor:
                     # Remove commas from numbers like 25,000
                     value = value.replace(',', '')
                     
+                    # Convert k/K (thousands) to actual number
+                    if value.lower().endswith('k'):
+                        value = value[:-1]
+                        try:
+                            value = str(float(value) * 1000)
+                        except ValueError:
+                            continue
+                    
                     # Get some context for the value (text before and after)
-                    start = max(0, match.start() - 20)
-                    end = min(len(text), match.end() + 20)
+                    start = max(0, match.start() - 25)
+                    end = min(len(text), match.end() + 25)
                     context = text[start:end].lower()
                     
-                    extracted_values.append((float(value), context))
+                    try:
+                        extracted_values.append((float(value), context, unit_type))
+                    except ValueError:
+                        continue
         
         return extracted_values
     
-    def _determine_likely_label_for_value(self, value, context):
+    def _determine_likely_label_for_value(self, value, context, unit_type):
         """
-        Determine the most likely label for a numeric value based on its context.
+        Determine the most likely label for a numeric value based on its context and unit type.
         
         Args:
             value (float): The numeric value
             context (str): The context string surrounding the value
+            unit_type (str): The type of unit detected
             
         Returns:
             str: The most likely label, or None if undetermined
         """
-        # Look for contextual clues
+        # Direct mapping from unit_type to label when unambiguous
+        unit_to_label = {
+            "prize": "prize",
+            "volume_cubic_meters": "passenger_space_volume",  # Could be passenger_space_volume or trunk_volume
+            "volume_liters": "trunk_volume",  # Could be trunk_volume or fuel_tank_capacity
+            "length_mm": None,  # Could be wheelbase or chassis_height
+            "length_cm": None,  # Could be wheelbase or chassis_height
+            "length_m": None,  # Could be wheelbase
+            "engine_displacement": "engine_displacement",
+            "engine_displacement_cc": "engine_displacement",
+            "motor_power": "motor_power",
+            "battery_capacity": "battery_capacity",
+            "fuel_tank_capacity": "fuel_tank_capacity",
+            "horsepower": "horsepower",
+            "torque": "torque",
+            "acceleration_time": "zero_to_one_hundred_km_h_acceleration_time",
+            "top_speed": "top_speed",
+            "fuel_consumption": "fuel_consumption",
+            "electric_consumption": "electric_consumption",
+            "driving_range": "driving_range"
+        }
+        
+        # Look for contextual clues to resolve ambiguous unit types
         context_clues = {
-            "prize": ["price", "cost", "dollar", "euro", "money", "budget", "afford", "expensive", "cheap", "worth", "pay"],
+                        "prize": ["price", "cost", "dollar", "euro", "money", "budget", "afford", "expensive", "cheap", "worth", "pay"],
             "passenger_space_volume": ["passenger space", "cabin space", "interior space", "interior volume", "cabin volume", "passenger volume", "cabin size", "interior size"],
             "trunk_volume": ["trunk", "boot", "cargo", "luggage", "storage space", "storage capacity", "cargo capacity", "trunk size", "boot size"],
             "wheelbase": ["wheelbase", "wheel base", "between wheels", "wheel to wheel"],
@@ -556,36 +622,79 @@ class ExplicitNeedsExtractor:
             "driving_range": ["driving range", "range", "distance on", "travel on", "km range", "mile range", "single charge", "tank of fuel"]
         }
         
-        best_match = None
-        max_matches = 0
+        # Get initial label from unit type
+        label = unit_to_label.get(unit_type)
         
-        for label, clues in context_clues.items():
-            matches = sum(1 for clue in clues if clue in context)
-            if matches > max_matches:
-                max_matches = matches
-                best_match = label
+        # If label is None or potentially ambiguous, use context to disambiguate
+        if unit_type in ["volume_cubic_meters", "volume_liters", "length_mm", "length_cm", "length_m"]:
+            best_match = None
+            max_matches = 0
+            
+            # Determine which labels to check based on unit_type
+            labels_to_check = []
+            if unit_type == "volume_cubic_meters":
+                labels_to_check = ["passenger_space_volume", "trunk_volume"]
+            elif unit_type == "volume_liters":
+                labels_to_check = ["trunk_volume", "fuel_tank_capacity"]
+            elif unit_type in ["length_mm", "length_cm", "length_m"]:
+                labels_to_check = ["wheelbase", "chassis_height"]
+                
+            for potential_label in labels_to_check:
+                clues = context_clues.get(potential_label, [])
+                matches = sum(1 for clue in clues if clue in context)
+                if matches > max_matches:
+                    max_matches = matches
+                    best_match = potential_label
+            
+            if best_match:
+                label = best_match
+            else:
+                # Default mappings for ambiguous units with no clear context
+                if unit_type == "volume_cubic_meters":
+                    label = "passenger_space_volume"  # Default to passenger space for cubic meters
+                elif unit_type == "volume_liters":
+                    label = "trunk_volume"  # Default to trunk volume for liters
+                elif unit_type == "length_mm" or unit_type == "length_cm":
+                    # Convert to approximate range for wheelbase vs chassis height
+                    if unit_type == "length_mm":
+                        if value >= 2000:  # Likely wheelbase
+                            label = "wheelbase"
+                        else:  # Likely chassis height
+                            label = "chassis_height"
+                    elif unit_type == "length_cm":
+                        if value >= 200:  # Likely wheelbase
+                            label = "wheelbase"
+                        else:  # Likely chassis height
+                            label = "chassis_height"
+                elif unit_type == "length_m":
+                    label = "wheelbase"  # Default to wheelbase for meters
         
-        # Different value ranges can also provide clues
-        if best_match is None:
-            if 5000 <= value <= 200000:
-                # Likely a price
-                best_match = "prize"
-            elif 1 <= value <= 10:
-                # Could be fuel consumption
-                if "consumption" in context or "economy" in context or "mileage" in context:
-                    best_match = "fuel_consumption"
-            elif 50 <= value <= 600:
-                # Could be driving range
-                if "range" in context or "distance" in context:
-                    best_match = "driving_range"
-                # Could be horsepower
-                elif "power" in context or "engine" in context:
-                    best_match = "horsepower"
-            elif 2000 <= value <= 4000:
-                # Likely wheelbase
-                best_match = "wheelbase"
+        return label
         
-        return best_match
+    def _convert_to_standard_unit(self, value, unit_type):
+        """
+        Convert a value to the standard unit expected by _map_value_to_range.
+        
+        Args:
+            value (float): The numeric value
+            unit_type (str): The type of unit detected
+            
+        Returns:
+            float: The value converted to the standard unit
+        """
+        # For each label, we need to convert to the expected unit
+        if unit_type == "length_cm":
+            # Convert cm to mm for wheelbase or chassis_height
+            return value * 10
+        elif unit_type == "length_m":
+            # Convert m to mm for wheelbase or chassis_height
+            return value * 1000
+        elif unit_type == "engine_displacement_cc":
+            # Convert cc to liters for engine_displacement
+            return value / 1000
+        
+        # For other unit types, no conversion needed
+        return value
     
     # @timer_decorator
     def extract_explicit_needs(self, user_input):
@@ -603,6 +712,7 @@ class ExplicitNeedsExtractor:
         - vehicle_category_middle
         - vehicle_category_top
         - seat_layout
+        - powertrain_type
         
         Other labels must be directly mentioned by name.
         
@@ -647,6 +757,7 @@ class ExplicitNeedsExtractor:
             "vehicle_category_middle",
             "vehicle_category_top",
             "seat_layout",
+            "powertrain_type",
         }
         
         # Define range-based labels
@@ -739,28 +850,44 @@ class ExplicitNeedsExtractor:
         for label in directly_mentioned_labels:
             if label in range_based_labels and label not in explicit_needs:
                 # Find the most relevant numeric value for this label
-                for value, context in extracted_values:
-                    # Check if context contains the label or its synonyms
-                    label_found = False
-                    for synonym in self.label_synonyms.get(label, []):
-                        if synonym in context:
-                            label_found = True
-                            break
-                            
-                    if label_found:
-                        range_value = self._map_value_to_range(value, label)
+                for value, context, unit_type in extracted_values:
+                    # If the unit_type directly corresponds to this label, use it
+                    likely_label = self._determine_likely_label_for_value(value, context, unit_type)
+                    
+                    if likely_label == label:
+                        # Convert to standard unit if needed
+                        converted_value = self._convert_to_standard_unit(value, unit_type)
+                        range_value = self._map_value_to_range(converted_value, label)
                         if range_value:
                             explicit_needs[label] = range_value
                             break
+                            
+                    # Check if context contains the label or its synonyms
+                    if not likely_label:
+                        label_found = False
+                        for synonym in self.label_synonyms.get(label, []):
+                            if synonym in context:
+                                label_found = True
+                                break
+                                
+                        if label_found:
+                            # Convert to standard unit if needed
+                            converted_value = self._convert_to_standard_unit(value, unit_type)
+                            range_value = self._map_value_to_range(converted_value, label)
+                            if range_value:
+                                explicit_needs[label] = range_value
+                                break
         
         # For numeric values that haven't been assigned to a label yet
-        for value, context in extracted_values:
+        for value, context, unit_type in extracted_values:
             # Try to determine the likely label for this value
-            likely_label = self._determine_likely_label_for_value(value, context)
+            likely_label = self._determine_likely_label_for_value(value, context, unit_type)
             
             # If the label is in our range labels and not already assigned
             if likely_label in range_based_labels and likely_label not in explicit_needs:
-                range_value = self._map_value_to_range(value, likely_label)
+                # Convert to standard unit if needed
+                converted_value = self._convert_to_standard_unit(value, unit_type)
+                range_value = self._map_value_to_range(converted_value, likely_label)
                 if range_value:
                     explicit_needs[likely_label] = range_value
         
@@ -838,9 +965,9 @@ if __name__ == "__main__":
     for input_text in test_inputs:
         print(f"Input: {input_text}")
         
-        # # Get mentioned labels
-        # mentioned = extractor.get_mentioned_needs(input_text)
-        # print(f"Mentioned labels: {mentioned}")
+        # Get mentioned labels
+        mentioned = extractor.get_mentioned_needs(input_text)
+        print(f"Mentioned labels: {mentioned}")
         
         # Extract explicit needs
         needs = extractor.extract_explicit_needs(input_text)
