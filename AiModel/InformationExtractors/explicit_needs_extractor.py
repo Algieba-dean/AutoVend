@@ -84,6 +84,10 @@ class ExplicitNeedsExtractor:
                 variations.extend(["autonomous driving", "self driving", "autopilot"])
             elif label.lower() == "noise_insulation":
                 variations.extend(["sound insulation", "sound proofing", "noise reduction"])
+            elif label.lower() == "brand_country":
+                variations.extend(["country", "made in", "country of origin", "origin country"])
+            elif label.lower() == "brand_area":
+                variations.extend(["region", "area", "continent"])
             
             # Add the variations to the synonyms list
             label_synonyms.extend(variations)
@@ -124,6 +128,43 @@ class ExplicitNeedsExtractor:
                     synonyms.extend(["hybrid", "hev"])
                 elif candidate.lower() == "plug-in hybrid electric vehicle":
                     synonyms.extend(["plug-in hybrid", "phev"])
+                
+                # Add country-specific synonyms and adjective forms
+                if label == "brand_country":
+                    if candidate.lower() == "usa":
+                        synonyms.extend(["america", "american", "united states", "united states of america", "u.s.", "u.s.a.", "us"])
+                    elif candidate.lower() == "germany":
+                        synonyms.extend(["german", "deutschland"])
+                    elif candidate.lower() == "china":
+                        synonyms.extend(["chinese", "prc", "people's republic of china"])
+                    elif candidate.lower() == "japan":
+                        synonyms.extend(["japanese", "nippon"])
+                    elif candidate.lower() == "korea":
+                        synonyms.extend(["korean", "south korea", "south korean", "republic of korea"])
+                    elif candidate.lower() == "france":
+                        synonyms.extend(["french"])
+                    elif candidate.lower() == "united kingdom":
+                        synonyms.extend(["uk", "britain", "great britain", "british", "england", "english"])
+                    elif candidate.lower() == "sweden":
+                        synonyms.extend(["swedish"])
+                
+                # Add area-specific synonyms
+                if label == "brand_area":
+                    if candidate.lower() == "european":
+                        synonyms.extend(["europe", "eu"])
+                    elif candidate.lower() == "american":
+                        synonyms.extend(["america", "north american", "north america", "usa", "u.s."])
+                    elif candidate.lower() == "asian":
+                        synonyms.extend(["asia", "east asian", "east asia"])
+                
+                # Add specific brand synonyms
+                if label == "brand":
+                    if candidate.lower() == "mercedes-benz":
+                        synonyms.extend(["mercedes", "benz"])
+                    elif candidate.lower() == "volkswagen":
+                        synonyms.extend(["vw"])
+                    elif candidate.lower() == "great wall motor":
+                        synonyms.extend(["great wall", "gwm"])
                 
                 # Remove duplicates
                 synonyms = list(set(synonyms))
