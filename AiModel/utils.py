@@ -3,6 +3,14 @@ import openai
 import time
 from datetime import datetime
 from functools import wraps
+import re
+
+def clean_thinking_output(output):
+    """
+    Clean the thinking output from the model.
+    """
+    cleaned_text = re.sub(r'<think>.*?</think>', '', output, flags=re.DOTALL)
+    return cleaned_text
 
 def timer_decorator(func):
     """
@@ -17,6 +25,8 @@ def timer_decorator(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
+        if os.getenv("DEBUG", "false").lower() == "false":
+            return func(*args, **kwargs)
         # Record start time
         start_time = datetime.now()
         start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -63,6 +73,10 @@ def get_openai_client():
     Returns:
         openai.OpenAI: Configured OpenAI client
     """
+    # OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/v1")
+    # OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "ollama")
+    # OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", OLLAMA_API_KEY)
+    # OPENAI_URL = os.getenv("OPENAI_URL", OLLAMA_URL)
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8")
     OPENAI_URL = os.getenv("OPENAI_URL", "https://api.deepseek.com/v1")
     
@@ -80,4 +94,8 @@ def get_openai_model():
     Returns:
         str: Model name
     """
-    return os.getenv("OPENAI_MODEL", "deepseek-chat") 
+    QWEN_MODEL_A3B = "modelscope.cn/unsloth/Qwen3-30B-A3B-128K-GGUF"
+    QWEN_MODEL_32B = "modelscope.cn/unsloth/Qwen3-32B-128K-GGUF"
+    OPENAI_MODEL = "deepseek-chat"
+    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", QWEN_MODEL_A3B)
+    return os.getenv("OPENAI_MODEL", OPENAI_MODEL) 
