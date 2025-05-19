@@ -40,6 +40,7 @@ class AutoVend:
         
         # Initialize state
         self.current_stage = "welcome"
+        self.previous_stage = ""
         self.user_profile = {}
         self.explicit_needs = {}
         self.implicit_needs = {}
