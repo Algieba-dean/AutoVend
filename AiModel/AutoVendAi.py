@@ -2,13 +2,14 @@ import os
 import json
 import concurrent.futures
 from utils import get_openai_client, get_openai_model, timer_decorator
-from profile_extractor import ProfileExtractor
-from expertise_evaluator import ExpertiseEvaluator
-from explicit_needs_extractor import ExplicitNeedsExtractor
-from implicit_needs_inferrer import ImplicitNeedsInferrer
-from test_drive_extractor import TestDriveExtractor
-from model_query_module import CarModelQuery
-from conversation_module import ConversationModule
+
+from LLMExtractors.profile_extractor import ProfileExtractor
+from LLMExtractors.expertise_evaluator import ExpertiseEvaluator
+from LLMExtractors.explicit_needs_extractor import ExplicitNeedsExtractor
+from LLMExtractors.implicit_needs_inferrer import ImplicitNeedsInferrer
+from LLMExtractors.test_drive_extractor import TestDriveExtractor
+from ModelQuery.ModelQuery import CarModelQuery
+from Conversation.conversation_module import ConversationModule
 from prompt_manager import PromptManager
 
 class AutoVend:
@@ -48,6 +49,17 @@ class AutoVend:
         
         # Create a thread pool executor
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
+    def get_initial_response(self, user_profile):
+        """
+        Get the initial response from the conversation module.
+        """
+        return self.conversation_module.get_initial_response(user_profile)
+    
+    def get_ask_basic_info_response(self, user_profile):
+        """
+        Get the response from the conversation module when asking for basic info.
+        """
+        return self.conversation_module.get_ask_basic_info_response(user_profile)
     
     @timer_decorator
     def process_message(self, user_message):
@@ -99,10 +111,11 @@ class AutoVend:
             # Combine explicit and implicit needs
             combined_needs = {**self.explicit_needs, **self.implicit_needs}
             # Use existing query_car_model method
-            car_models = self.car_model_query.query_car_model(combined_needs)
+            car_models, filter_needs = self.car_model_query.query_car_model(combined_needs)
             # Construct matched car models information
             self.matched_car_models = car_models
             self.matched_car_model_infos = [self.car_model_query.get_car_model_info(model) for model in car_models]
+            ...
                 
         # Determine next stage based on current information
         self._update_stage()

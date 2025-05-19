@@ -1,8 +1,11 @@
 import json
 import random
 import os
-from utils import get_openai_client, get_openai_model, timer_decorator
+from utils import get_openai_client, get_openai_model, timer_decorator, clean_thinking_output
 from prompt_manager import PromptManager
+from Conversation.welcome_message import get_welcome_message
+from Conversation.ask_basic_informaton_messages import get_ask_name_message,get_ask_title_message,get_ask_target_driver_message
+from Conversation.ask_reservation_information_messages import get_congratulation_message,get_ask_test_driver_message,get_ask_reservation_date_message,get_ask_reservation_time_message,get_ask_reservation_location_message
 
 class ConversationModule:
     """
@@ -23,13 +26,7 @@ class ConversationModule:
     }
     
     # Predefined welcome messages
-    WELCOME_MESSAGES = [
-        "Hello! This is AutoVend, your intelligent car purchasing assistant. How can I help you find your ideal vehicle today?",
-        "Hi there! I'm AutoVend, an AI-powered car consultant. I'm here to make your car shopping experience easier. What kind of vehicle are you looking for?",
-        "Welcome to our virtual showroom! I'm AutoVend, your smart car assistant. I can help with everything from finding the right model to booking a test drive. How may I assist you?",
-        "Thank you for contacting us! This is AutoVend, your personal car shopping guide. I'm here to help you find the perfect vehicle for your needs. What brings you to our service today?",
-        "Good day! AutoVend at your service. I'm specialized in helping customers find their perfect car match. What type of vehicle are you interested in exploring?"
-    ]
+    
     
     def __init__(self, api_key=None, model=None):
         """
@@ -47,16 +44,48 @@ class ConversationModule:
         
         # Initialize prompt manager
         self.prompt_manager = PromptManager()
+        self.__basic_information = {
+            "name":False, 
+            "user_title":False, 
+            "target_driver":False
+            }
     def get_initial_response(self, user_profile:dict):
         """
         Get the initial response , for warning the user that the chat will be recorded for training and improvement, randomly pick one from the WELCOME_MESSAGES.
         If user name and title are provided, use them to generate a personalized greeting.
         """
-        if user_profile.get("name") and user_profile.get("user_title"):
-            # TODO, not ok, let's update it later
-            return f"Hello! This is AutoVend, your intelligent car purchasing assistant. Current chat will be recorded for training and improvement. Continue means you agree to this. Use the customer's {'title ' + user_profile.get("user_title")} {'name ' + user_profile.get("name")} when greeting them."
-        else:
-            return random.choice(self.WELCOME_MESSAGES)
+        personalized_greeting = "Hi!"
+        if user_profile.get("name") :
+            personalized_greeting = f"Hi {user_profile.get("user_title","")} {user_profile.get("name")} !"
+        return f"{personalized_greeting} {get_welcome_message()}"
+    
+    def get_ask_basic_info_response(self, user_profile:dict):
+        """
+        Get the response from the conversation module when asking for basic info.
+        """
+        user_name = user_profile.get("name","")
+        user_title = user_profile.get("user_title","")
+        target_driver = user_profile.get("target_driver","")
+        if not user_name:
+            return random.choice(get_ask_name_messages())
+        if not user_title:
+            return random.choice(get_ask_title_messages())
+        if not target_driver:
+            return f"Hi {user_title} {user_name} ! {get_ask_target_driver_messages()}"
+        return f"Hi {user_title} {user_name} ! {get_ask_target_driver_messages()}"
+    
+    def get_ask_reservation_response(self, user_profile:dict, reservation_info:dict):
+        """
+        Get the response from the conversation module when asking for reservation.
+        """
+        test_driver = reservation_info.get("test_driver","")
+        reservation_date = reservation_info.get("reservation_date","")
+        reservation_time = reservation_info.get("reservation_time","")
+        reservation_location = reservation_info.get("reservation_location","")
+        reservation_phone_number = reservation_info.get("reservation_phone_number","")
+        salesman = reservation_info.get("salesman","")
+        selected_car_model = reservation_info.get("selected_car_model","")
+        return f"Hi {user_profile.get("user_title","")} {user_profile.get("name")} ! {get_ask_target_driver_messages()}"
     
     @timer_decorator
     def generate_response(self, user_message, user_profile, explicit_needs, 
@@ -80,7 +109,7 @@ class ConversationModule:
 
         # For welcome stage with first interaction, use predefined welcome message
         if current_stage == "welcome" and not self.conversation_history:
-            return random.choice(self.WELCOME_MESSAGES)
+            return get_welcome_message()
             
         # Add user message to conversation history
         self.conversation_history.append({"role": "user", "content": user_message})
@@ -104,11 +133,12 @@ class ConversationModule:
             model=self.model,
             messages=messages,
             temperature=0.7,  # Add temperature for more consistent responses
-            max_tokens=200 # Limit response length
+            max_tokens=500# Limit response length
         )
         
         # Get assistant response
         assistant_response = response.choices[0].message.content
+        assistant_response = clean_thinking_output(assistant_response)
         
         # Add assistant response to conversation history
         self.conversation_history.append({"role": "assistant", "content": assistant_response})

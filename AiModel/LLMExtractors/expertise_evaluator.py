@@ -1,7 +1,7 @@
 import json
 import openai
 import os
-from utils import get_openai_client, get_openai_model, timer_decorator
+from utils import get_openai_client, get_openai_model, timer_decorator, clean_thinking_output
 
 class ExpertiseEvaluator:
     """
@@ -46,11 +46,15 @@ class ExpertiseEvaluator:
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": user_message}
             ],
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
+            temperature=0.9
         )
+        
+        content = response.choices[0].message.content
+        content = clean_thinking_output(content)
         # Parse and return the expertise score
         try:
-            expertise_data = json.loads(response.choices[0].message.content)
+            expertise_data = json.loads(content)
             if "expertise" in expertise_data:
                 self.max_expertise_level = max(self.max_expertise_level, int(expertise_data["expertise"]))
             expertise_data["expertise"] = self.max_expertise_level

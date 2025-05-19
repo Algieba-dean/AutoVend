@@ -1,7 +1,7 @@
 import json
 import openai
 import os
-from utils import get_openai_client, get_openai_model, timer_decorator
+from utils import get_openai_client, get_openai_model, timer_decorator, clean_thinking_output
 
 class ExplicitNeedsExtractor:
     """
@@ -45,12 +45,15 @@ class ExplicitNeedsExtractor:
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": user_message}
             ],
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
+            temperature=0.9
         )
         
         # Parse and return the extracted needs
         try:
-            extracted_needs = json.loads(response.choices[0].message.content)
+            content = response.choices[0].message.content
+            content = clean_thinking_output(content)
+            extracted_needs = json.loads(content)
             return extracted_needs
         except json.JSONDecodeError:
             return {}

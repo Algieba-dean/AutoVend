@@ -21,7 +21,7 @@ class ProfileExtractor:
         self.model = model or get_openai_model()
         
         # Load user profile template
-        with open("UserProfile.json", "r") as f:
+        with open("./Config/UserProfile.json", "r") as f:
             self.profile_template = json.load(f)
     
     def extract_profile(self, user_message):
