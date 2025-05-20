@@ -165,7 +165,7 @@ class AutoVend:
         
         elif self.current_stage == "needs_analysis":
             # If we have a good amount of needs identified and matched car models
-            if len(self.explicit_needs) + len(self.implicit_needs) >= 5 and self.matched_car_models.get("matched_models"):
+            if len(self.explicit_needs) + len(self.implicit_needs) >= 5 and self.matched_car_models:
                 self.current_stage = "car_selection_confirmation"
         
         elif self.current_stage == "reservation4s":
