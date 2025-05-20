@@ -37,7 +37,7 @@ model_list = [
   "Honda-CR-V Hybrid Sport",
   "Honda-CR-V Hybrid EX-L",
   "Honda-CR-V Hybrid Touring",
-  "Honda-CR-V e:FCEV",
+  "Honda-CR-V e FCEV",
   "Honda-Pilot",
   "Honda-Pilot LX",
   "Honda-Pilot EX-L",
