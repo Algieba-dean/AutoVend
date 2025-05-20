@@ -1,7 +1,12 @@
 import re
 from datetime import datetime, timedelta
-from utils import get_current_time, timer_decorator
+# from utils import get_current_time, timer_decorator
 
+def get_current_time():
+    """
+    Get the current time in the format of YYYY-MM-DD HH:MM:SS
+    """
+    return datetime.now().time().strftime("%H:%M:%S")
 class TimeExtractor:
     """
     A class for extracting time information from user input strings.
@@ -42,7 +47,7 @@ class TimeExtractor:
             "hrs": 60
         }
     
-    @timer_decorator
+    # @timer_decorator
     def extract_times(self, text):
         """
         Extract time information from the given text.
