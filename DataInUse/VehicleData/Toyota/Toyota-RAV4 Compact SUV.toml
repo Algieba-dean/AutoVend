@@ -1,0 +1,238 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Toyota-RAV4 Compact SUV"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "30,000~40,000"
+prize_comments = "The Toyota RAV4 Compact SUV starts at $32,075 USD for the base LE trim and goes up to $39,800 USD for the top-tier Limited trim (2024 model year)."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact SUV"
+vehicle_category_bottom_comments = "The RAV4 is classified as a compact SUV with a unibody chassis, offering a balance of urban practicality and light off-road capability."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Toyota"
+brand_comments = "Toyota is a globally recognized Japanese automaker known for reliability and the RAV4 is one of its best-selling models."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Hybrid Electric Vehicle"
+powertrain_type_comments = "The RAV4 Hybrid combines a 2.5L 4-cylinder gasoline engine with electric motors for improved efficiency (EPA-estimated 40 MPG combined)."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "Total passenger volume is 98.9 cu ft (2.8 cubic meters), with ample headroom (37.7" front, 39.5" rear) and legroom (41.0" front, 37.8" rear)."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 37.6 cu ft (1,065L) behind rear seats, expanding to 69.8 cu ft (1,977L) with seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "Wheelbase measures 2,690mm (105.9 inches), contributing to stable highway handling."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 8.4 inches (213mm) for Adventure and TRD Off-Road trims, 8.1 inches (206mm) for others."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "Aggressive styling with angular lines, available two-tone paint, and optional blackout packages."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "Sharp creases dominate the design, though rounded edges improve aerodynamics (Cd ~0.34)."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Offers Lunar Rock (gray-green), Ruby Flare Pearl (red), and Ice Cap (white) alongside classic blacks/silvers."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Soft-touch plastics with metallic accents; available SofTex synthetic leather seats."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Standard 4-channel ABS with electronic brake-force distribution (EBD)."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Vehicle Stability Control (VSC) and Traction Control (TRAC) are standard across all trims."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "Includes dual front, front side, rear side, and full-length curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "SofTex synthetic leather is optional; base models use durable fabric."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Acoustic windshield and added insulation reduce but don't eliminate road noise."
+
+# voice_interfaction, candidate values: "Yes", "No"
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Toyota's Voice Recognition supports navigation and media controls via 'Hey Toyota'."
+
+# ota_updates, candidate values: "Yes", "No"
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment via Toyota Audio Multimedia system."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Toyota Safety Sense 2.5 offers lane centering and adaptive cruise control."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Full-Speed Range Dynamic Radar Cruise Control (DRCC) with stop-and-go."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Lane Tracing Assist works below 25 mph for low-speed congestion."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Pre-Collision System with Pedestrian Detection (PCS w/PD)."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Departure Alert with Steering Assist (LDA w/SA)."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "No remote parking feature available."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "Parking sensors and rearview camera are standard, but no automated parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Monitor (BSM) with Rear Cross-Traffic Alert (RCTA) on higher trims."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver drowsiness monitoring system."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L"
+engine_displacement = "2.0~2.5L"
+engine_displacement_comments = "2.5L DOHC 4-cylinder (A25A-FXS) with VVT-iE, paired with hybrid system."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "120~180kW"
+motor_power_comments = "Combined system output is 219 hp (163 kW) for FWD, 222 hp (166 kW) for AWD models."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh"
+battery_capacity = "None"
+battery_capacity_comments = "Hybrid models use a 1.6kWh NiMH battery, not a large-capacity EV battery."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "14.5-gallon (55L) tank enables 580+ mile range for hybrid models."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "200~300hp"
+horsepower_comments = "Net system output: 219 hp (FWD) or 222 hp (AWD). Gas-only models make 203 hp."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "200~300N·m"
+torque_comments = "Peak torque is 221 N·m (163 lb-ft) for the hybrid system."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Hybrid AWD models accelerate 0-60 mph in ~7.8 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 112 mph (180 km/h)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km"
+fuel_consumption = "4~6L/100km"
+fuel_consumption_comments = "EPA-rated 41/38/40 mpg (city/hwy/combined) for Hybrid FWD (5.7L/100km)."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is a hybrid, not a pure EV."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "Above 800km"
+driving_range_comments = "Hybrid models achieve 580+ miles (933+ km) per tank in real-world conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Available Dynamic Torque Vectoring AWD with Multi-Terrain Select."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "MacPherson struts (front), multi-link (rear) with stabilizer bars."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "Competent on light trails but not for serious rock crawling."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-passenger seating; no third-row option."
+
+# city_commuting, candidate values: "Yes", "No"
+city_commuting = "Yes"
+city_commuting_comments = "Tight 34.8 ft turning circle and hybrid efficiency ideal for urban use."
+
+# highway_long_distance, candidate values: "Yes", "No"
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride and adaptive cruise control for highway trips."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "TRD Off-Road trim adds Multi-Terrain Select and skid plates."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Roof rails support up to 165 lbs; towing capacity is 1,750 lbs."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Hybrid battery heating system ensures cold-weather operation down to -22°F (-30°C)."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Cooled hybrid components maintain performance in desert conditions."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large"
+size = "Medium"
+size_comments = "Dimensions: 180.9" L x 73.0" W x 67.2" H – squarely in the compact SUV segment."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balances urban maneuverability with family-friendly space."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "Medium"
+aesthetics_comments = "Bold styling but conservative compared to segment rivals like Mazda CX-5."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Class-leading hybrid efficiency (40 MPG combined)."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "Supportive seats but firmer ride than luxury competitors."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "Good driver aids but lacks premium features like augmented reality nav."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "Top Safety Pick+ rating and ample rear seat space for child seats."
+
+[KeyDetails]
+key_details = "The Toyota RAV4 Hybrid combines a 2.5L 4-cylinder engine with three electric motors (front and rear) for AWD capability without a driveshaft. It features Toyota Safety Sense 2.5 (TSS 2.5) with advanced driver aids, offers up to 39.8 MPG (AWD models), and has Adventure/TRD Off-Road trims for light off-roading. The infotainment system includes an 8" touchscreen with wireless Apple CarPlay/Android Auto."
+key_details_comments = "The Toyota RAV4 Hybrid features a sophisticated hybrid powertrain combining a 2.5L 4-cylinder Atkinson-cycle gasoline engine with three electric motors (two front, one rear) to deliver all-wheel drive capability without a mechanical driveshaft. It's equipped with Toyota Safety Sense 2.5 (TSS 2.5) featuring pre-collision detection, full-speed adaptive cruise control, lane tracing assist, and road sign recognition. The hybrid system achieves up to 40 MPG combined (39 MPG for AWD models) while offering 219-222 net system horsepower. Available Adventure and TRD Off-Road trims add Multi-Terrain Select with specific modes for mud/sand/rocks. The tech package includes an 8-inch touchscreen with wireless Apple CarPlay/Android Auto, and available digital rearview mirror. The battery is mounted under the rear seats to preserve cargo space."

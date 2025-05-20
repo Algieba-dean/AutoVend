@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Land Rover-Defender 110 X-Dynamic HSE Luxury Explorer Edition"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Land Rover-Defender 110 X-Dynamic HSE Luxury Explorer Edition is priced between $75,000 and $95,000 USD depending on options and configurations."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Off-road SUV"
+vehicle_category_bottom_comments = "The Defender 110 is a rugged off-road SUV with premium luxury features, designed for both extreme terrain and urban environments."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Land Rover"
+brand_comments = "Land Rover is a British luxury SUV manufacturer known for its off-road capabilities and premium vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Defender 110 X-Dynamic HSE Luxury Explorer Edition is powered by a 3.0L turbocharged inline-6 gasoline engine with mild hybrid technology."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The Defender 110 offers a spacious interior with approximately 4.8 cubic meters of passenger space, accommodating up to 7 passengers comfortably."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The trunk capacity is 535L (behind the third row), expandable to 1,876L with all rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The Defender 110 has a wheelbase of 3,022mm, providing excellent stability and interior space."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "The Defender 110 has a ground clearance of 291mm (11.5 inches) in its standard configuration, ideal for off-road conditions."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The Defender 110 X-Dynamic HSE Luxury Explorer Edition features a premium, rugged design with luxury touches, suitable for both business and adventure."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The Defender retains its iconic boxy shape with slightly smoothed edges for improved aerodynamics."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Neutral Colors"
+color_comments = "Available in sophisticated neutral tones like Carpathian Grey, Santorini Black, and Eiger Grey, with optional bright accents."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Luxury interior features rich Windsor Leather with optional open-pore wood veneer trim for a premium feel."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Equipped with advanced Anti-lock Braking System (ABS) for improved safety during hard braking."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is standard, enhancing vehicle stability in all driving conditions."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags for comprehensive occupant protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Premium Windsor Leather seats with 14-way power adjustment and memory function."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic laminated glass and extensive sound-deadening materials provide a quiet cabin even at highway speeds."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Land Rover's Pivi Pro infotainment system includes advanced voice control for navigation, media, and climate functions."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air software updates for infotainment and vehicle systems."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Features Level 2 autonomous driving with adaptive cruise control, lane centering, and traffic sign recognition."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes Adaptive Cruise Control with Stop & Go functionality for highway driving."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist combines adaptive cruise and lane keeping for low-speed congestion situations."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Autonomous Emergency Braking detects pedestrians and vehicles to prevent collisions."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keep Assist gently corrects steering to maintain lane position."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Does not feature remote parking capability, though it has semi-automatic parking assist."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Includes Park Assist that can automatically steer into parallel and perpendicular spaces."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Assist with Rear Traffic Monitor alerts to vehicles in adjacent lanes."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Condition Monitor detects signs of fatigue and suggests breaks."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "2.5~3.5L"
+engine_displacement_comments = "3.0L turbocharged inline-6 gasoline engine with 48V mild hybrid system."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as this is not a full electric vehicle (mild hybrid system only provides 16kW assist)."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Mild hybrid system uses a small 48V lithium-ion battery (0.2kWh) for start-stop and torque assist only."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "90L fuel tank capacity provides excellent range for long-distance travel."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "300~400hp"
+horsepower_comments = "Produces 395hp (294kW) at 5,500-6,500 rpm."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "550N·m of torque available from 2,000-5,000 rpm for strong acceleration and towing capability."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates from 0-100 km/h in 6.8 seconds despite its size and weight."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 210 km/h (130 mph)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Combined fuel consumption is 9.9L/100km (23.8 mpg) due to the vehicle's size and capability."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is not a full electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "Approximately 900km range on a full tank (90L) under mixed driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Permanent all-wheel drive with two-speed transfer case and center differential lock for superior traction."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front and rear independent air suspension with adaptive dynamics for comfort and capability."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "High"
+passibility_comments = "Exceptional off-road capability with 900mm wading depth, 38° approach angle, and Terrain Response 2 system."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "7-seat"
+seat_layout_comments = "Configurable 5+2 seating with optional third row (standard on Luxury Explorer Edition)."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "While large, the Defender is surprisingly maneuverable in urban environments with excellent visibility."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Excellent highway cruiser with comfortable seats, advanced driver aids, and long range."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "High"
+off_road_capability_comments = "One of the most capable production off-road vehicles with advanced 4x4 systems and durable construction."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "Exceptional cargo flexibility with configurable interior and roof rack options (168kg dynamic roof load)."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Engineered for extreme cold with heated components, proven operation down to -40°C."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Tested in desert conditions up to 50°C with robust cooling systems."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "The Defender 110 measures 5,018mm long, 2,008mm wide (excluding mirrors), and 1,967mm tall - a substantial vehicle."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "Highly versatile with exceptional passenger and cargo space, though parking can be challenging in tight spaces."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Iconic design that blends rugged capability with premium luxury details for a distinctive appearance."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Relatively high fuel consumption due to the vehicle's size, weight, and capability."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "Luxury-level comfort with premium materials, excellent ride quality, and advanced climate control."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Packed with advanced technology including Pivi Pro infotainment, digital instruments, and driver assistance systems."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "High"
+family_friendliness_comments = "Excellent family vehicle with spacious interior, safety features, and durable construction."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Land Rover Defender 110 X-Dynamic HSE Luxury Explorer Edition combines legendary off-road capability with premium luxury. Key features include: 3.0L turbocharged inline-6 mild hybrid (395hp/550N·m), permanent 4WD with Terrain Response 2, configurable 5+2 seating, 90L fuel tank, 900mm wading depth, and advanced driver assistance systems. The Luxury Explorer package adds premium Windsor Leather, open-pore wood trim, 20" alloy wheels, and enhanced off-road equipment."
+key_details_comments = "The Land Rover Defender 110 X-Dynamic HSE Luxury Explorer Edition represents the pinnacle of premium off-road capability combined with luxury appointments. Its 3.0L turbocharged inline-6 mild hybrid powertrain delivers 395hp and 550N·m of torque, paired with an advanced permanent 4WD system featuring Terrain Response 2 for unparalleled off-road performance. The vehicle offers exceptional versatility with configurable 5+2 seating, a massive 90L fuel tank for extended range, and class-leading 900mm wading depth. The Luxury Explorer package elevates the experience with premium Windsor Leather upholstery, open-pore wood veneer trim, 20-inch alloy wheels, and enhanced off-road equipment including a full-size spare wheel. Advanced technology includes the Pivi Pro infotainment system with over-the-air updates, digital instrument cluster, and comprehensive driver assistance systems. The Defender maintains its iconic rugged design while incorporating modern luxury touches, making it equally capable of traversing extreme terrain or serving as a premium family vehicle."

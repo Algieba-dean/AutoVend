@@ -1,0 +1,183 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "XPeng-Mona M03 Max"
+
+[PriciseLabels]
+
+prize = "40,000~60,000"
+prize_comments = "The XPeng-Mona M03 Max is priced between $45,000 and $55,000 USD depending on the trim level and options."
+
+vehicle_category_bottom = "C-Segment Sedan"
+vehicle_category_bottom_comments = "The XPeng-Mona M03 Max is a mid-size electric sedan with a focus on performance and technology."
+
+brand = "XPeng"
+brand_comments = "XPeng is a leading Chinese electric vehicle manufacturer known for its advanced autonomous driving technology."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The XPeng-Mona M03 Max is a pure electric vehicle with no internal combustion engine."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers 4.8 cubic meters of passenger space, providing ample room for five adults."
+
+trunk_volume = "400~500L"
+trunk_volume_comments = "The trunk capacity is 450L, expandable to 1,200L with rear seats folded."
+
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase is 2,890mm, contributing to a spacious interior and stable ride."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "The ground clearance is 140mm, optimized for urban driving and aerodynamics."
+
+design_style = "Sporty"
+design_style_comments = "The XPeng-Mona M03 Max features a sleek, aerodynamic design with a low drag coefficient of 0.23."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The car's body lines are meticulously designed for minimal air resistance and aesthetic appeal."
+
+color = "Neutral Colors"
+color_comments = "Available colors include Silver, Gray, and White, with optional premium finishes."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features brushed aluminum accents and premium synthetic leather upholstery."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system for enhanced safety."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is included to improve vehicle stability."
+
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags for comprehensive protection."
+
+seat_material = "Lether"
+seat_material_comments = "Premium synthetic leather seats with heating and ventilation options."
+
+noise_insulation = "High"
+noise_insulation_comments = "Advanced noise-canceling materials and acoustic glass provide a quiet cabin experience."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The Xmart OS supports natural language voice commands for infotainment and vehicle controls."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for software, navigation, and autonomous driving features."
+
+autonomous_driving_level = "L3"
+autonomous_driving_level_comments = "XPeng's XNGP system enables conditional autonomous driving in approved areas."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes full-speed adaptive cruise control with stop-and-go functionality."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Automatically handles stop-and-go traffic with steering, acceleration, and braking."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with automatic emergency braking at all speeds."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active lane keeping with centering on highways."
+
+remote_parking = "Yes"
+remote_parking_comments = "Remote parking assist via smartphone app in tight spaces."
+
+auto_parking = "Yes"
+auto_parking_comments = "Fully automated parking in parallel and perpendicular spaces."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver monitoring system alerts for drowsiness or distraction."
+
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as this is a pure electric vehicle."
+
+motor_power = "250~400kW"
+motor_power_comments = "Dual motors produce a combined 385kW (517hp) for high performance."
+
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "98kWh lithium-ion battery pack with advanced thermal management."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable as this is a pure electric vehicle."
+
+horsepower = "Above 400hp"
+horsepower_comments = "517 horsepower enables exceptional acceleration."
+
+torque = "Above 500N·m"
+torque_comments = "Instant torque of 660N·m delivers rapid acceleration from standstill."
+
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100km/h in 3.8 seconds for sports car performance."
+
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 230km/h for safety and efficiency."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable as this is a pure electric vehicle."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "Efficient energy use of 13.2kWh/100km in mixed driving conditions."
+
+driving_range = "Above 800km"
+driving_range_comments = "CLTC-rated range of 850km on a single charge."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual-motor AWD system provides excellent traction in all conditions."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front double-wishbone and rear multi-link suspension for superior handling."
+
+passibility = "Medium"
+passibility_comments = "140mm ground clearance is suitable for urban driving but not off-road."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard configuration seats five adults comfortably."
+
+city_commuting = "Yes"
+city_commuting_comments = "Ideal for urban use with compact dimensions and excellent maneuverability."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Long range and fast charging make it suitable for road trips."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Spacious trunk and foldable rear seats provide good cargo capacity."
+
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management maintains performance in temperatures as low as -30°C."
+
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling system protects battery in temperatures up to 50°C."
+
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "The XPeng-Mona M03 Max is a mid-size sedan with dimensions of 4,890mm long, 1,920mm wide, and 1,450mm tall."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior and advanced features make it highly usable for families and professionals."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, modern design with premium finishes and attention to detail."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Efficient electric drivetrain results in low energy costs per kilometer."
+
+comfort_level = "High"
+comfort_level_comments = "Premium materials, quiet cabin, and advanced suspension provide excellent comfort."
+
+smartness = "High"
+smartness_comments = "Cutting-edge autonomous driving features and intelligent connectivity systems."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Good safety features and space, though sporty orientation may not appeal to all families."
+
+
+[KeyDetails]
+key_details="The XPeng-Mona M03 Max is a premium electric sedan featuring XPeng's latest XNGP autonomous driving system, ultra-fast charging (10-80% in 15 minutes), and a luxurious tech-focused interior with a 15.6-inch rotating touchscreen and 18-speaker Dynaudio sound system."
+key_details_comments = "The XPeng-Mona M03 Max represents the pinnacle of XPeng's electric vehicle technology, combining luxury, performance, and cutting-edge autonomous capabilities. Its XNGP system enables hands-free driving in approved areas, while the 800V ultra-fast charging architecture allows for a 10-80% charge in just 15 minutes. The interior features premium materials throughout, highlighted by a 15.6-inch rotating touchscreen infotainment system and an immersive 18-speaker Dynaudio audio system. With a CLTC-rated range of 850km, 0-100km/h acceleration in 3.8 seconds, and advanced thermal management for extreme weather operation, the M03 Max delivers exceptional performance in all conditions while maintaining high energy efficiency."

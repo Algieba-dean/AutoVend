@@ -1,0 +1,243 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Porsche-718 Cayman EV Base Entry Electric Sports Coupe"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Porsche-718 Cayman EV Base Entry Electric Sports Coupe is priced between $82,000 and $95,000 USD, depending on optional features and regional pricing."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The 718 Cayman EV is a two-door, mid-engine (electric) sports coupe with a fixed roof, emphasizing performance and handling."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Porsche"
+brand_comments = "Porsche is a German luxury and high-performance automotive manufacturer, renowned for sports cars like the 718 Cayman EV."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The 718 Cayman EV is a pure electric vehicle (BEV) with no combustion engine, featuring a high-performance electric drivetrain."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers approximately 2.8 cubic meters of space, optimized for driver-focused ergonomics."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "300~400L"
+trunk_volume_comments = "The 718 Cayman EV provides 330L of trunk space (front and rear combined), typical for a sports coupe."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,675mm, contributing to agile handling and stability."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "The low-slung chassis has a ground clearance of 120mm, optimized for sporty driving dynamics."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The 718 Cayman EV features aggressive styling with aerodynamic enhancements, including a rear diffuser and active cooling vents."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Porsche's design language emphasizes flowing, aerodynamic lines with a drag coefficient of 0.30."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Bright Colors"
+color_comments = "Porsche offers vibrant options like Guards Red and Racing Yellow, alongside classic neutrals and dark tones."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features brushed aluminum accents, carbon-fiber trim, and leather upholstery as standard."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "Anti-lock braking system (ABS) is standard, with Porsche's high-performance braking calibration."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is included, with a sport mode for track driving."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side, and knee airbags for driver and passenger."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Standard 4-way adjustable sport seats with leather upholstery; optional Race-Tex microfiber available."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "Sound-deadening materials are used, but the sports exhaust (simulated for EV) and low-profile tires allow some road noise."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Porsche Communication Management (PCM) includes natural-language voice control for navigation and media."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment, battery management, and performance software are supported."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes adaptive cruise control, lane-keep assist, and traffic jam assist (SAE Level 2 autonomy)."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard with stop-and-go functionality for highway and urban driving."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Automatically adjusts speed and steering in congested traffic up to 60 km/h."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front and rear collision warning with autonomous braking at low and high speeds."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Uses cameras and steering inputs to maintain lane position, adjustable for aggressiveness."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Not available on the base model; optional on higher trims."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Includes semi-autonomous parking assist for parallel and perpendicular spaces."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Standard blind-spot monitoring with rear cross-traffic alert."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Monitors steering patterns and suggests breaks during long drives."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable—this is a pure electric vehicle with no combustion engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "250~400kW"
+motor_power_comments = "The base model features a dual-motor setup with 300 kW (402 hp) combined output."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "82 kWh net capacity (total 95 kWh gross) lithium-ion battery pack."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable—electric vehicle with no fuel tank."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "300~400hp"
+horsepower_comments = "402 hp (300 kW) in the base model, with optional performance upgrades available."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "Instant torque of 542 N·m (400 lb-ft) from 0 rpm, typical for electric motors."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 3.9 seconds (base model); optional Performance Pack reduces this to 3.5s."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "Electronically limited to 250 km/h (155 mph); can be unlocked to 280 km/h with software."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable—electric vehicle with no fuel consumption."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "Rated at 18.5 kWh/100 km (combined) due to high-performance tuning."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "WLTP-rated range of 490 km (305 miles) on a full charge."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual-motor AWD system with torque vectoring for optimal traction."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "Front and rear multi-link suspension with adaptive dampers (PASM) as standard."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "Low ground clearance and stiff suspension prioritize handling over rough terrain capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "Strictly a two-seater sports car with no rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions and one-pedal driving mode make it suitable for urban use."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable cruising with adaptive cruise control and 490 km range."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ride height and performance tires."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "330L total cargo space (front and rear) for weekend getaways."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management ensures consistent performance in temperatures as low as -20°C."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "Active cooling systems prevent overheating during track use or high ambient temperatures."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Small"
+size_comments = "Compact two-door sports coupe with a length of 4,380mm and width of 1,801mm."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Small"
+vehicle_usability_comments = "Optimized for driving enjoyment rather than practicality; limited cargo and passenger space."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "Iconic Porsche design with sleek proportions, LED lighting, and aggressive styling cues."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Higher than economy EVs due to performance focus, but efficient for its class."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "Firm suspension for sporty handling, but ergonomic seats and noise insulation balance comfort."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "Advanced connectivity, OTA updates, and Level 2 autonomy place it among the smartest sports cars."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "Two-seat layout and limited cargo space make it impractical for families."
+
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The Porsche 718 Cayman EV is the electric successor to the iconic mid-engine sports car, featuring a dual-motor AWD system, 490 km WLTP range, and 0-100 km/h in 3.9s. It retains the 718's balanced chassis but with instant torque and near-silent operation. Standard features include Porsche Active Suspension Management (PASM), 20-inch wheels, and a 10.9-inch infotainment screen with Apple CarPlay."
+key_details_comments = "The Porsche 718 Cayman EV represents a groundbreaking shift in Porsche's sports car lineage, transitioning the beloved mid-engine platform to full electrification. It combines Porsche's 75+ years of sports car engineering with cutting-edge EV technology, featuring a dual-motor all-wheel-drive system producing 402 hp and 542 N·m of torque. The 82 kWh battery enables a 490 km WLTP range while supporting 270 kW DC fast charging (10-80% in 25 minutes). Performance highlights include a 3.9s 0-100 km/h acceleration, 250 km/h top speed (electronically limited), and Porsche Torque Vectoring Plus for exceptional cornering. The vehicle maintains the perfect 718 weight distribution (44:56) through strategic battery placement, while offering both a 'Range' mode for efficiency and 'Sport Plus' mode for track-focused performance. The interior blends traditional Porsche driver focus with modern tech, including a curved digital instrument cluster and head-up display. Unique to the EV model is an optional 'Electric Sport Sound' that synthesizes a futuristic powertrain note."
+
+
+### Notes:

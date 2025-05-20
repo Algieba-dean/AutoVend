@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Nissan-Titan Full-Size Pickup with V8 Power"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "40,000~60,000"
+prize_comments = "The Nissan-Titan Full-Size Pickup with V8 Power is priced between $45,000 and $65,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Full-Size Pickup"
+vehicle_category_bottom_comments = "The Nissan Titan is classified as a full-size pickup truck with robust towing and hauling capabilities."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Nissan"
+brand_comments = "Nissan is a Japanese automaker known for its reliable and versatile vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Nissan Titan is powered by a 5.6L V8 gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "The Titan offers spacious cabin room with approximately 5.8 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The Titan's bed volume is approximately 1,500L (5.5' bed) or 2,000L (8' bed)."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The Titan has a wheelbase of 3,370mm (132.8 inches)."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "The Titan has a ground clearance of 250mm (9.8 inches)."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Business"
+design_style_comments = "The Titan features a rugged, utilitarian design suitable for work and heavy-duty use."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The Titan has a balanced mix of angular and smooth body lines for a tough yet refined look."
+
+# color, candidate values: "Bright Colors", "Neutral Colors", "Dark Colors"
+color = "Neutral Colors"
+color_comments = "The Titan is commonly available in neutral colors like white, silver, gray, and black."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The Titan features metal and brushed aluminum accents in its interior."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The Titan comes standard with Anti-lock Braking System (ABS)."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "The Titan includes Electronic Stability Program (ESP) for enhanced control."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "The Titan is equipped with six airbags: front, side, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "Leather seats are available in higher trims, while fabric is standard."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "The Titan offers decent noise insulation, though some engine and road noise is noticeable."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The Titan's infotainment system supports voice commands for navigation and media."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "No"
+ota_updates_comments = "The Titan does not support Over-The-Air (OTA) updates for its infotainment system."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The Titan offers Level 2 autonomy with features like adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "The Titan includes adaptive cruise control in higher trims."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "The Titan does not feature traffic jam assist."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "The Titan includes automatic emergency braking as part of its safety suite."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "The Titan features lane-keeping assist to help maintain lane position."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "The Titan does not support remote parking."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "The Titan does not offer automated parking assistance."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "The Titan includes blind-spot monitoring in higher trims."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "The Titan does not have fatigue driving detection."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "The Titan is powered by a 5.6L V8 gasoline engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as the Titan is not an electric vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as the Titan is not an electric vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "The Titan has a fuel tank capacity of 100L (26.4 gallons)."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The Titan's 5.6L V8 engine produces 400 horsepower."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "The Titan's 5.6L V8 engine generates 560 N·m (413 lb-ft) of torque."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The Titan accelerates from 0 to 100 km/h in approximately 7.5 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "160~200km/h"
+top_speed_comments = "The Titan has a top speed of around 180 km/h (112 mph)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "The Titan's fuel consumption is approximately 13.8L/100km (17 mpg) combined."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as the Titan is not an electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "The Titan has a driving range of approximately 650 km (404 miles) on a full tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "The Titan is available in rear-wheel drive (RWD) or optional four-wheel drive (4WD)."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The Titan features an independent double-wishbone front suspension and a solid rear axle with leaf springs."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "The Titan offers decent off-road capability, especially in 4WD configurations."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The Titan typically seats five, with an optional crew cab configuration."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "The Titan can be used for city commuting, though its size may be cumbersome in tight spaces."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The Titan is well-suited for long-distance highway driving with its comfortable cabin and powerful engine."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "The Titan offers moderate off-road capability, especially in 4WD configurations with off-road packages."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The Titan excels in cargo hauling with a maximum payload capacity of up to 1,680 lbs."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "The Titan performs well in cold climates, with reliable cold-start performance and heated seating options."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The Titan's cooling systems and materials are designed to withstand high temperatures."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "The Titan is a full-size pickup truck with substantial dimensions."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "The Titan is highly versatile, suitable for work, towing, and family use."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "Medium"
+aesthetics_comments = "The Titan has a rugged, masculine design that appeals to truck enthusiasts."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "The Titan's large V8 engine results in higher fuel consumption."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "The Titan offers a comfortable ride for a pickup truck, with well-cushioned seats and decent noise insulation."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "Medium"
+smartness_comments = "The Titan includes modern tech features but lacks advanced autonomous capabilities."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "The Titan is family-friendly with spacious seating, though its size may be impractical for some."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The Nissan Titan is a full-size pickup truck known for its powerful 5.6L V8 engine, robust towing capacity (up to 9,310 lbs), and spacious interior. It competes with trucks like the Ford F-150 and Chevrolet Silverado. Key features include a 9-speed automatic transmission, available 4WD, and advanced safety technologies like ProPILOT Assist. The Titan is built for durability and is a strong choice for heavy-duty work and long-distance travel."
+key_details_comments = "The Nissan Titan is a full-size pickup truck designed for heavy-duty performance, featuring a robust 5.6L V8 engine delivering 400 horsepower and 560 N·m of torque. It offers a maximum towing capacity of 9,310 lbs and a payload capacity of 1,680 lbs, making it ideal for work and recreational use. The Titan comes with a 9-speed automatic transmission and optional four-wheel drive (4WD) for enhanced off-road capability. Its spacious cabin provides approximately 5.8 cubic meters of passenger space, with leather seats available in higher trims. Advanced safety features include ProPILOT Assist (Level 2 autonomy), blind-spot detection, and automatic emergency braking. The Titan is well-suited for long-distance highway driving, with a fuel tank capacity of 100L (26.4 gallons) and a range of around 650 km (404 miles). While its size may be cumbersome for city commuting, it excels in versatility, durability, and towing performance, competing with rivals like the Ford F-150 and Chevrolet Silverado."

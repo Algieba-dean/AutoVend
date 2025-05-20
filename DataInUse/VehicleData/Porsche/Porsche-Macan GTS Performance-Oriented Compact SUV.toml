@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Porsche-Macan GTS Performance-Oriented Compact SUV"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "60,000~100,000"
+prize_comments = "The Porsche Macan GTS Performance-Oriented Compact SUV is priced between $72,000 and $85,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Compact SUV"
+vehicle_category_bottom_comments = "The Macan GTS is a performance-oriented compact SUV with sporty handling and SUV practicality."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Porsche"
+brand_comments = "Porsche is a German luxury and high-performance automobile manufacturer."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Macan GTS is powered by a turbocharged gasoline engine."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The Macan GTS offers approximately 3.8 cubic meters of passenger space."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "400~500L"
+trunk_volume_comments = "The exact trunk capacity is 488L, expandable to 1,503L with rear seats folded."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The Macan GTS has a wheelbase of 2,807mm."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "150~200mm"
+chassis_height_comments = "The Macan GTS has an adjustable air suspension with a ground clearance ranging from 150mm to 200mm."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Macan GTS features aggressive styling with sporty accents like black exterior trim and larger wheels."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The Macan GTS has sleek, aerodynamic body lines typical of Porsche design."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Dark Colors"
+color_comments = "The Macan GTS is often seen in dark colors like Black, Sapphire Blue, and Carmine Red."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The Macan GTS features aluminum trim and leather upholstery with contrast stitching."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The Macan GTS comes standard with Anti-lock Braking System."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "The Macan GTS includes Electronic Stability Program as standard."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "The Macan GTS has 8 airbags including front, side, and curtain airbags."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The Macan GTS features standard 8-way power-adjustable leather sport seats."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "The Macan GTS has excellent noise insulation with acoustic glass and sound-deadening materials."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The Porsche Communication Management (PCM) system supports voice commands."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The PCM system supports over-the-air updates for navigation and infotainment."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The Macan GTS offers Level 2 autonomous driving features like adaptive cruise control and lane keep assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Available as part of the optional Adaptive Cruise Control (ACC) package."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Available as part of the optional InnoDrive package."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard on all Macan GTS models."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Available as part of the Lane Keep Assist (LKA) system."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "The Macan GTS does not offer remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "Available as part of the optional ParkAssist package."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Standard on all Macan GTS models."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Available as part of the optional Driver Assistance package."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "2.5~3.5L"
+engine_displacement_comments = "The Macan GTS is powered by a 2.9L twin-turbocharged V6 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as the Macan GTS is not an electric vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as the Macan GTS is not an electric vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "The Macan GTS has a 65L fuel tank."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "300~400hp"
+horsepower_comments = "The Macan GTS produces 375hp (280kW) at 5,200-6,700 rpm."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "400~500N·m"
+torque_comments = "The Macan GTS produces 520N·m of torque from 1,900-5,000 rpm."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The Macan GTS accelerates from 0-100 km/h in 4.7 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "The Macan GTS has a top speed of 259 km/h (161 mph)."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "The Macan GTS has a combined fuel consumption of 9.6-10.1 L/100km."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as the Macan GTS is not an electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "The Macan GTS has a driving range of approximately 600-650 km on a full tank."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The Macan GTS features Porsche Traction Management (PTM) all-wheel drive system."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The Macan GTS features Porsche Active Suspension Management (PASM) with adaptive dampers."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Medium"
+passibility_comments = "The Macan GTS has decent ground clearance but is primarily designed for on-road performance."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The Macan GTS is a 5-seater SUV with 2 front and 3 rear seats."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "The Macan GTS is well-suited for city driving with good visibility and maneuverability."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The Macan GTS excels at highway cruising with excellent stability and comfort."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "While capable of light off-roading, the Macan GTS is primarily an on-road performance SUV."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "The Macan GTS offers practical cargo space with 488L trunk capacity."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "The Macan GTS performs well in cold conditions with standard all-wheel drive and cold-weather packages available."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The Macan GTS is engineered to perform reliably in high-temperature environments."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The Macan GTS is a mid-size compact SUV with dimensions of 4,726mm (L) x 1,922mm (W) x 1,621mm (H)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Medium"
+vehicle_usability_comments = "The Macan GTS offers a good balance of sporty performance and everyday practicality."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The Macan GTS features Porsche's signature design language with sporty and premium styling."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "As a performance-oriented SUV, the Macan GTS has higher fuel consumption compared to non-performance SUVs."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "The Macan GTS offers a comfortable ride with premium materials and adjustable suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "The Macan GTS features advanced driver assistance systems and connectivity features."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "While practical, the Macan GTS is more performance-focused than family-oriented SUVs."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The Porsche Macan GTS is the sporty variant of the Macan lineup, featuring a 2.9L twin-turbo V6 engine producing 375hp, Porsche Traction Management all-wheel drive, and adaptive air suspension. It combines SUV practicality with sports car performance, offering 0-100 km/h acceleration in 4.7 seconds and a top speed of 259 km/h. The interior features premium materials with sport seats, and the exterior has aggressive styling cues like black accents and larger wheels."
+key_details_comments = "The Porsche Macan GTS represents the perfect balance between sports car performance and SUV practicality. As the sportiest variant in the Macan lineup, it features a potent 2.9L twin-turbocharged V6 engine delivering 375 horsepower and 520 Nm of torque. The performance credentials are impressive with a 0-100 km/h sprint in just 4.7 seconds and a top speed of 259 km/h. Porsche's Traction Management all-wheel drive system ensures optimal grip in all conditions, while the adaptive air suspension (standard on GTS models) provides both sporty handling and comfortable ride quality. The interior boasts premium materials including leather sport seats with GTS branding, aluminum trim, and Porsche's latest infotainment system. Externally, the GTS is distinguished by its black exterior accents, sport exhaust system, and larger 20-inch wheels. Despite its performance focus, it maintains SUV practicality with 488 liters of cargo space (expandable to 1,503 liters) and comfortable seating for five. The Macan GTS truly embodies Porsche's 'everyday sports car' philosophy in SUV form."

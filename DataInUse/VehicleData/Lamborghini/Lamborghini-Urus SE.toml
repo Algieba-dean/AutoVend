@@ -1,0 +1,239 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Lamborghini-Urus SE"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The Lamborghini-Urus SE is priced between $230,000 and $260,000 USD depending on the trim level and options."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "All-terrain SUV"
+vehicle_category_bottom_comments = "The Urus SE is a high-performance luxury SUV with all-terrain capabilities, blending supercar performance with SUV practicality."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Lamborghini"
+brand_comments = "Lamborghini is an Italian luxury sports car manufacturer known for high-performance vehicles with striking designs."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Urus SE is powered by a twin-turbocharged V8 gasoline engine, delivering exceptional performance."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Urus SE offers a spacious interior with approximately 4.8 cubic meters of passenger space, accommodating five adults comfortably."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "Above 500L"
+trunk_volume_comments = "The exact trunk capacity is 574L, expandable to 1,596L with rear seats folded, providing ample cargo space."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The Urus SE has a wheelbase of 3,003mm, contributing to its stable handling and spacious interior."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "Above 200mm"
+chassis_height_comments = "The Urus SE features an adjustable air suspension with a ground clearance ranging from 158mm to 248mm, adapting to various driving conditions."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Urus SE features Lamborghini's aggressive, angular design language with sharp lines and a muscular stance, emphasizing its sporty character."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "The Urus SE combines sharp, angular lines with some smooth surfaces, creating a balanced yet aggressive aesthetic."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Bright Colors"
+color_comments = "Lamborghini offers the Urus SE in vibrant colors like Arancio Borealis (orange) and Verde Scandal (green), alongside more neutral options."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The Urus SE's interior features premium materials with aluminum and carbon fiber accents, emphasizing its sporty luxury."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The Urus SE is equipped with an advanced Anti-lock Braking System (ABS) for optimal braking performance."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is standard, enhancing vehicle stability during dynamic driving."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "8"
+airbag_count_comments = "The Urus SE includes eight airbags: front, side, curtain, and knee airbags for comprehensive occupant protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The seats are upholstered in premium leather with optional Alcantara inserts for a luxurious feel."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "High"
+noise_insulation_comments = "The Urus SE features extensive sound-deadening materials, providing a quiet cabin even at high speeds."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The infotainment system supports voice commands for navigation, media, and climate control."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The Urus SE supports over-the-air (OTA) updates for its infotainment and vehicle software."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The Urus SE offers Level 2 autonomous driving features, including adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "The Urus SE includes adaptive cruise control with stop-and-go functionality for highway driving."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic Jam Assist is available, providing steering and acceleration/deceleration support in congested traffic."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "The Urus SE features automatic emergency braking to mitigate collisions."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keep Assist helps maintain the vehicle's position within the lane."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "The Urus SE does not offer remote parking functionality."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "Yes"
+auto_parking_comments = "The Urus SE includes an automated parking system for parallel and perpendicular parking."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Detection alerts the driver to vehicles in adjacent lanes."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "The Urus SE monitors driver behavior for signs of fatigue and issues alerts."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "3.5~6.0L"
+engine_displacement_comments = "The Urus SE is powered by a 4.0L twin-turbocharged V8 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "None"
+motor_power_comments = "Not applicable as the Urus SE is not an electric vehicle."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as the Urus SE is not an electric vehicle."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "The Urus SE has a 75L fuel tank, providing a decent range for long-distance driving."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The Urus SE delivers 657 horsepower (490 kW), offering supercar-like performance."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "The Urus SE produces 850 N·m of torque, enabling rapid acceleration and strong towing capability."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The Urus SE accelerates from 0-100 km/h in just 3.6 seconds, rivaling many sports cars."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "240~300km/h"
+top_speed_comments = "The Urus SE has a top speed of 305 km/h (190 mph), making it one of the fastest SUVs in the world."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "The Urus SE has a combined fuel consumption of approximately 12.7L/100km, typical for a high-performance SUV."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as the Urus SE is not an electric vehicle."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "With its 75L fuel tank, the Urus SE offers a driving range of approximately 600 km under mixed driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The Urus SE features Lamborghini's advanced all-wheel-drive system with rear-wheel steering for exceptional handling."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The Urus SE uses an adaptive air suspension system with independent suspension at all four corners for superior ride quality."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "High"
+passibility_comments = "With its adjustable air suspension and all-wheel drive, the Urus SE can handle various terrains with ease."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "5-seat"
+seat_layout_comments = "The Urus SE is configured as a five-seater, with ample space for all occupants."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "Yes"
+city_commuting_comments = "Despite its size, the Urus SE is manageable in urban environments thanks to its responsive steering and driver aids."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The Urus SE excels on highways with its comfortable ride, advanced cruise control, and high-speed stability."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Medium"
+off_road_capability_comments = "While not a hardcore off-roader, the Urus SE can handle light off-road trails thanks to its all-wheel drive and adjustable suspension."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "Yes"
+cargo_capability_comments = "With up to 1,596L of cargo space, the Urus SE is practical for luggage and larger items."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "High"
+clod_resistance_comments = "The Urus SE performs well in cold climates, with features like heated seats and a robust engine start system."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The Urus SE's cooling systems are designed to maintain performance even in high-temperature environments."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Large"
+size_comments = "The Urus SE is a full-size luxury SUV with substantial dimensions (5,112mm long, 2,016mm wide)."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Large"
+vehicle_usability_comments = "The Urus SE offers excellent usability with its spacious interior, ample cargo space, and versatile performance."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The Urus SE features Lamborghini's striking design language, with aggressive lines and a commanding presence."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "As a high-performance SUV, the Urus SE has relatively high fuel consumption."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "High"
+comfort_level_comments = "The Urus SE provides a luxurious and comfortable ride, with premium materials and advanced suspension."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "The Urus SE is equipped with cutting-edge technology, including a digital cockpit and advanced driver assistance systems."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Medium"
+family_friendliness_comments = "While spacious and practical, the Urus SE's performance focus and luxury positioning make it less family-oriented than some SUVs."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details="The Lamborghini Urus SE is a high-performance luxury SUV that combines supercar dynamics with SUV practicality. It features a 4.0L twin-turbo V8 producing 657 hp, an
+key_details_comments = "The Lamborghini Urus SE is a groundbreaking high-performance luxury SUV that blends supercar dynamics with everyday usability. It features a 4.0L twin-turbocharged V8 engine producing 657 horsepower and 850 N·m of torque, enabling 0-100 km/h acceleration in just 3.6 seconds and a top speed of 305 km/h. The Urus SE combines Lamborghini's signature aggressive styling with a spacious five-seat interior, advanced all-wheel drive system, and adaptive air suspension. It offers 574L of cargo space (expandable to 1,596L) while maintaining the brand's iconic design language and cutting-edge technology features."

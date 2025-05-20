@@ -6,20 +6,20 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-  "Nissan Versa",
-  "Nissan Sentra",
-  "Nissan Altima",
-  "Nissan Maxima",
-  "Nissan Z",
-  "Nissan Kicks",
-  "Nissan Rogue",
-  "Nissan Rogue Rock Creek",
-  "Nissan Murano",
-  "Nissan Pathfinder",
-  "Nissan Armada",
-  "Nissan Ariya",
-  "Nissan Leaf",
-  "Nissan Frontier",
-  "Nissan Titan",
-  "Nissan Titan XD"
+  "Nissan-Versa Subcompact Affordable Sedan",
+  "Nissan-Sentra Compact Daily Commuter Sedan",
+  "Nissan-Altima Midsize Sedan with AWD Option",
+  "Nissan-Maxima Sporty Full-Size Luxury Sedan",
+  "Nissan-Z Rear-Wheel Drive Performance Coupe",
+  "Nissan-Kicks Compact Urban Crossover SUV",
+  "Nissan-Rogue Best-Selling Compact SUV",
+  "Nissan-Rogue Rock Creek Off-Road Styled Edition",
+  "Nissan-Murano Midsize SUV with Premium Touch",
+  "Nissan-Pathfinder Three-Row Family SUV",
+  "Nissan-Armada Full-Size SUV with V8 Power",
+  "Nissan-Ariya All-Electric Crossover SUV",
+  "Nissan-Leaf Affordable Compact Electric Hatchback",
+  "Nissan-Frontier Midsize Pickup Truck",
+  "Nissan-Titan Full-Size Pickup with V8 Power",
+  "Nissan-Titan XD Heavy-Duty Capability Pickup"
 ]

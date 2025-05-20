@@ -1,0 +1,188 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "XPeng-X9 740 Ultra-Long-Range FWD"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "40,000~60,000"
+prize_comments = "The XPeng-X9 740 Ultra-Long-Range FWD is priced between $45,000 and $55,000 USD, depending on optional features and regional pricing."
+
+vehicle_category_bottom = "Large MPV"
+vehicle_category_bottom_comments = "The X9 is a full-size electric MPV with a focus on luxury and family-oriented space."
+
+brand = "XPeng"
+brand_comments = "XPeng is a Chinese electric vehicle manufacturer known for advanced smart EV technology."
+
+# Powertrain and performance
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The X9 740 Ultra-Long-Range is a pure electric vehicle with no combustion engine."
+
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "Spacious interior with 5.8 cubic meters of passenger volume, optimized for 7-seat comfort."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 550L (expands to 1,800L with rear seats folded)."
+
+wheelbase = "Above 3100mm"
+wheelbase_comments = "Long 3,160mm wheelbase ensures stable handling and generous legroom."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance of 170mm, balancing aerodynamics and urban usability."
+
+# Design and aesthetics
+design_style = "Business"
+design_style_comments = "Elegant, minimalist design with premium MPV proportions."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Drag coefficient of 0.227, one of the lowest for an MPV."
+
+color = "Neutral Colors"
+color_comments = "Offers muted tones like Moonlight Silver and Midnight Black as standard."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Premium brushed aluminum accents paired with soft-touch materials."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included across all trims."
+
+airbag_count = "10"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags for all rows."
+
+seat_material = "Lether"
+seat_material_comments = "Nappa leather upholstery with ventilated front seats."
+
+noise_insulation = "High"
+noise_insulation_comments = "Double-layer acoustic glass and active noise cancellation."
+
+# Tech and autonomy
+voice_interfaction = "Yes"
+voice_interfaction_comments = "XPeng's Xmart OS supports natural language voice commands."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for infotainment and ADAS features."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "XPILOT 3.5 offers highway assist and automated lane changes."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Full-speed range ACC with stop-and-go functionality."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Handles stop-and-go traffic autonomously below 60 km/h."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front and rear collision warning with AEB."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active lane centering up to 130 km/h."
+
+remote_parking = "Yes"
+remote_parking_comments = "Memory Parking supports automated parking via smartphone."
+
+auto_parking = "Yes"
+auto_parking_comments = "VPA-L parking can handle complex vertical/horizontal spaces."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "BSD with rear cross-traffic alert."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver monitoring via facial recognition and steering input."
+
+# Powertrain specifics (BEV-only)
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable for battery electric vehicles."
+
+motor_power = "250~400kW"
+motor_power_comments = "Dual-motor setup delivers 370kW (496hp) combined output."
+
+battery_capacity = "Above 100kWh"
+battery_capacity_comments = "101.5kWh lithium iron phosphate (LFP) battery pack."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "BEVs do not require fuel tanks."
+
+horsepower = "Above 400hp"
+horsepower_comments = "496hp (370kW) total system output."
+
+torque = "Above 500N·m"
+torque_comments = "717N·m combined torque enables strong acceleration."
+
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 5.4 seconds despite large MPV form."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "BEVs do not consume fuel."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "Rated at 13.2kWh/100km under CLTC conditions."
+
+driving_range = "Above 800km"
+driving_range_comments = "CLTC-rated range of 840km (522 miles)."
+
+# Chassis and utility
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive configuration for efficiency."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson strut, rear multi-link setup with CDC dampers."
+
+passibility = "Medium"
+passibility_comments = "170mm ground clearance suits urban/light rough terrain."
+
+seat_layout = "7-seat"
+seat_layout_comments = "2+2+3 configuration with captain's chairs in second row."
+
+city_commuting = "Yes"
+city_commuting_comments = "Compact turning radius (6.2m) for urban maneuverability."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "800V architecture enables 220kW fast charging (10-80% in 20min)."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for serious off-road use."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Max cargo volume of 1,800L with seats folded."
+
+clod_resistance = "High"
+clod_resistance_comments = "Battery heating system maintains -30°C to 55°C operation."
+
+heat_resistance = "High"
+heat_resistance_comments = "Liquid-cooled battery with thermal management up to 55°C."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "5,293mm length × 1,988mm width × 1,785mm height."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Family-focused MPV with premium comfort features."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, aerodynamic MPV design with premium detailing."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "13.2kWh/100km is class-leading for large MPVs."
+
+comfort_level = "High"
+comfort_level_comments = "Air suspension optional, standard Nappa leather seats."
+
+smartness = "High"
+smartness_comments = "Xmart OS with 8155 chip and 5G connectivity."
+
+family_friendliness = "High"
+family_friendliness_comments = "7 seats, rear entertainment, and child seat anchors."
+
+[KeyDetails]
+key_details = "The XPeng X9 740 Ultra-Long-Range FWD combines a 101.5kWh LFP battery with 840km CLTC range, 496hp dual motors, and XPILOT 3.5 ADAS. It features a 7-seat business-class interior with optional rear-seat entertainment and 800V fast charging (10-80% in 20 minutes)."
+key_details_comments = "The XPeng X9 740 Ultra-Long-Range FWD represents the pinnacle of XPeng's electric MPV technology, combining a massive 101.5kWh lithium iron phosphate (LFP) battery pack with an industry-leading 840km CLTC-rated range. Its dual-motor front-wheel drive setup delivers 496hp (370kW) and 717N·m of torque, enabling surprisingly quick 0-100km/h acceleration in just 5.4 seconds despite its large MPV form factor. The vehicle features XPeng's advanced XPILOT 3.5 driver assistance system with highway navigation guided pilot and memory parking capabilities. The luxurious 7-seat interior offers business-class comfort with standard Nappa leather seats, optional air suspension, and rear-seat entertainment options. Its 800V high-voltage architecture supports ultra-fast 220kW DC charging, capable of replenishing the battery from 10-80% in just 20 minutes, making it exceptionally practical for long-distance travel. The X9 also boasts one of the most aerodynamic MPV designs with a 0.227 drag coefficient and comprehensive smart features powered by the Xmart OS with 5G connectivity."

@@ -1,0 +1,188 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Volvo-EX30-Ultra"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "40,000~60,000"
+prize_comments = "The Volvo EX30 Ultra is priced between $48,000 and $58,000 USD, depending on options and region."
+
+vehicle_category_bottom = "Compact SUV"
+vehicle_category_bottom_comments = "The EX30 is a premium compact SUV with a length of 4,233mm and a focus on urban mobility."
+
+brand = "Volvo"
+brand_comments = "Volvo is a Swedish luxury automotive brand known for safety and Scandinavian design."
+
+# Powertrain and performance
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The EX30 Ultra is a fully electric model with no combustion engine."
+
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "Passenger space is optimized for urban use, with 4.1 cubic meters of interior volume."
+
+trunk_volume = "300~400L"
+trunk_volume_comments = "Trunk capacity is 318L (VDA), expandable to 904L with rear seats folded."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,700mm, providing stable handling and interior space."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 170mm, balancing urban agility and mild rough-road capability."
+
+# Design and aesthetics
+design_style = "Sporty"
+design_style_comments = "Features a modern, athletic design with sharp lines and a fastback-like roofline."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Aerodynamically optimized with a drag coefficient of 0.29."
+
+color = "Neutral Colors"
+color_comments = "Offers Scandinavian-inspired colors like Moss Yellow, Cloud Blue, and Pine Grey."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Uses recycled aluminum trim and sustainable materials like flax composites."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included in all variants."
+
+airbag_count = "6"
+airbag_count_comments = "Includes front, side, and curtain airbags for all occupants."
+
+seat_material = "Lether"
+seat_material_comments = "Nordic recycled leather upholstery with wool blend options."
+
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and optimized aerodynamics result in 62 dB at 120 km/h."
+
+# Tech and connectivity
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Google Built-in with natural voice control for navigation/media/climate."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for infotainment, battery management, and ADAS."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Pilot Assist with lane centering and adaptive cruise control."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes stop-and-go functionality for traffic jams."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Automatically follows flow in congested traffic up to 60 km/h."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Detects vehicles, pedestrians, cyclists, and large animals."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active steering correction if unintentional lane departure is detected."
+
+remote_parking = "No"
+remote_parking_comments = "Does not support smartphone-controlled parking maneuvers."
+
+auto_parking = "Yes"
+auto_parking_comments = "Includes Park Pilot Assist for parallel/perpendicular spaces."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "BLIS (Blind Spot Information System) with steering assist."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Alert Control monitors steering patterns for fatigue."
+
+# Powertrain specifics (BEV)
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable - this is a pure electric vehicle."
+
+motor_power = "250~400kW"
+motor_power_comments = "Dual-motor AWD version produces 315 kW (428 hp) peak power."
+
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "69 kWh usable capacity (82 kWh gross) with NMC chemistry."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable - uses battery storage instead."
+
+horsepower = "300~400hp"
+horsepower_comments = "428 hp (315 kW) in Ultra trim with Performance software upgrade."
+
+torque = "Above 500N·m"
+torque_comments = "543 N·m (400 lb-ft) available from 0 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "3.6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 3.6 seconds (Performance upgrade)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h (112 mph)."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "BEV - uses electricity instead of fuel."
+
+electric_consumption = "14~16kWh/100km"
+electric_consumption_comments = "Official WLTP consumption is 15.1 kWh/100 km combined."
+
+driving_range = "400~800km"
+driving_range_comments = "Up to 480 km (298 miles) WLTP range in Ultra AWD configuration."
+
+# Chassis and dynamics
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual-motor setup with torque vectoring capability."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts, rear multi-link setup."
+
+passibility = "Medium"
+passibility_comments = "Optimized for urban roads with some gravel/light off-road capability."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 2+3 seating with optional 40/20/40 split rear seats."
+
+# Usage scenarios
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions (4.23m length) ideal for urban environments."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "480 km range and DC fast charging (10-80% in 26.5 mins)."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for serious off-roading - urban-focused SUV."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "318L trunk + underfloor storage, max 904L with seats folded."
+
+clod_resistance = "High"
+clod_resistance_comments = "Heat pump + battery preconditioning maintains >80% range at -10°C."
+
+heat_resistance = "Medium"
+heat_resistance_comments = "Active battery cooling maintains performance in hot climates."
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "Compact SUV dimensions (4,233mm length) with efficient space utilization."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balances urban agility with family-friendly practicality."
+
+aesthetics = "High"
+aesthetics_comments = "Distinctive Scandinavian design with premium material execution."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Efficient BEV powertrain with 15.1 kWh/100km WLTP."
+
+comfort_level = "High"
+comfort_level_comments = "Ergonomic seats, quiet cabin, and refined ride quality."
+
+smartness = "High"
+smartness_comments = "Advanced Google-based infotainment and comprehensive ADAS."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Good safety but compact size limits child seat flexibility."
+
+[KeyDetails]
+key_details = """

@@ -1,0 +1,240 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Lamborghini-Sian FKP 37"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The Lamborghini-Sian FKP 37 is priced at approximately $3.6 million USD, making it one of the most expensive production cars from Lamborghini."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The Sian FKP 37 is a limited-edition, high-performance two-door coupe with a futuristic design."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Lamborghini"
+brand_comments = "Lamborghini is an Italian luxury sports car manufacturer known for high-performance vehicles."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Hybrid Electric Vehicle"
+powertrain_type_comments = "The Sian FKP 37 features a V12 gasoline engine paired with a supercapacitor-based hybrid system."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The Sian FKP 37 offers approximately 2.8 cubic meters of passenger space, which is compact but carefully designed for optimal driving ergonomics. The cockpit-style interior features deeply bolstered sport seats that maximize space efficiency while providing exceptional support during high-performance driving. Though limited in volume compared to conventional cars, every centimeter is optimized for the driver's needs, with controls placed within easy reach and excellent outward visibility despite the low-slung design. The space prioritizes the driving experience over passenger comfort, typical of Lamborghini's supercar philosophy."
+passenger_space_volume_comments = "The Sian FKP 37 offers a compact passenger space optimized for performance, with exact volume around 2.8 cubic meters."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "The trunk capacity is approximately 265L, typical for high-performance sports cars."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2700mm, providing a balance between agility and stability."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "The ground clearance is approximately 120mm, optimized for aerodynamic performance."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The Sian FKP 37 features an aggressive, aerodynamic design with sharp lines and futuristic elements."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body features smooth, flowing lines combined with sharp angles for high aerodynamic efficiency."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Bright Colors"
+color_comments = "The Sian FKP 37 is often seen in vibrant colors like Verde Gea (green) and Oro Electrum (gold)."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features carbon fiber and aluminum accents, emphasizing a high-tech, performance-oriented cabin."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The Sian FKP 37 is equipped with advanced ABS for superior braking performance."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is included to enhance vehicle control during dynamic driving."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "6"
+airbag_count_comments = "The car includes dual front, side, and curtain airbags for occupant protection."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The seats are upholstered in premium Lamborghini leather with optional Alcantara accents."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "The cabin is designed to balance engine sound and road noise for a sporty yet comfortable experience."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The infotainment system supports voice commands for navigation and media control."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The system supports over-the-air updates for software enhancements."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The car features Level 2 autonomy with adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes adaptive cruise control for highway driving convenience."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist is available for low-speed congestion situations."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking is standard for collision avoidance."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist helps maintain lane position during highway driving."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available due to the car's performance-oriented design."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "Auto parking is not a feature, as the car is designed for driver engagement."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot detection is included for safer lane changes."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "The system monitors driver alertness and provides warnings if fatigue is detected."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "6.0~6.5L"
+engine_displacement_comments = "The Sian FKP 37 is powered by a 6.5L naturally aspirated V12 engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "Above 400kW"
+motor_power_comments = "The hybrid system adds 34 hp (25 kW) from a supercapacitor-based electric motor."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "None"
+battery_capacity_comments = "The Sian FKP 37 uses a supercapacitor instead of a traditional battery, with a capacity of 0.1kWh."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "The fuel tank capacity is 85L, supporting long-range performance driving."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The combined output is 819 hp (602 kW), with 785 hp from the V12 and 34 hp from the hybrid system."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "The engine produces 720 N·m of torque, with additional torque from the electric motor."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The Sian FKP 37 accelerates from 0-100 km/h in just 2.8 seconds."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "The top speed is 350 km/h, making it one of the fastest Lamborghini models."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "Fuel consumption is approximately 17.5 L/100km combined, typical for a high-performance V12."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as the hybrid system uses a supercapacitor for short bursts of electric power."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "400~800km"
+driving_range_comments = "The estimated range is approximately 500 km on a full tank, depending on driving conditions."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The Sian FKP 37 features Lamborghini's advanced AWD system for maximum traction."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The car uses a push-rod suspension system for superior handling and ride quality."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "The low ground clearance and sporty setup limit off-road capability."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "The Sian FKP 37 is a two-seater, focusing on driver and passenger experience."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "No"
+city_commuting_comments = "The car's performance-oriented design makes it less practical for daily city commuting."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The Sian FKP 37 is capable of long-distance highway driving, though fuel stops may be frequent."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The low ground clearance and performance tires limit off-road capability."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "No"
+cargo_capability_comments = "The small trunk and two-seat layout limit cargo capacity."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The car performs well in cold conditions but is not optimized for extreme cold."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The cooling system is designed to handle high temperatures during performance driving."
+
+
+[AmbiguousLabels]
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The Sian FKP 37 is a mid-size supercar with dimensions optimized for performance."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Small"
+vehicle_usability_comments = "The car's usability is limited due to its performance-focused design."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The Sian FKP 37 features a striking, futuristic design with high aesthetic appeal."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "The V12 engine and hybrid system result in high energy consumption."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "The car offers a balance of sporty handling and comfort, though it is firm."
+
+# smartness, candidate values: "Low", "Medium", "High"
+smartness = "High"
+smartness_comments = "The Sian FKP 37 includes advanced tech features like hybrid powertrain and driver aids."
+
+# family_friendliness, candidate values: "Low", "Medium", "High"
+family_friendliness = "Low"
+family_friendliness_comments = "The two-seat layout and performance focus make it unsuitable for family use."
+
+[KeyDetails]
+# key_details, a value to introduce more KeyDetails for current car model
+key_details = "The Lamborghini Sian FKP 37 is a limited-edition hybrid supercar featuring a 6.5L V12 engine paired with a supercapacitor-based hybrid system. It produces 819 hp, accelerates 0-100 km/h in 2.8 seconds, and has a top speed of 350 km/h. Only 63 units were produced, making it highly exclusive."
+key_details_comments = "The Lamborghini Sian FKP 37 is a groundbreaking hybrid supercar that combines a 6.5L naturally aspirated V12 engine with a supercapacitor-based hybrid system, delivering a combined 819 hp. As Lamborghini's first hybrid production car, it represents the brand's future technology while maintaining traditional performance values. Only 63 units were built (honoring Lamborghini's 1963 founding year), each featuring bespoke design elements and cutting-edge aerodynamics. The name 'Sian' means 'flash' in Bolognese dialect, referencing its lightning-fast performance, while 'FKP 37' pays homage to Ferdinand Karl Piëch (1937-2019), the former Volkswagen Group chairman."

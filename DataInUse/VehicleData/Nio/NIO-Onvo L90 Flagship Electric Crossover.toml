@@ -1,0 +1,190 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "NIO-Onvo L90 Flagship Electric Crossover"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "60,000~100,000"
+prize_comments = "The NIO-Onvo L90 Flagship Electric Crossover is priced between $68,000 and $92,000 USD, depending on battery capacity and optional features."
+
+vehicle_category_bottom = "Mid-to-Large SUV"
+vehicle_category_bottom_comments = "The L90 is positioned as a premium electric crossover with a spacious interior and advanced technology."
+
+brand = "NIO"
+brand_comments = "NIO is a Chinese electric vehicle manufacturer known for its premium EVs and battery-swapping technology."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The L90 is a pure electric vehicle with no combustion engine, featuring dual-motor AWD as standard."
+
+# Space and dimensions
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "The L90 offers 5.8 cubic meters of passenger space, with generous legroom and headroom in both rows."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Trunk capacity is 550L (VDA), expandable to 1,600L with rear seats folded flat."
+
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The L90 has a long 3,150mm wheelbase, contributing to its spacious interior and stable ride."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 180mm, with an optional air suspension that can raise it to 210mm."
+
+# Design and aesthetics
+design_style = "Business"
+design_style_comments = "Clean, premium design with minimalist lines and a focus on aerodynamic efficiency (0.23 Cd)."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Flowing, uninterrupted body lines with flush door handles and minimal panel gaps."
+
+color = "Neutral Colors"
+color_comments = "Offered in premium neutral tones like Moonlight Silver, Deep Space Gray, and Pearl White."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Sustainable open-pore wood trim paired with recycled aluminum accents."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Advanced ABS system with brake-by-wire technology for precise modulation."
+
+ESP = "Yes"
+ESP_comments = "Standard electronic stability program tuned for electric vehicle dynamics."
+
+airbag_count = "10"
+airbag_count_comments = "Includes front, side, curtain, and center airbags for all seating positions."
+
+seat_material = "Lether"
+seat_material_comments = "Premium Nappa leather seats with perforated cooling and massage functions."
+
+noise_insulation = "High"
+noise_insulation_comments = "Double-layer acoustic glass and active noise cancellation for a 38 dB cabin at 60 mph."
+
+# Tech features
+voice_interfaction = "Yes"
+voice_interfaction_comments = "NOMI 2.0 AI assistant with natural language processing and multi-zone recognition."
+
+ota_updates = "Yes"
+ota_updates_comments = "Full-vehicle OTA updates including battery management, ADAS, and infotainment."
+
+autonomous_driving_level = "L3"
+autonomous_driving_level_comments = "NIO Aquila Super Sensing with 33 sensors and 1016 TOPS computing power."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Traffic-aware cruise with stop-and-go functionality up to 130 km/h."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Hands-free driving in congested highways under 60 km/h."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "AEB with pedestrian/cyclist detection up to 85 km/h."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active lane centering with road edge detection."
+
+remote_parking = "Yes"
+remote_parking_comments = "Smart summon and remote parking via smartphone app."
+
+auto_parking = "Yes"
+auto_parking_comments = "Fully automated perpendicular and parallel parking."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Radar-based BSD with lane change assist."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver monitoring camera with facial recognition and alert system."
+
+# Powertrain (BEV-specific)
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable - pure electric vehicle."
+
+motor_power = "250~400kW"
+motor_power_comments = "Dual motors producing 360kW (483hp) total system output."
+
+battery_capacity = "Above 100kWh"
+battery_capacity_comments = "150kWh semi-solid state battery (optional) with 900km CLTC range."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable - pure electric vehicle."
+
+horsepower = "Above 400hp"
+horsepower_comments = "Total system output of 483hp (360kW)."
+
+torque = "Above 500N·m"
+torque_comments = "700N·m instant torque available from 0 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "4.9s 0-100 km/h acceleration (3.9s in Boost mode)."
+
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 230 km/h."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable - pure electric vehicle."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "16.2 kWh/100km combined (CLTC) with 100kWh battery."
+
+driving_range = "Above 800km"
+driving_range_comments = "900km CLTC range with 150kWh battery (650km with 100kWh pack)."
+
+# Chassis and dynamics
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual-motor AWD with torque vectoring."
+
+suspension = "Independent Suspension"
+suspension_comments = "Standard air suspension with CDC continuous damping control."
+
+passibility = "High"
+passibility_comments = "Excellent ride comfort with adaptive damping and road preview."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Executive lounge seating configuration with optional 4-seat layout."
+
+# Usage scenarios
+city_commuting = "Yes"
+city_commuting_comments = "Ideal for urban use with one-pedal driving and compact turning radius."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "800V architecture enables 20-80% charge in 15 minutes at ultra-fast stations."
+
+off_road_capability = "Medium"
+off_road_capability_comments = "Capable on light off-road terrain with hill descent control."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Versatile cargo space with under-floor storage and front trunk."
+
+# Environmental resistance
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management maintains 70% range at -20°C."
+
+heat_resistance = "High"
+heat_resistance_comments = "Liquid cooling system prevents performance throttling up to 45°C ambient."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "Overall length of 5,100mm with commanding road presence."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior with premium materials and advanced tech features."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, aerodynamic design with premium detailing and signature lighting."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its class at 16.2 kWh/100km, though large battery offsets consumption."
+
+comfort_level = "High"
+comfort_level_comments = "Executive-class comfort with noise levels rivaling luxury sedans."
+
+smartness = "High"
+smartness_comments = "Cutting-edge ADAS and infotainment with continuous OTA improvements."
+
+family_friendliness = "High"
+family_friendliness_comments = "Excellent safety ratings and spacious interior suitable for families."
+
+[KeyDetails]
+key_details = "The NIO-Onvo L90 is NIO's flagship electric crossover featuring: 1) 150kWh semi-solid state battery with 900km CLTC range, 2) NIO Aquila Super Sensing with 33 sensors enabling L3 autonomy, 3) Executive lounge interior with Nappa leather and sustainable materials, 4) 800V architecture enabling 350kW ultra-fast charging, 5) Standard air suspension with road preview, and 6) NOMI 2.0 AI assistant with emotional intelligence."
+key_details_comments = "The NIO-Onvo L90 represents the pinnacle of NIO's electric vehicle technology, combining cutting-edge battery systems with premium luxury features. Its 150kWh semi-solid state battery delivers class-leading 900km CLTC range, addressing range anxiety concerns. The Aquila Super Sensing system's 33 sensors (including 1x lidar, 7x 8MP cameras, and 4x NVIDIA Orin chips) enable true L3 autonomous driving capabilities. The interior showcases sustainable luxury with full-grain Nappa leather, open-pore wood trim, and aluminum accents, while the 800V electrical architecture supports ultra-fast 350kW charging (adding 400km in 15 minutes). The standard air suspension with continuous damping control and road preview system provides limousine-like ride quality. NOMI 2.0's emotional AI creates a personalized human-machine interaction experience unmatched in the EV segment."

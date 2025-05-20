@@ -1,0 +1,188 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Hyundai-Santa Fe Hybrid"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "40,000~60,000"
+prize_comments = "The Hyundai Santa Fe Hybrid is priced between $42,000 and $58,000 USD depending on trim (SE, SEL, Limited, or Calligraphy)."
+
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The Santa Fe Hybrid is a 5-seater mid-size SUV (7-seater optional in some markets) with a focus on family practicality and hybrid efficiency."
+
+brand = "Hyundai"
+brand_comments = "Hyundai is a South Korean automaker known for value-oriented vehicles with strong warranties."
+
+powertrain_type = "Hybrid Electric Vehicle"
+powertrain_type_comments = "The Santa Fe Hybrid combines a 1.6L turbocharged gasoline engine with a 44.2kW electric motor and 1.49kWh lithium-ion battery."
+
+# Dimensions and space
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Total passenger volume is approximately 4.8 cubic meters (169.6 cubic feet)."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 731L behind the rear seats, expandable to 1,625L with seats folded (measured to roof)."
+
+wheelbase = "2800~2950mm"
+wheelbase_comments = "Exact wheelbase is 2,815mm (110.8 inches), providing stable highway handling."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 185mm (7.3 inches), suitable for light off-road use."
+
+# Design and materials
+design_style = "Business"
+design_style_comments = "Sophisticated exterior with parametric jewel-pattern grille and upscale interior finishes."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Flowing character lines with aerodynamic 0.33 Cd coefficient."
+
+color = "Neutral Colors"
+color_comments = "Offers shades like Hampton Gray, Hyper White, and Phantom Black as popular choices."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Available genuine woodgrain trim (eucalyptus) on higher trims, with metal accents."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard 4-channel anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Control with traction management."
+
+airbag_count = "8"
+airbag_count_comments = "Includes dual front, front side, rear side, and curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Leather upholstery standard on Limited and Calligraphy trims (SEL has leatherette)."
+
+noise_insulation = "High"
+noise_insulation_comments = "Active noise cancellation and laminated front windows reduce cabin noise to 68 dB at 120 km/h."
+
+# Tech features
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Hyundai's Blue Link system supports natural language commands for navigation/media."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment and hybrid system software."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Highway Driving Assist combines adaptive cruise with lane centering."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Smart Cruise Control with stop-and-go functionality."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Works below 60 km/h to automate acceleration/braking/steering in congestion."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Forward Collision-avoidance Assist detects vehicles/pedestrians/cyclists."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Standard Lane Following Assist with haptic steering wheel feedback."
+
+remote_parking = "No"
+remote_parking_comments = "Does not offer smartphone-controlled parking."
+
+auto_parking = "Yes"
+auto_parking_comments = "Available Remote Smart Parking Assist on Calligraphy trim."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind-Spot View Monitor projects camera feed in instrument cluster."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Attention Warning monitors steering patterns for drowsiness."
+
+# Powertrain specs
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "1.6L T-GDi turbocharged inline-4 (178 hp gas engine component)."
+
+motor_power = "70~120kW"
+motor_power_comments = "44.2kW (59 hp) permanent-magnet synchronous electric motor."
+
+battery_capacity = "30~50kWh"
+battery_capacity_comments = "1.49kWh lithium-ion polymer battery (not designed for plug-in charging)."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "62L (16.4 gallon) tank enables 800+ km total range."
+
+horsepower = "200~300hp"
+horsepower_comments = "Combined system output is 226 hp (169 kW)."
+
+torque = "300~400N·m"
+torque_comments = "350 N·m (258 lb-ft) combined torque, with electric motor filling low-RPM gaps."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Official 0-100 km/h time is 8.8 seconds (FWD model)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 185 km/h (115 mph)."
+
+fuel_consumption = "4~6L/100km"
+fuel_consumption_comments = "EPA-rated 6.1L/100km city, 6.7L/100km highway (FWD)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - this is a non-plug-in hybrid without EV-mode consumption tracking."
+
+driving_range = "Above 800km"
+driving_range_comments = "Estimated 850-900 km total range (62L tank + hybrid efficiency)."
+
+# Chassis and utility
+drive_type = "All-Wheel Drive"
+drive_type_comments = "HTRAC AWD system available (standard on Calligraphy, optional on others)."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts, rear multi-link setup with amplitude-sensitive dampers."
+
+passibility = "Medium"
+passibility_comments = "185mm clearance and AWD capability suit light off-road use but not serious rock crawling."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 2-row configuration (7-seat available in non-hybrid Santa Fe)."
+
+city_commuting = "Yes"
+city_commuting_comments = "Hybrid system excels in stop-and-go traffic with regenerative braking."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride quality and adaptive cruise ideal for highways."
+
+off_road_capability = "Medium"
+off_road_capability_comments = "HTRAC AWD offers Snow/Mud/Sand modes but lacks low-range gearing."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "1,625L max cargo space with 60/40 split-folding rear seats."
+
+clod_resistance = "High"
+clod_resistance_comments = "Proven operation down to -30°C with battery warming system."
+
+heat_resistance = "High"
+heat_resistance_comments = "Cooling systems maintain performance up to 50°C ambient."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "Length: 4,785mm (188.4 in) - positions it at the larger end of mid-size SUVs."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious interior with easy access to all controls and storage."
+
+aesthetics = "High"
+aesthetics_comments = "Premium design language with jewel-like LED lighting signatures."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Class-leading hybrid efficiency for its size segment."
+
+comfort_level = "High"
+comfort_level_comments = "Ergonomic seats and well-tuned suspension absorb road imperfections."
+
+smartness = "High"
+smartness_comments = "Latest Hyundai SmartSense suite with over-the-air update capability."
+
+family_friendliness = "High"
+family_friendliness_comments = "Top safety ratings and rear seat amenities ideal for families."
+
+[KeyDetails]
+key_details = "The Santa Fe Hybrid combines a 1.6L turbo engine with electric motor for 226 hp combined. It offers up to 6.1L/100km fuel economy, 1,625L cargo space, and Hyundai's SmartSense safety suite. The Calligraphy trim adds Nappa leather, 20-inch wheels, and Remote Smart Parking."
+key_details_comments = "The Hyundai Santa Fe Hybrid combines a 1.6L turbocharged gasoline engine with an electric motor for a combined 226 hp output, delivering both power and efficiency. With EPA-rated fuel economy of 6.1L/100km in city driving, it offers significant savings at the pump. The vehicle provides exceptional practicality with 1,625L of maximum cargo space when rear seats are folded, along with Hyundai's comprehensive SmartSense safety package including forward collision avoidance and lane keeping assist. The top Calligraphy trim elevates the experience with premium Nappa leather seats, 20-inch alloy wheels, and advanced features like Remote Smart Parking Assist. This hybrid SUV strikes an ideal balance between family-friendly utility, advanced technology, and eco-conscious performance in the mid-size SUV segment."

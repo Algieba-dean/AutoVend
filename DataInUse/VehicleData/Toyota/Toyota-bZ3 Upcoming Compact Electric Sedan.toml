@@ -1,0 +1,181 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Toyota-bZ3 Upcoming Compact Electric Sedan"
+
+[PriciseLabels]
+
+prize = "30,000~40,000"
+prize_comments = "The Toyota-bZ3 Upcoming Compact Electric Sedan is priced between $35,000 and $38,000 USD depending on the trim level and options."
+
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The Toyota-bZ3 is a compact electric sedan with a focus on urban mobility and efficiency."
+
+brand = "Toyota"
+brand_comments = "The Toyota-bZ3 is part of Toyota's bZ (Beyond Zero) series, focusing on electric vehicles."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The Toyota-bZ3 is a pure electric vehicle with no internal combustion engine."
+
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 4.0 cubic meters, offering ample room for five occupants."
+
+trunk_volume = "400~500L"
+trunk_volume_comments = "The exact trunk capacity is 450L, providing practical storage for daily use."
+
+wheelbase = "2800~2950mm"
+wheelbase_comments = "The wheelbase is 2880mm, contributing to a spacious interior and stable ride."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "The chassis height is 140mm, balancing aerodynamics and ground clearance."
+
+design_style = "Sporty"
+design_style_comments = "The Toyota-bZ3 features a sleek, sporty design with sharp lines and a modern aesthetic."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The body lines are smooth and aerodynamic, enhancing efficiency and visual appeal."
+
+color = "Neutral Colors"
+color_comments = "The Toyota-bZ3 offers neutral color options, including silver, gray, and white."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features high-quality metal trim accents for a premium feel."
+
+ABS = "Yes"
+ABS_comments = "Anti-lock Braking System (ABS) is standard for enhanced safety."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (ESP) is included to improve vehicle stability."
+
+airbag_count = "8"
+airbag_count_comments = "The Toyota-bZ3 is equipped with 8 airbags, including front, side, and curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "The seats are upholstered in synthetic leather for comfort and durability."
+
+noise_insulation = "High"
+noise_insulation_comments = "The cabin features advanced noise insulation for a quiet ride."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The infotainment system supports voice interaction for hands-free control."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air (OTA) updates are supported for software and navigation."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The Toyota-bZ3 offers Level 2 autonomous driving features, including adaptive cruise control and lane-keeping assist."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Adaptive cruise control is included for maintaining a set distance from the vehicle ahead."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Traffic jam assist helps in stop-and-go traffic by automating acceleration and braking."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Automatic emergency braking is standard to prevent collisions."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane keep assist helps maintain the vehicle within its lane."
+
+remote_parking = "No"
+remote_parking_comments = "Remote parking is not available on the Toyota-bZ3."
+
+auto_parking = "Yes"
+auto_parking_comments = "Auto parking is included for assisted parallel and perpendicular parking."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot detection alerts the driver to vehicles in adjacent lanes."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Fatigue driving detection monitors driver alertness and provides warnings."
+
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as the Toyota-bZ3 is a pure electric vehicle."
+
+motor_power = "180~250kW"
+motor_power_comments = "The electric motor delivers 218kW (292hp) for strong acceleration."
+
+battery_capacity = "50~80kWh"
+battery_capacity_comments = "The battery capacity is 65.6kWh, providing a balance of range and efficiency."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable as the Toyota-bZ3 is a pure electric vehicle."
+
+horsepower = "200~300hp"
+horsepower_comments = "The Toyota-bZ3 produces 292hp, offering brisk performance."
+
+torque = "300~400N·m"
+torque_comments = "The electric motor generates 370N·m of torque for responsive acceleration."
+
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The 0-100 km/h acceleration time is 7.1 seconds."
+
+top_speed = "160~200km/h"
+top_speed_comments = "The top speed is electronically limited to 180 km/h."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable as the Toyota-bZ3 is a pure electric vehicle."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "The energy consumption is 13.1kWh/100km under mixed driving conditions."
+
+driving_range = "400~800km"
+driving_range_comments = "The Toyota-bZ3 offers a WLTP-rated range of 600km on a full charge."
+
+drive_type = "Rear-Wheel Drive"
+drive_type_comments = "The Toyota-bZ3 is rear-wheel drive for balanced handling."
+
+suspension = "Independent Suspension"
+suspension_comments = "The suspension system is fully independent for a comfortable ride."
+
+passibility = "Medium"
+passibility_comments = "The Toyota-bZ3 is designed for urban and highway driving, with moderate ground clearance."
+
+seat_layout = "5-seat"
+seat_layout_comments = "The Toyota-bZ3 accommodates five passengers with a 2+3 seating arrangement."
+
+city_commuting = "Yes"
+city_commuting_comments = "The Toyota-bZ3 is ideal for city commuting with its compact size and electric efficiency."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "The Toyota-bZ3 is capable of long-distance highway travel with its 600km range."
+
+off_road_capability = "Low"
+off_road_capability_comments = "The Toyota-bZ3 is not designed for off-road use."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "The Toyota-bZ3 offers practical cargo space for daily needs."
+
+clod_resistance = "Medium"
+clod_resistance_comments = "The battery system includes thermal management for reliable performance in cold weather."
+
+heat_resistance = "High"
+heat_resistance_comments = "The Toyota-bZ3 is designed to operate efficiently in hot climates with battery cooling."
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "The Toyota-bZ3 is a medium-sized compact sedan."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "The Toyota-bZ3 offers balanced usability for urban and highway driving."
+
+aesthetics = "High"
+aesthetics_comments = "The Toyota-bZ3 features a modern and attractive design."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "The Toyota-bZ3 is highly efficient with low energy consumption."
+
+comfort_level = "High"
+comfort_level_comments = "The Toyota-bZ3 provides a comfortable ride with premium interior materials."
+
+smartness = "High"
+smartness_comments = "The Toyota-bZ3 is equipped with advanced connectivity and driver-assistance features."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "The Toyota-bZ3 is suitable for small families with its 5-seat layout."
+
+[KeyDetails]
+key_details="The Toyota-bZ3 is a compact electric sedan with a 65.6kWh battery, offering a 600km range, 292hp, and advanced driver-assistance features. It is part of Toyota's bZ series, focusing on sustainable mobility."
+key_details_comments = "The Toyota-bZ3 is a cutting-edge compact electric sedan from Toyota's bZ (Beyond Zero) series, designed for sustainable urban mobility. It features a 65.6kWh lithium-ion battery delivering an impressive 600km WLTP-rated range, making it practical for both daily commutes and longer journeys. The rear-mounted electric motor produces 292hp (218kW) and 370N·m of torque, enabling brisk acceleration (0-100km/h in 7.1s) while maintaining energy efficiency (13.1kWh/100km). The model includes Level 2 autonomous driving capabilities with adaptive cruise control, lane-keeping assist, and traffic jam assist, along with a comprehensive safety suite including 8 airbags and automatic emergency braking. With its 2880mm wheelbase, the bZ3 offers generous interior space (4.0m³ passenger volume) and 450L trunk capacity, wrapped in a sleek, aerodynamic design featuring premium metal-trimmed interior accents and advanced connectivity with OTA updates."

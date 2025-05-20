@@ -1,0 +1,180 @@
+title = "CarLabels"
+
+car_model = "Honda-Civic Si"
+
+[PriciseLabels]
+prize = "30,000~40,000"
+prize_comments = "The Honda-Civic Si is priced between $32,000 and $38,000 USD depending on the trim level and options."
+
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The Civic Si is a performance-oriented variant of the Honda Civic, classified as a compact sedan."
+
+brand = "Honda"
+brand_comments = "Honda is a Japanese multinational manufacturer known for reliability and performance."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Civic Si is powered by a turbocharged gasoline engine with no hybrid or electric option."
+
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering ample room for five occupants."
+
+trunk_volume = "300~400L"
+trunk_volume_comments = "The trunk capacity is 315L, expandable to 1,200L with rear seats folded."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase measures 2,735mm, contributing to stable handling."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "The chassis height is approximately 140mm, optimized for sporty driving."
+
+design_style = "Sporty"
+design_style_comments = "The Civic Si features aggressive styling with a rear spoiler, sporty bumpers, and Si badging."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The Civic Si has sleek, aerodynamic body lines for reduced drag."
+
+color = "Bright Colors"
+color_comments = "Available colors include Rallye Red, Aegean Blue, and other vibrant options."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The interior features brushed metal accents and sport-oriented finishes."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system for improved control during hard braking."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard to enhance traction and stability."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, side, and side-curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Sport seats are upholstered in leather with red stitching."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Sound insulation is balanced for sporty engine note without excessive cabin noise."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Supports voice commands via Honda's infotainment system."
+
+ota_updates = "No"
+ota_updates_comments = "Does not support over-the-air updates for the infotainment system."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes adaptive cruise control and lane-keeping assist."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard with low-speed follow capability."
+
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "Not available on the Civic Si."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Standard forward collision warning with automatic braking."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Departure Warning with Lane Keeping Assist is standard."
+
+remote_parking = "No"
+remote_parking_comments = "No remote parking feature is available."
+
+auto_parking = "No"
+auto_parking_comments = "The Civic Si does not offer automated parking."
+
+blind_spot_detection = "No"
+blind_spot_detection_comments = "Blind-spot monitoring is not standard on the Si trim."
+
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver fatigue detection system is included."
+
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "Equipped with a 1.5L turbocharged 4-cylinder engine (1,498cc)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable as the Civic Si is gasoline-powered."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable as the Civic Si is gasoline-powered."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "12.4-gallon (46.9L) fuel tank capacity."
+
+horsepower = "200~300hp"
+horsepower_comments = "Produces 200 hp at 6,000 rpm."
+
+torque = "200~300N·m"
+torque_comments = "Generates 260 N·m (192 lb-ft) of torque at 1,800–5,000 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "6~8s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates 0–100 km/h in approximately 6.8 seconds."
+
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 225 km/h (140 mph)."
+
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "Rated at 7.1L/100km (combined city/highway)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as the Civic Si is gasoline-powered."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650km on a full tank (combined driving)."
+
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive with a limited-slip differential for performance."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts and rear multi-link independent suspension."
+
+passibility = "Medium"
+passibility_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 2+3 seating configuration."
+
+city_commuting = "Yes"
+city_commuting_comments = "Compact size and maneuverability make it ideal for urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable and stable at highway speeds."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Foldable rear seats expand trunk space for larger items."
+
+clod_resistance = "Medium"
+clod_resistance_comments = "Performs well in cold climates but lacks dedicated winter features."
+
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling and cabin AC are optimized for hot conditions."
+
+[AmbiguousLabels]
+size = "Medium"
+size_comments = "Compact sedan dimensions (4,674mm length, 1,802mm width)."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced for daily driving and sporty performance."
+
+aesthetics = "High"
+aesthetics_comments = "Aggressive styling with sporty accents appeals to enthusiasts."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its performance class but not hybrid-level."
+
+comfort_level = "Medium"
+comfort_level_comments = "Firm suspension prioritizes handling over luxury comfort."
+
+smartness = "Medium"
+smartness_comments = "Includes basic driver aids but lacks advanced autonomous features."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Practical for small families but lacks spaciousness of larger sedans."
+
+[KeyDetails]
+key_details = "The Honda-Civic Si is a performance-tuned variant of the Civic, featuring a 1.5L turbocharged engine, limited-slip differential, sport suspension, and aggressive styling. It balances daily usability with enthusiast-focused driving dynamics."
+key_details_comments = "The Honda Civic Si is the sportier iteration of Honda's popular compact sedan, designed to deliver an engaging driving experience while maintaining everyday practicality. It's powered by a responsive 1.5L turbocharged 4-cylinder engine producing 200 horsepower, paired with a precise 6-speed manual transmission as standard. Performance enhancements include a helical limited-slip differential for improved traction, sport-tuned suspension with adaptive dampers, and larger brakes. The exterior features aggressive styling cues like a rear spoiler, unique front bumper, and Si badging, while the interior boasts sport seats with bolstered support, leather upholstery with red contrast stitching, and metal trim accents. Despite its performance focus, it retains the Civic's reputation for reliability and offers standard Honda Sensing safety features including adaptive cruise control and lane keeping assist. The Civic Si strikes an excellent balance between daily drivability and enthusiast-oriented dynamics, making it one of the most compelling options in the affordable performance sedan segment."
+
+
+### Notes:

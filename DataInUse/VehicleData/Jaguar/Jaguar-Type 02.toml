@@ -1,0 +1,177 @@
+title = "CarLabels"
+
+car_model = "Jaguar-Type 02"
+
+[PriciseLabels]
+prize = "60,000~100,000"
+prize_comments = "The Jaguar I-PACE (Type 02) starts at $69,900 USD for the base trim and can exceed $90,000 USD for fully loaded configurations."
+
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The I-PACE is classified as a premium mid-size electric SUV with sporty characteristics."
+
+brand = "Jaguar"
+brand_comments = "Manufactured by Jaguar Land Rover under the Jaguar performance luxury brand."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "Pure electric vehicle with dual permanent magnet synchronous motors (one per axle)."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Total interior volume measures approximately 4.94 cubic meters (174.4 cubic feet)."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "25.3 cu ft (716L) behind rear seats, expanding to 51 cu ft (1,444L) with seats folded."
+
+wheelbase = "2950~3100mm"
+wheelbase_comments = "2,990mm (117.7 inches) wheelbase providing excellent interior space."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance of 170mm (6.7 inches) with adaptive air suspension option."
+
+design_style = "Sporty"
+design_style_comments = "Coupe-like SUV profile with muscular haunches and cab-forward proportions."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Aerodynamic drag coefficient of just 0.29Cd with flush door handles."
+
+color = "Dark Colors"
+color_comments = "Premium palette includes Fuji White, Santorini Black, and Eiger Grey metallic options."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Standard brushed aluminum trim with optional carbon fiber or open-pore wood."
+
+ABS = "Yes"
+ABS_comments = "4-channel ABS with electronic brakeforce distribution."
+
+ESP = "Yes"
+ESP_comments = "Advanced stability control with torque vectoring by braking."
+
+airbag_count = "6"
+airbag_count_comments = "Dual front, side-impact, and curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Standard Windsor leather with optional premium grained leather."
+
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic laminated glass and optimized sound deadening materials."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Jaguar's Touch Pro Duo system with Amazon Alexa integration."
+
+ota_updates = "Yes"
+ota_updates_comments = "SOTA (Software-over-the-air) capability for infotainment and vehicle systems."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes adaptive cruise with steering assist and traffic sign recognition."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "All-speed ACC with queue assist functionality."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Semi-autonomous driving in congested traffic up to 60 km/h."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "AEB with pedestrian and cyclist detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane departure warning with corrective steering input."
+
+remote_parking = "Yes"
+remote_parking_comments = "Available via smartphone app for tight parking situations."
+
+auto_parking = "Yes"
+auto_parking_comments = "Perpendicular and parallel parking assist system."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Assist with closing vehicle sensing."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Condition Monitor with alert suggestions."
+
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable for pure electric vehicle."
+
+motor_power = "250~400kW"
+motor_power_comments = "Dual motors producing 294kW (394hp) total system output."
+
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "90kWh liquid-cooled lithium-ion battery pack."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable for pure electric vehicle."
+
+horsepower = "300~400hp"
+horsepower_comments = "394 horsepower (294 kW) combined output."
+
+torque = "Above 500N·m"
+torque_comments = "512 lb-ft (694 N·m) available from 0 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "4.5 seconds 0-100 km/h in dynamic mode."
+
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 200 km/h (124 mph)."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable for pure electric vehicle."
+
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "Rated at 21.6 kWh/100km combined (EPA)."
+
+driving_range = "400~800km"
+driving_range_comments = "EPA-rated 470 km (292 miles) per charge, up to 470 km real-world."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Twin electric motors with intelligent AWD torque distribution."
+
+suspension = "Independent Suspension"
+suspension_comments = "Double wishbone front/integral link rear with optional air suspension."
+
+passibility = "Medium"
+passibility_comments = "Wading depth of 500mm (19.7 inches) for water crossings."
+
+seat_layout = "5-seat"
+seat_layout_comments = "2+3 seating configuration with optional heated rear seats."
+
+city_commuting = "Yes"
+city_commuting_comments = "Excellent urban EV with one-pedal driving and compact turning circle."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Fast charging (100kW) adds 78 miles in 15 minutes."
+
+off_road_capability = "Medium"
+off_road_capability_comments = "All-surface progress control with low-traction launch."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Front trunk (0.95 cu ft) plus rear cargo area."
+
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management maintains range in -25°C conditions."
+
+heat_resistance = "High"
+heat_resistance_comments = "Active cooling protects battery in +50°C ambient temperatures."
+
+[AmbiguousLabels]
+size = "Medium"
+size_comments = "4,682mm length × 2,011mm width × 1,565mm height dimensions."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Premium interior space with practical SUV versatility."
+
+aesthetics = "High"
+aesthetics_comments = "Ian Callum-designed with distinctive Jaguar DNA and EV proportions."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Competitive for performance EV segment (2.4 mi/kWh)."
+
+comfort_level = "High"
+comfort_level_comments = "Premium NVH control and adaptive damping options."
+
+smartness = "High"
+smartness_comments = "Pivi Pro infotainment with 12.3" digital cockpit and HUD."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "5-seat layout with ISOFIX but no third-row option."
+
+[KeyDetails]
+key_details = "The Jaguar I-PACE (Type 02) is the brand's first all-electric vehicle, winning 2019 World Car of the Year. Features include regenerative braking up to 0.4g, configurable dynamic modes, and 11kW AC charging capability. The battery is warrantied for 8 years/100,000 miles at 70% capacity."
+key_details_comments = "The Jaguar I-PACE (Type 02) represents Jaguar's groundbreaking entry into the premium EV market, earning the prestigious 2019 World Car of the Year award. This innovative model features sophisticated regenerative braking capable of recovering up to 0.4g of deceleration energy, multiple configurable drive modes (including dynamic and eco settings), and supports both 11kW AC charging and 100kW DC fast charging. The vehicle comes with an industry-standard 8-year/100,000-mile battery warranty that guarantees at least 70% capacity retention. Its advanced thermal management system ensures optimal battery performance in extreme temperatures (-25°C to +50°C), while the sophisticated twin-motor AWD system delivers both performance and all-weather capability. The I-PACE combines Jaguar's signature design language with purpose-built EV architecture, featuring a low center of gravity from its underfloor battery placement for exceptional handling dynamics."

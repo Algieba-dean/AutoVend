@@ -1,0 +1,182 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "NIO-EL6 Versatile Electric Urban SUV"
+
+[PriciseLabels]
+
+prize = "60,000~100,000"
+prize_comments = "The NIO-EL6 Versatile Electric Urban SUV is priced between $68,000 and $92,000 USD depending on the battery option and trim level."
+
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The EL6 is positioned as a premium mid-size electric SUV with a length of 4,850mm and width of 1,965mm."
+
+brand = "NIO"
+brand_comments = "NIO is a premium Chinese electric vehicle manufacturer known for its battery swap technology and advanced driver assistance systems."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The EL6 is a pure electric vehicle with no combustion engine, featuring NIO's latest electric drive system."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The interior offers 5.1 cubic meters of passenger space with premium legroom and headroom."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Standard trunk capacity is 579L, expandable to 1,530L with rear seats folded."
+
+wheelbase = "2950~3100mm"
+wheelbase_comments = "The EL6 features a long 2,960mm wheelbase for excellent interior space and ride stability."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance is 180mm, with adjustable air suspension available on higher trims."
+
+design_style = "Sporty"
+design_style_comments = "Features NIO's X-Bar design language with clean, aerodynamic lines and a coupe-like SUV profile."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The vehicle has a drag coefficient of just 0.26, among the best in class for SUVs."
+
+color = "Neutral Colors"
+color_comments = "Offers premium paint options including Moonlight Silver, Deep Space Gray, and Starry Night Blue."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Features premium metal and sustainable microfiber interior trim options."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program is standard across all variants."
+
+airbag_count = "10"
+airbag_count_comments = "Includes front, side, curtain, and knee airbags for all seating positions."
+
+seat_material = "Lether"
+seat_material_comments = "Premium Nappa leather seats with heating, ventilation, and massage functions available."
+
+noise_insulation = "High"
+noise_insulation_comments = "Features double-layer acoustic glass and extensive sound-deadening materials."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "NOMI AI assistant with natural language processing for vehicle controls and infotainment."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for vehicle systems, infotainment, and autonomous driving features."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "NIO Aquila Super Sensing system with 33 high-performance sensors enables advanced L2 autonomy."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes full-speed range adaptive cruise with traffic jam assist."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Can handle stop-and-go traffic autonomously up to 60km/h."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front and rear automatic emergency braking with pedestrian and cyclist detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active lane keeping with road edge detection and emergency lane departure prevention."
+
+remote_parking = "Yes"
+remote_parking_comments = "Supports remote parking via smartphone app in tight spaces."
+
+auto_parking = "Yes"
+auto_parking_comments = "Fully automated parking for parallel, perpendicular, and angled spaces."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert and active intervention."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver monitoring system with facial recognition and fatigue alerts."
+
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable as this is a pure electric vehicle."
+
+motor_power = "250~400kW"
+motor_power_comments = "Dual motor setup delivers 360kW (483hp) total system power in performance versions."
+
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "Available with 75kWh or 100kWh battery packs, supporting NIO's battery swap system."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable as this is a pure electric vehicle."
+
+horsepower = "Above 400hp"
+horsepower_comments = "Performance version delivers 483hp (360kW) for 0-100km/h in 4.5 seconds."
+
+torque = "Above 500N·m"
+torque_comments = "Maximum torque of 700N·m provides strong acceleration at all speeds."
+
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates from 0-100km/h in 4.5 seconds in performance trim."
+
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 200km/h for optimal range and safety."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable as this is a pure electric vehicle."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "Average consumption is 13.2kWh/100km in mixed driving conditions."
+
+driving_range = "400~800km"
+driving_range_comments = "CLTC-rated range of 610km with 100kWh battery, 450km with 75kWh battery."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual-motor AWD system with torque vectoring capability."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front double-wishbone and rear multi-link suspension, with air suspension optional."
+
+passibility = "Medium"
+passibility_comments = "Competent for light off-road use with 180mm ground clearance and AWD traction."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard configuration with premium seating for five adults."
+
+city_commuting = "Yes"
+city_commuting_comments = "Excellent urban vehicle with one-pedal driving and compact turning radius."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable long-distance cruiser with adaptive cruise and 610km range."
+
+off_road_capability = "Medium"
+off_road_capability_comments = "Capable of light off-road use but not designed for serious rock crawling."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Versatile cargo space with 579L trunk and roof rack compatibility."
+
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management maintains 80% range at -20°C, with heat pump system."
+
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling system maintains performance in temperatures up to 50°C."
+
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "At 4,850mm long and 1,965mm wide, it's among the larger mid-size SUVs."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Excellent daily usability with premium comfort features and practical cargo space."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, premium design with attention to detail and high-quality materials."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its size and performance, but not class-leading."
+
+comfort_level = "High"
+comfort_level_comments = "Exceptionally comfortable with premium materials, excellent NVH, and air suspension."
+
+smartness = "High"
+smartness_comments = "Cutting-edge technology including NOMI AI, 5G connectivity, and autonomous features."
+
+family_friendliness = "High"
+family_friendliness_comments = "Excellent safety ratings, spacious interior, and child-friendly features."
+
+[KeyDetails]
+key_details="The NIO EL6 combines premium electric performance with cutting-edge technology, offering up to 610km CLTC range, 483hp dual-motor AWD, and NIO's advanced NOP+ navigation-assisted driving. It features the brand's signature battery swap capability (3-minute swaps at NIO Power stations) and comes with comprehensive connectivity including 5G and V2X capabilities. The interior boasts a 12.8" AMOLED center display, 10.2" digital cluster, and optional augmented reality HUD."
+key_details_comments = "The NIO EL6 represents the pinnacle of Chinese electric vehicle technology, combining luxury SUV practicality with cutting-edge EV performance. Its dual-motor AWD system delivers 483 horsepower for sports car-like acceleration (0-100km/h in 4.5s) while maintaining a substantial 610km CLTC range. The vehicle stands out with NIO's innovative battery swap system (3-minute swaps at NIO Power stations) and advanced NOP+ navigation-assisted driving that enables semi-autonomous highway navigation. The tech package includes a 12.8\" AMOLED center display, 10.2\" digital cluster, optional AR HUD, and 5G connectivity with V2X capabilities. Premium features extend to the interior with sustainable materials, Nappa leather seats, and the interactive NOMI AI assistant. The EL6's combination of performance (700N·m torque), luxury, and technology positions it as a strong competitor to European premium electric SUVs."

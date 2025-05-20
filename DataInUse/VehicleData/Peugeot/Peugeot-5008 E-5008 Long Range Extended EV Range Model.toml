@@ -1,0 +1,181 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Peugeot-5008 E-5008 Long Range Extended EV Range Model"
+
+[PriciseLabels]
+
+prize = "40,000~60,000"
+prize_comments = "The Peugeot-5008 E-5008 Long Range Extended EV Range Model is priced between $45,000 and $58,000 USD depending on the trim level and options."
+
+vehicle_category_bottom = "Mid-Size SUV"
+vehicle_category_bottom_comments = "The E-5008 is classified as a mid-size SUV with 7-seat capacity and premium EV features."
+
+brand = "Peugeot"
+brand_comments = "Manufactured by the French automaker Peugeot, part of Stellantis group."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "Pure electric powertrain with no combustion engine, featuring a 98kWh battery pack."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "Generous interior space measuring approximately 4.8 cubic meters with flexible seating arrangements."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Boot capacity of 511 liters (VDA) in 5-seat configuration, expandable to 1,815 liters with rear seats folded."
+
+wheelbase = "2800~2950mm"
+wheelbase_comments = "Long 2840mm wheelbase providing excellent interior space and stability."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance of 180mm, optimized for urban driving while maintaining SUV presence."
+
+design_style = "Business"
+design_style_comments = "Premium, sophisticated design with sharp lines and modern Peugeot styling cues."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Aerodynamic design with 0.29 Cd coefficient for improved efficiency."
+
+color = "Neutral Colors"
+color_comments = "Offered in premium metallic and pearl finishes including Artense Grey and Okenite White."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Premium interior with optional Alcantara and real wood trim options."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included as standard safety equipment."
+
+airbag_count = "8"
+airbag_count_comments = "Comprehensive airbag system including front, side, curtain and knee airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Premium leather upholstery available in multiple color options."
+
+noise_insulation = "High"
+noise_insulation_comments = "Excellent NVH control with acoustic windshield and extensive soundproofing."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "PEUGEOT i-Cockpit® with voice recognition for navigation and media control."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for infotainment and vehicle systems."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Level 2 autonomous driving with adaptive cruise control and lane centering."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Includes stop-and-go functionality for traffic situations."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Semi-autonomous driving in congested traffic up to 60 km/h."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front collision warning with automatic emergency braking."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active lane keeping assistance with corrective steering input."
+
+remote_parking = "No"
+remote_parking_comments = "Does not feature remote parking capability."
+
+auto_parking = "Yes"
+auto_parking_comments = "Includes semi-automatic parking assistance for parallel and perpendicular spaces."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with visual and audible alerts."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver attention warning system detects fatigue patterns."
+
+engine_displacement = "None"
+engine_displacement_comments = "Pure electric vehicle with no combustion engine."
+
+motor_power = "180~250kW"
+motor_power_comments = "Front-mounted electric motor producing 230kW (308hp) peak power."
+
+battery_capacity = "80~100kWh"
+battery_capacity_comments = "Large 98kWh (gross) lithium-ion battery pack."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Electric vehicle with no fuel tank."
+
+horsepower = "200~300hp"
+horsepower_comments = "Produces 308 horsepower (230kW) for strong acceleration."
+
+torque = "300~400N·m"
+torque_comments = "Immediate torque delivery of 360N·m from electric motor."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Accelerates 0-100 km/h in 8.5 seconds."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h for efficiency."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Electric vehicle with no fuel consumption."
+
+electric_consumption = "12~14kWh/100km"
+electric_consumption_comments = "WLTP-rated consumption of 13.2 kWh/100km in mixed driving."
+
+driving_range = "400~800km"
+driving_range_comments = "WLTP-certified range of 660 km (410 miles) on single charge."
+
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Single motor front-wheel drive configuration."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front MacPherson struts and rear multi-link independent suspension."
+
+passibility = "Medium"
+passibility_comments = "Competent for light off-road but primarily designed for paved surfaces."
+
+seat_layout = "7-seat"
+seat_layout_comments = "Three-row seating configuration with 2+3+2 arrangement."
+
+city_commuting = "Yes"
+city_commuting_comments = "Excellent for urban use with one-pedal driving and compact turning circle."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Long range and comfort features make it ideal for highway trips."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for serious off-road use despite SUV styling."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Versatile cargo space with configurable seating and large trunk."
+
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management maintains performance in cold weather down to -20°C."
+
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling system protects battery in high temperature conditions."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "Substantial footprint at 4.64m long with commanding road presence."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Highly practical with flexible seating and generous cargo capacity."
+
+aesthetics = "High"
+aesthetics_comments = "Distinctive modern design with premium styling elements."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its size class with advanced energy recovery systems."
+
+comfort_level = "High"
+comfort_level_comments = "Premium ride quality with acoustic comfort and ergonomic seating."
+
+smartness = "High"
+smartness_comments = "Advanced connectivity and driver assistance technologies."
+
+family_friendliness = "High"
+family_friendliness_comments = "Excellent family vehicle with 7-seat capacity and safety features."
+
+[KeyDetails]
+key_details="The Peugeot E-5008 Long Range features a 98kWh battery providing up to 660km WLTP range, 7-seat configuration, and premium EV technology including 230kW motor, 180kW fast charging (10-80% in 30 mins), and advanced driver assistance systems. The interior features Peugeot's latest i-Cockpit with 21-inch curved display and premium materials throughout."
+key_details_comments = "The Peugeot E-5008 Long Range represents the pinnacle of Peugeot's electric SUV offerings, combining a massive 98kWh battery pack with an impressive 660km WLTP-certified range - making it one of the longest-range 7-seat EVs on the market. The 230kW (308hp) front-mounted electric motor delivers strong acceleration (0-100km/h in 8.5s) while maintaining excellent efficiency (13.2kWh/100km WLTP). The vehicle supports 180kW DC fast charging, enabling 10-80% charges in just 30 minutes. The premium interior features Peugeot's latest i-Cockpit with a 21-inch curved digital display, configurable ambient lighting, and available premium materials like Alcantara and real wood trim. Advanced driver assistance systems include Level 2 autonomous driving capabilities with traffic jam assist, while the 7-seat configuration (2+3+2) offers exceptional versatility for families. The combination of long range, fast charging, premium comfort and advanced technology positions this as a flagship model in Peugeot's electric lineup."

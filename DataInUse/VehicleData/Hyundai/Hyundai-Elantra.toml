@@ -1,0 +1,192 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Hyundai-Elantra"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "20,000~30,000"
+prize_comments = "The Hyundai Elantra has a base MSRP of $20,500 USD for the SE trim, ranging up to $28,000 USD for the Limited trim with optional packages."
+
+vehicle_category_bottom = "C-Segment Sedan"
+vehicle_category_bottom_comments = "The Elantra competes in the compact sedan segment with dimensions of 184.1 inches in length and 71.9 inches in width."
+
+brand = "Hyundai"
+brand_comments = "Hyundai Motor Company, a South Korean automotive manufacturer."
+
+# Powertrain details (focusing on the most common 2.0L gasoline variant)
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The standard Elantra uses a 2.0L MPI 4-cylinder gasoline engine, with an available 1.6L turbocharged option."
+
+# Dimensions and capacity
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "EPA passenger volume is 99.4 cubic feet (2.81 cubic meters), with 42.3 inches of front legroom."
+
+trunk_volume = "400~500L"
+trunk_volume_comments = "14.2 cubic feet (402 liters) of trunk space, with 60/40 split-folding rear seats."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "107.1 inches (2,720 mm) wheelbase for improved interior space."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance of 5.3 inches (135 mm), typical for sedans."
+
+# Design attributes
+design_style = "Sporty"
+design_style_comments = "Parametric Dynamics design language with sharp character lines and coupe-like roofline."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Precise body panel gaps and fluid surface transitions."
+
+color = "Neutral Colors"
+color_comments = "Offers colors like Fluid Metal, Electric Shadow, and Ultimate Red."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Premium soft-touch materials with available metal-look accents."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Control with Traction Control."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, front side, and full-length side curtain airbags."
+
+# Comfort features
+seat_material = "Lether"
+seat_material_comments = "Leatherette upholstery standard on SEL and Limited trims, with optional genuine leather."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Acoustic windshield and added insulation for reduced road noise."
+
+# Tech features
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Hyundai Blue Link with natural language voice recognition."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for navigation and infotainment systems."
+
+# Driver assistance
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Hyundai SmartSense package provides Level 2 autonomy features."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Smart Cruise Control with Stop & Go capability."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Available as part of the Highway Driving Assist package."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Forward Collision-Avoidance Assist with Pedestrian Detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Following Assist and Lane Keeping Assist standard on all trims."
+
+remote_parking = "No"
+remote_parking_comments = "Not available on Elantra models."
+
+auto_parking = "Yes"
+auto_parking_comments = "Available Remote Smart Parking Assist on Limited trim."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind-Spot Collision-Avoidance Assist standard on most trims."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Attention Warning system monitors driving patterns."
+
+# Powertrain specifications
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "Standard 2.0L MPI (147 hp) or available 1.6L Turbo (201 hp) engines."
+
+motor_power = "None"
+motor_power_comments = "Not applicable for gasoline-powered variants."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable for gasoline-powered variants."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "12.4-gallon (46.9L) fuel tank capacity."
+
+horsepower = "100~200hp"
+horsepower_comments = "147 hp (2.0L) or 201 hp (1.6T) depending on engine choice."
+
+torque = "200~300N·m"
+torque_comments = "132 lb-ft (179 N·m) for 2.0L, 195 lb-ft (264 N·m) for 1.6T."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "1.6T models achieve 0-60 mph in 7.4 seconds."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 130 mph (209 km/h) for 1.6T models."
+
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA-rated 33 mpg combined (7.1 L/100km) for 2.0L models."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline-powered variants."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 409 miles (658 km) range with 2.0L engine."
+
+# Chassis and drivetrain
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive standard, no AWD option available."
+
+suspension = "Independent Suspension"
+suspension_comments = "MacPherson strut front, multi-link rear suspension."
+
+passibility = "Medium"
+passibility_comments = "Typical sedan ground clearance with optimized approach/departure angles."
+
+# Seating and utility
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-passenger seating capacity."
+
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions and good visibility ideal for urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride quality and efficient powertrains for highway cruising."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use, typical sedan capabilities."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Good trunk space for class with folding rear seats."
+
+clod_resistance = "Medium"
+clod_resistance_comments = "Proven reliability in cold climates with available heated features."
+
+heat_resistance = "High"
+heat_resistance_comments = "Effective cooling systems for hot weather operation."
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "184.1-inch length positions it as a mid-size compact sedan."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced daily driver with good space efficiency."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, modern design with premium styling cues."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Competitive fuel efficiency for the segment."
+
+comfort_level = "High"
+comfort_level_comments = "Well-tuned suspension and supportive seats."
+
+smartness = "High"
+smartness_comments = "Comprehensive tech features and connectivity."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Good safety ratings but limited rear space compared to SUVs."
+
+[KeyDetails]
+key_details = "The Hyundai Elantra (7th generation) features a bold parametric design, advanced SmartSense safety suite, and choice of efficient 2.0L or powerful 1.6T engines. Notable for its premium interior materials and class-leading warranty (5yr/60,000mi basic, 10yr/100,000mi powertrain). Available with 10.25-inch digital cluster and navigation. IIHS Top Safety Pick+ when equipped with specific headlights."
+key_details_comments = "The 7th generation Hyundai Elantra represents a significant evolution in Hyundai's compact sedan lineup, featuring the brand's striking Parametric Dynamics design language that gives it a distinctive, upscale appearance. The vehicle offers two engine choices - a fuel-efficient 2.0L MPI engine producing 147 hp for budget-conscious buyers, and a more powerful 1.6L turbocharged option delivering 201 hp for performance-oriented drivers. Hyundai's comprehensive SmartSense safety suite comes standard across all trims, including Forward Collision-Avoidance Assist, Lane Keeping Assist, and Driver Attention Warning. The interior showcases premium materials with available leather seating surfaces and metal-look accents, while tech features include available dual 10.25-inch displays (digital cluster and infotainment) with navigation. The Elantra stands out in its class with Hyundai's industry-leading warranty coverage - 5 years/60,000 miles bumper-to-bumper and 10 years/100,000 miles powertrain protection. When equipped with specific headlight options, it earns the IIHS Top Safety Pick+ rating, making it one of the safest choices in the compact sedan segment."

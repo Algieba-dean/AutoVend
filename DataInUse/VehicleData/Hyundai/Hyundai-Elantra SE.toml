@@ -1,0 +1,188 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Hyundai-Elantra SE"
+
+[PriciseLabels]
+
+# Prize and basic info
+prize = "20,000~30,000"
+prize_comments = "The Hyundai Elantra SE starts at $21,245 USD (base MSRP) and can go up to $28,000 USD with optional packages."
+
+vehicle_category_bottom = "C-Segment Sedan"
+vehicle_category_bottom_comments = "The Elantra is classified as a compact C-segment sedan with dimensions of 184.1 inches (4,676 mm) in length."
+
+brand = "Hyundai"
+brand_comments = "Hyundai Motor Company, a South Korean automotive manufacturer."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "Equipped with a 2.0L MPI 4-cylinder gasoline engine (no hybrid/electric option in SE trim)."
+
+# Space and dimensions
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "EPA passenger volume: 99.4 cu ft (2.81 m³). Total interior volume is approximately 5.1 m³."
+
+trunk_volume = "400~500L"
+trunk_volume_comments = "14.2 cu ft (402 L) trunk capacity, expandable with 60/40 split-folding rear seats."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "107.1 inches (2,720 mm) wheelbase."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance: 5.3 inches (135 mm)."
+
+# Design and aesthetics
+design_style = "Sporty"
+design_style_comments = "Parametric Dynamics design language with sharp lines and coupe-like roofline."
+
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "Angular body creases mixed with some smooth surfaces."
+
+color = "Neutral Colors"
+color_comments = "Available in colors like Electric Shadow (gray), Fluid Metal (silver), and Ultimate Red."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Piano black and metallic-look accents in cabin (cloth seats standard)."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Control with Traction Control."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, front side, and full-length side curtain airbags."
+
+seat_material = "Fabric"
+seat_material_comments = "Premium cloth upholstery standard (leather available in higher trims)."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Active noise cancellation not available in SE trim."
+
+# Tech features
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Bluetooth hands-free with voice recognition for basic functions."
+
+ota_updates = "No"
+ota_updates_comments = "SE trim lacks over-the-air update capability (available in Limited trim)."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Hyundai SmartSense with Lane Following Assist (LFA) and Highway Driving Assist (HDA)."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Smart Cruise Control with Stop & Go (requires optional Convenience Package)."
+
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "Not available in SE trim (requires higher trims)."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Forward Collision-Avoidance Assist (FCA) with pedestrian detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keeping Assist (LKA) standard."
+
+remote_parking = "No"
+remote_parking_comments = "Remote Smart Parking Assist not available in SE trim."
+
+auto_parking = "No"
+auto_parking_comments = "No automatic parking system in base trim."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind-Spot Collision-Avoidance Assist (BCA) included in Convenience Package."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver Attention Warning (DAW) monitors driving patterns."
+
+# Powertrain specs
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "2.0L MPI Atkinson-cycle 4-cylinder (147 hp, 132 lb-ft torque)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable - gasoline engine only."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable - conventional powertrain."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "12.4-gallon (47 L) fuel tank capacity."
+
+horsepower = "100~200hp"
+horsepower_comments = "147 hp @ 6,200 rpm."
+
+torque = "200~300N·m"
+torque_comments = "132 lb-ft (179 N·m) @ 4,500 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-60 mph in ~8.8 seconds (estimated)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 121 mph (195 km/h)."
+
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA rated: 33 mpg combined (7.1 L/100km)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable - gasoline powertrain."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 409 miles (658 km) range on highway."
+
+# Chassis and capability
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive only in SE trim."
+
+suspension = "Independent Suspension"
+suspension_comments = "MacPherson strut front, torsion beam rear suspension."
+
+passibility = "Medium"
+passibility_comments = "Typical sedan ground clearance (135mm)."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-passenger seating."
+
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions ideal for urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable for long trips with good fuel economy."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "402L trunk with folding seats."
+
+clod_resistance = "Medium"
+clod_resistance_comments = "Standard cold-weather package available (block heater, battery warmer)."
+
+heat_resistance = "High"
+heat_resistance_comments = "Proven reliability in hot climates with efficient AC system."
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "184.1-inch length places it in mid-size compact segment."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced for both city and highway use."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek design with premium-looking details."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "33 mpg combined is competitive for class."
+
+comfort_level = "Medium"
+comfort_level_comments = "Good ride quality but lacks premium noise insulation."
+
+smartness = "Medium"
+smartness_comments = "Basic smart features without premium tech."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Good for small families but limited rear space."
+
+[KeyDetails]
+key_details = "The 2024 Hyundai Elantra SE offers a balance of value and features with its 2.0L engine delivering 147 hp, achieving 33 mpg combined. It includes Hyundai SmartSense safety suite with Forward Collision-Avoidance Assist and Lane Keeping Assist. The SE trim starts at $21,245 and competes with Toyota Corolla LE and Honda Civic LX."
+key_details_comments = "The 2024 Hyundai Elantra SE represents an excellent value proposition in the compact sedan segment, offering a compelling combination of features, efficiency, and affordability. Its 2.0L MPI 4-cylinder engine delivers 147 horsepower while achieving an EPA-estimated 33 mpg combined, making it both capable and fuel-efficient for daily commuting. The inclusion of Hyundai's SmartSense safety suite as standard equipment (including Forward Collision-Avoidance Assist and Lane Keeping Assist) provides important active safety technologies typically found in more expensive vehicles. With a starting MSRP of $21,245 USD, it undercuts many competitors while offering comparable or better standard features. The Elantra SE particularly shines as an urban commuter with its compact dimensions (184.1 inches long) and tight turning radius, yet remains comfortable enough for highway trips. While it lacks some premium amenities of higher trims, it maintains Hyundai's strong warranty coverage (5-year/60,000-mile basic, 10-year/100,000-mile powertrain) that adds significant long-term value. The SE trim competes directly with base models like the Toyota Corolla LE and Honda Civic LX, often offering more standard technology and safety features at a similar price point."

@@ -1,0 +1,190 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Honda-Civic Sedan LX"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "20,000~30,000"
+prize_comments = "The Honda-Civic Sedan LX is priced between $23,950 and $28,500 USD depending on options and location."
+
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The Civic Sedan LX is classified as a compact sedan, offering a balance of space and efficiency."
+
+brand = "Honda"
+brand_comments = "Honda is a globally recognized Japanese automaker known for reliability and efficiency."
+
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The LX trim features a 2.0L naturally aspirated gasoline engine."
+
+# Space and dimensions
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The Civic Sedan offers 3.9 cubic meters of passenger space with ample legroom."
+
+trunk_volume = "400~500L"
+trunk_volume_comments = "Trunk capacity is 428L (15.1 cu ft), expandable with 60/40 split-folding rear seats."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase is 2,735mm (107.7 inches), contributing to stable handling."
+
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is 134mm (5.3 inches), typical for sedans."
+
+# Design and aesthetics
+design_style = "Sporty"
+design_style_comments = "The Civic features aggressive styling with a fastback-like roofline."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Features fluid body lines with a low drag coefficient (0.29 Cd)."
+
+color = "Neutral Colors"
+color_comments = "Offers colors like Lunar Silver, Cosmic Blue, and Crystal Black Pearl."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Piano black and metallic accents dominate the cabin."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program (VSA) is standard."
+
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, front side, and side curtain airbags."
+
+seat_material = "Fabric"
+seat_material_comments = "Standard cloth seats with premium fabric texture."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Active noise cancellation and acoustic glass reduce cabin noise."
+
+# Tech and connectivity
+voice_interfaction = "Yes"
+voice_interfaction_comments = "HondaLink system supports Apple CarPlay/Android Auto with voice commands."
+
+ota_updates = "No"
+ota_updates_comments = "Infotainment system does not support over-the-air updates."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Includes Honda Sensing suite with adaptive cruise control and lane-keeping."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard with low-speed follow capability."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Works with adaptive cruise control under 45 mph."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Collision Mitigation Braking System (CMBS) is standard."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keeping Assist System (LKAS) included in Honda Sensing."
+
+remote_parking = "No"
+remote_parking_comments = "No remote parking feature on the LX trim."
+
+auto_parking = "No"
+auto_parking_comments = "No automated parking assist."
+
+blind_spot_detection = "No"
+blind_spot_detection_comments = "Blind-spot monitoring is not standard on LX (available on higher trims)."
+
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver drowsiness monitoring."
+
+# Powertrain specs
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "2.0L DOHC i-VTEC 4-cylinder (158 hp, 138 lb-ft)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable (gasoline-only powertrain)."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable (non-hybrid model)."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "46.9L (12.4-gallon) tank capacity."
+
+horsepower = "100~200hp"
+horsepower_comments = "158 hp @ 6,500 rpm."
+
+torque = "200~300N·m"
+torque_comments = "138 lb-ft (187N·m) @ 4,200 rpm."
+
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-60 mph in ~8.5 sec (CVT transmission)."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 125 mph (201 km/h)."
+
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA-rated 30 mpg city / 38 mpg highway (7.8L/100km combined)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable (gasoline engine)."
+
+driving_range = "400~800km"
+driving_range_comments = "~580 km (360 miles) on a full tank (combined cycle)."
+
+# Chassis and drivetrain
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive layout with MacPherson strut front suspension."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front: MacPherson strut; Rear: Multi-link independent suspension."
+
+passibility = "Medium"
+passibility_comments = "Typical sedan ground clearance (134mm)."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 5-passenger seating."
+
+# Usage scenarios
+city_commuting = "Yes"
+city_commuting_comments = "Excellent maneuverability and fuel efficiency for urban driving."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride and good NVH levels for highway cruising."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use (sedan configuration)."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "428L trunk + foldable rear seats for larger items."
+
+clod_resistance = "Medium"
+clod_resistance_comments = "The Honda Civic Sedan LX demonstrates medium cold weather resistance with reliable cold-start performance down to -20°C (-4°F) when properly maintained. It includes standard cold-weather features like an engine block heater (optional in some markets) and effective cabin heating, though extreme winter conditions may require winter tires for optimal traction."
+cold_resistance_comments = "Proven reliability in cold climates with proper maintenance."
+
+heat_resistance = "High"
+heat_resistance_comments = "Effective cooling system tested in extreme temperatures."
+
+[AmbiguousLabels]
+
+size = "Medium"
+size_comments = "Compact sedan dimensions: 4,674mm L x 1,802mm W x 1,415mm H."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced for daily commuting and small families."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, modern design with premium exterior details."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Class-leading fuel efficiency for its segment."
+
+comfort_level = "Medium"
+comfort_level_comments = "Well-tuned suspension but firmer than luxury sedans."
+
+smartness = "Medium"
+smartness_comments = "Good tech features but lacks premium autonomous functions."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Good safety ratings but limited rear-seat space for larger families."
+
+[KeyDetails]
+key_details = "The 2023 Honda Civic Sedan LX features Honda Sensing safety suite as standard, a 2.0L engine with 158 hp, and a refined interior with 7-inch digital instrument cluster. It achieves top safety ratings (IIHS Top Safety Pick+) and offers exceptional reliability with Honda's reputation for longevity."
+key_details_comments = "The Honda Civic Sedan LX represents the value-oriented entry in Honda's acclaimed compact sedan lineup, combining the brand's legendary reliability with modern safety tech. Its standard Honda Sensing suite (including collision mitigation, lane keeping assist, and adaptive cruise control) earned it IIHS Top Safety Pick+ status. The 2.0L i-VTEC engine delivers 158 hp through a refined CVT transmission, achieving class-leading 38 mpg highway. The cabin features a 7-inch digital instrument cluster, 5-inch infotainment display (with Apple CarPlay/Android Auto), and premium soft-touch materials uncommon in base models. With a 428L trunk and 60/40 split rear seats, it maintains Honda's practical packaging while offering a 5-year/60,000-mile powertrain warranty for peace of mind."

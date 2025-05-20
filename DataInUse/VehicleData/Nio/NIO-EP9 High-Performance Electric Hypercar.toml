@@ -1,0 +1,234 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "NIO-EP9 High-Performance Electric Hypercar"
+
+[PriciseLabels]
+
+# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+prize = "Above 100,000"
+prize_comments = "The NIO-EP9 High-Performance Electric Hypercar is priced at approximately $1.48 million USD, making it an exclusive high-performance electric vehicle."
+
+# vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
+vehicle_category_bottom = "Two-door Hardtop Sports Car"
+vehicle_category_bottom_comments = "The NIO-EP9 is a high-performance electric hypercar with a two-door hardtop sports car design, optimized for track performance."
+
+# brand, candidate values: "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD","Geely","Changan","Great Wall Motor","Nio","XiaoMi","XPeng"
+brand = "Nio"
+brand_comments = "NIO is a Chinese electric vehicle manufacturer known for its high-performance electric cars and innovative battery-swapping technology."
+
+# powertrain_type, candidate values: "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle"
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "The NIO-EP9 is a pure electric vehicle with no internal combustion engine, powered by four high-performance electric motors."
+
+# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_sapce_volume = "2.5~3.5 cubic meter"
+passenger_sapce_volume_comments = "The NIO-EP9 has a compact passenger space of approximately 2.8 cubic meters, optimized for a two-seat configuration."
+
+# trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
+trunk_volume = "200~300L"
+trunk_volume_comments = "The NIO-EP9 has a limited trunk capacity of approximately 250L, as it is designed primarily for performance rather than cargo."
+
+# wheelbase, candidate values: "2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "Above 3100mm"
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The NIO-EP9 has a wheelbase of 2,750mm, providing a stable platform for high-speed performance."
+
+# chassis_height, candidate values: "100~130mm", "130~150mm", "150~200mm", "Above 200mm"
+chassis_height = "100~130mm"
+chassis_height_comments = "The NIO-EP9 has a low chassis height of approximately 120mm, enhancing aerodynamics and handling."
+
+# design_style, candidate values: "Sporty", "Business"
+design_style = "Sporty"
+design_style_comments = "The NIO-EP9 features an aggressive, aerodynamic design with a focus on high-performance track capabilities."
+
+# body_line_smoothness, candidate values: "High", "Medium", "Low"
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The NIO-EP9 has a highly streamlined body with smooth lines to reduce drag and improve aerodynamic efficiency."
+
+# color, candidate values: "Bright Colors, "Neutral Colors, "Dark Colors"
+color = "Bright Colors"
+color_comments = "The NIO-EP9 is often seen in bright, eye-catching colors like blue, green, and silver, emphasizing its hypercar status."
+
+# interior_material_texture, candidate values: "Wood Trim", "Metal Trim"
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The NIO-EP9 features a high-tech interior with carbon fiber and metal trim, emphasizing its performance-oriented design."
+
+# ABS, candidate values: "Yes", "No"
+ABS = "Yes"
+ABS_comments = "The NIO-EP9 is equipped with advanced ABS for superior braking performance under high-speed conditions."
+
+# ESP, candidate values: "Yes", "No"
+ESP = "Yes"
+ESP_comments = "The NIO-EP9 includes Electronic Stability Program (ESP) to enhance control during high-performance driving."
+
+# airbag_count, candidate values: "2", "4", "6", "8", "10", "Above 10"
+airbag_count = "4"
+airbag_count_comments = "The NIO-EP9 is equipped with four airbags, including front and side airbags for driver and passenger safety."
+
+# seat_material, candidate values: "Lether", "Fabric"
+seat_material = "Lether"
+seat_material_comments = "The NIO-EP9 features premium leather seats with racing-style bolstering for enhanced support during high-speed driving."
+
+# noise_insulation, candidate values: "High", "Medium", "Low"
+noise_insulation = "Medium"
+noise_insulation_comments = "The NIO-EP9 has moderate noise insulation, as it is designed for performance rather than luxury comfort."
+
+# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "The NIO-EP9 includes a voice interaction system for basic infotainment controls, though it is minimal due to its track-focused design."
+
+# ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
+ota_updates = "Yes"
+ota_updates_comments = "The NIO-EP9 supports over-the-air (OTA) updates for its software systems, including performance tuning and infotainment."
+
+# autonomous_driving_level, candidate values: "L2", "L3"
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The NIO-EP9 offers Level 2 autonomous driving features, including adaptive cruise control and lane-keeping assist."
+
+# adaptive_cruise_control, candidate values: "Yes", "No"
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "The NIO-EP9 includes adaptive cruise control for highway driving, though it is primarily a driver-focused hypercar."
+
+# traffic_jam_assist, candidate values: "Yes", "No"
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "The NIO-EP9 does not include traffic jam assist, as it is designed for high-performance driving rather than urban commuting."
+
+# automatic_emergency_braking, candidate values: "Yes", "No"
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "The NIO-EP9 is equipped with automatic emergency braking to enhance safety during high-speed driving."
+
+# lane_keep_assist, candidate values: "Yes", "No"
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "The NIO-EP9 includes lane-keep assist as part of its Level 2 autonomous driving features."
+
+# remote_parking, candidate values: "Yes", "No"
+remote_parking = "No"
+remote_parking_comments = "The NIO-EP9 does not support remote parking, as it is a manual, driver-focused hypercar."
+
+# auto_parking, candidate values: "Yes", "No"
+auto_parking = "No"
+auto_parking_comments = "The NIO-EP9 does not include auto-parking functionality, as it is designed for track and performance driving."
+
+# blind_spot_detection, candidate values: "Yes", "No"
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "The NIO-EP9 includes blind-spot detection to enhance safety during high-speed lane changes."
+
+# fatigue_driving_detection, candidate values: "Yes", "No"
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "The NIO-EP9 features fatigue driving detection to alert the driver during prolonged high-performance driving."
+
+# engine_displacement, candidate values: "Below 1.0L", "1.0~1.6L", "1.6~2.0L", "2.0~2.5L", "2.5~3.5L", "3.5~6.0L", "Above 6.0L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+engine_displacement = "None"
+engine_displacement_comments = "The NIO-EP9 is a pure electric vehicle and does not have an internal combustion engine."
+
+# motor_power, candidate values: "Below 70kW", "70~120kW", "120~180kW", "180~250kW", "250~400kW", "Above 400kW"
+motor_power = "Above 400kW"
+motor_power_comments = "The NIO-EP9 features four electric motors with a combined output of 1,000 kW (1,341 hp), delivering exceptional performance."
+
+# battery_capacity, candidate values: "30~50kWh", "50~80kWh", "80~100kWh", "Above 100kWh", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+battery_capacity = "Above 100kWh"
+battery_capacity_comments = "The NIO-EP9 is equipped with a 70kWh battery pack, though its performance-oriented design prioritizes power over range."
+
+# fuel_tank_capacity, candidate values: "30~50L", "50~70L", "Above 70L", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "The NIO-EP9 is a pure electric vehicle and does not have a fuel tank."
+
+# horsepower, candidate values: "Below 100hp", "100~200hp", "200~300hp", "300~400hp", "Above 400hp"
+horsepower = "Above 400hp"
+horsepower_comments = "The NIO-EP9 delivers a staggering 1,341 horsepower (1,000 kW), making it one of the most powerful electric hypercars."
+
+# torque, candidate values: "Below 200N·m", "200~300N·m", "300~400N·m", "400~500N·m", "Above 500N·m"
+torque = "Above 500N·m"
+torque_comments = "The NIO-EP9 produces 1,480 N·m of torque, enabling explosive acceleration and track performance."
+
+# zero_to_one_hundred_km_h_acceleration_time, candidate values: "Above 10s", "8~10s", "6~8s", "4~6s", "Below 4s",  vehicle from 0 to 100 km/h acceleration time
+zero_to_one_hundred_km_h_acceleration_time = "Below 4s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "The NIO-EP9 accelerates from 0 to 100 km/h in just 2.7 seconds, showcasing its hypercar performance."
+
+# top_speed, candidate values: "Below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "Above 300km/h"
+top_speed = "Above 300km/h"
+top_speed_comments = "The NIO-EP9 has a top speed of 313 km/h (194 mph), making it one of the fastest electric cars in the world."
+
+# fuel_consumption, candidate values: "4~6L/100km", "6~8L/100km", "Above 8L/100km", for powertrain_type is "Battery Electric Vehicle", it's valid, value can be "None"
+fuel_consumption = "None"
+fuel_consumption_comments = "The NIO-EP9 is a pure electric vehicle and does not consume fuel."
+
+# electric_consumption, candidate values: "10~12kWh/100km", "12~14kWh/100km", "Above 14kWh/100km", for powertrain_type is "Gasoline Engine" or "Diesel Engine", value can be "None"
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "The NIO-EP9 has high energy consumption due to its extreme performance, averaging around 30 kWh/100km under track conditions."
+
+# driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
+driving_range = "300~400km"
+driving_range_comments = "The NIO-EP9 offers a range of approximately 427 km (265 miles) on a single charge under ideal conditions, though this decreases significantly under track use."
+
+# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "All-Wheel Drive"
+drive_type_comments = "The NIO-EP9 features all-wheel drive with four independent electric motors, one for each wheel, providing exceptional traction and control."
+
+# suspension, candidate values: "Independent Suspension", "Non-independent Suspension"
+suspension = "Independent Suspension"
+suspension_comments = "The NIO-EP9 uses a fully independent suspension system with adjustable dampers for optimal track performance."
+
+# passibility, candidate values: "Low", "Medium", "High"
+passibility = "Low"
+passibility_comments = "The NIO-EP9 has low passibility due to its ultra-low ground clearance and track-focused design."
+
+# seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
+seat_layout = "2-seat"
+seat_layout_comments = "The NIO-EP9 is a two-seater hypercar, with a driver and passenger seat in a racing-style configuration."
+
+# city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
+city_commuting = "No"
+city_commuting_comments = "The NIO-EP9 is not designed for city commuting; it is a track-focused hypercar with limited practicality for daily use."
+
+# highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
+highway_long_distance = "No"
+highway_long_distance_comments = "The NIO-EP9 is not optimized for long-distance highway driving due to its limited range and performance-oriented setup."
+
+# off_road_capability, candidate values: "Low", "Medium", "High"
+off_road_capability = "Low"
+off_road_capability_comments = "The NIO-EP9 has no off-road capability, as it is designed exclusively for high-performance track and road use."
+
+# cargo_capability, candidate values: "Yes", "No"
+cargo_capability = "No"
+cargo_capability_comments = "The NIO-EP9 has minimal cargo capability, with only a small trunk for essential items."
+
+# clod_resistance, candidate values: "High", "Medium", "Low"
+clod_resistance = "Medium"
+clod_resistance_comments = "The NIO-EP9 has moderate cold resistance, with battery performance managed for track conditions. While it features thermal management systems, extreme cold temperatures may still impact battery efficiency and range."
+cold_resistance_comments = "The NIO-EP9 has moderate cold resistance, with battery performance managed for track conditions, though extreme cold may affect range."
+
+# heat_resistance, candidate values: "High", "Medium", "Low"
+heat_resistance = "High"
+heat_resistance_comments = "The NIO-EP9 is designed with high heat resistance, featuring advanced cooling systems for its motors and battery during high-performance driving."
+
+
+[AmbiguousLabels]
+smartness = ""
+smartness_comments = "The NIO-EP9 demonstrates high smartness in terms of performance technology and track-focused systems, though it lacks some smart city-driving features due to its hypercar nature. Its advanced electric powertrain and aerodynamics showcase cutting-edge engineering."
+family_friendliness = ""
+family_friendliness_comments = "The NIO-EP9 scores extremely low on family friendliness. It's a two-seat, track-focused hypercar with no rear seats, minimal storage space, and a stiff suspension setup unsuitable for family use or child safety seats."
+
+# size: candidate values: "Small", "Medium", "Large", the size of the vehicle
+size = "Medium"
+size_comments = "The NIO-EP9 is a medium-sized hypercar, with dimensions optimized for aerodynamics and track performance."
+
+# vehicle_usability: candidate values: "Small", "Medium", "Large"
+vehicle_usability = "Small"
+vehicle_usability_comments = "The NIO-EP9 has limited usability due to its track-focused design, with minimal practicality for daily driving."
+
+# aesthetics: candidate values: "Low", "Medium", "High"
+aesthetics = "High"
+aesthetics_comments = "The NIO-EP9 is widely regarded as a visually stunning hypercar, with aggressive styling and aerodynamic features."
+
+# energy_consumption_level: candidate values: "Low", "Medium", "High"
+energy_consumption_level = "High"
+energy_consumption_level_comments = "The NIO-EP9 has high energy consumption due to its extreme performance, though this is expected for a hypercar."
+
+# comfort_level: candidate values: "Low", "Medium", "High"
+comfort_level = "Medium"
+comfort_level_comments = "The NIO-EP9 offers moderate comfort with racing
+[KeyDetails]
+key_details=""
+key_details_comments = "The NIO-EP9 is a limited-production electric hypercar featuring: 1,341 hp from four electric motors, 0-100 km/h in 2.7 seconds, 313 km/h top speed, 427 km NEDC range, active aerodynamics, and carbon fiber construction. Only 16 units were produced, primarily for track use."

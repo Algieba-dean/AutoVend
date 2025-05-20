@@ -1,0 +1,237 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Honda-Civic Sedan EX"
+
+[PriciseLabels]
+
+# Prize
+prize = "20,000~30,000"
+prize_comments = "The Honda-Civic Sedan EX is priced between $24,700 and $28,300 USD depending on options and location."
+
+# Vehicle Category
+vehicle_category_bottom = "Compact Sedan"
+vehicle_category_bottom_comments = "The Civic EX is a well-balanced compact sedan with a focus on practicality and efficiency."
+
+# Brand
+brand = "Honda"
+brand_comments = "Honda is a Japanese automaker known for reliability and fuel efficiency."
+
+# Powertrain Type
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The Civic EX is powered by a 2.0L naturally aspirated gasoline engine."
+
+# Passenger Space Volume
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "The Civic EX offers 97.8 cu ft (2.77 cubic meters) of passenger volume, providing ample space for five occupants."
+
+# Trunk Volume
+trunk_volume = "300~400L"
+trunk_volume_comments = "The trunk capacity is 14.8 cu ft (419L), expandable with the 60/40 split-folding rear seats."
+
+# Wheelbase
+wheelbase = "2650~2800mm"
+wheelbase_comments = "The wheelbase measures 2,735mm (107.7 inches), contributing to stable handling and interior space."
+
+# Chassis Height
+chassis_height = "130~150mm"
+chassis_height_comments = "Ground clearance is approximately 134mm (5.3 inches), suitable for urban driving."
+
+# Design Style
+design_style = "Sporty"
+design_style_comments = "The Civic EX features a sleek, aerodynamic design with aggressive lines and a low stance."
+
+# Body Line Smoothness
+body_line_smoothness = "High"
+body_line_smoothness_comments = "The Civic's body features smooth, flowing lines with minimal sharp edges for improved aerodynamics."
+
+# Color
+color = "Neutral Colors"
+color_comments = "Available colors include Lunar Silver Metallic, Modern Steel Metallic, and Crystal Black Pearl."
+
+# Interior Material Texture
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "The cabin features brushed metal accents on the dashboard and door panels."
+
+# ABS
+ABS = "Yes"
+ABS_comments = "Standard 4-wheel Anti-lock Braking System (ABS) with Electronic Brake Distribution (EBD)."
+
+# ESP
+ESP = "Yes"
+ESP_comments = "Vehicle Stability Assist (VSA) with traction control is standard."
+
+# Airbag Count
+airbag_count = "6"
+airbag_count_comments = "Includes dual front, front side, and side curtain airbags."
+
+# Seat Material
+seat_material = "Fabric"
+seat_material_comments = "Premium cloth seats with manual adjustment for the front row."
+
+# Noise Insulation
+noise_insulation = "Medium"
+noise_insulation_comments = "Active Noise Cancellation reduces cabin noise, but road noise is still noticeable at highway speeds."
+
+# Voice Interaction
+voice_interfaction = "Yes"
+voice_interfaction_comments = "HondaLink infotainment supports Apple CarPlay/Android Auto with voice commands."
+
+# OTA Updates
+ota_updates = "No"
+ota_updates_comments = "Software updates require a dealership visit or USB manual update."
+
+# Autonomous Driving Level
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Honda Sensing suite provides adaptive cruise control and lane-keeping assist."
+
+# Adaptive Cruise Control
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Standard with low-speed follow capability."
+
+# Traffic Jam Assist
+traffic_jam_assist = "No"
+traffic_jam_assist_comments = "Not available on the EX trim."
+
+# Automatic Emergency Braking
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Collision Mitigation Braking System (CMBS) is standard."
+
+# Lane Keep Assist
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Keeping Assist System (LKAS) included in Honda Sensing."
+
+# Remote Parking
+remote_parking = "No"
+remote_parking_comments = "Not available on this trim."
+
+# Auto Parking
+auto_parking = "No"
+auto_parking_comments = "No automated parking assist feature."
+
+# Blind Spot Detection
+blind_spot_detection = "No"
+blind_spot_detection_comments = "Blind-spot monitoring is optional on higher trims."
+
+# Fatigue Driving Detection
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No driver drowsiness monitoring system."
+
+# Engine Displacement
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "2.0L DOHC i-VTEC 4-cylinder engine (158 hp, 138 lb-ft torque)."
+
+# Motor Power
+motor_power = "None"
+motor_power_comments = "Not applicable (gasoline-only powertrain)."
+
+# Battery Capacity
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable (non-hybrid model)."
+
+# Fuel Tank Capacity
+fuel_tank_capacity = "30~50L"
+fuel_tank_capacity_comments = "12.4-gallon (46.9L) tank capacity."
+
+# Horsepower
+horsepower = "100~200hp"
+horsepower_comments = "158 hp @ 6,500 rpm."
+
+# Torque
+torque = "200~300N·m"
+torque_comments = "138 lb-ft (187N·m) @ 4,200 rpm."
+
+# 0-100 km/h Acceleration
+zero_to_one_hundred_km_h_acceleration_time = "8~10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "Approximately 8.5 seconds (CVT automatic)."
+
+# Top Speed
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180 km/h (112 mph)."
+
+# Fuel Consumption
+fuel_consumption = "6~8L/100km"
+fuel_consumption_comments = "EPA-rated 30 mpg city / 37 mpg highway (7.8L/100km combined)."
+
+# Electric Consumption
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable (gasoline-only powertrain)."
+
+# Driving Range
+driving_range = "400~800km"
+driving_range_comments = "Approximately 650 km (404 miles) per tank."
+
+# Drive Type
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive with MacPherson strut front suspension."
+
+# Suspension
+suspension = "Independent Suspension"
+suspension_comments = "Front: MacPherson strut; Rear: Multi-link independent suspension."
+
+# Passibility
+passibility = "Medium"
+passibility_comments = "Handles urban roads well but not designed for off-road use."
+
+# Seat Layout
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 2+3 seating configuration."
+
+# City Commuting
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions and good visibility make it ideal for city driving."
+
+# Highway Long Distance
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable ride and efficient highway cruising."
+
+# Off-Road Capability
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use due to low ground clearance."
+
+# Cargo Capability
+cargo_capability = "Yes"
+cargo_capability_comments = "419L trunk with folding rear seats for larger items."
+
+# Cold Resistance
+clod_resistance = "Medium"
+clod_resistance_comments = "Reliable cold starts down to -20°C with proper winter preparation."
+
+# Heat Resistance
+heat_resistance = "High"
+heat_resistance_comments = "Proven cooling system performance in temperatures up to 45°C."
+
+[AmbiguousLabels]
+
+# Size
+size = "Medium"
+size_comments = "Compact sedan dimensions: 4,630mm long, 1,799mm wide, 1,416mm tall."
+
+# Vehicle Usability
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balanced for daily commuting and occasional long trips."
+
+# Aesthetics
+aesthetics = "High"
+aesthetics_comments = "Sleek, modern design with premium styling cues."
+
+# Energy Consumption Level
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Class-leading fuel efficiency for its segment."
+
+# Comfort Level
+comfort_level = "Medium"
+comfort_level_comments = "Well-tuned suspension but firmer than luxury sedans."
+
+# Smartness
+smartness = "Medium"
+smartness_comments = "Good tech features but lacks some premium connectivity options."
+
+# Family Friendliness
+family_friendliness = "High"
+family_friendliness_comments = "Excellent safety ratings and practical interior layout."
+
+[KeyDetails]
+key_details = "The Honda Civic EX Sedan combines reliability, fuel efficiency (30/37 mpg), and Honda Sensing safety suite as standard. Key features include a 2.0L engine (158 hp), 7-inch touchscreen with Apple CarPlay/Android Auto, and 16-inch alloy wheels. It holds a 5-star NHTSA safety rating and offers 14.8 cu-ft trunk capacity."
+key_details_comments = "The Honda Civic EX Sedan is a well-rounded compact car that delivers exceptional value with its combination of reliability, fuel efficiency (30/37 mpg city/highway), and comprehensive Honda Sensing safety suite as standard equipment. It's powered by a responsive 2.0L i-VTEC 4-cylinder engine producing 158 horsepower, paired with a smooth CVT transmission. The EX trim adds premium features like a 7-inch touchscreen infotainment system with Apple CarPlay/Android Auto integration, 16-inch alloy wheels, and automatic climate control. With its 5-star NHTSA safety rating, generous 14.8 cubic foot trunk capacity, and comfortable seating for five, it's an excellent choice for both daily commuting and family transportation needs. The Civic EX particularly shines in urban environments with its compact dimensions (4,630mm length) while still offering highway-capable performance and comfort."

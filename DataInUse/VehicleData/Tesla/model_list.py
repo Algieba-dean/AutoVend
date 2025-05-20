@@ -6,19 +6,19 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-  "Model S",
-  "Model S Plaid",
-  "Model 3 Standard RWD",
-  "Model 3 Long Range RWD",
-  "Model 3 Long Range AWD",
-  "Model 3 Performance",
-  "Model X",
-  "Model X Plaid",
-  "Model Y",
-  "Model Y Long Range AWD",
-  "Model Y Long Range RWD",
-  "Model Y Performance",
-  "Model Y Launch Series",
-  "Model Q",
-  "Model 2"
+  "Tesla-Model S Premium Electric Sedan",
+  "Tesla-Model S Plaid High-Performance Tri-Motor Sedan",
+  "Tesla-Model 3 Standard RWD Entry-Level Rear-Wheel Drive Sedan",
+  "Tesla-Model 3 Long Range RWD Extended Range Rear-Wheel Drive",
+  "Tesla-Model 3 Long Range AWD Dual Motor All-Wheel Drive",
+  "Tesla-Model 3 Performance Sporty Dual Motor AWD Sedan",
+  "Tesla-Model X Full-Size Electric SUV with Falcon Doors",
+  "Tesla-Model X Plaid High-Performance Tri-Motor SUV",
+  "Tesla-Model Y Compact Electric SUV",
+  "Tesla-Model Y Long Range AWD Extended Range All-Wheel Drive",
+  "Tesla-Model Y Long Range RWD Extended Range Rear-Wheel Drive",
+  "Tesla-Model Y Performance Sporty Dual Motor AWD SUV",
+  "Tesla-Model Y Launch Series Limited Edition Performance SUV",
+  "Tesla-Model Q Concept Electric Vehicle (unreleased/rumored)",
+  "Tesla-Model 2 Upcoming Affordable Compact Electric Car"
 ]

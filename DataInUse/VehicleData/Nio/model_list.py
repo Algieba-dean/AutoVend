@@ -6,19 +6,19 @@ IMPORTANT: These are specific model variants (not just series names) to ensure a
 """
 
 model_list = [
-  "NIO EP9",
-  "NIO ET7",
-  "NIO ET5",
-  "NIO ET9",
-  "NIO ES8",
-  "NIO ES6",
-  "NIO EC6",
-  "NIO EC7",
-  "NIO EL8",
-  "NIO EL7",
-  "NIO EL6",
-  "Onvo L60",
-  "Onvo L80",
-  "Onvo L90",
-  "Firefly Compact EV"
+  "NIO-EP9 High-Performance Electric Hypercar",
+  "NIO-ET7 Premium Electric Executive Sedan",
+  "NIO-ET5 Compact Electric Sports Sedan",
+  "NIO-ET9 Flagship Luxury Electric Sedan",
+  "NIO-ES8 Full-Size Electric Family SUV",
+  "NIO-ES6 Midsize Electric Performance SUV",
+  "NIO-EC6 Sporty Electric Coupe SUV",
+  "NIO-EC7 Aerodynamic Electric Coupe SUV",
+  "NIO-EL8 Three-Row Electric Luxury SUV",
+  "NIO-EL7 Premium Electric Midsize SUV",
+  "NIO-EL6 Versatile Electric Urban SUV",
+  "NIO-Onvo L60 Affordable Family Electric SUV",
+  "NIO-Onvo L80 Midsize Smart Electric SUV",
+  "NIO-Onvo L90 Flagship Electric Crossover",
+  "NIO-Firefly Compact EV Urban City Electric Vehicle"
 ]

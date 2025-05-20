@@ -1,0 +1,183 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "XPeng-X9 702 Ultra-Long-Range AWD"
+
+[PriciseLabels]
+
+prize = "60,000~100,000"
+prize_comments = "The XPeng-X9 702 Ultra-Long-Range AWD is priced between $75,000 and $95,000 USD depending on the configuration and regional pricing."
+
+vehicle_category_bottom = "Large MPV"
+vehicle_category_bottom_comments = "The X9 is a full-size luxury electric MPV with seating for up to 7 passengers."
+
+brand = "XPeng"
+brand_comments = "Chinese electric vehicle manufacturer known for advanced autonomous driving technology."
+
+powertrain_type = "Battery Electric Vehicle"
+powertrain_type_comments = "Pure electric vehicle with dual-motor all-wheel drive system."
+
+passenger_sapce_volume = "Above 5.5 cubic meter"
+passenger_sapce_volume_comments = "With 5.8 cubic meters of passenger volume, the X9 offers exceptional interior space rivaling premium business jets. The three-row configuration provides generous legroom (up to 1,024mm in second row) and headroom, while the flat floor and theater-style seating ensure comfort for all passengers. The executive second-row seats offer 14-way power adjustment with heating, ventilation and massage functions, making it ideal for business travel or family trips."
+passenger_sapce_comments = "Spacious interior with 5.8 cubic meters of passenger volume, offering premium comfort."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Standard trunk capacity is 550L, expandable to 2,100L with rear seats folded."
+
+wheelbase = "Above 3100mm"
+wheelbase_comments = "Long 3160mm wheelbase contributes to excellent interior space and ride stability."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "Ground clearance of 170mm, with adaptive air suspension available."
+
+design_style = "Business"
+design_style_comments = "Premium business-oriented design with sleek, aerodynamic lines."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Exceptional 0.272 Cd drag coefficient thanks to streamlined design."
+
+color = "Neutral Colors"
+color_comments = "Offers premium neutral color options including Moonlight Silver and Midnight Black."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Premium interior with real wood trim and soft-touch materials throughout."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program with multiple driving modes."
+
+airbag_count = "10"
+airbag_count_comments = "Comprehensive airbag system including curtain and knee airbags."
+
+seat_material = "Lether"
+seat_material_comments = "Premium Nappa leather seats with heating, ventilation and massage functions."
+
+noise_insulation = "High"
+noise_insulation_comments = "Excellent NVH control with double-glazed windows and acoustic foam insulation."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Advanced Xmart OS supports natural voice commands in multiple languages."
+
+ota_updates = "Yes"
+ota_updates_comments = "Supports over-the-air updates for infotainment, ADAS and vehicle systems."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "The XPeng X9 features Level 2+ autonomous driving capability through its XPILOT 4.0 system, which includes navigation-guided pilot, automatic lane changes, and highway assist. While not fully autonomous, it provides comprehensive driver assistance with 31 sensors (including 2 lidar units) for 360° perception, enabling hands-free operation in approved conditions with driver monitoring."
+autonomous_driving_comments = "XPILOT 4.0 system offers Level 2+ autonomous driving capabilities."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Full-speed range adaptive cruise with stop-and-go functionality."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Advanced traffic jam assist can handle stop-and-go traffic autonomously."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Front and rear automatic emergency braking with pedestrian detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane centering assist works up to 130 km/h."
+
+remote_parking = "Yes"
+remote_parking_comments = "Supports remote parking via smartphone app."
+
+auto_parking = "Yes"
+auto_parking_comments = "Fully automated parking with memory parking for up to 100 locations."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind spot monitoring with rear cross-traffic alert."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "Driver monitoring system with fatigue detection alerts."
+
+engine_displacement = "None"
+engine_displacement_comments = "Not applicable for battery electric vehicles."
+
+motor_power = "250~400kW"
+motor_power_comments = "Dual motor setup producing 370kW (503hp) combined output."
+
+battery_capacity = "Above 100kWh"
+battery_capacity_comments = "101.5kWh CATL lithium-ion battery pack."
+
+fuel_tank_capacity = "None"
+fuel_tank_capacity_comments = "Not applicable for battery electric vehicles."
+
+horsepower = "Above 400hp"
+horsepower_comments = "503 horsepower (370kW) combined from dual motors."
+
+torque = "Above 500N·m"
+torque_comments = "717 N·m of instant torque available from standstill."
+
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100 km/h in 5.4 seconds despite large size."
+
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 230 km/h."
+
+fuel_consumption = "None"
+fuel_consumption_comments = "Not applicable for battery electric vehicles."
+
+electric_consumption = "Above 14kWh/100km"
+electric_consumption_comments = "Rated at 15.8 kWh/100km combined cycle."
+
+driving_range = "Above 800km"
+driving_range_comments = "CLTC-rated range of 702 km (436 miles)."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "Dual motor AWD system with torque vectoring capability."
+
+suspension = "Independent Suspension"
+suspension_comments = "Front double wishbone and rear multi-link suspension, with optional air suspension."
+
+passibility = "Medium"
+passibility_comments = "Balanced for urban and highway driving, not designed for off-road."
+
+seat_layout = "7-seat"
+seat_layout_comments = "2+2+3 seating configuration with captain's chairs in second row."
+
+city_commuting = "Yes"
+city_commuting_comments = "Excellent urban EV with one-pedal driving and compact turning radius."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Long range and fast charging make it ideal for road trips."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for off-road use despite AWD system."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Versatile cargo space with multiple seating configurations."
+
+clod_resistance = "High"
+clod_resistance_comments = "Battery thermal management maintains 80% range at -20°C."
+
+heat_resistance = "High"
+heat_resistance_comments = "Advanced cooling system maintains performance in hot climates."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "Full-size MPV dimensions: 5293mm long, 1988mm wide, 1785mm tall."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Excellent daily usability with premium comfort features."
+
+aesthetics = "High"
+aesthetics_comments = "Sleek, modern design with premium detailing."
+
+energy_consumption_level = "Medium"
+energy_consumption_level_comments = "Efficient for its size class but large battery means higher absolute consumption."
+
+comfort_level = "High"
+comfort_level_comments = "Exceptional ride comfort with premium seating and quiet cabin."
+
+smartness = "High"
+smartness_comments = "Cutting-edge tech including 5G connectivity and advanced ADAS."
+
+family_friendliness = "High"
+family_friendliness_comments = "Ideal family vehicle with spacious interior and safety features."
+
+[KeyDetails]
+key_details="The XPeng X9 702 Ultra-Long-Range AWD is a premium electric MPV featuring XPeng's latest X-EEA 3.0 electronic architecture, 800V high-voltage platform enabling 480kW ultra-fast charging (10-80% in 20 minutes), and advanced XPILOT 4.0 driver assistance system with lidar and 31 sensors. The interior features a 17.3-inch central display, 21.4-inch rear entertainment screen, and premium sound system."
+key_details_comments = "As XPeng's flagship electric MPV, the X9 702 Ultra-Long-Range AWD represents the pinnacle of the brand's technology with its 800V X-EEA 3.0 architecture enabling ultra-fast 480kW charging (10-80% in just 20 minutes). It combines luxury MPV practicality with cutting-edge tech including a 17.3-inch central touchscreen, 21.4-inch rear entertainment display, 23-speaker Dynaudio sound system, and advanced thermal management for all-weather performance. The vehicle showcases XPeng's leadership in smart EV technology with its comprehensive sensor suite for autonomous driving and premium cabin experience."

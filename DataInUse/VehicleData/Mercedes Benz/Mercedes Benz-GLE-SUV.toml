@@ -1,0 +1,191 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Mercedes-Benz GLE SUV"
+
+[PriciseLabels]
+
+# Prize and category
+prize = "60,000~100,000"
+prize_comments = "The Mercedes-Benz GLE SUV starts at $62,150 USD for the GLE 350 and goes up to $97,800 USD for the AMG GLE 63 S, depending on trim and options."
+
+vehicle_category_bottom = "Mid-to-Large SUV"
+vehicle_category_bottom_comments = "The GLE is a luxury mid-to-large SUV with premium features and spacious interiors."
+
+brand = "Mercedes-Benz"
+brand_comments = "Mercedes-Benz is a German luxury automotive brand known for high-end vehicles."
+
+# Powertrain and performance
+powertrain_type = "Gasoline Engine"
+powertrain_type_comments = "The GLE offers gasoline engines (e.g., 3.0L inline-6 turbo in GLE 450) and plug-in hybrid variants (GLE 580e). This spec focuses on the gasoline variant."
+
+passenger_sapce_volume = "4.5~5.5 cubic meter"
+passenger_sapce_volume_comments = "The cabin offers 4.9 cubic meters of passenger space with premium legroom and headroom."
+
+trunk_volume = "Above 500L"
+trunk_volume_comments = "Cargo capacity is 630L (expandable to 2,055L with rear seats folded)."
+
+wheelbase = "Above 3100mm"
+wheelbase_comments = "The wheelbase is 2,995mm (GLE) or 3,075mm (GLE Coupe), ensuring stability and interior space."
+
+chassis_height = "Above 200mm"
+chassis_height_comments = "Ground clearance is 210mm (adjustable to 270mm with AIRMATIC suspension)."
+
+# Design and aesthetics
+design_style = "Business"
+design_style_comments = "The GLE emphasizes luxury and sophistication over sportiness."
+
+body_line_smoothness = "High"
+body_line_smoothness_comments = "Sleek, aerodynamic design with a drag coefficient of 0.29."
+
+color = "Neutral Colors"
+color_comments = "Offers shades like Polar White, Obsidian Black, and Selenite Grey."
+
+interior_material_texture = "Wood Trim"
+interior_material_texture_comments = "Open-pore brown walnut wood trim with leather upholstery standard."
+
+# Safety features
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program included."
+
+airbag_count = "10"
+airbag_count_comments = "Includes front, side, knee, and curtain airbags."
+
+seat_material = "Lether"
+seat_material_comments = "MB-Tex faux leather or optional Nappa leather."
+
+noise_insulation = "High"
+noise_insulation_comments = "Acoustic glass and insulated cabin reduce road noise."
+
+# Tech and autonomy
+voice_interfaction = "Yes"
+voice_interfaction_comments = "MBUX Voice Assistant with natural language support."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for infotainment and ECU."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "DRIVE PILOT offers lane-keeping and adaptive cruise control."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "DISTRONIC with stop-and-go functionality."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Part of DRIVE PILOT package (steering assist under 60 km/h)."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Active Brake Assist with cross-traffic detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Active Lane Keeping Assist."
+
+remote_parking = "Yes"
+remote_parking_comments = "Optional Remote Parking Assist via smartphone app."
+
+auto_parking = "Yes"
+auto_parking_comments = "Active Parking Assist with 360° camera."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Assist with exit warning."
+
+fatigue_driving_detection = "Yes"
+fatigue_driving_detection_comments = "ATTENTION ASSIST monitors driving behavior."
+
+# Powertrain details (gasoline-focused)
+engine_displacement = "2.5~3.5L"
+engine_displacement_comments = "GLE 450: 3.0L turbocharged I6 (362 hp). AMG GLE 63 S: 4.0L V8 (603 hp)."
+
+motor_power = "None"
+motor_power_comments = "Not applicable for gasoline variants."
+
+battery_capacity = "None"
+battery_capacity_comments = "Not applicable for gasoline variants."
+
+fuel_tank_capacity = "Above 70L"
+fuel_tank_capacity_comments = "85L tank capacity for long-range driving."
+
+horsepower = "300~400hp"
+horsepower_comments = "GLE 450: 362 hp; AMG GLE 63 S: 603 hp."
+
+torque = "Above 500N·m"
+torque_comments = "GLE 450: 500 N·m; AMG GLE 63 S: 850 N·m."
+
+zero_to_one_hundred_km_h_acceleration_time = "4~6s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "GLE 450: 5.3s; AMG GLE 63 S: 3.8s."
+
+top_speed = "200~240km/h"
+top_speed_comments = "Electronically limited to 250 km/h (AMG models)."
+
+fuel_consumption = "Above 8L/100km"
+fuel_consumption_comments = "GLE 450: 9.8L/100km (combined); AMG GLE 63 S: 13.1L/100km."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable for gasoline variants."
+
+driving_range = "400~800km"
+driving_range_comments = "~700km range (GLE 450) with 85L tank."
+
+drive_type = "All-Wheel Drive"
+drive_type_comments = "4MATIC AWD standard across all trims."
+
+suspension = "Independent Suspension"
+suspension_comments = "AIRMATIC air suspension optional for adaptive damping."
+
+passibility = "High"
+passibility_comments = "Off-road mode with adjustable ride height (up to 270mm)."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Optional third row for 7-seat configuration."
+
+# Usability
+city_commuting = "Yes"
+city_commuting_comments = "Compact dimensions for a large SUV (4,941mm length)."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable cruiser with adaptive cruise control."
+
+off_road_capability = "Medium"
+off_road_capability_comments = "Competent for light off-roading (w/ optional Off-Road Package)."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "2,055L max cargo space with seats folded."
+
+clod_resistance = "High"
+clod_resistance_comments = "Tested for -30°C starts with auxiliary heating."
+
+heat_resistance = "High"
+heat_resistance_comments = "Engine cooling and cabin climate control optimized for hot climates."
+
+[AmbiguousLabels]
+
+size = "Large"
+size_comments = "Length: 4,941mm; Width: 2,018mm; Height: 1,782mm."
+
+vehicle_usability = "Large"
+vehicle_usability_comments = "Spacious for families with premium utility features."
+
+aesthetics = "High"
+aesthetics_comments = "Luxury design with iconic Mercedes styling cues."
+
+energy_consumption_level = "High"
+energy_consumption_level_comments = "Premium SUV with higher fuel consumption (9.8–13.1L/100km)."
+
+comfort_level = "High"
+comfort_level_comments = "Pillowy ride quality with noise-insulated cabin."
+
+smartness = "High"
+smartness_comments = "MBUX infotainment with AI and augmented reality navigation."
+
+family_friendliness = "High"
+family_friendliness_comments = "ISOFIX anchors, rear entertainment, and optional 7-seat layout."
+
+[KeyDetails]
+key_details = "The Mercedes-Benz GLE SUV combines luxury, technology, and versatility. Key highlights include the 3.0L turbocharged I6 (362 hp) with EQ Boost, 4MATIC AWD, and a 12.3-inch dual-screen MBUX infotainment system. Optional features include E-ACTIVE BODY CONTROL suspension and DRIVE PILOT semi-autonomous driving."
+key_details_comments = "The Mercedes-Benz GLE SUV represents the pinnacle of luxury midsize SUVs, blending cutting-edge technology with premium craftsmanship. Its standout features include a 3.0L turbocharged inline-6 engine with EQ Boost mild hybrid technology delivering 362 horsepower, paired with the responsive 4MATIC all-wheel-drive system. The interior showcases Mercedes' latest MBUX infotainment system with dual 12.3-inch displays, augmented reality navigation, and natural voice control. Optional advanced features like E-ACTIVE BODY CONTROL suspension (which can individually adjust each wheel) and DRIVE PILOT semi-autonomous driving system elevate it beyond competitors. The GLE balances everyday practicality (with available third-row seating) with the refined driving dynamics expected from Mercedes-Benz, making it equally capable for family duties and long-distance touring."
+
+
+### Notes:

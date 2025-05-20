@@ -1,0 +1,180 @@
+# The Car Information Labels, contains PriciseLabels and AmbiguousLabels
+
+title = "CarLabels"
+
+car_model = "Toyota-C-HR+ SE Mid-Trim Urban SUV"
+
+[PriciseLabels]
+prize = "30,000~40,000"
+prize_comments = "The Toyota C-HR+ SE Mid-Trim Urban SUV is priced between $32,500 and $38,000 USD depending on options and region."
+
+vehicle_category_bottom = "Compact SUV"
+vehicle_category_bottom_comments = "The C-HR+ is positioned as a stylish compact crossover SUV with urban-focused dimensions."
+
+brand = "Toyota"
+brand_comments = "Manufactured by Toyota Motor Corporation, a leading Japanese automaker."
+
+powertrain_type = "Hybrid Electric Vehicle"
+powertrain_type_comments = "Features Toyota's Hybrid Synergy Drive system combining a gasoline engine with electric motors."
+
+passenger_sapce_volume = "3.5~4.5 cubic meter"
+passenger_sapce_volume_comments = "Offers 3.8 cubic meters of passenger space with a coupe-like roofline."
+
+trunk_volume = "300~400L"
+trunk_volume_comments = "Boot capacity is 377 liters (VDA), expandable to 1,102 liters with rear seats folded."
+
+wheelbase = "2650~2800mm"
+wheelbase_comments = "2,640mm wheelbase provides stable handling while maintaining compact dimensions."
+
+chassis_height = "150~200mm"
+chassis_height_comments = "160mm ground clearance offers urban-friendly ride height with mild rough-road capability."
+
+design_style = "Sporty"
+design_style_comments = "Features aggressive styling with sharp character lines and hidden rear door handles."
+
+body_line_smoothness = "Medium"
+body_line_smoothness_comments = "Angular design with pronounced wheel arches and floating roof effect."
+
+color = "Bright Colors"
+color_comments = "Available in vibrant options including Ruby Flare Pearl and Blue Eclipse Metallic."
+
+interior_material_texture = "Metal Trim"
+interior_material_texture_comments = "Premium interior with metallic accents and soft-touch surfaces."
+
+ABS = "Yes"
+ABS_comments = "Standard anti-lock braking system with electronic brake-force distribution."
+
+ESP = "Yes"
+ESP_comments = "Electronic Stability Program with traction control included."
+
+airbag_count = "8"
+airbag_count_comments = "Includes front, side, curtain and knee airbags for all occupants."
+
+seat_material = "Lether"
+seat_material_comments = "SofTex synthetic leather upholstery with contrast stitching."
+
+noise_insulation = "Medium"
+noise_insulation_comments = "Acoustic windshield and additional insulation materials reduce road noise."
+
+voice_interfaction = "Yes"
+voice_interfaction_comments = "Toyota's voice recognition system for infotainment controls."
+
+ota_updates = "Yes"
+ota_updates_comments = "Over-the-air updates for multimedia system via Toyota Connected Services."
+
+autonomous_driving_level = "L2"
+autonomous_driving_level_comments = "Toyota Safety Sense provides partial automation with lane centering and adaptive cruise."
+
+adaptive_cruise_control = "Yes"
+adaptive_cruise_control_comments = "Full-speed range dynamic radar cruise control."
+
+traffic_jam_assist = "Yes"
+traffic_jam_assist_comments = "Low-speed following capability in congested traffic."
+
+automatic_emergency_braking = "Yes"
+automatic_emergency_braking_comments = "Pre-collision system with pedestrian detection."
+
+lane_keep_assist = "Yes"
+lane_keep_assist_comments = "Lane Tracing Assist helps maintain center position."
+
+remote_parking = "No"
+remote_parking_comments = "Does not feature remote parking capability."
+
+auto_parking = "Yes"
+auto_parking_comments = "Intelligent Clearance Sonar with automatic parking assistance."
+
+blind_spot_detection = "Yes"
+blind_spot_detection_comments = "Blind Spot Monitor with Rear Cross-Traffic Alert."
+
+fatigue_driving_detection = "No"
+fatigue_driving_detection_comments = "No dedicated driver fatigue monitoring system."
+
+engine_displacement = "1.6~2.0L"
+engine_displacement_comments = "1.8-liter 4-cylinder Atkinson-cycle gasoline engine (2ZR-FXE)."
+
+motor_power = "70~120kW"
+motor_power_comments = "Hybrid system combines 72kW engine with 53kW electric motor (total system output 90kW)."
+
+battery_capacity = "None"
+battery_capacity_comments = "Hybrid system uses small 1.6kWh NiMH battery, not comparable to BEV capacities."
+
+fuel_tank_capacity = "50~70L"
+fuel_tank_capacity_comments = "43-liter fuel tank capacity for extended range."
+
+horsepower = "100~200hp"
+horsepower_comments = "Total system output of 121 horsepower (90kW)."
+
+torque = "200~300N·m"
+torque_comments = "142Nm from engine plus 163Nm from electric motor."
+
+zero_to_one_hundred_km_h_acceleration_time = "Above 10s"
+zero_to_one_hundred_km_h_acceleration_time_comments = "0-100km/h in 11.0 seconds due to hybrid powertrain characteristics."
+
+top_speed = "160~200km/h"
+top_speed_comments = "Electronically limited to 180km/h."
+
+fuel_consumption = "4~6L/100km"
+fuel_consumption_comments = "Official combined consumption of 4.3L/100km (WLTP)."
+
+electric_consumption = "None"
+electric_consumption_comments = "Not applicable as this is a hybrid without plug-in capability."
+
+driving_range = "400~800km"
+driving_range_comments = "Approximately 700km range on a full tank in mixed driving."
+
+drive_type = "Font-Wheel Drive"
+drive_type_comments = "Front-wheel drive configuration standard (AWD not available on hybrid models)."
+
+suspension = "Independent Suspension"
+suspension_comments = "MacPherson strut front and double wishbone rear suspension."
+
+passibility = "Medium"
+passibility_comments = "Capable on light off-road surfaces but primarily designed for urban use."
+
+seat_layout = "5-seat"
+seat_layout_comments = "Standard 2+3 seating configuration."
+
+city_commuting = "Yes"
+city_commuting_comments = "Excellent urban vehicle with compact dimensions and hybrid efficiency."
+
+highway_long_distance = "Yes"
+highway_long_distance_comments = "Comfortable for highway driving with good NVH characteristics."
+
+off_road_capability = "Low"
+off_road_capability_comments = "Not designed for serious off-road use despite SUV styling."
+
+cargo_capability = "Yes"
+cargo_capability_comments = "Practical cargo space with 60/40 split folding rear seats."
+
+clod_resistance = "Medium"
+clod_resistance_comments = "The Toyota C-HR+ hybrid system demonstrates good cold weather performance down to approximately -20°C, with battery heating systems and engine management optimized for winter conditions. However, like all hybrids, fuel efficiency may decrease by 15-20% in extreme cold due to increased engine runtime for cabin heating and battery temperature management."
+cold_resistance_comments = "Hybrid system performs well in cold climates down to -20°C."
+
+heat_resistance = "High"
+heat_resistance_comments = "Proven reliability in hot climates up to 50°C."
+
+[AmbiguousLabels]
+size = "Medium"
+size_comments = "Compact crossover dimensions: 4,360mm length × 1,795mm width × 1,565mm height."
+
+vehicle_usability = "Medium"
+vehicle_usability_comments = "Balances urban maneuverability with practical interior space."
+
+aesthetics = "High"
+aesthetics_comments = "Distinctive, polarizing design with premium detailing."
+
+energy_consumption_level = "Low"
+energy_consumption_level_comments = "Class-leading hybrid efficiency for its segment."
+
+comfort_level = "Medium"
+comfort_level_comments = "Firm sporty suspension tuned for urban driving."
+
+smartness = "Medium"
+smartness_comments = "Comprehensive safety tech but lacks some premium connectivity features."
+
+family_friendliness = "Medium"
+family_friendliness_comments = "Suitable for small families but limited rear headroom."
+
+[KeyDetails]
+key_details = "The Toyota C-HR+ SE Mid-Trim Urban SUV combines striking coupe-like styling with Toyota's proven hybrid technology. Key features include the 1.8L hybrid powertrain delivering 4.3L/100km fuel economy, comprehensive Toyota Safety Sense 2.5 suite, and premium interior with SofTex upholstery. The model stands out with its dramatic design featuring hidden rear door handles and 18-inch alloy wheels, while offering practical SUV versatility in a compact package."
+key_details_comments = "The Toyota C-HR+ SE Mid-Trim Urban SUV represents a compelling blend of avant-garde styling and hybrid efficiency in the compact crossover segment. Its standout features include: 1) A 1.8L hybrid powertrain delivering class-leading 4.3L/100km combined fuel economy, 2) Toyota Safety Sense 2.5 with comprehensive active safety features, 3) Premium interior with SofTex synthetic leather and metallic accents, 4) Distinctive coupe-like styling with hidden rear door handles and 18-inch alloys, and 5) Practical 377L cargo capacity expandable to 1,102L. The model successfully combines eye-catching design with Toyota's renowned hybrid reliability, making it ideal for style-conscious urban drivers seeking fuel efficiency without compromising SUV versatility."
