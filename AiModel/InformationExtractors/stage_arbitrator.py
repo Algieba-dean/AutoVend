@@ -132,7 +132,11 @@ class StageArbitrator:
             "like this", "interested in", "prefer this", "this car",
             "this vehicle", "that vehicle", "decide on", "decided",
             "perfect", "ideal", "right for me", "matches my needs",
-            "good choice", "great option"
+            "good choice", "great option", "pick", "want this", "want that",
+            "model y", "model 3", "mustang", "mach-e", "id.4", "polestar", 
+            "model s", "model x", "looks interesting", "interested in the",
+            "caught my attention", "appeals to me", "like the", "would like the",
+            "good fit", "tesla model", "audi e-tron", "vw id", "bmw i"
         ]
         
         user_input_lower = user_input.lower()
@@ -150,10 +154,24 @@ class StageArbitrator:
             "store", "location", "phone", "contact", "available", "availability",
             "time", "date", "visit", "try", "try out", "feel",
             "behind the wheel", "drive it", "check it out", "see it in person",
-            "book a slot", "test it"
+            "book a slot", "test it", "4s", "reservation", "showroom", "service center"
+        ]
+        
+        # Special case for keywords that shouldn't trigger test drive detection
+        non_test_drive_contexts = [
+            "what color options are available",
+            "what features are available",
+            "what trim levels are available"
         ]
         
         user_input_lower = user_input.lower()
+        
+        # Check if input contains any of the non-test drive contexts
+        for context in non_test_drive_contexts:
+            if context in user_input_lower:
+                return False
+        
+        # Check for test drive keywords
         for keyword in test_drive_keywords:
             if keyword.lower() in user_input_lower:
                 return True
@@ -167,7 +185,8 @@ class StageArbitrator:
             "complete", "talk later", "no more questions", "all set",
             "that's all", "that will be all", "done", "satisfied",
             "enough information", "good day", "see you later",
-            "appreciate your help", "helpful", "good enough"
+            "appreciate your help", "helpful", "good enough", 
+            "great help", "well done", "good talk", "take care"
         ]
         
         user_input_lower = user_input.lower()
@@ -217,9 +236,27 @@ class StageArbitrator:
             
         # Needs analysis logic        
         elif self.current_stage == "needs_analysis":
-            if needs and matched_car_models and (self._contains_car_selection_keywords(user_input) or len(matched_car_models) > 0):
+            car_selection_detected = False
+            
+            # Check if matched_car_models are provided
+            if matched_car_models and len(matched_car_models) > 0:
+                # First, check if the user input contains car selection keywords
+                if self._contains_car_selection_keywords(user_input):
+                    car_selection_detected = True
+                # If not found via keywords, check for specific car model mentions
+                else:
+                    user_input_lower = user_input.lower()
+                    for car_model in matched_car_models:
+                        if car_model.lower() in user_input_lower:
+                            car_selection_detected = True
+                            break
+            
+            # If car selection is detected, transition regardless of needs keywords
+            if car_selection_detected:
+                # Force the stage change directly, bypass global checks
                 self.current_stage = "car_selection_confirmation"
-                
+                return self.current_stage  # Return early to avoid global transitions
+            
         # Car selection confirmation logic
         elif self.current_stage == "car_selection_confirmation":
             if self._contains_needs_keywords(user_input):
@@ -240,17 +277,17 @@ class StageArbitrator:
                 
         # Handle transitions from any stage
         
-        # If user wants to talk about needs at any point
-        if self.current_stage not in ["needs_analysis", "initial", "welcome"] and self._contains_needs_keywords(user_input):
-            self.current_stage = "needs_analysis"
-            
-        # If user wants to book test drive at any point after needs analysis
-        if self.current_stage not in ["reservation4s", "reservation_confirmation", "farewell", "initial", "welcome"] and self._contains_test_drive_keywords(user_input):
-            self.current_stage = "reservation4s"
-            
         # If user explicitly says goodbye at any point
         if self._contains_farewell_keywords(user_input) and self.current_stage != "farewell":
             self.current_stage = "farewell"
+            
+        # If user wants to book test drive at any point after needs analysis
+        elif self.current_stage not in ["reservation4s", "reservation_confirmation", "farewell", "initial", "welcome"] and self._contains_test_drive_keywords(user_input):
+            self.current_stage = "reservation4s"
+            
+        # If user wants to talk about needs at any point, but only if we're not in car selection mode from needs analysis
+        elif self.current_stage not in ["needs_analysis", "initial", "welcome"] and self._contains_needs_keywords(user_input):
+            self.current_stage = "needs_analysis"
             
         # Update stage history if stage has changed
         if self.current_stage != self.previous_stage:
@@ -320,7 +357,7 @@ if __name__ == "__main__":
         }
     }
     
-    sample_matched_car_models = ["Tesla Model Y", "Ford Mustang Mach-E"]
+    sample_matched_car_models = ["Tesla Model Y", "Ford Mustang Mach-E", "Tesla Model 3"]
     
     sample_reservation_info_incomplete = {
         "test_driver": "Mr. Zhang",
@@ -502,6 +539,60 @@ if __name__ == "__main__":
                                    sample_profile_complete, sample_needs)
         assert arbitrator.current_stage == "farewell", f"Expected farewell stage, got {arbitrator.current_stage}"
     
+    # Additional tests for enhanced stage recognition and transitions
+    
+    # Test 16: Recognizing specific car model mentions as car selection
+    def test_specific_car_model_recognition():
+        arbitrator = StageArbitrator()
+        # Setup stages
+        arbitrator.current_stage = "needs_analysis"
+        arbitrator.stage_history = ["initial", "welcome", "needs_analysis"]
+        
+        # User mentions a specific car model
+        arbitrator.determine_stage("The Tesla Model 3 looks interesting", 
+                                   sample_profile_complete, sample_needs, sample_matched_car_models)
+        assert arbitrator.current_stage == "car_selection_confirmation", f"Expected car_selection_confirmation stage, got {arbitrator.current_stage}"
+    
+    # Test 17: Context-aware test drive keyword detection
+    def test_context_aware_test_drive_detection():
+        arbitrator = StageArbitrator()
+        # Tests that "available" in different contexts is handled correctly
+        assert not arbitrator._contains_test_drive_keywords("What color options are available?"), "Should not detect test drive keywords in color options context"
+        assert arbitrator._contains_test_drive_keywords("Is tomorrow available for a test drive?"), "Should detect test drive context with 'available'"
+    
+    # Test 18: Direct jump from profile to reservation
+    def test_direct_profile_to_reservation():
+        arbitrator = StageArbitrator()
+        # Setup stages
+        arbitrator.current_stage = "profile_analysis"
+        arbitrator.stage_history = ["initial", "welcome", "profile_analysis"]
+        
+        # User wants to skip needs analysis and car selection
+        arbitrator.determine_stage("I want to visit the 4S store directly", 
+                                   sample_profile_complete)
+        assert arbitrator.current_stage == "reservation4s", f"Expected reservation4s stage, got {arbitrator.current_stage}"
+    
+    # Test 19: Handling multi-intent messages
+    def test_multi_intent_message_handling():
+        arbitrator = StageArbitrator()
+        # Setup stages
+        arbitrator.current_stage = "welcome"
+        
+        # Message contains both profile and needs information
+        arbitrator.determine_stage("My name is John and I'm looking for an electric SUV with good range", 
+                                   sample_profile_complete)
+        assert arbitrator.current_stage == "needs_analysis", f"Expected needs_analysis stage, got {arbitrator.current_stage}"
+    
+    # Test 20: Recognizing abbreviated farewell expressions
+    def test_abbreviated_farewell_recognition():
+        arbitrator = StageArbitrator()
+        # Setup stages
+        arbitrator.current_stage = "car_selection_confirmation"
+        
+        # Short farewell expression
+        arbitrator.determine_stage("thx, bye", sample_profile_complete, sample_needs, sample_matched_car_models)
+        assert arbitrator.current_stage == "farewell", f"Expected farewell stage, got {arbitrator.current_stage}"
+    
     # Run all tests
     print("Starting StageArbitrator unit tests...\n")
     
@@ -520,5 +611,12 @@ if __name__ == "__main__":
     run_test("Test 13: Jump Back to Needs", test_jump_back_to_needs)
     run_test("Test 14: Skip to Test Drive", test_skip_to_test_drive)
     run_test("Test 15: Skip to Farewell", test_skip_to_farewell)
+    
+    # Run additional tests
+    run_test("Test 16: Specific Car Model Recognition", test_specific_car_model_recognition)
+    run_test("Test 17: Context-aware Test Drive Detection", test_context_aware_test_drive_detection)
+    run_test("Test 18: Direct Profile to Reservation", test_direct_profile_to_reservation)
+    run_test("Test 19: Multi-Intent Message Handling", test_multi_intent_message_handling)
+    run_test("Test 20: Abbreviated Farewell Recognition", test_abbreviated_farewell_recognition)
     
     print("All tests completed.") 
