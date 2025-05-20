@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 from pathlib import Path
 import shutil
@@ -14,10 +14,11 @@ class FileStorage:
         self.profiles_dir = os.path.join(storage_dir, "profiles")
         self.sessions_dir = os.path.join(storage_dir, "sessions")
         self.messages_dir = os.path.join(storage_dir, "messages")
+        self.test_drives_dir = os.path.join(storage_dir, "test_drives")
         self.connection_data_dict = self._get_all_connection_number_with_user_name()
         
         # Create necessary directories
-        for directory in [self.profiles_dir, self.sessions_dir, self.messages_dir]:
+        for directory in [self.profiles_dir, self.sessions_dir, self.messages_dir, self.test_drives_dir]:
             os.makedirs(directory, exist_ok=True)
     
     def _get_profile_path(self, phone_number: str) -> str:
@@ -182,4 +183,138 @@ class FileStorage:
             return True
         except Exception as e:
             print(f"Error cleaning up old sessions: {e}")
-            return False 
+            return False
+
+    def _get_test_drive_path(self, reservation_id: str) -> str:
+        """Get test drive file path by reservation ID"""
+        return os.path.join(self.test_drives_dir, f"{reservation_id}.json")
+    
+    def _get_test_drive_phone_index_path(self) -> str:
+        """Get test drive phone number index file path"""
+        return os.path.join(self.test_drives_dir, "phone_index.json")
+    
+    def save_test_drive(self, test_drive_data: Dict[str, Any]) -> bool:
+        """Save test drive reservation"""
+        try:
+            reservation_id = test_drive_data.get("reservation_id")
+            reservation_phone = test_drive_data.get("test_drive_info", {}).get("reservation_phone_number")
+            
+            if not reservation_id or not reservation_phone:
+                return False
+                
+            # Save test drive data
+            file_path = self._get_test_drive_path(reservation_id)
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(test_drive_data, f, ensure_ascii=False, indent=2)
+                
+            # Update phone index
+            phone_index = {}
+            index_path = self._get_test_drive_phone_index_path()
+            if os.path.exists(index_path):
+                with open(index_path, "r", encoding="utf-8") as f:
+                    phone_index = json.load(f)
+                    
+            phone_index[reservation_phone] = reservation_id
+            with open(index_path, "w", encoding="utf-8") as f:
+                json.dump(phone_index, f, ensure_ascii=False, indent=2)
+                
+            return True
+        except Exception as e:
+            print(f"Error saving test drive: {e}")
+            return False
+    
+    def update_test_drive(self, test_drive_data: Dict[str, Any]) -> bool:
+        """Update test drive reservation"""
+        try:
+            reservation_id = test_drive_data.get("reservation_id")
+            if not reservation_id:
+                return False
+                
+            # Just save the updated data
+            file_path = self._get_test_drive_path(reservation_id)
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(test_drive_data, f, ensure_ascii=False, indent=2)
+                
+            return True
+        except Exception as e:
+            print(f"Error updating test drive: {e}")
+            return False
+    
+    def get_test_drive(self, reservation_id: str) -> Optional[Dict[str, Any]]:
+        """Get test drive reservation by ID"""
+        try:
+            file_path = self._get_test_drive_path(reservation_id)
+            if not os.path.exists(file_path):
+                return None
+                
+            with open(file_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error getting test drive: {e}")
+            return None
+    
+    def get_test_drive_by_phone(self, reservation_phone_number: str) -> Optional[Dict[str, Any]]:
+        """Get test drive reservation by phone number"""
+        try:
+            # Get reservation ID from phone index
+            index_path = self._get_test_drive_phone_index_path()
+            if not os.path.exists(index_path):
+                return None
+                
+            with open(index_path, "r", encoding="utf-8") as f:
+                phone_index = json.load(f)
+                
+            reservation_id = phone_index.get(reservation_phone_number)
+            if not reservation_id:
+                return None
+                
+            # Get test drive data by ID
+            return self.get_test_drive(reservation_id)
+        except Exception as e:
+            print(f"Error getting test drive by phone: {e}")
+            return None
+    
+    def delete_test_drive(self, reservation_phone_number: str) -> bool:
+        """Delete test drive reservation by phone number"""
+        try:
+            # Get reservation ID from phone index
+            index_path = self._get_test_drive_phone_index_path()
+            if not os.path.exists(index_path):
+                return False
+                
+            with open(index_path, "r", encoding="utf-8") as f:
+                phone_index = json.load(f)
+                
+            reservation_id = phone_index.get(reservation_phone_number)
+            if not reservation_id:
+                return False
+                
+            # Delete test drive file
+            file_path = self._get_test_drive_path(reservation_id)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                
+            # Update phone index
+            del phone_index[reservation_phone_number]
+            with open(index_path, "w", encoding="utf-8") as f:
+                json.dump(phone_index, f, ensure_ascii=False, indent=2)
+                
+            return True
+        except Exception as e:
+            print(f"Error deleting test drive: {e}")
+            return False
+    
+    def get_all_test_drives(self) -> List[Dict[str, Any]]:
+        """Get all test drive reservations"""
+        try:
+            test_drives = []
+            # Only process JSON files that aren't the phone index
+            for filename in os.listdir(self.test_drives_dir):
+                if filename.endswith('.json') and filename != "phone_index.json":
+                    with open(os.path.join(self.test_drives_dir, filename), "r", encoding="utf-8") as f:
+                        test_drive = json.load(f)
+                        test_drives.append(test_drive)
+            return test_drives
+        except Exception as e:
+            print(f"Error getting all test drives: {e}")
+            return [] 
