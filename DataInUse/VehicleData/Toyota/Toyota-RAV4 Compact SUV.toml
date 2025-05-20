@@ -24,7 +24,7 @@ powertrain_type_comments = "The RAV4 Hybrid combines a 2.5L 4-cylinder gasoline 
 
 # passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
 passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Total passenger volume is 98.9 cu ft (2.8 cubic meters), with ample headroom (37.7" front, 39.5" rear) and legroom (41.0" front, 37.8" rear)."
+passenger_sapce_volume_comments = "Total passenger volume is 98.9 cu ft (2.8 cubic meters), with ample headroom (37.7\" front, 39.5\" rear) and legroom (41.0\" front, 37.8\" rear)."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -207,7 +207,7 @@ heat_resistance_comments = "Cooled hybrid components maintain performance in des
 
 # size: candidate values: "Small", "Medium", "Large"
 size = "Medium"
-size_comments = "Dimensions: 180.9" L x 73.0" W x 67.2" H – squarely in the compact SUV segment."
+size_comments = "Dimensions: 180.9\" L x 73.0\" W x 67.2\" H – squarely in the compact SUV segment."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
 vehicle_usability = "Medium"
@@ -234,5 +234,5 @@ family_friendliness = "High"
 family_friendliness_comments = "Top Safety Pick+ rating and ample rear seat space for child seats."
 
 [KeyDetails]
-key_details = "The Toyota RAV4 Hybrid combines a 2.5L 4-cylinder engine with three electric motors (front and rear) for AWD capability without a driveshaft. It features Toyota Safety Sense 2.5 (TSS 2.5) with advanced driver aids, offers up to 39.8 MPG (AWD models), and has Adventure/TRD Off-Road trims for light off-roading. The infotainment system includes an 8" touchscreen with wireless Apple CarPlay/Android Auto."
+key_details = "The Toyota RAV4 Hybrid combines a 2.5L 4-cylinder engine with three electric motors (front and rear) for AWD capability without a driveshaft. It features Toyota Safety Sense 2.5 (TSS 2.5) with advanced driver aids, offers up to 39.8 MPG (AWD models), and has Adventure/TRD Off-Road trims for light off-roading. The infotainment system includes an 8\" touchscreen with wireless Apple CarPlay/Android Auto."
 key_details_comments = "The Toyota RAV4 Hybrid features a sophisticated hybrid powertrain combining a 2.5L 4-cylinder Atkinson-cycle gasoline engine with three electric motors (two front, one rear) to deliver all-wheel drive capability without a mechanical driveshaft. It's equipped with Toyota Safety Sense 2.5 (TSS 2.5) featuring pre-collision detection, full-speed adaptive cruise control, lane tracing assist, and road sign recognition. The hybrid system achieves up to 40 MPG combined (39 MPG for AWD models) while offering 219-222 net system horsepower. Available Adventure and TRD Off-Road trims add Multi-Terrain Select with specific modes for mud/sand/rocks. The tech package includes an 8-inch touchscreen with wireless Apple CarPlay/Android Auto, and available digital rearview mirror. The battery is mounted under the rear seats to preserve cargo space."

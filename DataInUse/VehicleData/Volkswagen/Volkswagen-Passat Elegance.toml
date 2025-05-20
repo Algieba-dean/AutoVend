@@ -226,7 +226,7 @@ comfort_level_comments = "12-way power seats with massage function and premium N
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Digital Cockpit Pro and 9.2" touchscreen with gesture control."
+smartness_comments = "Digital Cockpit Pro and 9.2\" touchscreen with gesture control."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "High"
@@ -234,5 +234,5 @@ family_friendliness_comments = "ISOFIX anchors, rear sunshades, and ample child 
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details = "The Volkswagen Passat Elegance combines executive comfort with advanced driver aids, featuring a 220hp 2.0L TSI engine, 10.25" Digital Cockpit, and Travel Assist semi-autonomous driving. Its 586L trunk and noise-insulated cabin make it ideal for long journeys."
+key_details = "The Volkswagen Passat Elegance combines executive comfort with advanced driver aids, featuring a 220hp 2.0L TSI engine, 10.25\" Digital Cockpit, and Travel Assist semi-autonomous driving. Its 586L trunk and noise-insulated cabin make it ideal for long journeys."
 key_details_comments = "The Volkswagen Passat Elegance represents the pinnacle of Volkswagen's executive sedan lineup, combining German engineering with premium comfort features. Its 2.0L TSI turbocharged engine delivers 220 horsepower while maintaining respectable fuel efficiency. The model stands out with its Digital Cockpit Pro (10.25\" display), 9.2\" touchscreen infotainment with gesture control, and premium Nappa leather seats. Advanced driver assistance systems include Travel Assist for semi-autonomous highway driving (combining adaptive cruise control with lane centering), along with Park Assist for automated parking maneuvers. The spacious interior (4.8m³ passenger volume) features tri-zone climate control and acoustic laminated glass for exceptional quietness. Practicality is ensured by a 586L trunk (expandable to 1,152L) and comprehensive safety systems including 8 airbags and automatic emergency braking. This model particularly excels as a business vehicle or premium family transporter, offering a balanced combination of performance (0-100km/h in 7.1s), comfort (12-way adjustable seats with massage function), and technology (including over-the-air updates)."

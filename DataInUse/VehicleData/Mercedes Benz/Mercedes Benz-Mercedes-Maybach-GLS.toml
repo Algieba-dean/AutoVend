@@ -188,7 +188,7 @@ highway_long_distance_comments = "Magic Body Control (optional) reads road ahead
 
 # off_road_capability, candidate values: "Low", "Medium", "High"
 off_road_capability = "Low"
-off_road_capability_comments = "Has off-road drive modes but primarily designed for paved roads (21-22" wheels standard)."
+off_road_capability_comments = "Has off-road drive modes but primarily designed for paved roads (21-22\" wheels standard)."
 
 # cargo_capability, candidate values: "Yes", "No"
 cargo_capability = "Yes"
@@ -236,4 +236,4 @@ family_friendliness_comments = "Spacious but optimized for adult passengers rath
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
 key_details = "The Mercedes-Maybach GLS 600 4MATIC combines S-Class luxury with SUV practicality. Key features include: Executive Rear Seating Package with reclining seats (43.5° angle), champagne flutes, Maybach-specific drive modes (including 'Curve' that leans into turns), and optional No.8 fragrance system. The Maybach-exclusive two-tone paint requires 62 manual steps taking a week to complete."
-key_details_comments = "The Mercedes-Maybach GLS 600 4MATIC represents the pinnacle of luxury SUVs, blending Maybach's ultra-premium craftsmanship with GLS practicality. Its Executive Rear Seating Package transforms the cabin into a mobile lounge with power-adjustable rear seats (43.5° recline), calf rests, and champagne cooler. Unique Maybach drive modes include 'Curve' which actively leans the vehicle into turns for comfort. The optional ENERGIZING Comfort system synchronizes climate, fragrance (with exclusive Maybach No.8 scent), seat massage, and ambient lighting. The hand-applied two-tone paint requires 62 manual steps taking craftsmen a week to complete, while the standard Burmester® 3D surround sound system features 27 speakers. The Maybach-specific grille with vertical chrome pinstripes and exclusive 22-23" wheels distinguish it from standard GLS models."
+key_details_comments = "The Mercedes-Maybach GLS 600 4MATIC represents the pinnacle of luxury SUVs, blending Maybach's ultra-premium craftsmanship with GLS practicality. Its Executive Rear Seating Package transforms the cabin into a mobile lounge with power-adjustable rear seats (43.5° recline), calf rests, and champagne cooler. Unique Maybach drive modes include 'Curve' which actively leans the vehicle into turns for comfort. The optional ENERGIZING Comfort system synchronizes climate, fragrance (with exclusive Maybach No.8 scent), seat massage, and ambient lighting. The hand-applied two-tone paint requires 62 manual steps taking craftsmen a week to complete, while the standard Burmester® 3D surround sound system features 27 speakers. The Maybach-specific grille with vertical chrome pinstripes and exclusive 22-23\" wheels distinguish it from standard GLS models."

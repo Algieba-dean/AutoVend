@@ -239,7 +239,7 @@ family_friendliness = "Low"
 family_friendliness_comments = "No rear seats or child-seat anchors; purely a driver’s car."
 
 [KeyDetails]
-key_details = """
+key_details = ""
 key_details_comments = "The Lamborghini Revuelto is a groundbreaking hybrid supercar featuring a 6.5L V12 engine paired with three electric motors, delivering 1,015 CV. It represents Lamborghini's first series-production V12 hybrid, combining extreme performance (0-100 km/h in 2.5s) with limited electrification (3.8 kWh battery). The design features signature scissor doors, aerospace-inspired aerodynamics, and a driver-focused cockpit with advanced digital interfaces."
 
 

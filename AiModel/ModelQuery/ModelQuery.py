@@ -2,7 +2,7 @@ import tomllib as tomli
 import json
 import os
 from pathlib import Path
-#from pprint import pp
+from pprint import pp
 
 class CarModelQuery:
     def __init__(self):
@@ -54,10 +54,11 @@ class CarModelQuery:
         vehicle_files = self._get_all_vehicle_files_path()
         for vehicle_file in vehicle_files:
             vehicle_data = self._load_car_data(vehicle_file)
-            self.vehicle_data_list.append(vehicle_data)
-            self.all_model_names.append(vehicle_data["car_model"])
-            self.all_model_infos[vehicle_data["car_model"]] = dict()
-            self.all_model_infos[vehicle_data["car_model"]] = vehicle_data
+            if vehicle_data:
+                self.vehicle_data_list.append(vehicle_data)
+                self.all_model_names.append(vehicle_data["car_model"])
+                self.all_model_infos[vehicle_data["car_model"]] = dict()
+                self.all_model_infos[vehicle_data["car_model"]] = vehicle_data
         
             
     def get_all_model_names(self):
@@ -253,9 +254,9 @@ class CarModelQuery:
         return ""
 
 # test code
-#if __name__ == "__main__":
-#    c = CarModelQuery()
+if __name__ == "__main__":
+    c = CarModelQuery()
     # test query
-#    result = c.query_car_model({"vehicle_category_middle": ["sedan","suv"],"brand_country":["sweden","china"],"size":["small","middle"]})
-#    print("query results:")
-#    pp(result)
+    result = c.query_car_model({"vehicle_category_middle": ["sedan","suv"],"brand_country":["sweden","china"],"size":["small","middle"]})
+    print("query results:")
+    pp(result)

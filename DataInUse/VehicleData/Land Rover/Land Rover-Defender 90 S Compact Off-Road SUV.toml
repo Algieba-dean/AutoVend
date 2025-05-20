@@ -227,7 +227,7 @@ comfort_level_comments = "Premium materials and adaptive damping provide luxury-
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Pivi Pro infotainment with 10" touchscreen and 12.3" digital cluster."
+smartness_comments = "Pivi Pro infotainment with 10\" touchscreen and 12.3\" digital cluster."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
@@ -235,5 +235,5 @@ family_friendliness_comments = "5-seat practicality but lacks sliding doors or m
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details = "The Defender 90 S combines Land Rover's legendary off-road DNA with modern luxury. Key features include: 1) Standard Terrain Response 2 with Configurable Terrain Response, 2) Structural aluminum-intensive D7x architecture, 3) Up to 900mm wading depth, 4) Optional Active Locking Rear Differential, 5) 11.4" ground clearance (extendable to 14.1" with air suspension)."
+key_details = "The Defender 90 S combines Land Rover's legendary off-road DNA with modern luxury. Key features include: 1) Standard Terrain Response 2 with Configurable Terrain Response, 2) Structural aluminum-intensive D7x architecture, 3) Up to 900mm wading depth, 4) Optional Active Locking Rear Differential, 5) 11.4\" ground clearance (extendable to 14.1\" with air suspension)."
 key_details_comments = "The Defender 90 S represents Land Rover's modern interpretation of its iconic off-roader, blending heritage design with cutting-edge technology. Key highlights include: 1) Permanent all-wheel drive with twin-speed transfer case (high/low range) for serious off-roading, 2) Standard Terrain Response 2 system with automatic terrain detection and configurable modes (Rock Crawl, Mud/Ruts, Sand, etc.), 3) Lightweight yet rigid aluminum-intensive D7x platform offering 3x the stiffness of traditional ladder frames, 4) Exceptional approach (38°), departure (40°), and breakover (31°) angles for obstacle clearance, 5) Advanced wading capability with standard Wade Sensing system that displays water depth on the infotainment screen, 6) Configurable 'S' trim adds premium touches like 20-inch wheels and Windsor leather while maintaining core off-road hardware."

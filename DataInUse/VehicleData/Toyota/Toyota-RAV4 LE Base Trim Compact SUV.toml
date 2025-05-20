@@ -180,7 +180,7 @@ seat_layout_comments = "Standard 5-passenger configuration with 60/40 split rear
 
 # city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
 city_commuting = "Yes"
-city_commuting_comments = "Compact dimensions (180.9" length) and tight turning radius suit urban driving."
+city_commuting_comments = "Compact dimensions (180.9\" length) and tight turning radius suit urban driving."
 
 # highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
 highway_long_distance = "Yes"
@@ -206,7 +206,7 @@ heat_resistance_comments = "Radiator and cooling system designed for desert cond
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
-size_comments = "180.9" length and 73" width place it mid-pack among compact SUVs."
+size_comments = "180.9\" length and 73\" width place it mid-pack among compact SUVs."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
 vehicle_usability = "Medium"
@@ -234,5 +234,5 @@ family_friendliness_comments = "Top safety picks, LATCH anchors, and spacious re
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details = "The 2024 RAV4 LE emphasizes value with standard Toyota Safety Sense 2.5, LED lighting, and 17" steel wheels. It's powered by a 203-hp 2.5L engine paired with an 8-speed automatic. While lacking luxury features, it delivers Toyota's renowned reliability with 5-star NHTSA safety ratings."
+key_details = "The 2024 RAV4 LE emphasizes value with standard Toyota Safety Sense 2.5, LED lighting, and 17\" steel wheels. It's powered by a 203-hp 2.5L engine paired with an 8-speed automatic. While lacking luxury features, it delivers Toyota's renowned reliability with 5-star NHTSA safety ratings."
 key_details_comments = "The 2024 Toyota RAV4 LE Base Trim represents the entry point of Toyota's best-selling compact SUV lineup. It comes well-equipped with essential safety technology including Toyota Safety Sense 2.5 (pre-collision system, lane departure alert, adaptive cruise control), LED headlights and daytime running lights, and a 7-inch touchscreen with Apple CarPlay/Android Auto. The 2.5L 4-cylinder engine delivers 203 horsepower through an 8-speed automatic transmission, balancing power and efficiency. While it lacks some premium features of higher trims, it maintains Toyota's reputation for reliability with standard 24-month/25,000-mile maintenance coverage and excellent resale value. The LE is particularly appealing for budget-conscious buyers who prioritize safety and practicality over luxury amenities."

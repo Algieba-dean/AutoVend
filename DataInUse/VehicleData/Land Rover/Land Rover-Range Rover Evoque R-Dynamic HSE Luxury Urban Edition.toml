@@ -227,7 +227,7 @@ comfort_level_comments = "Magnetic dampers (optional) and premium noise insulati
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "Pivi Pro infotainment with dual 10" screens and 4G connectivity."
+smartness_comments = "Pivi Pro infotainment with dual 10\" screens and 4G connectivity."
 
 # family_friendliness, candidate values: "Low", "Medium", "High"
 family_friendliness = "Medium"
@@ -235,7 +235,7 @@ family_friendliness_comments = "ISOFIX anchors and rear airbags, but limited thi
 
 [KeyDetails]
 # key_details, a value to introduce more KeyDetails for current car model
-key_details = "The Range Rover Evoque R-Dynamic HSE Luxury Urban Edition combines Land Rover's off-road heritage with urban sophistication. Key features include: 20" alloy wheels, Matrix LED headlights, Meridian 15-speaker audio, ClearSight rearview mirror (camera-based), and a sliding panoramic roof. The Terrain Response 2 system offers Sand, Grass/Gravel/Snow, Mud/Ruts, and Eco modes. Optional features include Adaptive Dynamics (magnetic dampers) and Head-Up Display."
+key_details = "The Range Rover Evoque R-Dynamic HSE Luxury Urban Edition combines Land Rover's off-road heritage with urban sophistication. Key features include: 20\" alloy wheels, Matrix LED headlights, Meridian 15-speaker audio, ClearSight rearview mirror (camera-based), and a sliding panoramic roof. The Terrain Response 2 system offers Sand, Grass/Gravel/Snow, Mud/Ruts, and Eco modes. Optional features include Adaptive Dynamics (magnetic dampers) and Head-Up Display."
 key_details_comments = "The Range Rover Evoque R-Dynamic HSE Luxury Urban Edition represents the pinnacle of compact luxury SUVs, blending Land Rover's legendary off-road capabilities with premium urban styling. Key highlights include: 20-inch 5-Split-Spoke alloy wheels with Gloss Dark Grey finish, Matrix LED headlights with signature Daytime Running Lights, and a Windsor leather interior with Ebony wood veneers. The vehicle features Land Rover's advanced Terrain Response 2 system with multiple driving modes (including an Eco mode for improved fuel efficiency) and standard All-Wheel Drive with Driveline Disconnect technology. The tech package includes a 12.3-inch Interactive Driver Display, dual 10-inch Touch Pro Duo infotainment screens with Pivi Pro interface supporting Apple CarPlay/Android Auto, and a 15-speaker Meridian Surround Sound System. Unique to the Urban Edition are special badging, premium exterior accents, and an optional Black Pack for darkened exterior elements. The ClearSight rearview mirror (which switches to a camera feed when rear visibility is obstructed) and configurable ambient lighting with 10 colors enhance the premium experience. Optional features include Adaptive Dynamics with Configurable Dynamics mode, Head-Up Display, and a sliding panoramic roof."
 
 

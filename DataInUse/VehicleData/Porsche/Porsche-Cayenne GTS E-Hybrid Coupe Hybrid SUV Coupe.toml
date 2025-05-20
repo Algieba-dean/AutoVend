@@ -229,7 +229,7 @@ comfort_level_comments = "The Cayenne GTS E-Hybrid Coupe offers a luxurious and 
 
 # smartness, candidate values: "Low", "Medium", "High"
 smartness = "High"
-smartness_comments = "The vehicle is equipped with cutting-edge technology, including connectivity, driver
+smartness_comments = "The vehicle is equipped with cutting-edge technology, including connectivity, driver"
 [KeyDetails]
 key_details=""
 key_details_comments = "The Porsche Cayenne GTS E-Hybrid Coupe combines a 3.0L turbocharged V6 (340 hp) with a 134 kW electric motor for 500 hp combined output. Key features include: 17.9 kWh battery (30 km EV range), 4.7s 0-100 km/h acceleration, 263 km/h top speed, Porsche Traction Management AWD, adaptive air suspension, 625L cargo capacity (expandable to 1,540L), and Porsche Communication Management with voice control and OTA updates. The luxury interior features leather upholstery, metal trim, and 8 airbags for safety."

@@ -183,7 +183,7 @@ family_friendliness = "Low"
 family_friendliness_comments = "No rear seats or child-seat anchors."
 
 [KeyDetails]
-key_details = """
+key_details = ""
 
 
 ### Notes:

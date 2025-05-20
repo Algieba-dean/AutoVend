@@ -76,7 +76,7 @@ noise_insulation_comments = "Acoustic glass and sound-deadening materials reduce
 
 # voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
 voice_interfaction = "Yes"
-voice_interfaction_comments = "Toyota's "Hey Toyota" voice assistant supports natural language commands."
+voice_interfaction_comments = "Toyota's \"Hey Toyota\" voice assistant supports natural language commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -215,7 +215,7 @@ vehicle_usability_comments = "Balanced for daily commuting and weekend trips."
 
 # aesthetics: candidate values: "Low", "Medium", "High"
 aesthetics = "High"
-aesthetics_comments = "Futuristic "bZ" design language with LED signatures."
+aesthetics_comments = "Futuristic \"bZ\" design language with LED signatures."
 
 # energy_consumption_level: candidate values: "Low", "Medium", "High"
 energy_consumption_level = "Medium"

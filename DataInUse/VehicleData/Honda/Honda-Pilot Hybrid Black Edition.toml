@@ -215,7 +215,7 @@ vehicle_usability_comments = "Family-focused with 19 cup holders and 4 USB ports
 
 # aesthetics: candidate values: "Low", "Medium", "High"
 aesthetics = "High"
-aesthetics_comments = "Black Edition adds 20" gloss-black wheels and blacked-out chrome."
+aesthetics_comments = "Black Edition adds 20\" gloss-black wheels and blacked-out chrome."
 
 # energy_consumption_level: candidate values: "Low", "Medium", "High"
 energy_consumption_level = "Medium"

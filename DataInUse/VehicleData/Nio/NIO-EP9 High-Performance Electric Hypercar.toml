@@ -228,7 +228,7 @@ energy_consumption_level_comments = "The NIO-EP9 has high energy consumption due
 
 # comfort_level: candidate values: "Low", "Medium", "High"
 comfort_level = "Medium"
-comfort_level_comments = "The NIO-EP9 offers moderate comfort with racing
+comfort_level_comments = "The NIO-EP9 offers moderate comfort with racing"
 [KeyDetails]
 key_details=""
 key_details_comments = "The NIO-EP9 is a limited-production electric hypercar featuring: 1,341 hp from four electric motors, 0-100 km/h in 2.7 seconds, 313 km/h top speed, 427 km NEDC range, active aerodynamics, and carbon fiber construction. Only 16 units were produced, primarily for track use."

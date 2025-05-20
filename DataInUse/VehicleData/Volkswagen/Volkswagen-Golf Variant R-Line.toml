@@ -76,7 +76,7 @@ noise_insulation_comments = "Acoustic glass and enhanced door seals reduce cabin
 
 # voice_interfaction, candidate values: "Yes", "No"
 voice_interfaction = "Yes"
-voice_interfaction_comments = "Volkswagen's "Hello Volkswagen" voice control for infotainment and climate."
+voice_interfaction_comments = "Volkswagen's \"Hello Volkswagen\" voice control for infotainment and climate."
 
 # ota_updates, candidate values: "Yes", "No"
 ota_updates = "Yes"

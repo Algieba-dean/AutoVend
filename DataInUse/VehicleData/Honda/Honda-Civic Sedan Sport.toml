@@ -180,7 +180,7 @@ seat_layout_comments = "Standard 5-passenger seating with 60/40 split rear seat.
 
 # city_commuting, candidate values: "Yes", "No", the value of car commuting needs, if support city commuting
 city_commuting = "Yes"
-city_commuting_comments = "Compact dimensions (187.0" length) and good visibility ideal for city driving."
+city_commuting_comments = "Compact dimensions (187.0\" length) and good visibility ideal for city driving."
 
 # highway_long_distance, candidate values: "Yes", "No", the value of car commuting needs, if support highway long distance commuting
 highway_long_distance = "Yes"
@@ -188,7 +188,7 @@ highway_long_distance_comments = "Comfortable ride and excellent fuel economy fo
 
 # off_road_capability, candidate values: "Low", "Medium", "High"
 off_road_capability = "Low"
-off_road_capability_comments = "Not designed for off-road use - 5.3" ground clearance."
+off_road_capability_comments = "Not designed for off-road use - 5.3\" ground clearance."
 
 # cargo_capability, candidate values: "Yes", "No"
 cargo_capability = "Yes"
@@ -206,7 +206,7 @@ heat_resistance_comments = "Proven durability in hot climates with efficient coo
 
 # size: candidate values: "Small", "Medium", "Large", the size of the vehicle
 size = "Medium"
-size_comments = "Compact sedan dimensions (187.0" L x 70.9" W x 55.7" H)."
+size_comments = "Compact sedan dimensions (187.0\" L x 70.9\" W x 55.7\" H)."
 
 # vehicle_usability: candidate values: "Small", "Medium", "Large"
 vehicle_usability = "Medium"
