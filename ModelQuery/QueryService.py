@@ -161,21 +161,46 @@ class CarModelQuery:
         for query_key,query_value in query.items():
             if query_key.endswith('_alias'):
                 # convert alias query
-                query_value=self._get_actual_value_from_alias(query_key,query_value)
-                query_key=query_key.replace('_alias', '')
+                if isinstance(query_value,str):
+                    query_value=self._get_actual_value_from_alias(query_key,query_value)
+                    query_key=query_key.replace('_alias', '')
+                else:
+                    query_value_list=[]
+                    for alias_item_value in query_value:
+                        alias_item_value=self._get_actual_value_from_alias(query_key,alias_item_value)
+                        query_value_list.append(alias_item_value)
+                    query_value=query_value_list
             # check vehicle data with query value
             if query_key in vehicle_data:
-                if vehicle_data[query_key].lower()!=query_value:
-                    return False
+                if isinstance(query_value,str):
+                    if vehicle_data[query_key].lower()!=query_value:
+                        return False
+                else:
+                    if vehicle_data[query_key].lower() not in query_value:
+                        return False
             else:
                 #check vehicle category and brand key
                 match query_key:
                     case "vehicle_category_top" | "vehicle_category_middle":
-                        if vehicle_data["vehicle_category_bottom"].lower() not in self.vehicle_category_tree[query_value]:
-                            return False
+                        if isinstance(query_value,str):
+                            if vehicle_data["vehicle_category_bottom"].lower() not in self.vehicle_category_tree[query_value]:
+                                return False
+                        else:
+                            allowed_value_list=[]
+                            for query_value_item in query_value:
+                                allowed_value_list.extend(self.vehicle_category_tree[query_value_item])
+                            if vehicle_data["vehicle_category_bottom"].lower() not in allowed_value_list:
+                                    return False
                     case "brand_area" | "brand_country":
-                        if vehicle_data["brand"].lower() not in self.brand_tree[query_value]:
-                            return False
+                        if isinstance(query_value,str):
+                            if vehicle_data["brand"].lower() not in self.brand_tree[query_value]:
+                                return False
+                        else:
+                            allowed_value_list=[]
+                            for query_value_item in query_value:
+                                allowed_value_list.extend(self.brand_tree[query_value_item])
+                            if vehicle_data["brand"].lower() not in allowed_value_list:
+                                return False
                     case _:
                         return False
 
@@ -215,6 +240,6 @@ class CarModelQuery:
 #if __name__ == "__main__":
 #    c = CarModelQuery()
     # test query
-#    result = c.query_car_model({"vehicle_category_middle": "suv","brand":"bmw"})
+#    result = c.query_car_model({"vehicle_category_middle": ["sedan","suv"],"brand_country":["sweden","china"],"size":["small","middle"]})
 #    print("query results:")
 #    pp(result)
