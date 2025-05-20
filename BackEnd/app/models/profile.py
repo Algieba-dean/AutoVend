@@ -23,7 +23,8 @@ class UserProfile:
         }
         self.connection_information = connection_information or {
             "connection_phone_number": "",
-            "connection_id_relationship": ""
+            "connection_id_relationship": "",
+            "connection_user_name": ""
         }
         self.updated_at = datetime.utcnow().isoformat()
         
@@ -91,7 +92,7 @@ class UserProfile:
             
         # Validate connection information if provided
         if self.connection_information and not self._validate_connection_information():
-            errors.append("Connection information must include: connection_phone_number, connection_id_relationship")
+            errors.append("Connection information must include: connection_phone_number, connection_id_relationship, connection_user_name")
             
         return errors
     
@@ -129,8 +130,9 @@ class UserProfile:
     
     def _validate_target_driver(self, driver: str) -> bool:
         """Validate target driver value"""
-        valid_drivers = ["self", "spouse", "child", "parent", "other"]
-        return driver.lower() in valid_drivers
+        return True
+        # valid_drivers = ["self", "spouse", "child", "parent", "other"]
+        #return driver.lower() in valid_drivers
     
     def _validate_expertise(self, expertise: str) -> bool:
         """Validate expertise value"""
@@ -147,7 +149,7 @@ class UserProfile:
     
     def _validate_connection_information(self) -> bool:
         """Validate connection information fields"""
-        required_fields = ["connection_phone_number", "connection_id_relationship"]
+        required_fields = ["connection_phone_number", "connection_user_name"]
         return all(field in self.connection_information for field in required_fields)
     
     @staticmethod
@@ -168,6 +170,7 @@ class UserProfile:
             },
             "connection_information": {
                 "connection_phone_number": "",
-                "connection_id_relationship": ""
+                "connection_id_relationship": "",
+                "connection_user_name": ""
             }
         } 

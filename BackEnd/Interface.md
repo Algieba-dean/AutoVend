@@ -32,7 +32,8 @@ This document defines the API interface between the frontend and backend of Auto
       },
       "connection_information": {
         "connection_phone_number": "",
-        "connection_id_relationship": ""
+        "connection_id_relationship": "",
+      "connection_user_name": ""
       }
     }
     ```
@@ -70,7 +71,8 @@ This document defines the API interface between the frontend and backend of Auto
     },
     "connection_information": {
       "connection_phone_number": "",
-      "connection_id_relationship": ""
+      "connection_id_relationship": "",
+      "connection_user_name": ""
     }
   }
   ```
@@ -141,7 +143,8 @@ This document defines the API interface between the frontend and backend of Auto
         },
         "connection_information": {
           "connection_phone_number": "",
-          "connection_id_relationship": ""
+          "connection_id_relationship": "",
+          "connection_user_name": ""
         }
       },
       "matched_car_models": [],
@@ -209,7 +212,8 @@ This document defines the API interface between the frontend and backend of Auto
         },
         "connection_information": {
           "connection_phone_number": "",
-          "connection_id_relationship": ""
+          "connection_id_relationship": "",
+      "connection_user_name": ""
         }
       },
       "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
@@ -287,7 +291,8 @@ This document defines the API interface between the frontend and backend of Auto
         },
         "connection_information": {
           "connection_phone_number": "",
-          "connection_id_relationship": ""
+          "connection_id_relationship": "",
+      "connection_user_name": ""
         }
       },
       "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
@@ -347,7 +352,8 @@ This document defines the API interface between the frontend and backend of Auto
         },
         "connection_information": {
           "connection_phone_number": "",
-          "connection_id_relationship": ""
+          "connection_id_relationship": "",
+      "connection_user_name": ""
         }
       },
       "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
@@ -406,6 +412,7 @@ AdditionalInformation:
 ConnectionInformation:
   connection_phone_number: Optional, string format
   connection_id_relationship: Optional, string format describing relationship
+  connection_user_name: Optional, string format
 ```
 
 ### User Profile Field Details
@@ -433,6 +440,7 @@ ConnectionInformation:
 |-------|------|----------|-------------|-----------------|
 | connection_phone_number | String | No | Phone number of connection | Any valid phone number |
 | connection_id_relationship | String | No | Relationship to connection | Any relationship description |
+| connection_user_name | String | No | Name of connection | Any name string |
 
 ### Car Needs/Requirements
 

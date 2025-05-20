@@ -2,6 +2,7 @@ import json
 import os
 from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
+from pathlib import Path
 import shutil
 
 class FileStorage:
@@ -13,6 +14,7 @@ class FileStorage:
         self.profiles_dir = os.path.join(storage_dir, "profiles")
         self.sessions_dir = os.path.join(storage_dir, "sessions")
         self.messages_dir = os.path.join(storage_dir, "messages")
+        self.connection_data_dict = self._get_all_connection_number_with_user_name()
         
         # Create necessary directories
         for directory in [self.profiles_dir, self.sessions_dir, self.messages_dir]:
@@ -52,6 +54,52 @@ class FileStorage:
         except Exception as e:
             print(f"Error getting profile: {e}")
             return None
+
+    def get_profiles_from_connection(self,phone_number:str)->Optional[Dict[str, Any]]:
+        """Get profiles from connection, will only be called when directly,get profile can't find the profile, try to find it from connection"""
+        try:
+            if not phone_number:
+                return None
+
+            if phone_number in self.connection_data_dict:
+                return self.connection_data_dict[phone_number]
+            else:
+                # print(f"Not found matched connection user name for {phone_number}")
+                return None
+        except Exception as e:
+            print(f"Error getting profiles from connection: {e}")
+            return None
+
+    def _get_all_connection_number_with_user_name(self):
+        """
+        get all connection numbers with their user names
+        
+        Returns:
+            dict, key is connection number, value is user name
+        """
+        connection_data_list = dict()
+        if Path(self.profiles_dir).exists():
+            return connection_data_list
+        for file in Path(self.profiles_dir).glob("*.json"):
+            try:
+                with open(file, "r", encoding="utf-8") as f:
+                    profile_data = json.load(f)
+                    connection_phone_number = profile_data["connection_information"]["connection_phone_number"]
+                    connection_user_name = profile_data["connection_information"]["connection_user_name"]
+                    raw_phone_number = profile_data["phone_number"]
+                    raw_name = profile_data["name"]
+                    return_dict = {
+                        "connection_phone_number":connection_phone_number,
+                        "connection_user_name":connection_user_name,
+                        "raw_phone_number":raw_phone_number,
+                        "raw_name":raw_name
+                    }
+                    connection_data_list[raw_phone_number]=return_dict
+            except Exception as e:
+                # print(f"Error loading connection data from {file}: {e}")
+                return dict()
+        return connection_data_list
+                
     
     def save_session(self, session_id: str, session_data: Dict[str, Any]) -> bool:
         """Save chat session"""

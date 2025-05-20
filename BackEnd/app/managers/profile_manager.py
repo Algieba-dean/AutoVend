@@ -23,10 +23,24 @@ class ProfileManager:
             return None, "Phone number is required"
             
         profile_data = Config.storage.get_profile(phone_number)
-        if not profile_data:
+        if profile_data:
+            return profile_data, None
+        connection_data = Config.storage.get_profiles_from_connection(phone_number)
+        from_user_name = connection_data.get("raw_name","")
+        from_phone_number = connection_data.get("raw_phone_number","")
+        connection_name = connection_data.get("connection_user_name","")
+        # connection_phone_number = phone_number
+        if not connection_data:
             return None, "Profile not found"
-            
-        return profile_data, None
+        connection_profile_data , error, validation_errors  = Config.storage.create_profile(phone_number)
+        if error:
+            return None, error
+        if validation_errors:
+            return None, validation_errors
+        connection_profile_data["name"] = connection_name
+        connection_profile_data["connection_information"]["connection_phone_number"] = from_phone_number
+        connection_profile_data["connection_information"]["connection_user_name"] = from_user_name
+        return connection_profile_data, None
     
     @staticmethod
     def create_profile(profile_data: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], Optional[str], Optional[List[str]]]:
