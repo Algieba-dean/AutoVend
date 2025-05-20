@@ -275,22 +275,129 @@ class BasicProfileExtractor:
         
         # Check for common phrases indicating the driver
         driver_indicators = {
-            "Self": [r'\b(i|myself|me)\s*(?:will|am|going to)?\s*(?:be\s*)?(?:the\s*)?(?:one\s*)?(?:to\s*)?drive', 
-                    r'(?:drive|driving)\s*(?:myself|me|by myself)'],
-            "Wife": [r'(?:my\s*)?wife\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)'],
-            "Husband": [r'(?:my\s*)?husband\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)'],
-            "Parents": [r'(?:my\s*)?parents\s*(?:will|are)?\s*(?:be\s*)?(?:driving|drive)'],
-            "Father": [r'(?:my\s*)?(?:father|dad)\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)'],
-            "Mother": [r'(?:my\s*)?(?:mother|mom)\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)'],
-            "Son": [r'(?:my\s*)?son\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)'],
-            "Daughter": [r'(?:my\s*)?daughter\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)'],
-            "Friend": [r'(?:my\s*)?friend\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)']
+            "Self": [
+                # Direct self-driving patterns
+                r'\b(i|myself|me)\s*(?:will|am|going to)?\s*(?:be\s*)?(?:the\s*)?(?:one\s*)?(?:to\s*)?drive',
+                r'(?:drive|driving)\s*(?:myself|me|by myself)',
+                # Car ownership patterns
+                r'my\s+(?:own|future|new|next)?\s*car',
+                r'car\s+for\s+(?:me|myself)',
+                r'(?:i|me)\s+(?:as\s+the\s+)?driver',
+                r'i\s+(?:need|want|plan|intend)\s+to\s+(?:drive|use|buy|get|have)\s+(?:a\s+)?(?:car|vehicle)',
+                r'(?:i|me)\s+(?:to|for)\s+drive',
+                r'(?:for|to)\s+(?:me|myself)',
+                r'i\'m\s+(?:the\s+)?(?:one|person)(?:\s+who)?\s+(?:will|going\s+to)\s+(?:use|drive|operate)',
+                r'i\s+(?:will|am\s+going\s+to)\s+(?:be|become)\s+(?:a|the)\s+driver',
+                r'this\s+car\s+is\s+for\s+me',
+                r'i\s+need\s+a\s+(?:new\s+)?(?:car|vehicle|ride)'
+            ],
+            "Wife": [
+                r'(?:my\s*)?wife\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?wife',
+                r'(?:my\s+)?wife(?:\'s)?\s+(?:car|vehicle|driving|ride)',
+                r'(?:my\s+)?wife\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?wife\s+(?:needs|wants|plans|intends)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?wife',
+                r'(?:my\s+)?wife.*(?:birthday|present|gift)'
+            ],
+            "Husband": [
+                r'(?:my\s*)?husband\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?husband',
+                r'(?:my\s+)?husband(?:\'s)?\s+(?:car|vehicle|driving|ride)',
+                r'(?:my\s+)?husband\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?husband\s+(?:needs|wants|plans|intends)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?husband',
+                r'(?:my\s+)?husband.*(?:birthday|present|gift)'
+            ],
+            "Parents": [
+                r'(?:my\s*)?parents\s*(?:will|are)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?parents',
+                r'(?:my\s+)?parents(?:\'s)?\s+(?:car|vehicle|driving|ride)',
+                r'(?:my\s+)?parents\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?parents\s+(?:need|want|plan|intend)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?parents',
+                r'(?:reliable|safe)(?:\s+car)?\s+for\s+(?:my\s+)?parents'
+            ],
+            "Father": [
+                r'(?:my\s*)?(?:father|dad)\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?(?:father|dad)',
+                r'(?:my\s+)?(?:father|dad)(?:\'s)?\s+(?:car|vehicle|driving|ride|next)',
+                r'(?:my\s+)?(?:father|dad)\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?(?:father|dad)\s+(?:needs|wants|plans|intends)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?(?:father|dad)',
+                r'(?:my\s+)?dad(?:\'s)?\s+(?:next|new)\s+(?:car|vehicle)'
+            ],
+            "Mother": [
+                r'(?:my\s*)?(?:mother|mom)\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?(?:mother|mom)',
+                r'(?:my\s+)?(?:mother|mom)(?:\'s)?\s+(?:car|vehicle|driving|ride)',
+                r'(?:my\s+)?(?:mother|mom)\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?(?:mother|mom)\s+(?:needs|wants|plans|intends)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?(?:mother|mom)'
+            ],
+            "Son": [
+                r'(?:my\s*)?son\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?son',
+                r'(?:my\s+)?son(?:\'s)?\s+(?:car|vehicle|driving|ride)',
+                r'(?:my\s+)?son\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?son\s+(?:needs|wants|plans|intends)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?son'
+            ],
+            "Daughter": [
+                r'(?:my\s*)?daughter\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?daughter',
+                r'(?:my\s+)?daughter(?:\'s)?\s+(?:car|vehicle|driving|ride)',
+                r'(?:my\s+)?daughter\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?daughter\s+(?:needs|wants|plans|intends)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?daughter',
+                r'(?:my\s+)?daughter\s+needs\s+(?:a\s+)vehicle\s+for\s+college'
+            ],
+            "Friend": [
+                r'(?:my\s*)?friend\s*(?:will|is)?\s*(?:be\s*)?(?:driving|drive)',
+                r'car\s+for\s+(?:my\s+)?friend',
+                r'(?:my\s+)?friend(?:\'s)?\s+(?:car|vehicle|driving|ride)',
+                r'(?:my\s+)?friend\s+(?:to|as\s+the)\s+driver',
+                r'(?:my\s+)?friend\s+(?:needs|wants|plans|intends)\s+to\s+drive',
+                r'(?:shopping|looking|buying|getting)\s+(?:a\s+)?(?:car|vehicle)\s+for\s+(?:my\s+)?friend',
+                r'help\s+(?:me\s+)?find\s+(?:a\s+)?car\s+for\s+(?:my\s+)?friend'
+            ]
         }
+        
+        # Check for potential self-driving from context (if no specific driver mentioned)
+        self_indicators = [
+            r'i\s+(?:need|want|looking\s+for|searching\s+for)\s+(?:a|the|some|new)?\s+(?:car|vehicle|transportation)',
+            r'i\'m\s+(?:looking|searching)\s+for\s+(?:a|the|some|new)?\s+(?:car|vehicle)',
+            r'(?:help|advise|assist)\s+me\s+(?:to\s+)?(?:buy|purchase|get|find|choose)\s+(?:a|the|some|new)?\s+(?:car|vehicle)',
+            r'i\s+(?:want\s+to|plan\s+to|going\s+to)\s+(?:buy|purchase|get|have)\s+(?:a|the|some|new)?\s+(?:car|vehicle)',
+            r'i\'m\s+(?:interested\s+in|considering)\s+(?:a|the|some|new)?\s+(?:car|vehicle)',
+            r'i\s+need\s+advice\s+about\s+cars',
+            r'(?:considering|thinking\s+about)\s+(?:a\s+)?(?:new\s+)?vehicle\s+purchase',
+            r'(?:looking|searching)\s+for\s+(?:my|a)\s+(?:first|new|next)\s+car',
+            r'i\'m\s+(?:\w+\s+)*looking\s+for\s+my\s+(?:first|new|next)\s+car'
+        ]
         
         # Check driver indicator patterns
         for driver, patterns in driver_indicators.items():
             for pattern in patterns:
                 if re.search(pattern, text, re.IGNORECASE):
+                    return driver
+        
+        # Check for possession words indicating relationships
+        possessive_indicators = [
+            (r'(?:my\s+)?(?:wife)(?:\'s)?', "Wife"),
+            (r'(?:my\s+)?(?:husband)(?:\'s)?', "Husband"),
+            (r'(?:my\s+)?(?:son)(?:\'s)?', "Son"),
+            (r'(?:my\s+)?(?:daughter)(?:\'s)?', "Daughter"),
+            (r'(?:my\s+)?(?:father|dad)(?:\'s)?', "Father"),
+            (r'(?:my\s+)?(?:mother|mom)(?:\'s)?', "Mother"),
+            (r'(?:my\s+)?(?:parents)(?:\'s)?', "Parents"),
+            (r'(?:my\s+)?(?:friend)(?:\'s)?', "Friend")
+        ]
+        
+        if "car" in text or "vehicle" in text or "ride" in text or "driving" in text or "buy" in text or "purchase" in text:
+            for pattern, driver in possessive_indicators:
+                if re.search(pattern, text, re.IGNORECASE):
+                    # Check if this is the context of a car/vehicle discussion
                     return driver
         
         # Check for direct mentions of relationships
@@ -311,6 +418,23 @@ class BasicProfileExtractor:
                         return "Sister"
                     return candidate
         
+        # If no specific driver found, check for self-driving context
+        for pattern in self_indicators:
+            if re.search(pattern, text, re.IGNORECASE):
+                return "Self"
+        
+        # Look for "shopping", "buying", "looking for" in combination with car/vehicle
+        if re.search(r'(?:shopping|buying|looking|searching)\s+for\s+(?:a\s+)?(?:car|vehicle)', text, re.IGNORECASE):
+            # If no explicit driver mentioned, assume self
+            return "Self" 
+        
+        # If conversation starts with "I", "My", it's likely about the self
+        first_sentence = re.split(r'[.!?]', text)[0].strip().lower()
+        if first_sentence.startswith("i ") or first_sentence.startswith("my "):
+            # Only if fairly short sentence and doesn't mention others
+            if len(first_sentence.split()) < 10 and not any(word in first_sentence for word in ["wife", "husband", "son", "daughter", "mom", "dad", "friend"]):
+                return "Self"
+                
         return ""
     
     def update_profile(self, current_profile, user_input):
@@ -377,4 +501,30 @@ if __name__ == "__main__":
     
     print(f"Initial profile: {current_profile}")
     print(f"Update text: {update_text}")
-    print(f"Updated profile: {updated_profile}") 
+    print(f"Updated profile: {updated_profile}")
+    
+    # Test additional target driver expressions
+    print("\nTesting additional target driver expressions:")
+    target_driver_tests = [
+        "I need a car for my daily commute",
+        "I'm interested in buying a new car for myself",
+        "Looking for a car that my wife can use",
+        "This will be my son's car",
+        "I want a car for my mom to drive around town",
+        "My daughter needs a vehicle for college",
+        "Looking for my dad's next car",
+        "Help me find a car for my friend",
+        "I'm car shopping for my husband's birthday",
+        "Need a reliable car for my parents",
+        "My car needs replacement",
+        "Car shopping for my wife's new ride",
+        "This car is for me",
+        "I need advice about cars",
+        "Considering a new vehicle purchase"
+    ]
+    
+    for text in target_driver_tests:
+        driver = extractor._extract_target_driver(text)
+        print(f"Input: {text}")
+        print(f"Extracted driver: {driver or 'Not found'}")
+        print() 
