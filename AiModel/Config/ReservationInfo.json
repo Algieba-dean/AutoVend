@@ -1,0 +1,27 @@
+{
+        "test_driver": {
+            "candidates":["self","wife","husband","son","daughter","mom","dad","friend"],
+            "description":"the driver of the test drive"
+        },
+        "test_driver_name": {
+            "description":"the name of the test driver"
+        },
+        "reservation_date": {
+            "description":"the date of the test drive"
+        },
+        "selected_car_model":{
+            "description":"the car model of the test drive"
+        },
+        "reservation_time": {
+            "description":"the time of the test drive"
+        },
+        "reservation_location": {
+            "description":"the location of the test drive"
+        },
+        "reservation_phone_number": {
+            "description":"the phone number of the test drive"
+        },
+        "salesman": {
+            "description":"the salesman of the test drive"
+        }
+      }

@@ -10,6 +10,7 @@ from LLMExtractors.implicit_needs_inferrer import ImplicitNeedsInferrer
 from LLMExtractors.test_drive_extractor import TestDriveExtractor
 from ModelQuery.ModelQuery import CarModelQuery
 from Conversation.conversation_module import ConversationModule
+from InformationExtractors.stage_arbitrator import StageArbitrator
 from prompt_manager import PromptManager
 
 class AutoVend:
@@ -41,12 +42,13 @@ class AutoVend:
         # Initialize state
         self.current_stage = "welcome"
         self.previous_stage = ""
-        self.user_profile = {}
-        self.explicit_needs = {}
-        self.implicit_needs = {}
-        self.test_drive_info = {}
-        self.matched_car_models = []
-        self.matched_car_model_infos = []
+        self.stage = dict()
+        self.user_profile = dict()
+        self.explicit_needs = dict()
+        self.implicit_needs = dict()
+        self.test_drive_info = dict()
+        self.matched_car_models = list()
+        self.matched_car_model_infos = list()
         
         # Create a thread pool executor
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
@@ -152,32 +154,7 @@ class AutoVend:
     
     def _update_stage(self):
         """Update the conversation stage based on current information."""
-        # Basic stage progression logic
-        if self.current_stage == "welcome":
-            # If we have some profile info but not enough about car needs
-            if self.user_profile and len(self.user_profile) >= 2:
-                self.current_stage = "profile_analysis"
-        
-        elif self.current_stage == "profile_analysis":
-            # If we have enough profile info and some needs are identified
-            if len(self.user_profile) >= 3 and (self.explicit_needs or self.implicit_needs):
-                self.current_stage = "needs_analysis"
-        
-        elif self.current_stage == "needs_analysis":
-            # If we have a good amount of needs identified and matched car models
-            if len(self.explicit_needs) + len(self.implicit_needs) >= 5 and self.matched_car_models:
-                self.current_stage = "car_selection_confirmation"
-        
-        elif self.current_stage == "reservation4s":
-            # If we have most test drive details
-            if len(self.test_drive_info) >= 4:
-                self.current_stage = "reservation_confirmation"
-        
-        elif self.current_stage == "reservation_confirmation":
-            # If all test drive details are complete
-            if len(self.test_drive_info) >= 5:
-                self.current_stage = "farewell"
-    
+        self.stage_arbitrator.determine_stage(user_message, self.user_profile, self.explicit_needs, self.implicit_needs, self.matched_car_models)
     def get_car_model_details(self, model_name):
         """
         Get detailed information about a specific car model.
