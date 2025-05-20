@@ -2,7 +2,7 @@ import tomllib as tomli
 import json
 import os
 from pathlib import Path
-from pprint import pp
+#from pprint import pp
 
 class CarModelQuery:
     def __init__(self):
@@ -254,9 +254,9 @@ class CarModelQuery:
         return ""
 
 # test code
-if __name__ == "__main__":
-    c = CarModelQuery()
+#if __name__ == "__main__":
+#    c = CarModelQuery()
     # test query
-    result = c.query_car_model({"vehicle_category_middle": ["sedan","suv"],"brand_country":["sweden","china"],"size":["small","middle"]})
-    print("query results:")
-    pp(result)
+#    result = c.query_car_model({"vehicle_category_middle": ["sedan","suv"],"brand_country":["sweden","china"],"size":["small","middle"]})
+#    print("query results:")
+#    pp(result)
