@@ -16,9 +16,11 @@ def create_app(config_name="default"):
     # Register blueprints
     from app.routes.profile import profile_bp
     from app.routes.chat import chat_bp
+    from app.routes.test_drive import test_drive_bp
     
     app.register_blueprint(profile_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(test_drive_bp)
     
     # Simple index route
     @app.route("/")

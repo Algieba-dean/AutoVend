@@ -1,0 +1,14 @@
+{
+    "test_drive_info":{
+        "test_driver": "Ms. Wang",
+        "reservation_date": "",
+        "selected_car_model":"BMW-1 Series",
+        "reservation_time": "",
+        "reservation_location": "",
+        "reservation_phone_number": "14555758496",
+        "salesman": "Mr. Zhang",
+        "status": "Pending"
+    },
+    "created_at":"",
+    "updated_at":""
+}
