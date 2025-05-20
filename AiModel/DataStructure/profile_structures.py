@@ -41,6 +41,7 @@ class ProfileData:
         },
         "connection_information": {
           "connection_phone_number": "",
-          "connection_id_relationship": ""
+          "connection_id_relationship": "",
+          "connection_user_name": ""
         }
       }

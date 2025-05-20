@@ -55,6 +55,10 @@
         "connection_id_relationship": {
             "description": "the relastionship of connection",
             "value": ""
+        },
+        "connection_user_name": {
+            "description": "the name of the connection",
+            "value": ""
         }
     }
 } 

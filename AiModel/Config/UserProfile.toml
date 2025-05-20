@@ -50,4 +50,7 @@ connection_phone_number = ""
 # connection_id_relationship, the relastionship of connection
 connection_id_relationship = ""
 
+# connection_user_name: Optional, the name of the connection
+connection_user_name = ""
+
 
