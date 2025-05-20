@@ -32,8 +32,7 @@ This document defines the API interface between the frontend and backend of Auto
       },
       "connection_information": {
         "connection_phone_number": "",
-        "connection_id_relationship": "",
-      "connection_user_name": ""
+        "connection_id_relationship": ""
       }
     }
     ```
@@ -71,8 +70,7 @@ This document defines the API interface between the frontend and backend of Auto
     },
     "connection_information": {
       "connection_phone_number": "",
-      "connection_id_relationship": "",
-      "connection_user_name": ""
+      "connection_id_relationship": ""
     }
   }
   ```
@@ -123,7 +121,7 @@ This document defines the API interface between the frontend and backend of Auto
       "message": {
         "message_id": "<uuid>",
         "sender_type": "system",
-        "sender_id": "AutoVend",
+        "sender_id": "agent_123",
         "content": "Hi I'm AutoVend, your smart assistant! How can I assist you in finding your ideal vehicle today?",
         "timestamp": "2025-06-01T12:34:56Z",
         "status": "delivered"
@@ -155,6 +153,7 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_info": {
         "test_driver": "",
         "reservation_date": "",
+        "selected_car_model":"",
         "reservation_time": "",
         "reservation_location": "",
         "reservation_phone_number": "",
@@ -192,7 +191,7 @@ This document defines the API interface between the frontend and backend of Auto
       "response": {
         "message_id": "<uuid>",
         "sender_type": "system",
-        "sender_id": "AutoVend",
+        "sender_id": "agent_123",
         "content": "I'd be happy to help you find an electric SUV with good range. Tesla Model Y offers around 330 miles of range, while Ford Mustang Mach-E offers up to 300 miles. Would you like more information about these models or would you prefer other options?",
         "timestamp": "2025-06-01T12:35:05Z",
         "status": "delivered"
@@ -213,7 +212,7 @@ This document defines the API interface between the frontend and backend of Auto
         "connection_information": {
           "connection_phone_number": "",
           "connection_id_relationship": "",
-      "connection_user_name": ""
+          "connection_user_name": ""
         }
       },
       "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
@@ -236,6 +235,7 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_date": "",
         "reservation_time": "",
         "reservation_location": "",
+        "selected_car_model":"",
         "reservation_phone_number": "",
         "salesman": ""
       }
@@ -270,7 +270,7 @@ This document defines the API interface between the frontend and backend of Auto
         {
           "message_id": "<uuid>",
           "sender_type": "system",
-          "sender_id": "AutoVend",
+          "sender_id": "agent_123",
           "content": "I'd be happy to help you find an electric SUV. Could you tell me your typical daily commute distance?",
           "timestamp": "2025-06-01T12:35:10Z"
         }
@@ -292,7 +292,7 @@ This document defines the API interface between the frontend and backend of Auto
         "connection_information": {
           "connection_phone_number": "",
           "connection_id_relationship": "",
-      "connection_user_name": ""
+          "connection_user_name": ""
         }
       },
       "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
@@ -313,6 +313,7 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_info": {
         "test_driver": "",
         "reservation_date": "",
+        "selected_car_model":"Tesla Model Y",
         "reservation_time": "",
         "reservation_location": "",
         "reservation_phone_number": "",
@@ -352,8 +353,7 @@ This document defines the API interface between the frontend and backend of Auto
         },
         "connection_information": {
           "connection_phone_number": "",
-          "connection_id_relationship": "",
-      "connection_user_name": ""
+          "connection_id_relationship": ""
         }
       },
       "matched_car_models": ["Tesla Model Y", "Ford Mustang Mach-E"],
@@ -378,6 +378,7 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_info": {
         "test_driver": "Mr. Zhang",
         "reservation_date": "2025-06-05",
+        "selected_car_model":"Tesla Model Y",
         "reservation_time": "14:00",
         "reservation_location": "Tesla Beijing Haidian Store",
         "reservation_phone_number": "123456789",
@@ -389,6 +390,193 @@ This document defines the API interface between the frontend and backend of Auto
   - Body: `{ "error": "Chat session not found" }`
   - Status: 400 Bad Request
   - Body: `{ "error": "Session already ended" }`
+
+### Test Drive Functionality
+
+#### 1. Create Test Drive Reservation
+
+- **Endpoint**: `POST /api/test-drive`
+- **Description**: Creates a new test drive reservation
+- **Request Body**:
+  ```json
+  {
+    "test_drive_info": {
+      "test_driver": "Mr. Zhang",
+      "brand": "Tesla",
+      "selected_car_model": "Model Y",
+      "status": "Pending",
+      "reservation_phone_number": "123456789",
+      "reservation_location": "Tesla Beijing Haidian Store",
+      "reservation_time": "14:00",
+      "reservation_date": "2025-06-05"
+    }
+  }
+  ```
+- **Required Fields**: `test_driver`, `brand`, `selected_car_model`, `reservation_phone_number`, `reservation_date`, `reservation_time`
+- **Response**:
+  - Status: 201 Created
+  - Body: 
+    ```json
+    {
+      "created_at": "2025-06-01T12:34:56Z",
+      "test_drive_info": {
+        "test_driver": "Mr. Zhang",
+        "brand": "Tesla",
+        "selected_car_model": "Model Y",
+        "status": "Pending",
+        "reservation_phone_number": "123456789",
+        "reservation_location": "Tesla Beijing Haidian Store",
+        "reservation_time": "14:00",
+        "reservation_date": "2025-06-05"
+      }
+    }
+    ```
+  - Status: 400 Bad Request
+  - Body: `{ "error": "Validation error", "details": [...] }`
+  - Status: 409 Conflict
+  - Body: `{ "error": "A test drive reservation already exists for this phone number" }`
+
+#### 2. Get Test Drive Reservation
+
+- **Endpoint**: `GET /api/test-drive/{reservation_phone_number}`
+- **Description**: Retrieves details of a specific test drive reservation
+- **Parameters**:
+  - `reservation_phone_number`: Phone number associated with the reservation
+- **Response**:
+  - Status: 200 OK
+  - Body:
+    ```json
+    {
+      "created_at": "2025-06-01T12:34:56Z",
+      "updated_at": "2025-06-01T14:34:56Z",
+      "test_drive_info": {
+        "test_driver": "Mr. Zhang",
+        "brand": "Tesla",
+        "selected_car_model": "Model Y",
+        "status": "Confirmed",
+        "reservation_phone_number": "123456789",
+        "reservation_location": "Tesla Beijing Haidian Store",
+        "reservation_time": "14:00",
+        "reservation_date": "2025-06-05"
+      }
+    }
+    ```
+  - Status: 404 Not Found
+  - Body: `{ "error": "Test drive reservation not found" }`
+
+#### 3. Update Test Drive Reservation
+
+- **Endpoint**: `PUT /api/test-drive/{reservation_phone_number}`
+- **Description**: Updates an existing test drive reservation
+- **Parameters**:
+  - `reservation_phone_number`: Phone number associated with the reservation
+- **Request Body**:
+  ```json
+  {
+    "test_drive_info": {
+      "test_driver": "Mr. Zhang",
+      "brand": "Tesla",
+      "selected_car_model": "Model Y",
+      "status": "Confirmed",
+      "reservation_phone_number": "123456789",
+      "reservation_location": "Tesla Beijing Haidian Store",
+      "reservation_time": "15:30",
+      "reservation_date": "2025-06-05"
+    }
+  }
+  ```
+- **Response**:
+  - Status: 200 OK
+  - Body:
+    ```json
+    {
+      "created_at": "2025-06-01T12:34:56Z",
+      "updated_at": "2025-06-01T16:34:56Z",
+      "test_drive_info": {
+        "test_driver": "Mr. Zhang",
+        "brand": "Tesla",
+        "selected_car_model": "Model Y",
+        "status": "Confirmed",
+        "reservation_phone_number": "123456789",
+        "reservation_location": "Tesla Beijing Haidian Store",
+        "reservation_time": "15:30",
+        "reservation_date": "2025-06-05"
+      }
+    }
+    ```
+  - Status: 404 Not Found
+  - Body: `{ "error": "Test drive reservation not found" }`
+  - Status: 400 Bad Request
+  - Body: `{ "error": "Validation error", "details": [...] }`
+
+#### 4. Delete Test Drive Reservation
+
+- **Endpoint**: `DELETE /api/test-drive/{reservation_phone_number}`
+- **Description**: Deletes a test drive reservation
+- **Parameters**:
+  - `reservation_phone_number`: Phone number associated with the reservation
+- **Response**:
+  - Status: 200 OK
+  - Body:
+    ```json
+    {
+      "message": "Test drive reservation deleted successfully",
+      "reservation_phone_number": "123456789"
+    }
+    ```
+  - Status: 404 Not Found
+  - Body: `{ "error": "Test drive reservation not found" }`
+
+#### 5. List Test Drive Reservations
+
+- **Endpoint**: `GET /api/test-drive`
+- **Description**: Retrieves a list of test drive reservations with optional filtering
+- **Query Parameters**:
+  - `status` (optional): Filter by status (Pending, Confirmed, Completed)
+  - `brand` (optional): Filter by car brand
+  - `from_date` (optional): Filter by reservation date range start (YYYY-MM-DD)
+  - `to_date` (optional): Filter by reservation date range end (YYYY-MM-DD)
+  - `limit` (optional): Maximum number of records to return, default 20
+  - `offset` (optional): Offset for pagination, default 0
+- **Response**:
+  - Status: 200 OK
+  - Body:
+    ```json
+    {
+      "total_count": 42,
+      "limit": 20,
+      "offset": 0,
+      "test_drives": [
+        {
+          "created_at": "2025-06-01T12:34:56Z",
+          "test_drive_info": {
+            "test_driver": "Mr. Zhang",
+            "brand": "Tesla",
+            "selected_car_model": "Model Y",
+            "status": "Pending",
+            "reservation_phone_number": "123456789",
+            "reservation_location": "Tesla Beijing Haidian Store", "reservation_time": "14:00",
+            "reservation_date": "2025-06-05"
+          }
+        },
+        {
+          "created_at": "2025-06-01T13:34:56Z",
+          "test_drive_info": {
+            "test_driver": "Mrs. Li",
+            "brand": "Nio",
+            "selected_car_model": "ES6",
+            "status": "Confirmed",
+            "reservation_phone_number": "987654321",
+            "reservation_location": "Nio House Beijing",
+            "reservation_time": "10:00",
+            "reservation_date": "2025-06-06"
+          }
+        }
+      ]
+    }
+    ```
+  - Status: 400 Bad Request
+  - Body: `{ "error": "Invalid query parameters" }`
 
 ## Data Structures
 
@@ -412,7 +600,6 @@ AdditionalInformation:
 ConnectionInformation:
   connection_phone_number: Optional, string format
   connection_id_relationship: Optional, string format describing relationship
-  connection_user_name: Optional, string format
 ```
 
 ### User Profile Field Details
@@ -440,7 +627,6 @@ ConnectionInformation:
 |-------|------|----------|-------------|-----------------|
 | connection_phone_number | String | No | Phone number of connection | Any valid phone number |
 | connection_id_relationship | String | No | Relationship to connection | Any relationship description |
-| connection_user_name | String | No | Name of connection | Any name string |
 
 ### Car Needs/Requirements
 
@@ -568,6 +754,42 @@ reservation_info:
 | reservation_location | String | No | Dealership location | "Tesla Beijing Haidian Store" |
 | reservation_phone_number | String | No | Contact phone | "123456789" |
 | salesman | String | No | Assigned sales person | "David Chen" |
+
+### Test Drive Reservation
+
+The test_drive_info structure contains information about a test drive reservation.
+
+```
+test_drive_info:
+  test_driver: String identifying the person who will test drive the vehicle
+  brand: String indicating the car brand
+  selected_car_model: String specifying the car model
+  status: Enum indicating the current status of the test drive
+  reservation_phone_number: String with contact phone number (primary identifier)
+  reservation_location: String describing the dealership or store location
+  reservation_time: String in HH:MM format for the reservation time
+  reservation_date: String in YYYY-MM-DD format for the reservation date
+```
+
+### Test Drive Information Field Details
+
+| Field | Type | Required | Description | Example Values |
+|-------|------|----------|-------------|----------------|
+| test_driver | String | Yes | Name of test driver | "Mr. Zhang" |
+| brand | String | Yes | Car manufacturer | "Tesla", "Nio", "BMW" |
+| selected_car_model | String | Yes | Specific car model | "Model Y", "ES6", "i4" |
+| status | String | Yes | Current status of test drive | "Pending", "Confirmed", "Completed" |
+| reservation_phone_number | String | Yes | Contact phone (primary identifier) | "123456789" |
+| reservation_location | String | Yes | Dealership location | "Tesla Beijing Haidian Store" |
+| reservation_time | String | Yes | Time of test drive | "14:00" (HH:MM format) |
+| reservation_date | String | Yes | Date of test drive | "2025-06-05" (YYYY-MM-DD format) |
+
+#### Test Drive Status Values
+| Value | Description |
+|-------|-------------|
+| Pending | Initial state when test drive is requested but not confirmed by dealer |
+| Confirmed | Test drive has been approved by dealer and scheduled |
+| Completed | Test drive has been completed |
 
 ### Chat Session
 

@@ -2,8 +2,18 @@ import re
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import calendar
-from utils import get_current_date, timer_decorator
 
+def get_current_time():
+    """
+    Get the current time in the format of YYYY-MM-DD HH:MM:SS
+    """
+    return datetime.now().time().strftime("%H:%M:%S")
+
+def get_current_date():
+    """
+    Get the current date in the format of YYYY-MM-DD
+    """
+    return datetime.now().strftime("%Y-%m-%d")
 class DateExtractor:
     """
     A class for extracting date information from user input strings.
@@ -47,7 +57,6 @@ class DateExtractor:
             "december": 12, "dec": 12
         }
     
-    @timer_decorator
     def extract_dates(self, text):
         """
         Extract date information from the given text based on current date.

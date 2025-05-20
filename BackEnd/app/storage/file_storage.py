@@ -78,9 +78,9 @@ class FileStorage:
             dict, key is connection number, value is user name
         """
         connection_data_list = dict()
-        if Path(self.profiles_dir).exists():
+        if not Path(self.profiles_dir).exists():
             return connection_data_list
-        for file in Path(self.profiles_dir).glob("*.json"):
+        for file in Path(self.profiles_dir).rglob("*.json"):
             try:
                 with open(file, "r", encoding="utf-8") as f:
                     profile_data = json.load(f)
