@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=10, help='Number of training epochs')
     parser.add_argument('--lr', type=float, default=5e-5, help='Learning rate')
     parser.add_argument('--output_dir', type=str, default='outputs', help='Directory to save outputs')
-    parser.add_argument('--seed', type=int, default=42, help='Random seed')
+    parser.add_argument('--seed', type=int, default=213, help='Random seed')
     return parser.parse_args()
 
 def set_seed(seed):
@@ -173,6 +173,11 @@ def main():
     
     print(f"Training completed. Best model from epoch {best_epoch+1} with validation loss: {best_val_loss:.4f}")
     
+    # Save final model
+    final_model_path = os.path.join(args.output_dir, 'final_model.pt')
+    torch.save(model.state_dict(), final_model_path)
+    print(f"Saved final model to {final_model_path}")
+    
     # Load best model for evaluation
     model.load_state_dict(torch.load(os.path.join(args.output_dir, 'best_model.pt')))
     
@@ -194,6 +199,16 @@ def main():
     
     print(f"Test predictions saved to {os.path.join(args.output_dir, 'test_predictions.json')}")
     
+    # Save model configuration for easier loading later
+    model_config = {
+        "model_name": args.model_name,
+        "implicit_labels": list(implicit_labels.keys()),
+        "config_file": args.config
+    }
+    with open(os.path.join(args.output_dir, 'model_config.json'), 'w') as f:
+        json.dump(model_config, f, indent=2)
+    print(f"Model configuration saved to {os.path.join(args.output_dir, 'model_config.json')}")
+    
     # Example prediction
     example_text = "I need a comfortable family car with good safety features and fuel economy"
     predictions = model.predict(example_text, device, implicit_labels)
@@ -201,6 +216,12 @@ def main():
     print(f"\nExample Prediction for: '{example_text}'")
     for label, value in predictions.items():
         print(f"{label}: {value}")
+    
+    # Show filtered (non-none) predictions
+    filtered_predictions = {label: value for label, value in predictions.items() if value != "none"}
+    print(f"\nFiltered predictions (non-none only):")
+    for label, value in filtered_predictions.items():
+        print(f"  {label}: {value}")
 
 if __name__ == "__main__":
     main() 

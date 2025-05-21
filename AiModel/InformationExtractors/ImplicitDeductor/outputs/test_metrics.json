@@ -1,0 +1,150 @@
+{
+  "prize_alias": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "passenger_space_volume_alias": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "trunk_volume_alias": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "chassis_height_alias": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "abs": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "voice_interaction": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "remote_parking": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "auto_parking": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "battery_capacity_alias": {
+    "accuracy": 0.5,
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1": 0.6666666666666666
+  },
+  "fuel_tank_capacity_alias": {
+    "accuracy": 0.5,
+    "precision": 0.25,
+    "recall": 0.5,
+    "f1": 0.3333333333333333
+  },
+  "fuel_consumption_alias": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "electric_consumption_alias": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "city_commuting": {
+    "accuracy": 0.5,
+    "precision": 0.25,
+    "recall": 0.5,
+    "f1": 0.3333333333333333
+  },
+  "highway_long_distance": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "cargo_capability": {
+    "accuracy": 0.5,
+    "precision": 0.25,
+    "recall": 0.5,
+    "f1": 0.3333333333333333
+  },
+  "cold_resistance": {
+    "accuracy": 0.5,
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1": 0.6666666666666666
+  },
+  "heat_resistance": {
+    "accuracy": 0.5,
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1": 0.6666666666666666
+  },
+  "size": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "vehicle_usability": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "aesthetics": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "energy_consumption_level": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "comfort_level": {
+    "accuracy": 0.5,
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1": 0.6666666666666666
+  },
+  "smartness": {
+    "accuracy": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "family_friendliness": {
+    "accuracy": 0.5,
+    "precision": 0.25,
+    "recall": 0.5,
+    "f1": 0.3333333333333333
+  },
+  "overall": {
+    "accuracy": 0.2916666666666667,
+    "f1": 0.2916666666666667
+  }
+}
