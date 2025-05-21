@@ -244,8 +244,9 @@
 
 .chat-input {
   flex: 1;
-  min-height: 40px;
-  max-height: 100px;
+  height: 80;
+  min-height: 80px;
+  max-height: 80px;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -262,7 +263,7 @@
 
 .send-button {
   padding: 0 20px;
-  height: 40px;
+  height: 35px;
   background: #23A6F0;
   color: white;
   border: none;
@@ -315,4 +316,28 @@
 
 .empty-cars, .empty-analysis {
   min-height: 20px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 80px;
+  justify-content: space-between;
+}
+
+.hang-up-button {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  height: 35px;
+}
+
+.hang-up-button:hover {
+  background-color: #ff7875;
 }

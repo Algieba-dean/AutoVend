@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { chatService } from '../../services/api';
+import { chatService, profileService } from '../../services/api';
 import './Chat.css';
 
 const Chat = () => {
@@ -69,7 +69,7 @@ const Chat = () => {
   }, [location.state]);
 
   // Define a state to track whether polling should continue
-  const [shouldPoll, setShouldPoll] = useState(true);
+  const [shouldPoll, setShouldPoll] = useState(false);
 
   // Add needs state
   const [needs, setNeeds] = useState([]);
@@ -156,7 +156,7 @@ const Chat = () => {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || !sessionId) return;
 
-    // Re-enable polling when sending a new message
+    // 发送消息时启用轮询
     setShouldPoll(true);
 
     const newMessage = {
@@ -183,8 +183,12 @@ const Chat = () => {
         };
         setMessages(prev => [...prev, assistantMessage]);
 
-        // Stop polling after receiving assistant message
+        // 收到助手回复后立即停止轮询
         setShouldPoll(false);
+        setIsTyping(false);
+      } else {
+        // 如果后端没有直接返回回复，启动轮询等待回复
+        setShouldPoll(true);
       }
 
       // Update current stage
@@ -227,7 +231,6 @@ const Chat = () => {
 
       // Error message also counts as assistant message, stop polling
       setShouldPoll(false);
-    } finally {
       setIsTyping(false);
     }
   };
@@ -297,8 +300,8 @@ const Chat = () => {
         <div className="info-panel chat-user-profile">
           <h3>User Profile</h3>
           <div className="panel-content">
-            {userProfile?.phoneNumber && (
-              <div className="profile-item">Phone number: {userProfile.phoneNumber}</div>
+            {userProfile?.phone_number && (
+              <div className="profile-item">Phone number: {userProfile.phone_number}</div>
             )}
             {userProfile?.name && (
               <div className="profile-item">Name: {userProfile.name}</div>
@@ -375,9 +378,26 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleBack = () => {
+  const handleBack = async () => {
     if (window.confirm('Are you sure you want to exit the current conversation? This call will not be recorded after exiting.')) {
-      navigate(-1);
+      try {
+        // If session ID exists, terminate the session
+        if (sessionId) {
+          await chatService.endSession(sessionId);
+          console.log('Session terminated');
+        }
+        
+        // If user profile exists, delete the user profile, default user cannot be deleted
+        if (userProfile && userProfile.phone_number && userProfile.phone_number !== '13888888888') {
+          await profileService.deleteProfile(userProfile.phone_number);
+          console.log('User profile deleted');
+        }
+      } catch (error) {
+        console.error('Error terminating session or deleting user profile:', error);
+      } finally {
+        // Return to previous page regardless of success or failure
+        navigate(-1);
+      }
     }
   };
 
@@ -417,13 +437,34 @@ const Chat = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
           />
-          <button
-            className="send-button"
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim()}
-          >
-            Send
-          </button>
+          <div className="button-group">
+            <button
+              className="send-button"
+              onClick={handleSendMessage}
+              disabled={!inputMessage.trim()}
+            >
+              Send
+            </button>
+            <button
+              className="hang-up-button"
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to end the current conversation? This conversation will be recorded')) {
+                  try {
+                    if (sessionId) {
+                      await chatService.endSession(sessionId);
+                      console.log('Session terminated');
+                    }
+                  } catch (error) {
+                    console.error('Error terminating session:', error);
+                  } finally {
+                    navigate(-1);
+                  }
+                }
+              }}
+            >
+              Hang Up
+            </button>
+          </div>
         </div>
       </div>
       <div className="info-panels">

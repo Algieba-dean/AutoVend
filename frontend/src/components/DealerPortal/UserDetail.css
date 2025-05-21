@@ -117,3 +117,26 @@
   font-size: 14px;
   line-height: 1.5;
 }
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-badge.pending {
+  background-color: #FFF3E0;
+  color: #FFA500;
+}
+
+.status-badge.confirmed {
+  background-color: #E8F5E9;
+  color: #4CAF50;
+}
+
+.status-badge.completed {
+  background-color: #E3F2FD;
+  color: #2196F3;
+}

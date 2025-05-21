@@ -1,85 +1,125 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DealerPortal.css';
+import { reservationService } from '../../services/api';
 
 // 将模拟数据移到组件外部
 const mockUsers = [
   {
     id: 1,
     name: "John Smith",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
     carBrand: "BMW",
     carModel: "X5 M Sport",
     date: "2024-03-15",
-    status: "pending"
+    status: "Pending"
   },
   {
     id: 2,
     name: "Emma Wilson",
-    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
     carBrand: "Mercedes-Benz",
     carModel: "E300L AMG",
     date: "2024-03-16",
-    status: "confirmed"
+    status: "Confirmed"
   },
   {
     id: 3,
     name: "Michael Brown",
-    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
     carBrand: "Audi",
     carModel: "Q7 Premium Plus",
     date: "2024-03-17",
-    status: "completed"
+    status: "Completed"
   },
   {
     id: 4,
     name: "Sarah Davis",
-    avatar: "https://randomuser.me/api/portraits/women/4.jpg",
     carBrand: "BMW",
     carModel: "740Li xDrive",
     date: "2024-03-18",
-    status: "pending"
+    status: "Pending"
   },
   {
     id: 5,
     name: "James Wilson",
-    avatar: "https://randomuser.me/api/portraits/men/5.jpg",
     carBrand: "Mercedes-Benz",
     carModel: "GLC 300 4MATIC",
     date: "2024-03-19",
-    status: "confirmed"
+    status: "Confirmed"
   },
   {
     id: 6,
     name: "Linda Chen",
-    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
     carBrand: "Audi",
     carModel: "RS e-tron GT",
     date: "2024-03-20",
-    status: "pending"
+    status: "Pending"
   }
 ];
 
 // 将状态样式映射移到组件外部
 const statusStyles = {
-  pending: { color: '#FFA500', background: '#FFF3E0' },
-  confirmed: { color: '#4CAF50', background: '#E8F5E9' },
-  completed: { color: '#2196F3', background: '#E3F2FD' }
+  Pending: { color: '#FFA500', background: '#FFF3E0' },
+  Confirmed: { color: '#4CAF50', background: '#E8F5E9' },
+  Completed: { color: '#2196F3', background: '#E3F2FD' }
 };
 
 const DealerPortal = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // 从API获取预约数据
+    const fetchReservations = async () => {
+      try {
+        setLoading(true);
+        const test_drives = await reservationService.getAllReservations();
+        
+        // 将预约数据转换为组件所需的格式
+        const formattedUsers = test_drives.map((test_drive, index) => ({
+          id: index + 1, // 添加id字段
+          name: test_drive.test_drive_info.test_driver,
+          carBrand: test_drive.test_drive_info.brand,
+          carModel: test_drive.test_drive_info.selected_car_model,
+          date: test_drive.test_drive_info.reservation_date,
+          status: test_drive.test_drive_info.status,
+          phone: test_drive.test_drive_info.reservation_phone_number,
+          address: test_drive.test_drive_info.reservation_location,
+          time: test_drive.test_drive_info.reservation_time
+        }));
+        
+        setUsers(formattedUsers);
+        setError(null);
+      } catch (error) {
+        console.error('获取预约数据失败:', error);
+        setError('无法加载预约数据，请稍后再试');
+        // 如果API调用失败，使用模拟数据作为备用
+        setUsers(mockUsers);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReservations();
+  }, []);
+
+  const handleUserClick = (userId) => {
+    navigate(`/dealer-portal/user/${userId}`);
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
   const handleRowClick = (userId) => {
-    navigate(`/dealer-portal/user/${userId}`);
+    // 找到对应的用户数据
+    const selectedUser = users.find(user => user.id === userId);
+    // 导航到用户详情页面并传递用户数据
+    navigate(`/dealer-portal/user/${userId}`, { state: { userInfo: selectedUser } });
   };
 
   // 过滤用户列表的函数
-  const filteredUsers = mockUsers.filter(user => {
+  const filteredUsers = users.filter(user => {
     const matchBrand = !selectedBrand || user.carBrand === selectedBrand;
     const matchDate = !selectedDate || user.date === selectedDate;
     const matchStatus = !selectedStatus || user.status === selectedStatus;
@@ -132,9 +172,9 @@ const DealerPortal = () => {
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
             <option value="">Appointment Status</option>
-            <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="completed">Completed</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Completed">Completed</option>
           </select>
         </div>
 
