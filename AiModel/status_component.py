@@ -135,6 +135,13 @@ class StatusComponent:
         - Update profile's connection_id_relationship with test_driver value
         - Update profile's connection_phone_number with reservation_phone_number
         - Update profile's connection_user_name with test_driver_name
+        
+        If after updating:
+        1. test_driver has a value and is "Self"
+        
+        Then:
+        - Update test_drive_info's reservation_phone_number with profile's phone_number
+        - Update test_drive_info's test_driver_name with profile's name
         """
         # First update the test drive info normally
         for key, value in test_drive_info.items():
@@ -145,7 +152,11 @@ class StatusComponent:
         test_driver = self.test_drive_info.get("test_driver", "")
         reservation_phone = self.test_drive_info.get("reservation_phone_number", "")
         
-        if (test_driver and test_driver.lower() != "self" and reservation_phone):
+        if test_driver and test_driver.lower() == "self":
+            # If test driver is self, synchronize phone number and name from profile
+            self.test_drive_info["reservation_phone_number"] = self.user_profile.get("phone_number", "")
+            self.test_drive_info["test_driver_name"] = self.user_profile.get("name", "")
+        elif test_driver and test_driver.lower() != "self" and reservation_phone:
             # Update connection information in the profile
             self.user_profile["connection_information"]["connection_id_relationship"] = test_driver
             self.user_profile["connection_information"]["connection_phone_number"] = reservation_phone
@@ -306,6 +317,31 @@ if __name__ == "__main__":
     print(status_component.test_drive_info)
     print("\nConnection information (automatically updated):")
     print(status_component.user_profile["connection_information"])
+    
+    # Test 3b: Test when test_driver is "Self" - should sync profile info to test drive info
+    print("\n=== Test 3b: Test Drive Information with Self as driver ===")
+    # First update profile with some data
+    status_component = StatusComponent()
+    status_component.update_profile({
+        "name": "John Smith",
+        "phone_number": "5559876543"
+    })
+    
+    # Now update test drive info with Self as driver
+    status_component.update_test_drive_info({
+        "test_driver": "Self",
+        "reservation_date": "2023-12-20",
+        "selected_car_model": "ModelY",
+        "reservation_time": "10:30",
+        "reservation_location": "North Dealership",
+        "salesman": "Alice Johnson"
+    })
+    
+    # Verify that test_driver_name and reservation_phone_number were synchronized from profile
+    print("Test drive information after setting Self as driver:")
+    print(f"Driver name (should be 'John Smith'): {status_component.test_drive_info['test_driver_name']}")
+    print(f"Reservation phone (should be '5559876543'): {status_component.test_drive_info['reservation_phone_number']}")
+    print(f"Other test drive details: Date={status_component.test_drive_info['reservation_date']}, Model={status_component.test_drive_info['selected_car_model']}")
     
     # Test 4: Update matched car models
     print("\n=== Test 4: Matched Car Models ===")
