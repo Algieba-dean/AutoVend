@@ -268,17 +268,15 @@ class FileStorage:
             print(f"Error deleting test drive: {e}")
             return False
     
-    def get_all_test_drives(self) -> Dict[str, Any]:
+    def get_all_test_drives(self) -> List[Dict[str, Any]]:
         """Get all test drive reservations"""
         try:
-            test_drives = dict()
-            # Only process JSON files that aren't the phone index
+            test_drives = []
             for filename in os.listdir(self.test_drives_dir):
                 if filename.endswith('.json'):
                     with open(os.path.join(self.test_drives_dir, filename), "r", encoding="utf-8") as f:
-                        test_drive_name = filename.replace(".json","")
                         test_drive_value = json.load(f)
-                        test_drives[test_drive_name] = test_drive_value
+                        test_drives.append(test_drive_value)
             return test_drives
         except Exception as e:
             print(f"Error getting all test drives: {e}")

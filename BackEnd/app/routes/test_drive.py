@@ -141,11 +141,10 @@ def list_test_drives():
     
     # Apply pagination
     total_count = len(filtered_drives)
-    paginated_drives = filtered_drives[offset:offset + limit]
-    
+
     return jsonify({
         "total_count": total_count,
         "limit": limit,
         "offset": offset,
-        "test_drives": paginated_drives
+        "test_drives": filtered_drives
     }), 200 

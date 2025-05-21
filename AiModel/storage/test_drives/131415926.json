@@ -3,7 +3,7 @@
     "test_driver": "Mr. Test",
     "brand": "BMW",
     "reservation_date": "2025-05-24",
-    "selected_car_model": "BMW test",
+    "selected_car_model": "BMW test 1",
     "reservation_time": "19:30",
     "reservation_location": "Test location",
     "reservation_phone_number": "131415926",
@@ -11,5 +11,5 @@
     "status": "Pending"
   },
   "created_at": "2025-05-21T04:24:46.388917+00:00",
-  "updated_at": "2025-05-21T04:24:46.388917+00:00"
+  "updated_at": "2025-05-21T06:29:29.997547+00:00"
 }
