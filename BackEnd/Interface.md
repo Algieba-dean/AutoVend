@@ -404,11 +404,12 @@ This document defines the API interface between the frontend and backend of Auto
       "test_driver": "Mr. Zhang",
       "brand": "Tesla",
       "selected_car_model": "Model Y",
-      "status": "Pending",
       "reservation_phone_number": "123456789",
       "reservation_location": "Tesla Beijing Haidian Store",
       "reservation_time": "14:00",
-      "reservation_date": "2025-06-05"
+      "reservation_date": "2025-06-05",
+      "salesman": "Mr. Nobody",
+      "status": "Pending"
     }
   }
   ```
@@ -419,6 +420,7 @@ This document defines the API interface between the frontend and backend of Auto
     ```json
     {
       "created_at": "2025-06-01T12:34:56Z",
+      "updated_at": "2025-06-01T12:34:56Z",
       "test_drive_info": {
         "test_driver": "Mr. Zhang",
         "brand": "Tesla",
@@ -427,7 +429,9 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_phone_number": "123456789",
         "reservation_location": "Tesla Beijing Haidian Store",
         "reservation_time": "14:00",
-        "reservation_date": "2025-06-05"
+        "reservation_date": "2025-06-05",
+        "salseman": "Mr. Nobody",
+        "status": "Pending"
       }
     }
     ```
@@ -457,7 +461,9 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_phone_number": "123456789",
         "reservation_location": "Tesla Beijing Haidian Store",
         "reservation_time": "14:00",
-        "reservation_date": "2025-06-05"
+        "reservation_date": "2025-06-05",
+        "salesman": "Mr. Nobody",
+        "status": "Pending"
       }
     }
     ```
@@ -481,7 +487,9 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_phone_number": "123456789",
       "reservation_location": "Tesla Beijing Haidian Store",
       "reservation_time": "15:30",
-      "reservation_date": "2025-06-05"
+      "reservation_date": "2025-06-05",
+      "salesman": "Mr. Nobody",
+      "status": "Pending"
     }
   }
   ```
@@ -500,7 +508,9 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_phone_number": "123456789",
         "reservation_location": "Tesla Beijing Haidian Store",
         "reservation_time": "15:30",
-        "reservation_date": "2025-06-05"
+        "reservation_date": "2025-06-05",
+        "salesman": "Mr. Nobody",
+        "status": "Pending"
       }
     }
     ```
@@ -549,6 +559,7 @@ This document defines the API interface between the frontend and backend of Auto
       "test_drives": [
         {
           "created_at": "2025-06-01T12:34:56Z",
+          "updated_at": "2025-06-01T16:34:56Z",
           "test_drive_info": {
             "test_driver": "Mr. Zhang",
             "brand": "Tesla",
@@ -556,11 +567,14 @@ This document defines the API interface between the frontend and backend of Auto
             "status": "Pending",
             "reservation_phone_number": "123456789",
             "reservation_location": "Tesla Beijing Haidian Store", "reservation_time": "14:00",
-            "reservation_date": "2025-06-05"
+            "reservation_date": "2025-06-05",
+            "salesman": "Mr. Nobody",
+            "status": "Pending"
           }
         },
         {
           "created_at": "2025-06-01T13:34:56Z",
+          "updated_at": "2025-06-01T16:34:56Z",
           "test_drive_info": {
             "test_driver": "Mrs. Li",
             "brand": "Nio",
@@ -569,7 +583,9 @@ This document defines the API interface between the frontend and backend of Auto
             "reservation_phone_number": "987654321",
             "reservation_location": "Nio House Beijing",
             "reservation_time": "10:00",
-            "reservation_date": "2025-06-06"
+            "reservation_date": "2025-06-06",
+            "salesman": "Mr. Nobody",
+            "status": "Pending"
           }
         }
       ]

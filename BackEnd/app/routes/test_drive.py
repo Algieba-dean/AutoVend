@@ -18,12 +18,11 @@ def create_test_drive():
     required_fields = [
         "test_driver",
         "brand",
-        "reservation_date",
         "selected_car_model", 
-        "reservation_time",
-        "reservation_location",
         "reservation_phone_number", 
-        "salesman"
+        "reservation_location",
+        "reservation_time",
+        "reservation_date"
     ]
     
     missing_fields = [field for field in required_fields if field not in test_drive_info or not test_drive_info[field]]
@@ -49,7 +48,7 @@ def create_test_drive():
         reservation_time=test_drive_info["reservation_time"],
         reservation_location=test_drive_info["reservation_location"],
         reservation_phone_number=test_drive_info["reservation_phone_number"],
-        salesman=test_drive_info["salesman"],
+        salesman=test_drive_info.get("salesman",""),
         status=test_drive_info.get("status", "Pending")
     )
     
@@ -59,7 +58,7 @@ def create_test_drive():
     return jsonify({
         "test_drive_info": test_drive.test_drive_info,
         "created_at": test_drive.created_at,
-        "update_at" : test_drive.updated_at
+        "updated_at" : test_drive.updated_at
     }), 201
 
 @test_drive_bp.route("/api/test-drive/<reservation_phone_number>", methods=["GET"])
