@@ -85,3 +85,14 @@
 .learn-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
+.dealerPortal-btn {
+  background: transparent;
+  border: 1px solid white !important;
+  color: white;
+  align-items: center;
+}
+
+.dealerPortal-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

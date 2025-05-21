@@ -17,6 +17,10 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 600px;
+  max-height: 80vh;
+  position: sticky;
+  top: 80px;
+  overflow: hidden;  /* 防止双滚动条出现 */
 }
 
 .chat-messages {
@@ -25,12 +29,83 @@
   flex-direction: column;
   gap: 15px;
   overflow-y: auto;
+  padding-right: 15px;
+  margin-bottom: 15px;
+  scrollbar-width: thin;
+  scrollbar-color: #7b98a8 #F5F5F5;
+  min-height: 0;  /* 确保flex子元素可以正确滚动 */
+}
+
+/* 自定义滚动条样式（Webkit浏览器） */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #23A6F0;
+  border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #1873CC;
 }
 
 .message {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.message.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background: #F5F5F5;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #666;
+  max-width: 150px;
+}
+
+.typing-indicator .dots {
+  display: flex;
+  margin-left: 8px;
+}
+
+.typing-indicator .dots span {
+  animation: typing 1.4s infinite;
+  margin: 0 2px;
+}
+
+.typing-indicator .dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator .dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .message.assistant {
@@ -55,35 +130,6 @@
 
 .message.assistant .message-content {
   background: #F5F5F5;
-}
-
-.wave-animation {
-  width: 150px;
-  height: 100px;  /* 增加高度以容纳更大的波浪 */
-  overflow: hidden;
-  margin: 0 auto;
-}
-
-.wave-animation svg {
-  width: 200px;
-  height: 100px;
-}
-
-.wave-animation svg path {
-  animation: wave 1s ease-in-out infinite;  /* 将动画时间从2s改为1s，使频率加快 */
-  transform-origin: center;
-}
-
-@keyframes wave {
-  0% {
-    d: path("M0,50 C30,20 70,80 100,50 C130,20 170,80 200,50");
-  }
-  50% {
-    d: path("M0,50 C30,80 70,20 100,50 C130,80 170,20 200,50");
-  }
-  100% {
-    d: path("M0,50 C30,20 70,80 100,50 C130,20 170,80 200,50");
-  }
 }
 
 .info-panels {
@@ -119,6 +165,29 @@
 
 .panel-content {
   padding: 20px;
+  max-height: 300px;  /* 限制面板内容的最大高度 */
+  overflow-y: auto;   /* 启用垂直滚动 */
+  scrollbar-width: thin;  /* Firefox 滚动条样式 */
+  scrollbar-color: #7b98a8 #F5F5F5;  /* Firefox 滚动条颜色 */
+}
+
+/* 自定义面板滚动条样式（Webkit浏览器） */
+.panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 3px;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+  background: #23A6F0;
+  border-radius: 3px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+  background: #1873CC;
 }
 
 .profile-item, .analysis-item {
@@ -128,6 +197,7 @@
   line-height: 1.6;
   position: relative;
   padding-left: 15px;
+  padding-right: 15px;  /* 添加右侧内边距，防止文字与滚动条重叠 */
 }
 
 .profile-item::before, .analysis-item::before {
@@ -209,4 +279,40 @@
 .send-button:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+.test-drive-appointment {
+  grid-column: 1 / span 2;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.appointment-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.item-label {
+  color: #666;
+  min-width: 120px;
+  font-size: 14px;
+}
+
+.item-value {
+  color: #252B42;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.empty-appointment {
+  min-height: 260px;
+}
+
+.empty-cars, .empty-analysis {
+  min-height: 20px;
 }

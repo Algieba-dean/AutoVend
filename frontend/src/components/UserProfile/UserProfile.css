@@ -12,6 +12,7 @@
   max-width: 1800px;
   gap: 60px;
   align-items: center;
+  margin-top: 60px;
 }
 
 .profile-content {
@@ -146,30 +147,6 @@
   font-weight: 500;
 }
 
-.input-group {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.custom-input {
-  padding: 8px 12px;
-  border: 1px solid #E6E6E6;
-  border-radius: 5px;
-  font-size: 14px;
-  min-width: 120px;
-  outline: none;
-}
-
-.custom-input:focus {
-  border-color: #23A6F0;
-}
-
-.custom-input:focus,
-.input-group select:focus {
-  border-color: #23A6F0;
-}
-
 .add-field-btn {
   background: none;
   border: none;
@@ -204,4 +181,40 @@
 
 .delete-field-btn:hover {
   background: #E02E24;
+}
+
+.section-header {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  width: 100%;
+}
+
+.section-header h3 {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.input-label {
+  min-width: 150px;
+  font-weight: 500;
+}
+
+.custom-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.custom-input:focus {
+  border-color: #1E90FF;
+  outline: none;
 }

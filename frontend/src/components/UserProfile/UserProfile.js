@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { profileService, chatService } from '../../services/api';
 import './UserProfile.css';
 
 const UserProfile = () => {
@@ -8,104 +8,164 @@ const UserProfile = () => {
   const location = useLocation();
   const userType = location.state?.userType || 'default';
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [customInputs, setCustomInputs] = useState({
+  const [profile, setProfile] = useState({
+    phone_number: '',
+    user_title: '',
     name: '',
-    job: '',
-    phone: ''
+    target_driver: '',
+    expertise: '',
+    additional_information: {
+      family_size: '',
+      price_sensitivity: '',
+      residence: '',
+      parking_conditions: ''
+    },
+    connection_information: {
+      connection_phone_number: '',
+      connection_id_relationship: '',
+      connection_user_name: ''
+    }
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDefaultProfile = async () => {
+      try {
+        setIsLoading(true);
+        const response = await profileService.getDefaultProfile();
+        if (Array.isArray(response) && response[0]) {
+          const profileData = response[0];
+          setProfile(profileData);
+        } else {
+          console.error('No default profile date.');
+        }
+      } catch (error) {
+        console.error('Failed to load the default profile:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    // Only call loadDefaultProfile when userType is default
+    if (userType === 'default') {
+      loadDefaultProfile();
+    } else {
+      setIsLoading(false); // For other types, directly set isLoading to false
+    }
+  }, [userType]); // Add userType as a dependency
+
+  const createProfile = async () => {
+    try {
+      await profileService.createProfile(profile);
+      return true; // Creation successful
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+      // Check error type to determine if user already exists
+      if (error.response && error.response.status === 409) {
+        setError('Phone number already exists, please use another number');
+      } else {
+        setError('Save user failed, please try again');
+      }
+      return false; // Creation failed
+    }
+  };
 
   const handleBack = () => {
     navigate(-1);
   };
 
-  const handleCustomInputChange = (field, value) => {
-    setCustomInputs(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handlePhoneChange = (e) => {
+    profile.phone_number = e.target.value;
+    setPhoneNumber(e.target.value);
+    setProfile(profile);
+    setError(''); // Clear error message
   };
 
-  const handlePhoneChange = (e) => {
-    setPhoneNumber(e.target.value);
-    setError(''); // 清除错误信息
-  };
+  const startSession = async () => {
+    try {
+      const sessionData = await chatService.startSession(profile.phone_number);
+      // After successful storage, jump to the chat page and pass the session data
+      navigate('/chat', {
+        state: {
+          sessionData,
+          profile: sessionData.profile
+        }
+      });
+    } catch (error) {
+      setError('Failed to start chat session, please try again.');
+      console.error('Error starting chat session:', error);
+    }
+  }
 
   const handleStartDemo = async () => {
     if (userType === 'custom') {
-      // 验证自定义用户的所有必填字段
-      if (!customInputs.name.trim()) {
-        setError('请输入姓名');
+      // Verify all required fields for custom users
+      if (!profile.phone_number.trim()) {
+        setError('Please enter the phone number');
         return;
       }
 
-      if (!customInputs.job.trim()) {
-        setError('请输入职业');
+      if (!profile.user_title.trim()) {
+        setError('Please enter the user title');
         return;
       }
 
-      if (!customInputs.phone.trim()) {
-        setError('请输入电话号码');
+      if (!profile.name.trim()) {
+        setError('Please enter the name');
         return;
       }
 
-      if (!/^\d+$/.test(customInputs.phone)) {
-        setError('请输入有效的数字电话号码');
+      if (!profile.target_driver.trim()) {
+        setError('Please select the target driver');
         return;
       }
 
-      // 验证额外字段
-      for (const field of additionalFields) {
-        if (!field.label.trim() || !field.value.trim()) {
-          setError('请完整填写所有额外字段');
-          return;
-        }
+      if (!profile.expertise.trim()) {
+        setError('Please select the knowledge level about cars');
+        return;
+      }
+
+      if (!/^\d+$/.test(profile.phone_number)) {
+        setError('Please enter a valid numeric phone number');
+        return;
       }
 
       try {
-        // 将用户数据存储到后端
-        await axios.post('/api/users', {
-          ...customInputs,
-          additionalFields,
-          userType: 'custom'
-        });
-
-        // 存储成功后跳转到聊天页面
-        navigate('/chat');
+        const profileCreated = await createProfile();
+        if (!profileCreated) {
+          return; // If created failed, then return
+        }
       } catch (error) {
-        setError('保存用户信息失败，请重试');
+        setError('Failed to save user information, please try again');
         console.error('Error saving user data:', error);
+        return;
       }
     } else if (userType === 'empty') {
-      // 空用户需要验证电话号码
+      // Empty User still needs to verify phone number
       if (!phoneNumber.trim()) {
         setError('Please enter the phone number');
         return;
       }
 
       if (!/^\d+$/.test(phoneNumber)) {
-        setError('Please enter then valid phone number');
+        setError('Please enter a valid phone number');
         return;
       }
 
       try {
-        // 将电话号码存储到后端
-        await axios.post('/api/users', {
-          phoneNumber: phoneNumber,
-          userType: 'empty'
-        });
-
-        // 存储成功后跳转到聊天页面，并传递用户信息
-        navigate('/chat', { state: { userType: 'empty', phoneNumber } });
+        // Create the new empty user profile
+        const profileCreated = await createProfile();
+        if (!profileCreated) {
+          return; // If creation failed, don't continue
+        }
       } catch (error) {
-        setError('Error saving phone number, please try it again.');
+        setError('Error saving phone number, please try again.');
         console.error('Error saving phone number:', error);
+        return;
       }
-    } else {
-      // default user 直接进入聊天页面，传递默认用户信息
-      navigate('/chat', { state: { userType: 'default', phoneNumber: '123' } });
     }
-};
+    startSession();
+  };
 
   const getImageSrc = () => {
     switch (userType) {
@@ -119,36 +179,6 @@ const UserProfile = () => {
     }
   };
 
-  const nameOptions = ['Jane', 'John', 'Mike', '自定义'];
-  const jobOptions = ['Car Engineer', 'Car Dealer', 'Car Designer', '自定义'];
-  const phoneOptions = ['123-456-7890', '987-654-3210', '自定义'];
-
-  const [additionalFields, setAdditionalFields] = useState([]);
-  
-  const labelOptions = [
-    'Age',
-    'Address',
-    'Email',
-    'Company',
-    'Position',
-    'Education'
-  ];
-
-  const handleAddField = () => {
-    setAdditionalFields([...additionalFields, { label: '', value: '' }]);
-  };
-
-  const handleFieldChange = (index, field, value) => {
-    const newFields = [...additionalFields];
-    newFields[index][field] = value;
-    setAdditionalFields(newFields);
-  };
-
-  const handleDeleteField = (index) => {
-    const newFields = additionalFields.filter((_, i) => i !== index);
-    setAdditionalFields(newFields);
-  };
-
   const renderCustomProfileContent = () => {
     return (
       <>
@@ -159,74 +189,183 @@ const UserProfile = () => {
         <div className="profile-info">
           <div className="info-item custom-item">
             <div className="input-group">
-              <span className="input-label">Name:</span>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={customInputs.name}
-                onChange={(e) => handleCustomInputChange('name', e.target.value)}
-                className="custom-input"
-              />
-            </div>
-          </div>
-          <div className="info-item custom-item">
-            <div className="input-group">
-              <span className="input-label">Job:</span>
-              <input
-                type="text"
-                placeholder="Enter your job"
-                value={customInputs.job}
-                onChange={(e) => handleCustomInputChange('job', e.target.value)}
-                className="custom-input"
-              />
-            </div>
-          </div>
-          <div className="info-item custom-item">
-            <div className="input-group">
-              <span className="input-label">Phone:</span>
+              <span className="input-label">Phone number:</span>
               <input
                 type="tel"
-                placeholder="Enter your phone number"
-                value={customInputs.phone}
-                onChange={(e) => handleCustomInputChange('phone', e.target.value)}
+                placeholder="Enter the phone number"
+                value={profile.phone_number}
+                onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
                 className="custom-input"
               />
             </div>
           </div>
-          
-          {additionalFields.map((field, index) => (
-            <div key={index} className="info-item custom-item">
-              <div className="input-group">
-                <select
-                  value={field.label}
-                  onChange={(e) => handleFieldChange(index, 'label', e.target.value)}
-                  className="label-select"
-                >
-                  <option value="">Select label</option>
-                  {labelOptions.map(option => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  placeholder="Enter value"
-                  value={field.value}
-                  onChange={(e) => handleFieldChange(index, 'value', e.target.value)}
-                  className="custom-input"
-                />
-                <button 
-                  className="delete-field-btn"
-                  onClick={() => handleDeleteField(index)}
-                >
-                  -
-                </button>
-              </div>
+
+          <div className="info-item custom-item">
+            <div className="input-group">
+              <span className="input-label">Title:</span>
+              <select
+                value={profile.user_title}
+                onChange={(e) => {
+                  const title = e.target.value;
+                  setProfile(prevProfile => ({
+                    ...prevProfile,
+                    user_title: title
+                  }));
+                }}
+                className="custom-input"
+              >
+                <option value="">Select the title</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Miss.">Miss.</option>
+                <option value="Ms.">Ms.</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Name (e.g. Zhang)"
+                value={profile.name}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setProfile(prevProfile => ({
+                    ...prevProfile,
+                    name: name
+                  }));
+                }}
+                className="custom-input"
+                style={{ marginLeft: '10px' }}
+              />
             </div>
-          ))}
-          
-          <button className="add-field-btn" onClick={handleAddField}>
-            + Add label
-          </button>
+          </div>
+
+          <div className="info-item custom-item">
+            <div className="input-group">
+              <span className="input-label">Target driver:</span>
+              <select
+                value={profile.target_driver}
+                onChange={(e) => setProfile({ ...profile, target_driver: e.target.value })}
+                className="custom-input"
+              >
+                <option value="">Select target driver</option>
+                <option value="Self">Self</option>
+                <option value="Wife">Wife</option>
+                <option value="Husband">Husband</option>
+                <option value="Parents">Parents</option>
+                <option value="Children">Children</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="info-item custom-item">
+            <div className="input-group">
+              <span className="input-label">Expertise:</span>
+              <select
+                value={profile.expertise}
+                onChange={(e) => setProfile({ ...profile, expertise: e.target.value })}
+                className="custom-input"
+              >
+                <option value="">Select the expertise (0-10)</option>
+                <option value="0">0 - Know nothing</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5 - average</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10 - Professional</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="section-header">
+            <h3>Additional Information(Optional)</h3>
+          </div>
+
+          <div className="info-item custom-item">
+            <div className="input-group">
+              <span className="input-label">Family Size:</span>
+              <input
+                type="text"
+                placeholder="e.g. 3"
+                value={profile.additional_information.family_size}
+                onChange={(e) => setProfile({
+                  ...profile,
+                  additional_information: {
+                    ...profile.additional_information,
+                    family_size: e.target.value
+                  }
+                })}
+                className="custom-input"
+              />
+            </div>
+          </div>
+
+          <div className="info-item custom-item">
+            <div className="input-group">
+              <span className="input-label">Price Sensitivity:</span>
+              <select
+                value={profile.additional_information.price_sensitivity}
+                onChange={(e) => setProfile({
+                  ...profile,
+                  additional_information: {
+                    ...profile.additional_information,
+                    price_sensitivity: e.target.value
+                  }
+                })}
+                className="custom-input"
+              >
+                <option value="">Select price sensitivity</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="info-item custom-item">
+            <div className="input-group">
+              <span className="input-label">Residence:</span>
+              <input
+                type="text"
+                placeholder="e.g. China+Beijing+Haidian"
+                value={profile.additional_information.residence}
+                onChange={(e) => setProfile({
+                  ...profile,
+                  additional_information: {
+                    ...profile.additional_information,
+                    residence: e.target.value
+                  }
+                })}
+                className="custom-input"
+              />
+            </div>
+          </div>
+
+          <div className="info-item custom-item">
+            <div className="input-group">
+              <span className="input-label">Parking Conditions:</span>
+              <select
+                value={profile.additional_information.parking_conditions}
+                onChange={(e) => setProfile({
+                  ...profile,
+                  additional_information: {
+                    ...profile.additional_information,
+                    parking_conditions: e.target.value
+                  }
+                })}
+                className="custom-input"
+              >
+                <option value="">Select parking conditions</option>
+                <option value="Allocated Parking Space">Allocated Parking Space</option>
+                <option value="Street Parking">Street Parking</option>
+                <option value="Public Parking Lot">Public Parking Lot</option>
+                <option value="No Parking">No Parking</option>
+              </select>
+            </div>
+          </div>
         </div>
       </>
     );
@@ -252,12 +391,11 @@ const UserProfile = () => {
                   onChange={handlePhoneChange}
                   className={`phone-input ${error ? 'error' : ''}`}
                 />
-                {error && <div className="error-message">{error}</div>}
               </div>
             </div>
           </>
         );
-      
+
       case 'default':
       default:
         return (
@@ -267,25 +405,56 @@ const UserProfile = () => {
               <h2>Default User Profile</h2>
             </div>
             <div className="profile-info">
-              <div className="info-item">
-                <span className="info-label">Name: Jane</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Job: Car Engineer</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Phone number: 123</span>
-              </div>
+              {profile.name && (
+                <div className="info-item">
+                  <span className="info-label">Name: {profile.name}</span>
+                </div>
+              )}
+              {profile.user_title && (
+                <div className="info-item">
+                  <span className="info-label">User title: {profile.user_title}</span>
+                </div>
+              )}
+              {profile.phone_number && (
+                <div className="info-item">
+                  <span className="info-label">Phone number: {profile.phone_number}</span>
+                </div>
+              )}
+              {profile.target_driver && (
+                <div className="info-item">
+                  <span className="info-label">Target driver: {profile.target_driver}</span>
+                </div>
+              )}
+              {profile.expertise && (
+                <div className="info-item">
+                  <span className="info-label">Expertise: {profile.expertise}</span>
+                </div>
+              )}
+              {profile.additional_information?.family_size && (
+                <div className="info-item">
+                  <span className="info-label">Family size: {profile.additional_information.family_size}</span>
+                </div>
+              )}
+              {profile.additional_information?.price_sensitivity && (
+                <div className="info-item">
+                  <span className="info-label">Price Sensitivity: {profile.additional_information.price_sensitivity}</span>
+                </div>
+              )}
+              {profile.additional_information?.residence && (
+                <div className="info-item">
+                  <span className="info-label">Residence: {profile.additional_information.residence}</span>
+                </div>
+              )}
+              {profile.additional_information?.parking_conditions && (
+                <div className="info-item">
+                  <span className="info-label">Parking conditions: {profile.additional_information.parking_conditions}</span>
+                </div>
+              )}
             </div>
           </>
         );
     }
   };
-
-  // Remove this duplicate declaration
-  // const handleStartDemo = () => {
-  //   navigate('/chat');
-  // };
 
   return (
     <div className="user-profile">
@@ -298,9 +467,10 @@ const UserProfile = () => {
           <button className="start-demo-btn" onClick={handleStartDemo}>
             Start the demo
           </button>
+          {error && <div className="error-message global-error">{error}</div>}
         </div>
         <div className="profile-images">
-          <img src={getImageSrc()} alt="Video chat" className="chat-image" />
+          <img src={getImageSrc()} alt="Chat" className="chat-image" />
         </div>
       </div>
     </div>

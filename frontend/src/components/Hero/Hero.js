@@ -9,6 +9,10 @@ const Hero = () => {
     navigate('/select-user');
   };
 
+  const handleDealerPortal = () => {
+    navigate('/dealer-portal');
+  };
+
   return (
     <div className="hero">
       <div className="welcome">Welcome</div>
@@ -20,6 +24,7 @@ const Hero = () => {
       <div className="subtitle">Help you to find your beloved vehicles</div>
       <div className="cta-buttons">
         <button className="demo-btn" onClick={handleStartDemo}>Start the demo!</button>
+        <button className="dealerPortal-btn" onClick={handleDealerPortal} title="For 4S Store">Dealer Portal</button>
         <button className="learn-btn">Learn More</button>
       </div>
     </div>
