@@ -32,6 +32,7 @@ class StatusComponent:
             "test_driver_name": "",
             "reservation_date": "",
             "selected_car_model": "",
+            "brand":"",
             "reservation_time": "",
             "reservation_location": "",
             "reservation_phone_number": "",
@@ -135,11 +136,40 @@ class StatusComponent:
         Then:
         - Update test_drive_info's reservation_phone_number with profile's phone_number
         - Update test_drive_info's test_driver_name with profile's name
+        
+        If selected_car_model has a value:
+        - Try to extract brand from selected_car_model and update the brand field
         """
         # First update the test drive info normally
         for key, value in test_drive_info.items():
             if key in self.test_drive_info:
                 self.test_drive_info[key] = value
+        
+        # Try to extract brand from selected_car_model
+        selected_car_model = self.test_drive_info.get("selected_car_model", "")
+        if selected_car_model:
+            # Define the list of brands from QueryLabels.json
+            brands = [
+                "volkswagen", "audi", "porsche", "bentley", "bugatti", "lamborghini", 
+                "bmw", "mercedes-benz", "peugeot", "renault", "jaguar", "land rover", 
+                "rolls-royce", "volvo", "chevrolet", "buick", "cadillac", "ford", 
+                "tesla", "toyota", "honda", "nissan", "suzuki", "mazda", "hyundai", 
+                "byd", "geely", "changan", "great wall motor", "nio", "xiaomi", "xpeng"
+            ]
+            
+            # Convert selected_car_model to lowercase for case-insensitive matching
+            selected_car_model_lower = selected_car_model.lower()
+            
+            # Try to match a brand
+            for brand in brands:
+                # Check if the brand is at the beginning of the car model
+                if selected_car_model_lower.startswith(brand) or selected_car_model_lower.startswith(brand.replace(" ", "-")):
+                    self.test_drive_info["brand"] = brand
+                    break
+                # Also check if the brand appears after a hyphen (e.g., "some-volkswagen-model")
+                elif f"-{brand}" in selected_car_model_lower or f"-{brand.replace(' ', '-')}" in selected_car_model_lower:
+                    self.test_drive_info["brand"] = brand
+                    break
         
         # Check conditions for updating profile connection information
         test_driver = self.test_drive_info.get("test_driver", "")
@@ -220,6 +250,7 @@ class StatusComponent:
             "test_driver_name": "",
             "reservation_date": "",
             "selected_car_model": "",
+            "brand":"",
             "reservation_time": "",
             "reservation_location": "",
             "reservation_phone_number": "",
@@ -330,6 +361,24 @@ if __name__ == "__main__":
     print(f"Driver name (should be 'John Smith'): {status_component.test_drive_info['test_driver_name']}")
     print(f"Reservation phone (should be '5559876543'): {status_component.test_drive_info['reservation_phone_number']}")
     print(f"Other test drive details: Date={status_component.test_drive_info['reservation_date']}, Model={status_component.test_drive_info['selected_car_model']}")
+    
+    # Test 3c: Test brand extraction from selected_car_model
+    print("\n=== Test 3c: Brand Extraction from Car Model ===")
+    
+    # Test with different car model formats
+    test_models = [
+        "volkswagen-golf", 
+        "Toyota Camry", 
+        "bmw-x5", 
+        "some-mercedes-benz-class", 
+        "great wall motor-haval",
+        "unknown-model"
+    ]
+    
+    for model in test_models:
+        status_component = StatusComponent()
+        status_component.update_test_drive_info({"selected_car_model": model})
+        print(f"Model: {model} -> Extracted Brand: {status_component.test_drive_info.get('brand', 'Not detected')}")
     
     # Test 4: Update matched car models
     print("\n=== Test 4: Matched Car Models ===")
