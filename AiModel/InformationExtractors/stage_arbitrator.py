@@ -15,7 +15,9 @@ class StageArbitrator:
         "welcome",
         "profile_analysis",
         "needs_analysis",
+        "implicit_confirmation",
         "car_selection_confirmation",
+        "model_introduction",
         "reservation4s",
         "reservation_confirmation",
         "farewell"
@@ -146,6 +148,26 @@ class StageArbitrator:
                 
         return False
         
+    def _contains_model_introduction_keywords(self, user_input: str) -> bool:
+        """Check if the user input contains keywords related to requesting car model introduction."""
+        introduction_keywords = [
+            "tell me more about", "know more about", "learn more about",
+            "introduce", "introduction", "information about", "details about",
+            "specifications", "specs", "features of", "tell me about",
+            "more information", "more details", "describe", "what can you tell me about",
+            "explain", "elaborate on", "overview of", "characteristics of",
+            "properties of", "attributes of", "performance of", "capability of",
+            "tell me more", "can you explain", "what's special about", "highlight",
+            "show me the", "what are the", "how does the", "I'd like to know more"
+        ]
+        
+        user_input_lower = user_input.lower()
+        for keyword in introduction_keywords:
+            if keyword.lower() in user_input_lower:
+                return True
+                
+        return False
+        
     def _contains_test_drive_keywords(self, user_input: str) -> bool:
         """Check if the user input contains keywords related to test drive."""
         test_drive_keywords = [
@@ -236,12 +258,21 @@ class StageArbitrator:
             
         # Needs analysis logic        
         elif self.current_stage == "needs_analysis":
+            # Check for implicit confirmation transition
+            if needs and "implicit" in needs and needs["implicit"] and len(needs["implicit"]) > 0:
+                self.current_stage = "implicit_confirmation"
+                return self.current_stage  # Return early to avoid global transitions
+                
             car_selection_detected = False
+            model_introduction_requested = False
             
             # Check if matched_car_models are provided
             if matched_car_models and len(matched_car_models) > 0:
+                # Check if user wants model introduction
+                if self._contains_model_introduction_keywords(user_input):
+                    model_introduction_requested = True
                 # First, check if the user input contains car selection keywords
-                if self._contains_car_selection_keywords(user_input):
+                elif self._contains_car_selection_keywords(user_input):
                     car_selection_detected = True
                 # If not found via keywords, check for specific car model mentions
                 else:
@@ -251,19 +282,65 @@ class StageArbitrator:
                             car_selection_detected = True
                             break
             
-            # If car selection is detected, transition regardless of needs keywords
-            if car_selection_detected:
+            # Handle transition based on detected intents
+            if model_introduction_requested:
+                self.current_stage = "model_introduction"
+                return self.current_stage  # Return early to avoid global transitions
+            elif car_selection_detected:
                 # Force the stage change directly, bypass global checks
                 self.current_stage = "car_selection_confirmation"
                 return self.current_stage  # Return early to avoid global transitions
+        
+        # Implicit confirmation logic
+        elif self.current_stage == "implicit_confirmation":
+            car_selection_detected = False
+            model_introduction_requested = False
             
+            # Check if matched_car_models are provided
+            if matched_car_models and len(matched_car_models) > 0:
+                # Check if user wants model introduction
+                if self._contains_model_introduction_keywords(user_input):
+                    model_introduction_requested = True
+                # First, check if the user input contains car selection keywords
+                elif self._contains_car_selection_keywords(user_input):
+                    car_selection_detected = True
+                # If not found via keywords, check for specific car model mentions
+                else:
+                    user_input_lower = user_input.lower()
+                    for car_model in matched_car_models:
+                        if car_model.lower() in user_input_lower:
+                            car_selection_detected = True
+                            break
+            
+            # Handle transition based on detected intents
+            if model_introduction_requested:
+                self.current_stage = "model_introduction"
+                return self.current_stage  # Return early to avoid global transitions
+            elif car_selection_detected:
+                self.current_stage = "car_selection_confirmation"
+                return self.current_stage  # Return early to avoid global transitions
+            elif self._contains_needs_keywords(user_input):
+                self.current_stage = "needs_analysis"
+                return self.current_stage  # Return early to avoid global transitions
+                
         # Car selection confirmation logic
         elif self.current_stage == "car_selection_confirmation":
-            if self._contains_needs_keywords(user_input):
+            if matched_car_models and len(matched_car_models) > 0 and self._contains_model_introduction_keywords(user_input):
+                self.current_stage = "model_introduction"
+            elif self._contains_needs_keywords(user_input):
                 # User wants to reconsider their needs
                 self.current_stage = "needs_analysis"
             elif self._contains_test_drive_keywords(user_input):
                 self.current_stage = "reservation4s"
+                
+        # Model introduction logic
+        elif self.current_stage == "model_introduction":
+            if self._contains_car_selection_keywords(user_input):
+                self.current_stage = "car_selection_confirmation"
+            elif self._contains_test_drive_keywords(user_input):
+                self.current_stage = "reservation4s"
+            elif self._contains_needs_keywords(user_input):
+                self.current_stage = "needs_analysis"
                 
         # Reservation (4S) logic
         elif self.current_stage == "reservation4s":
@@ -281,6 +358,10 @@ class StageArbitrator:
         if self._contains_farewell_keywords(user_input) and self.current_stage != "farewell":
             self.current_stage = "farewell"
             
+        # If user wants model introduction at any point after car selection
+        elif matched_car_models and len(matched_car_models) > 0 and self._contains_model_introduction_keywords(user_input) and self.current_stage not in ["model_introduction", "initial", "welcome", "farewell"]:
+            self.current_stage = "model_introduction"
+            
         # If user wants to book test drive at any point after needs analysis
         elif self.current_stage not in ["reservation4s", "reservation_confirmation", "farewell", "initial", "welcome"] and self._contains_test_drive_keywords(user_input):
             self.current_stage = "reservation4s"
@@ -288,6 +369,10 @@ class StageArbitrator:
         # If user wants to talk about needs at any point, but only if we're not in car selection mode from needs analysis
         elif self.current_stage not in ["needs_analysis", "initial", "welcome"] and self._contains_needs_keywords(user_input):
             self.current_stage = "needs_analysis"
+            
+        # Check for implicit confirmation transition from previous needs_analysis stage
+        if self.previous_stage == "needs_analysis" and self.current_stage == "needs_analysis" and needs and "implicit" in needs and needs["implicit"] and len(needs["implicit"]) > 0:
+            self.current_stage = "implicit_confirmation"
             
         # Update stage history if stage has changed
         if self.current_stage != self.previous_stage:
@@ -430,8 +515,19 @@ if __name__ == "__main__":
         arbitrator.current_stage = "needs_analysis"
         arbitrator.stage_history = ["initial", "welcome", "needs_analysis"]
         
+        # Setup needs without implicit needs to avoid automatic transition to implicit_confirmation
+        needs_without_implicit = {
+            "explicit": {
+                "powertrain_type": "Battery Electric Vehicle",
+                "vehicle_category_bottom": "Compact SUV",
+                "driving_range": "Above 800km",
+                "brand": "Tesla",
+                "prize": "40,000~60,000"
+            }
+        }
+        
         # If needs and matched cars are provided, and user selects a car
-        arbitrator.determine_stage("I like the Tesla Model Y", sample_profile_complete, sample_needs, sample_matched_car_models)
+        arbitrator.determine_stage("I like the Tesla Model Y", sample_profile_complete, needs_without_implicit, sample_matched_car_models)
         assert arbitrator.current_stage == "car_selection_confirmation", f"Expected car_selection_confirmation stage, got {arbitrator.current_stage}"
     
     # Test 6: Car selection to reservation
@@ -534,9 +630,19 @@ if __name__ == "__main__":
         arbitrator.current_stage = "needs_analysis"
         arbitrator.stage_history = ["initial", "welcome", "needs_analysis"]
         
+        # Setup needs without implicit needs to avoid automatic transition to implicit_confirmation
+        needs_without_implicit = {
+            "explicit": {
+                "powertrain_type": "Battery Electric Vehicle",
+                "vehicle_category_bottom": "Compact SUV",
+                "driving_range": "Above 800km",
+                "brand": "Tesla"
+            }
+        }
+        
         # User wants to end conversation
         arbitrator.determine_stage("Thanks, that's all I needed. Goodbye!", 
-                                   sample_profile_complete, sample_needs)
+                                   sample_profile_complete, needs_without_implicit)
         assert arbitrator.current_stage == "farewell", f"Expected farewell stage, got {arbitrator.current_stage}"
     
     # Additional tests for enhanced stage recognition and transitions
@@ -548,9 +654,18 @@ if __name__ == "__main__":
         arbitrator.current_stage = "needs_analysis"
         arbitrator.stage_history = ["initial", "welcome", "needs_analysis"]
         
+        # Setup needs without implicit needs to avoid automatic transition to implicit_confirmation
+        needs_without_implicit = {
+            "explicit": {
+                "powertrain_type": "Battery Electric Vehicle",
+                "vehicle_category_bottom": "Compact SUV",
+                "driving_range": "Above 800km"
+            }
+        }
+        
         # User mentions a specific car model
         arbitrator.determine_stage("The Tesla Model 3 looks interesting", 
-                                   sample_profile_complete, sample_needs, sample_matched_car_models)
+                                   sample_profile_complete, needs_without_implicit, sample_matched_car_models)
         assert arbitrator.current_stage == "car_selection_confirmation", f"Expected car_selection_confirmation stage, got {arbitrator.current_stage}"
     
     # Test 17: Context-aware test drive keyword detection
@@ -593,6 +708,91 @@ if __name__ == "__main__":
         arbitrator.determine_stage("thx, bye", sample_profile_complete, sample_needs, sample_matched_car_models)
         assert arbitrator.current_stage == "farewell", f"Expected farewell stage, got {arbitrator.current_stage}"
     
+    # Test 21: Model introduction request detection
+    def test_model_introduction_request():
+        arbitrator = StageArbitrator()
+        # Setup stages - start from needs analysis
+        arbitrator.current_stage = "needs_analysis"
+        arbitrator.stage_history = ["initial", "welcome", "needs_analysis"]
+        
+        # Setup needs without implicit needs to avoid automatic transition to implicit_confirmation
+        needs_without_implicit = {
+            "explicit": {
+                "powertrain_type": "Battery Electric Vehicle",
+                "vehicle_category_bottom": "Compact SUV",
+                "driving_range": "Above 800km"
+            }
+        }
+        
+        # User asks for more details about a car model
+        arbitrator.determine_stage("I'd like to know more about the Tesla Model Y", 
+                                  sample_profile_complete, needs_without_implicit, sample_matched_car_models)
+        assert arbitrator.current_stage == "model_introduction", f"Expected model_introduction stage, got {arbitrator.current_stage}"
+        
+        # Reset and test from car selection confirmation
+        arbitrator.reset()
+        arbitrator.current_stage = "car_selection_confirmation"
+        arbitrator.stage_history = ["initial", "welcome", "needs_analysis", "car_selection_confirmation"]
+        
+        # User asks for specifications
+        arbitrator.determine_stage("Can you tell me the specifications of the Mustang Mach-E?", 
+                                  sample_profile_complete, needs_without_implicit, sample_matched_car_models)
+        assert arbitrator.current_stage == "model_introduction", f"Expected model_introduction stage, got {arbitrator.current_stage}"
+        
+        # Test returning to car selection from model introduction
+        arbitrator.determine_stage("I think I'll go with this model", 
+                                  sample_profile_complete, needs_without_implicit, sample_matched_car_models)
+        assert arbitrator.current_stage == "car_selection_confirmation", f"Expected car_selection_confirmation stage, got {arbitrator.current_stage}"
+    
+    # Test 22: Implicit confirmation stage transition
+    def test_implicit_confirmation_stage():
+        arbitrator = StageArbitrator()
+        # Setup stages
+        arbitrator.current_stage = "needs_analysis"
+        arbitrator.stage_history = ["initial", "welcome", "needs_analysis"]
+        
+        # Test needs with implicit needs
+        needs_with_implicit = {
+            "explicit": {
+                "powertrain_type": "Battery Electric Vehicle",
+                "vehicle_category_bottom": "Compact SUV",
+                "driving_range": "Above 800km"
+            },
+            "implicit": {
+                "energy_consumption_level": "Low",
+                "size": "Medium",
+                "family_friendliness": "High"
+            }
+        }
+        
+        # User input with needs keywords, but we have implicit needs already
+        arbitrator.determine_stage("I need a car with good range", 
+                                   sample_profile_complete, needs_with_implicit)
+        assert arbitrator.current_stage == "implicit_confirmation", f"Expected implicit_confirmation stage, got {arbitrator.current_stage}"
+        
+        # Now test transitions from implicit confirmation to other stages
+        
+        # To car selection
+        arbitrator.determine_stage("I like the Tesla Model Y", 
+                                  sample_profile_complete, needs_with_implicit, sample_matched_car_models)
+        assert arbitrator.current_stage == "car_selection_confirmation", f"Expected car_selection_confirmation stage, got {arbitrator.current_stage}"
+        
+        # Reset and test transition to model introduction
+        arbitrator.current_stage = "implicit_confirmation"
+        arbitrator.stage_history = ["initial", "welcome", "needs_analysis", "implicit_confirmation"]
+        
+        arbitrator.determine_stage("Tell me more about the Tesla Model 3", 
+                                  sample_profile_complete, needs_with_implicit, sample_matched_car_models)
+        assert arbitrator.current_stage == "model_introduction", f"Expected model_introduction stage, got {arbitrator.current_stage}"
+        
+        # Reset and test back to needs analysis
+        arbitrator.current_stage = "implicit_confirmation"
+        arbitrator.stage_history = ["initial", "welcome", "needs_analysis", "implicit_confirmation"]
+        
+        arbitrator.determine_stage("Actually I'm looking for a car with better performance", 
+                                  sample_profile_complete, needs_with_implicit, sample_matched_car_models)
+        assert arbitrator.current_stage == "needs_analysis", f"Expected needs_analysis stage, got {arbitrator.current_stage}"
+    
     # Run all tests
     print("Starting StageArbitrator unit tests...\n")
     
@@ -618,5 +818,7 @@ if __name__ == "__main__":
     run_test("Test 18: Direct Profile to Reservation", test_direct_profile_to_reservation)
     run_test("Test 19: Multi-Intent Message Handling", test_multi_intent_message_handling)
     run_test("Test 20: Abbreviated Farewell Recognition", test_abbreviated_farewell_recognition)
+    run_test("Test 21: Model Introduction Request", test_model_introduction_request)
+    run_test("Test 22: Implicit Confirmation Stage", test_implicit_confirmation_stage)
     
     print("All tests completed.") 
