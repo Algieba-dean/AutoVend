@@ -177,6 +177,75 @@
             </div>
         </div>
     </div>
+    
+    <!-- Test Drive Section -->
+    <div class="container">
+        <div class="section">
+            <h2>Test Drive Reservation</h2>
+            <div>
+                <label for="testDriverName">Test Driver Name:</label>
+                <input type="text" id="testDriverName" placeholder="Full Name">
+            </div>
+            <div>
+                <label for="carBrand">Car Brand:</label>
+                <select id="carBrand">
+                    <option value="">Please select</option>
+                    <option value="Audi">Audi</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Mercedes">Mercedes</option>
+                    <option value="Tesla">Tesla</option>
+                    <option value="Toyota">Toyota</option>
+                </select>
+            </div>
+            <div>
+                <label for="carModel">Car Model:</label>
+                <input type="text" id="carModel" placeholder="Model Name">
+            </div>
+            <div>
+                <label for="reservationDate">Reservation Date:</label>
+                <input type="date" id="reservationDate">
+            </div>
+            <div>
+                <label for="reservationTime">Reservation Time:</label>
+                <input type="time" id="reservationTime">
+            </div>
+            <div>
+                <label for="reservationLocation">Reservation Location:</label>
+                <input type="text" id="reservationLocation" placeholder="Dealership Location">
+            </div>
+            <div>
+                <label for="reservationPhone">Phone Number:</label>
+                <input type="text" id="reservationPhone" placeholder="Contact Phone Number">
+            </div>
+            <div>
+                <label for="salesmanName">Salesman:</label>
+                <input type="text" id="salesmanName" placeholder="Salesman Name">
+            </div>
+            <div>
+                <label for="reservationStatus">Status:</label>
+                <select id="reservationStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            
+            <div>
+                <button id="createTestDrive">Create Reservation</button>
+                <button id="getTestDrive">Get Reservation</button>
+                <button id="updateTestDrive">Update Reservation</button>
+                <button id="deleteTestDrive">Delete Reservation</button>
+                <button id="listTestDrives">List All Reservations</button>
+            </div>
+            <div id="testDriveStatus"></div>
+            
+            <div>
+                <h3>Test Drive Reservations</h3>
+                <div id="testDriveList" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // API URL
@@ -184,6 +253,7 @@
         
         // Global variables
         let currentSessionId = null;
+        let currentTestDrives = [];
         
         // DOM elements
         const phoneNumberInput = document.getElementById('phoneNumber');
@@ -209,6 +279,25 @@
         const chatStatusDiv = document.getElementById('chatStatus');
         const sessionInfoDiv = document.getElementById('sessionInfo');
         
+        // Test Drive DOM elements
+        const testDriverNameInput = document.getElementById('testDriverName');
+        const carBrandSelect = document.getElementById('carBrand');
+        const carModelInput = document.getElementById('carModel');
+        const reservationDateInput = document.getElementById('reservationDate');
+        const reservationTimeInput = document.getElementById('reservationTime');
+        const reservationLocationInput = document.getElementById('reservationLocation');
+        const reservationPhoneInput = document.getElementById('reservationPhone');
+        const salesmanNameInput = document.getElementById('salesmanName');
+        const reservationStatusSelect = document.getElementById('reservationStatus');
+        
+        const createTestDriveButton = document.getElementById('createTestDrive');
+        const getTestDriveButton = document.getElementById('getTestDrive');
+        const updateTestDriveButton = document.getElementById('updateTestDrive');
+        const deleteTestDriveButton = document.getElementById('deleteTestDrive');
+        const listTestDrivesButton = document.getElementById('listTestDrives');
+        const testDriveStatusDiv = document.getElementById('testDriveStatus');
+        const testDriveListDiv = document.getElementById('testDriveList');
+        
         // Event listeners
         saveProfileButton.addEventListener('click', saveProfile);
         loadProfileButton.addEventListener('click', loadProfile);
@@ -220,6 +309,13 @@
                 sendMessage();
             }
         });
+        
+        // Test Drive event listeners
+        createTestDriveButton.addEventListener('click', createTestDrive);
+        getTestDriveButton.addEventListener('click', getTestDrive);
+        updateTestDriveButton.addEventListener('click', updateTestDrive);
+        deleteTestDriveButton.addEventListener('click', deleteTestDrive);
+        listTestDrivesButton.addEventListener('click', listTestDrives);
         
         // Create/update user profile
         async function saveProfile() {
@@ -531,6 +627,271 @@
                 element.innerHTML = '';
             }, 3000);
         }
+        
+        // Create test drive reservation
+        async function createTestDrive() {
+            const phoneNumber = reservationPhoneInput.value.trim();
+            if (!phoneNumber) {
+                showError(testDriveStatusDiv, 'Phone number cannot be empty');
+                return;
+            }
+            
+            // Validate required fields
+            const requiredFields = [
+                { field: testDriverNameInput, name: 'Test Driver Name' },
+                { field: carBrandSelect, name: 'Car Brand' },
+                { field: carModelInput, name: 'Car Model' },
+                { field: reservationDateInput, name: 'Reservation Date' },
+                { field: reservationTimeInput, name: 'Reservation Time' },
+                { field: reservationLocationInput, name: 'Reservation Location' },
+                { field: salesmanNameInput, name: 'Salesman Name' }
+            ];
+            
+            for (const { field, name } of requiredFields) {
+                if (!field.value.trim()) {
+                    showError(testDriveStatusDiv, `${name} cannot be empty`);
+                    return;
+                }
+            }
+            
+            const testDriveData = {
+                test_drive_info: {
+                    test_driver: testDriverNameInput.value.trim(),
+                    brand: carBrandSelect.value,
+                    selected_car_model: carModelInput.value.trim(),
+                    reservation_date: reservationDateInput.value,
+                    reservation_time: reservationTimeInput.value,
+                    reservation_location: reservationLocationInput.value.trim(),
+                    reservation_phone_number: phoneNumber,
+                    salesman: salesmanNameInput.value.trim(),
+                    status: reservationStatusSelect.value
+                }
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/test-drive`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testDriveData)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showSuccess(testDriveStatusDiv, 'Test drive reservation created successfully');
+                    // Refresh the list
+                    listTestDrives();
+                } else {
+                    const errorData = await response.json();
+                    showError(testDriveStatusDiv, `Creation failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(testDriveStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Get test drive reservation by phone number
+        async function getTestDrive() {
+            const phoneNumber = reservationPhoneInput.value.trim();
+            if (!phoneNumber) {
+                showError(testDriveStatusDiv, 'Phone number cannot be empty');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/test-drive/${phoneNumber}`);
+                
+                if (response.ok) {
+                    const testDriveData = await response.json();
+                    
+                    // Fill form with reservation data
+                    const testDriveInfo = testDriveData.test_drive_info;
+                    testDriverNameInput.value = testDriveInfo.test_driver || '';
+                    carBrandSelect.value = testDriveInfo.brand || '';
+                    carModelInput.value = testDriveInfo.selected_car_model || '';
+                    reservationDateInput.value = testDriveInfo.reservation_date || '';
+                    reservationTimeInput.value = testDriveInfo.reservation_time || '';
+                    reservationLocationInput.value = testDriveInfo.reservation_location || '';
+                    salesmanNameInput.value = testDriveInfo.salesman || '';
+                    reservationStatusSelect.value = testDriveInfo.status || 'Pending';
+                    
+                    showSuccess(testDriveStatusDiv, 'Test drive reservation loaded successfully');
+                } else {
+                    const errorData = await response.json();
+                    showError(testDriveStatusDiv, `Load failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(testDriveStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Update test drive reservation
+        async function updateTestDrive() {
+            const phoneNumber = reservationPhoneInput.value.trim();
+            if (!phoneNumber) {
+                showError(testDriveStatusDiv, 'Phone number cannot be empty');
+                return;
+            }
+            
+            const testDriveData = {
+                test_drive_info: {
+                    test_driver: testDriverNameInput.value.trim(),
+                    brand: carBrandSelect.value,
+                    selected_car_model: carModelInput.value.trim(),
+                    reservation_date: reservationDateInput.value,
+                    reservation_time: reservationTimeInput.value,
+                    reservation_location: reservationLocationInput.value.trim(),
+                    reservation_phone_number: phoneNumber,
+                    salesman: salesmanNameInput.value.trim(),
+                    status: reservationStatusSelect.value
+                }
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/test-drive/${phoneNumber}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testDriveData)
+                });
+                
+                if (response.ok) {
+                    showSuccess(testDriveStatusDiv, 'Test drive reservation updated successfully');
+                    // Refresh the list
+                    listTestDrives();
+                } else {
+                    const errorData = await response.json();
+                    showError(testDriveStatusDiv, `Update failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(testDriveStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Delete test drive reservation
+        async function deleteTestDrive() {
+            const phoneNumber = reservationPhoneInput.value.trim();
+            if (!phoneNumber) {
+                showError(testDriveStatusDiv, 'Phone number cannot be empty');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to delete this test drive reservation?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/test-drive/${phoneNumber}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    // Clear form
+                    testDriverNameInput.value = '';
+                    carBrandSelect.value = '';
+                    carModelInput.value = '';
+                    reservationDateInput.value = '';
+                    reservationTimeInput.value = '';
+                    reservationLocationInput.value = '';
+                    salesmanNameInput.value = '';
+                    reservationStatusSelect.value = 'Pending';
+                    
+                    showSuccess(testDriveStatusDiv, 'Test drive reservation deleted successfully');
+                    // Refresh the list
+                    listTestDrives();
+                } else {
+                    const errorData = await response.json();
+                    showError(testDriveStatusDiv, `Delete failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(testDriveStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // List all test drive reservations
+        async function listTestDrives() {
+            try {
+                // Get query parameters from URL if any
+                const urlParams = new URLSearchParams(window.location.search);
+                const status = urlParams.get('status') || '';
+                const brand = urlParams.get('brand') || '';
+                const fromDate = urlParams.get('from_date') || '';
+                const toDate = urlParams.get('to_date') || '';
+                
+                // Build query string
+                let queryString = '';
+                if (status) queryString += `status=${status}&`;
+                if (brand) queryString += `brand=${brand}&`;
+                if (fromDate) queryString += `from_date=${fromDate}&`;
+                if (toDate) queryString += `to_date=${toDate}&`;
+                
+                const response = await fetch(`${API_URL}/api/test-drive${queryString ? '?' + queryString : ''}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentTestDrives = data.test_drives || [];
+                    
+                    // Display test drives
+                    displayTestDrives(currentTestDrives);
+                    
+                    showSuccess(testDriveStatusDiv, `Loaded ${currentTestDrives.length} test drive reservations`);
+                } else {
+                    const errorData = await response.json();
+                    showError(testDriveStatusDiv, `List failed: ${errorData.error}`);
+                }
+            } catch (error) {
+                showError(testDriveStatusDiv, `Request error: ${error.message}`);
+            }
+        }
+        
+        // Display test drives in the list
+        function displayTestDrives(testDrives) {
+            if (!testDrives || testDrives.length === 0) {
+                testDriveListDiv.innerHTML = '<p>No test drive reservations found.</p>';
+                return;
+            }
+            
+            let html = '<table style="width:100%; border-collapse: collapse;">';
+            html += '<tr><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Driver</th>';
+            html += '<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Brand/Model</th>';
+            html += '<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Date/Time</th>';
+            html += '<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Phone</th>';
+            html += '<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Status</th>';
+            html += '<th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Actions</th></tr>';
+            
+            testDrives.forEach(drive => {
+                const info = drive.test_drive_info;
+                html += `<tr>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px;">${info.test_driver}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px;">${info.brand} ${info.selected_car_model}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px;">${info.reservation_date} ${info.reservation_time}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px;">${info.reservation_phone_number}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px;">${info.status}</td>`;
+                html += `<td style="border: 1px solid #ddd; padding: 8px;">`;
+                html += `<button onclick="loadTestDrive('${info.reservation_phone_number}')">Load</button>`;
+                html += `</td></tr>`;
+            });
+            
+            html += '</table>';
+            testDriveListDiv.innerHTML = html;
+        }
+        
+        // Load a specific test drive into the form
+        function loadTestDrive(phoneNumber) {
+            reservationPhoneInput.value = phoneNumber;
+            getTestDrive();
+        }
+        
+        // Load test drives on page load
+        window.addEventListener('load', function() {
+            // Initialize date input with today's date
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            reservationDateInput.value = `${yyyy}-${mm}-${dd}`;
+            
+            // List test drives
+            listTestDrives();
+        });
     </script>
 </body>
-</html> 
+</html>

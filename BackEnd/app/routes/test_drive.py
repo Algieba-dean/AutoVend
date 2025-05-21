@@ -17,6 +17,7 @@ def create_test_drive():
     # Validate required fields
     required_fields = [
         "test_driver",
+        "brand",
         "reservation_date",
         "selected_car_model", 
         "reservation_time",
@@ -33,7 +34,7 @@ def create_test_drive():
         }), 400
     
     # Check if reservation already exists with this phone number
-    existing = Config.storage.get_test_drive_by_phone_number(test_drive_info["reservation_phone_number"])
+    existing = Config.storage.check_test_drive_existing_by_phone_number(test_drive_info["reservation_phone_number"])
     if existing:
         return jsonify({
             "error": "A test drive reservation already exists for this phone number"
@@ -42,10 +43,11 @@ def create_test_drive():
     # Create test drive reservation
     test_drive = TestDrive(
         test_driver=test_drive_info["test_driver"],
+        brand=test_drive_info["brand"],
         reservation_date=test_drive_info["reservation_date"],
         selected_car_model=test_drive_info["selected_car_model"],
         reservation_time=test_drive_info["reservation_time"],
-        reservation_location=test_drive_info("reservation_location"),
+        reservation_location=test_drive_info["reservation_location"],
         reservation_phone_number=test_drive_info["reservation_phone_number"],
         salesman=test_drive_info["salesman"],
         status=test_drive_info.get("status", "Pending")
@@ -74,13 +76,13 @@ def get_test_drive(reservation_phone_number):
 def update_test_drive(reservation_phone_number):
     """Updates an existing test drive reservation"""
     data = request.get_json()
-    updata_drive_data = data["test_drive_info"]
+    updata_drive_info = data["test_drive_info"]
 
-    if not updata_drive_data:
-        return jsonify({"error": "Update test drive information is required"}), 400
+    if not updata_drive_info:
+        return jsonify({"error": "Test drive information is required"}), 400
     
     # Get test drive reservation
-    test_drive_data = Config.storage.get_test_drive_by_phone(reservation_phone_number)
+    test_drive_data = Config.storage.get_test_drive_by_phone_number(reservation_phone_number)
     if not test_drive_data:
         return jsonify({"error": "Test drive reservation not found"}), 404
     
@@ -88,7 +90,7 @@ def update_test_drive(reservation_phone_number):
     test_drive = TestDrive.created_from_dict(test_drive_data)
     
     # Update with new information
-    test_drive.update(updata_drive_data)
+    test_drive.update(updata_drive_info)
     
     # Save updated test drive
     Config.storage.update_test_drive(test_drive.convert_to_dict())
@@ -115,6 +117,7 @@ def list_test_drives():
     """Retrieves a list of test drive reservations with optional filtering"""
     # Get query parameters
     status = request.args.get("status")
+    brand = request.args.get("brand")
     from_date = request.args.get("from_date")
     to_date = request.args.get("to_date")
     limit = int(request.args.get("limit", 20))
@@ -128,7 +131,11 @@ def list_test_drives():
     for drive in test_drives:
         if status and drive["test_drive_info"]["status"] != status:
             continue
-        if from_date < drive["test_drive_info"]["reservation_date"] < to_date:
+        if brand and drive["test_drive_info"]["brand"] != status:
+            continue
+        if from_date and drive["test_drive_info"]["reservation_date"] < from_date:
+            continue
+        if to_date and drive["test_drive_info"]["reservation_date"] > to_date:
             continue
         filtered_drives.append(drive)
     

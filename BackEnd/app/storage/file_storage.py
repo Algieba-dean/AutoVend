@@ -3,7 +3,6 @@ import os
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 from pathlib import Path
-import shutil
 
 class FileStorage:
     """File-based storage manager for AutoVend"""
@@ -237,7 +236,25 @@ class FileStorage:
         except Exception as e:
             print(f"Error getting test drive data: {e}")
             return None
-    
+
+    def check_test_drive_existing_by_phone_number(self, reservation_phone_number: str) ->bool:
+        """Check if test drive file exist and valid"""
+        try:
+            file_path = self._get_test_drive_path(reservation_phone_number)
+            if not os.path.exists(file_path):
+                return False
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                test_drive_data= json.load(f)
+                if not test_drive_data:
+                    self.delete_test_drive_by_phone_number(reservation_phone_number)
+                    return False
+            return True
+
+        except Exception as e:
+            print(f"Error checking test drive data: {e}")
+            return None
+
     def delete_test_drive_by_phone_number(self, reservation_phone_number: str) -> bool:
         """Delete test drive reservation by phone number"""
         try:
@@ -254,7 +271,7 @@ class FileStorage:
     def get_all_test_drives(self) -> Dict[str, Any]:
         """Get all test drive reservations"""
         try:
-            test_drives = Dict()
+            test_drives = dict()
             # Only process JSON files that aren't the phone index
             for filename in os.listdir(self.test_drives_dir):
                 if filename.endswith('.json'):
