@@ -80,6 +80,12 @@ class RangeExplicitExtractor:
             patterns["numeric"] = re.compile(r'(\d+(?:\.\d+)?)\s*(?:-|to|~)\s*(\d+(?:\.\d+)?)', re.IGNORECASE)
             patterns["single_numeric"] = re.compile(r'(\d+(?:\.\d+)?)', re.IGNORECASE)
             
+            # Create pattern for qualifiers
+            patterns["at_least"] = re.compile(r'\b(at\s+least|minimum|minimum\s+of|no\s+less\s+than|not\s+less\s+than)\b', re.IGNORECASE)
+            patterns["at_most"] = re.compile(r'\b(at\s+most|maximum|maximum\s+of|no\s+more\s+than|not\s+more\s+than)\b', re.IGNORECASE)
+            patterns["more_than"] = re.compile(r'\b(more\s+than|above|over|exceeding|greater\s+than|higher\s+than)\b', re.IGNORECASE)
+            patterns["less_than"] = re.compile(r'\b(less\s+than|below|under|lower\s+than|smaller\s+than)\b', re.IGNORECASE)
+            
             # Create patterns for specific candidates
             patterns["candidates"] = []
             for candidate in info["candidates"]:
@@ -204,6 +210,86 @@ class RangeExplicitExtractor:
         
         return matching_candidates
     
+    def _normalize_with_qualifier(self, label: str, value: float, qualifier_type: str) -> List[str]:
+        """
+        Normalize a value with a qualifier (at least, at most, more than, less than) to matching range candidates.
+        
+        Args:
+            label: The label name
+            value: The numeric value
+            qualifier_type: The type of qualifier ("at_least", "at_most", "more_than", "less_than")
+            
+        Returns:
+            List of matching candidate ranges based on the qualifier logic
+        """
+        matching_candidates = []
+        
+        for candidate in self.range_labels[label]["candidates"]:
+            if candidate.lower() == "none":
+                continue
+                
+            # Extract the numeric range from the candidate
+            range_match = re.search(r'([\d.]+)(?:\s*-|~|\s+to\s+)([\d.]+)', candidate)
+            below_match = re.search(r'below\s+([\d.]+)', candidate)
+            above_match = re.search(r'above\s+([\d.]+)', candidate)
+            
+            if range_match:
+                range_min = float(range_match.group(1).replace(',', ''))
+                range_max = float(range_match.group(2).replace(',', ''))
+                
+                if qualifier_type in ("at_least", "more_than"):
+                    # For "at least X", include ranges where min >= X OR where X falls within the range
+                    if (qualifier_type == "at_least" and (range_min >= value or (range_min <= value <= range_max))):
+                        matching_candidates.append(candidate)
+                    # For "more than X", include ranges where min > X OR where X < range_max
+                    elif qualifier_type == "more_than" and (range_min > value or range_max > value):
+                        matching_candidates.append(candidate)
+                elif qualifier_type in ("at_most", "less_than"):
+                    # For "at most X", include ranges where max <= X OR where X falls within the range
+                    if (qualifier_type == "at_most" and (range_max <= value or (range_min <= value <= range_max))):
+                        matching_candidates.append(candidate)
+                    # For "less than X", include ranges where max < X OR where X > range_min
+                    elif qualifier_type == "less_than" and (range_max < value or range_min < value):
+                        matching_candidates.append(candidate)
+            elif below_match:
+                threshold = float(below_match.group(1).replace(',', ''))
+                # For "below X" candidate
+                if qualifier_type in ("at_most", "less_than"):
+                    # Always include "below X" for at_most and less_than
+                    matching_candidates.append(candidate)
+                elif qualifier_type in ("at_least", "more_than") and value < threshold:
+                    matching_candidates.append(candidate)
+            elif above_match:
+                threshold = float(above_match.group(1).replace(',', ''))
+                # For "above X" candidate
+                if qualifier_type in ("at_least", "more_than"):
+                    # Always include "above X" for at_least and more_than
+                    matching_candidates.append(candidate)
+                elif qualifier_type in ("at_most", "less_than") and value > threshold:
+                    matching_candidates.append(candidate)
+        
+        # Special case to include "below X" ranges for "at_most Y" qualifiers
+        if qualifier_type == "at_most":
+            for candidate in self.range_labels[label]["candidates"]:
+                if "below" in candidate.lower():
+                    below_match = re.search(r'below\s+([\d.]+)', candidate)
+                    if below_match:
+                        below_value = float(below_match.group(1).replace(',', ''))
+                        if below_value > value:
+                            matching_candidates.append(candidate)
+        
+        # Special case to include "above X" ranges for "at_least Y" qualifiers
+        if qualifier_type == "at_least":
+            for candidate in self.range_labels[label]["candidates"]:
+                if "above" in candidate.lower():
+                    above_match = re.search(r'above\s+([\d.]+)', candidate)
+                    if above_match:
+                        above_value = float(above_match.group(1).replace(',', ''))
+                        if above_value < value:
+                            matching_candidates.append(candidate)
+        
+        return matching_candidates
+    
     def extract_range_explicit_needs(self, user_input: str) -> Dict[str, List[str]]:
         """
         Extract range values from user dialogue.
@@ -244,6 +330,26 @@ class RangeExplicitExtractor:
             if label == "battery_capacity" and re.search(r'battery.{1,20}(capacity|size).{1,10}\d+\s*kwh', user_input, re.IGNORECASE):
                 synonyms_mentioned = True
                 
+            # Special case for ground clearance as a synonym for chassis height
+            if label == "chassis_height" and re.search(r'ground\s*clearance', user_input, re.IGNORECASE):
+                synonyms_mentioned = True
+                
+            # Special case for fuel efficiency as a synonym for fuel consumption
+            if label == "fuel_consumption" and re.search(r'(fuel|gas)\s*(efficiency|economy|mileage)', user_input, re.IGNORECASE):
+                synonyms_mentioned = True
+            
+            # Enhanced detection for fuel consumption in complex descriptions
+            if label == "fuel_consumption" and re.search(r'(efficient|efficiency|economical).{1,30}(fuel|gas|petrol|diesel)', user_input, re.IGNORECASE):
+                synonyms_mentioned = True
+            
+            # Enhanced detection for fuel consumption with specific values
+            if label == "fuel_consumption" and re.search(r'(under|below|less than|no more than).{1,10}\d+\s*(l|liter|litre)s?\s*(per|\/)\s*100\s*km', user_input, re.IGNORECASE):
+                synonyms_mentioned = True
+                
+            # Special case for top speed variations
+            if label == "top_speed" and re.search(r'(top|maximum|max)\s*(speed|velocity)', user_input, re.IGNORECASE):
+                synonyms_mentioned = True
+                
             if label_mentioned or synonyms_mentioned:
                 # First check if any candidates are explicitly mentioned
                 for candidate_pattern in patterns["candidates"]:
@@ -276,9 +382,32 @@ class RangeExplicitExtractor:
                         
                         unit_match = patterns["unit"].search(context)
                         if unit_match or context_relevant:
-                            # Normalize the range to candidate values
-                            matching_candidates = self._normalize_to_range_pair(label, min_val, max_val)
-                            label_values.update(matching_candidates)
+                            # Check for qualifiers that might modify the range interpretation
+                            at_least_qualifier = patterns["at_least"].search(context)
+                            at_most_qualifier = patterns["at_most"].search(context)
+                            more_than_qualifier = patterns["more_than"].search(context)
+                            less_than_qualifier = patterns["less_than"].search(context)
+                            
+                            if at_least_qualifier:
+                                # For "at least X-Y", use lower bound
+                                matching_candidates = self._normalize_with_qualifier(label, min_val, "at_least")
+                                label_values.update(matching_candidates)
+                            elif at_most_qualifier:
+                                # For "at most X-Y", use upper bound
+                                matching_candidates = self._normalize_with_qualifier(label, max_val, "at_most")
+                                label_values.update(matching_candidates)
+                            elif more_than_qualifier:
+                                # For "more than X-Y", use lower bound
+                                matching_candidates = self._normalize_with_qualifier(label, min_val, "more_than")
+                                label_values.update(matching_candidates)
+                            elif less_than_qualifier:
+                                # For "less than X-Y", use upper bound
+                                matching_candidates = self._normalize_with_qualifier(label, max_val, "less_than")
+                                label_values.update(matching_candidates)
+                            else:
+                                # Normal range without qualifiers
+                                matching_candidates = self._normalize_to_range_pair(label, min_val, max_val)
+                                label_values.update(matching_candidates)
                     
                     # Look for single values that might imply ranges
                     for match in patterns["single_numeric"].finditer(user_input):
@@ -294,28 +423,32 @@ class RangeExplicitExtractor:
                             "synonyms" in patterns and patterns["synonyms"].search(context)
                         )
                         
-                        # Check for qualifiers like "at least", "below", "above", etc.
-                        below_qualifier = re.search(r'\b(less than|below|under|not more than|lower than|no more than|smaller than)\b', context, re.IGNORECASE)
-                        above_qualifier = re.search(r'\b(more than|above|over|at least|exceeding|greater than|higher than)\b', context, re.IGNORECASE)
-                        
                         unit_match = patterns["unit"].search(context)
                         if unit_match or context_relevant:
-                            if below_qualifier:
-                                # For "below X", use normalized range checking
-                                below_candidates = [c for c in self.range_labels[label]["candidates"] 
-                                                if "below" in c.lower() or 
-                                                (re.search(r'([\d.]+)(?:\s*-|~|\s+to\s+)([\d.]+)', c) and 
-                                                float(re.search(r'([\d.]+)(?:\s*-|~|\s+to\s+)([\d.]+)', c).group(2).replace(',', '')) <= value)]
-                                label_values.update(below_candidates)
-                            elif above_qualifier:
-                                # For "above X", use normalized range checking
-                                above_candidates = [c for c in self.range_labels[label]["candidates"] 
-                                                 if "above" in c.lower() or 
-                                                 (re.search(r'([\d.]+)(?:\s*-|~|\s+to\s+)([\d.]+)', c) and 
-                                                 float(re.search(r'([\d.]+)(?:\s*-|~|\s+to\s+)([\d.]+)', c).group(1).replace(',', '')) >= value)]
-                                label_values.update(above_candidates)
+                            # Check for qualifiers that modify how we interpret the value
+                            at_least_qualifier = patterns["at_least"].search(context)
+                            at_most_qualifier = patterns["at_most"].search(context)
+                            more_than_qualifier = patterns["more_than"].search(context)
+                            less_than_qualifier = patterns["less_than"].search(context)
+                            
+                            if at_least_qualifier:
+                                # For "at least X", find ranges where min value >= X
+                                matching_candidates = self._normalize_with_qualifier(label, value, "at_least")
+                                label_values.update(matching_candidates)
+                            elif at_most_qualifier:
+                                # For "at most X", find ranges where max value <= X
+                                matching_candidates = self._normalize_with_qualifier(label, value, "at_most")
+                                label_values.update(matching_candidates)
+                            elif more_than_qualifier:
+                                # For "more than X", find ranges strictly above X
+                                matching_candidates = self._normalize_with_qualifier(label, value, "more_than")
+                                label_values.update(matching_candidates)
+                            elif less_than_qualifier:
+                                # For "less than X", find ranges strictly below X
+                                matching_candidates = self._normalize_with_qualifier(label, value, "less_than")
+                                label_values.update(matching_candidates)
                             else:
-                                # For single values, find all candidate ranges that include this value
+                                # For single values without qualifiers, find ranges that include this value
                                 matching_candidates = self._normalize_to_range(label, value)
                                 label_values.update(matching_candidates)
             
@@ -656,10 +789,115 @@ def test_synonym_variations():
     assert any("400" in r for r in result3["torque"]), "Should extract correct torque range"
 
 
+# Additional test cases for enhanced qualifier handling
+def test_enhanced_qualifier_handling():
+    """Test enhanced handling of qualifiers like at least, at most, more than, no more than."""
+    extractor = RangeExplicitExtractor()
+    
+    # Test case 1: "at least" qualifier
+    case_1 = "I need a car with at least 250 horsepower."
+    print(f"Input: {case_1}")
+    result1 = extractor.extract_range_explicit_needs(case_1)
+    print(f"Output: {result1}")
+    expected1 = {"horsepower": ["200-300 hp", "300-400 hp", "above 400 hp"]}
+    print(f"Expected: {expected1}")
+    
+    assert "horsepower" in result1, "Should extract horsepower with 'at least' qualifier"
+    assert "200-300 hp" in result1["horsepower"], "Should include 200-300 hp range for 'at least 250 hp'"
+    assert "300-400 hp" in result1["horsepower"], "Should include 300-400 hp range for 'at least 250 hp'"
+    assert "100-200 hp" not in result1["horsepower"], "Should NOT include 100-200 hp range for 'at least 250 hp'"
+    
+    print()
+    
+    # Test case 2: "at most" qualifier
+    case_2 = "I want a car with at most 150 horsepower."
+    print(f"Input: {case_2}")
+    result2 = extractor.extract_range_explicit_needs(case_2)
+    print(f"Output: {result2}")
+    expected2 = {"horsepower": ["100-200 hp", "below 100 hp"]}
+    print(f"Expected: {expected2}")
+    
+    assert "horsepower" in result2, "Should extract horsepower with 'at most' qualifier"
+    assert "100-200 hp" in result2["horsepower"], "Should include 100-200 hp range for 'at most 150 hp'"
+    assert "below 100 hp" in result2["horsepower"], "Should include below 100 hp range for 'at most 150 hp'"
+    assert "200-300 hp" not in result2["horsepower"], "Should NOT include 200-300 hp range for 'at most 150 hp'"
+    
+    print()
+    
+    # Test case 3: "more than" qualifier
+    case_3 = "I'm looking for an EV with more than 80kwh battery capacity."
+    print(f"Input: {case_3}")
+    result3 = extractor.extract_range_explicit_needs(case_3)
+    print(f"Output: {result3}")
+    expected3 = {"battery_capacity": ["80-100kwh", "above 100kwh"]}
+    print(f"Expected: {expected3}")
+    
+    assert "battery_capacity" in result3, "Should extract battery capacity with 'more than' qualifier"
+    assert "80-100kwh" in result3["battery_capacity"], "Should include 80-100kwh range for 'more than 80kwh'"
+    assert "above 100kwh" in result3["battery_capacity"], "Should include above 100kwh range for 'more than 80kwh'"
+    assert "50-80kwh" not in result3["battery_capacity"], "Should NOT include 50-80kwh range for 'more than 80kwh'"
+    
+    print()
+    
+    # Test case 4: "no more than" qualifier
+    case_4 = "I need a car with no more than 7l/100km fuel consumption."
+    print(f"Input: {case_4}")
+    result4 = extractor.extract_range_explicit_needs(case_4)
+    print(f"Output: {result4}")
+    expected4 = {"fuel_consumption": ["6-8l/100km", "4-6l/100km", "below 4l/100km"]}
+    print(f"Expected: {expected4}")
+    
+    assert "fuel_consumption" in result4, "Should extract fuel consumption with 'no more than' qualifier"
+    assert "6-8l/100km" in result4["fuel_consumption"], "Should include 6-8l/100km range for 'no more than 7l/100km'"
+    assert "4-6l/100km" in result4["fuel_consumption"], "Should include 4-6l/100km range for 'no more than 7l/100km'"
+    assert "8-10l/100km" not in result4["fuel_consumption"], "Should NOT include 8-10l/100km range for 'no more than 7l/100km'"
+
+
+def test_complex_multi_label_extraction():
+    """Test extraction of multiple labels with various qualifiers in a single query."""
+    extractor = RangeExplicitExtractor()
+    
+    complex_case = """I'm looking for a car with at least 300 horsepower, 
+                     fuel consumption no more than 8l/100km, 
+                     trunk volume of about 450-500 liters, 
+                     and acceleration from 0-100 in at most 6 seconds.
+                     It should also have a ground clearance of at least 180mm."""
+    
+    print(f"Input: {complex_case}")
+    result = extractor.extract_range_explicit_needs(complex_case)
+    print(f"Output: {result}")
+    
+    expected = {
+        "horsepower": ["300-400 hp", "above 400 hp"],
+        "fuel_consumption": ["6-8l/100km", "4-6l/100km", "below 4l/100km"],
+        "trunk_volume": ["400-500l"],
+        "zero_to_one_hundred_km_h_acceleration_time": ["4-6s", "below 4s"],
+        "chassis_height": ["150-200mm", "above 200mm"]
+    }
+    
+    print(f"Expected: {expected}")
+    
+    assert "horsepower" in result, "Should extract horsepower with 'at least' qualifier"
+    assert "300-400 hp" in result["horsepower"], "Should include 300-400 hp for 'at least 300 hp'"
+    
+    assert "fuel_consumption" in result, "Should extract fuel consumption with 'no more than' qualifier"
+    assert "6-8l/100km" in result["fuel_consumption"], "Should include 6-8l/100km for 'no more than 8l/100km'"
+    
+    assert "trunk_volume" in result, "Should extract trunk volume from range"
+    assert "400-500l" in result["trunk_volume"], "Should include 400-500l for 'trunk volume of about 450-500 liters'"
+    
+    assert "zero_to_one_hundred_km_h_acceleration_time" in result, "Should extract acceleration time with 'at most' qualifier"
+    assert "4-6s" in result["zero_to_one_hundred_km_h_acceleration_time"], "Should include 4-6s for 'at most 6 seconds'"
+    
+    assert "chassis_height" in result, "Should extract chassis height with 'at least' qualifier"
+    assert any("180" in r or "150-200" in r for r in result["chassis_height"]), "Should include appropriate range for 'ground clearance of at least 180mm'"
+
+
 # Main test runner
 if __name__ == "__main__":
     print("Starting RangeExplicitExtractor tests...\n")
     
+    # Run original tests
     run_test("Test 1: Horsepower Extraction", test_horsepower_extraction)
     run_test("Test 2: Engine Displacement Extraction", test_engine_displacement_extraction)
     run_test("Test 3: Battery Capacity Extraction", test_battery_capacity_extraction)
@@ -671,5 +909,9 @@ if __name__ == "__main__":
     run_test("Test 9: Overlapping Ranges", test_overlapping_ranges)
     run_test("Test 10: Complex Descriptions", test_complex_descriptions)
     run_test("Test 11: Synonym Variations", test_synonym_variations)
+    
+    # Run new tests for enhanced features
+    run_test("Test 12: Enhanced Qualifier Handling", test_enhanced_qualifier_handling)
+    run_test("Test 13: Complex Multi-Label Extraction", test_complex_multi_label_extraction)
     
     print("\nAll tests completed.") 
