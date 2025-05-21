@@ -5,7 +5,7 @@ class TestDrive:
     
     def __init__(self, test_driver : str, brand: str, reservation_date : str, selected_car_model : str, 
                  reservation_time: str, reservation_location: str, reservation_phone_number = str,
-                 salesman: str="", status= str or "Pending"):
+                 salesman: str="", status= str or "Pending", notes= str or "empty"):
         """Initialize a new test drive reservation"""
         self.created_at = datetime.now(UTC).isoformat()
         self.updated_at = self.created_at
@@ -18,7 +18,8 @@ class TestDrive:
             "reservation_location": reservation_location,
             "reservation_phone_number": reservation_phone_number,
             "salesman": salesman,
-            "status": status
+            "status": status,
+            "notes": notes
         }
     
     @classmethod
@@ -33,7 +34,8 @@ class TestDrive:
             reservation_time=test_drive_info.get("reservation_time", ""),
             reservation_location=test_drive_info.get("reservation_location", ""),
             reservation_phone_number=test_drive_info.get("reservation_phone_number", ""),
-            status=test_drive_info.get("status", "Pending")
+            status=test_drive_info.get("status", "Pending"),
+            notes=test_drive_info.get("notes","empty")
         )
         test_drive.created_at = data.get("created_at", test_drive.created_at)
         test_drive.updated_at = data.get("updated_at", test_drive.updated_at)

@@ -49,7 +49,8 @@ def create_test_drive():
         reservation_location=test_drive_info["reservation_location"],
         reservation_phone_number=test_drive_info["reservation_phone_number"],
         salesman=test_drive_info.get("salesman",""),
-        status=test_drive_info.get("status", "Pending")
+        status=test_drive_info.get("status", "Pending"),
+        notes=test_drive_info.get("notes","empty")
     )
     
     # Save test drive

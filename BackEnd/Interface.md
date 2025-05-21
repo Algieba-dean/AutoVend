@@ -409,7 +409,8 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_time": "14:00",
       "reservation_date": "2025-06-05",
       "salesman": "Mr. Nobody",
-      "status": "Pending"
+      "status": "Pending",
+      "notes": "User enjoy this test drive"
     }
   }
   ```
@@ -431,7 +432,8 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_time": "14:00",
         "reservation_date": "2025-06-05",
         "salseman": "Mr. Nobody",
-        "status": "Pending"
+        "status": "Pending",
+        "notes": "User enjoy this test drive"
       }
     }
     ```
@@ -463,7 +465,8 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_time": "14:00",
         "reservation_date": "2025-06-05",
         "salesman": "Mr. Nobody",
-        "status": "Pending"
+        "status": "Pending",
+        "notes": "User enjoy this test drive"
       }
     }
     ```
@@ -489,7 +492,8 @@ This document defines the API interface between the frontend and backend of Auto
       "reservation_time": "15:30",
       "reservation_date": "2025-06-05",
       "salesman": "Mr. Nobody",
-      "status": "Pending"
+      "status": "Pending",
+      "notes": "User enjoy this test drive"
     }
   }
   ```
@@ -510,7 +514,8 @@ This document defines the API interface between the frontend and backend of Auto
         "reservation_time": "15:30",
         "reservation_date": "2025-06-05",
         "salesman": "Mr. Nobody",
-        "status": "Pending"
+        "status": "Pending",
+        "notes": "User enjoy this test drive"
       }
     }
     ```
@@ -569,7 +574,8 @@ This document defines the API interface between the frontend and backend of Auto
             "reservation_location": "Tesla Beijing Haidian Store", "reservation_time": "14:00",
             "reservation_date": "2025-06-05",
             "salesman": "Mr. Nobody",
-            "status": "Pending"
+            "status": "Pending",
+            "notes": "User enjoy this test drive"
           }
         },
         {
@@ -585,7 +591,8 @@ This document defines the API interface between the frontend and backend of Auto
             "reservation_time": "10:00",
             "reservation_date": "2025-06-06",
             "salesman": "Mr. Nobody",
-            "status": "Pending"
+            "status": "Pending",
+            "notes": "User enjoy this test drive"
           }
         }
       ]
