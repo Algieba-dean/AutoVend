@@ -27,8 +27,6 @@ class StatusComponent:
             "explicit": dict(),
             "implicit": dict()
         }
-        self.explicit_needs = dict()
-        self.implicit_needs = dict()
         self.test_drive_info = {
             "test_driver": "",
             "test_driver_name": "",
@@ -88,10 +86,7 @@ class StatusComponent:
         """
         for key, value in explicit_needs.items():
             # Add new key or update existing key with new value
-            self.explicit_needs[key] = value
-            
-        # Update the needs dictionary with the latest explicit needs
-        self.needs["explicit"] = self.explicit_needs
+            self.needs["explicit"][key] = value
 
         # TODO as current, multiple value for single key is not supported on query model end, so we need to convert it to string
         self.convert_list_need_to_str()
@@ -107,21 +102,19 @@ class StatusComponent:
         This function should be called after update_explicit_needs
         """
         # First, identify keys that exist in explicit_needs
-        explicit_keys = set(self.explicit_needs.keys())
+        explicit_keys = set(self.needs["explicit"].keys())
         
         # Process each key in the provided implicit_needs
         for key, value in implicit_needs.items():
             if key in explicit_keys:
                 # This key exists in explicit_needs, so we should not add it to implicit_needs
                 # Also, remove it from implicit_needs if it exists there
-                if key in self.implicit_needs:
-                    del self.implicit_needs[key]
+                if key in self.needs["implicit"]:
+                    del self.needs["implicit"][key]
             else:
                 # This key does not exist in explicit_needs, so update it
-                self.implicit_needs[key] = value
+                self.needs["implicit"][key] = value
         
-        # Update the needs dictionary with the latest implicit needs
-        self.needs["implicit"] = self.implicit_needs
         self.convert_list_need_to_str()
     
     def update_test_drive_info(self, test_drive_info):
@@ -179,24 +172,21 @@ class StatusComponent:
         - Otherwise leave the value unchanged
         """
         # Process explicit needs
-        for key in list(self.explicit_needs.keys()):
-            value = self.explicit_needs[key]
+        for key in list(self.needs["explicit"].keys()):
+            value = self.needs["explicit"][key]
             if isinstance(value, list):
                 if len(value) > 0:
                     # Replace list with its first element
-                    self.explicit_needs[key] = value[0]
+                    self.needs["explicit"][key] = value[0]
         
         # Process implicit needs
-        for key in list(self.implicit_needs.keys()):
-            value = self.implicit_needs[key]
+        for key in list(self.needs["implicit"].keys()):
+            value = self.needs["implicit"][key]
             if isinstance(value, list):
                 if len(value) > 0:
                     # Replace list with its first element
-                    self.implicit_needs[key] = value[0]
-        
-        # Update the main needs dictionary
-        self.needs["explicit"] = self.explicit_needs
-        self.needs["implicit"] = self.implicit_needs
+                    self.needs["implicit"][key] = value[0]
+    
     def reset(self):
         """Reset the status component"""
         self.stage = dict()
@@ -225,8 +215,6 @@ class StatusComponent:
             "explicit": dict(),
             "implicit": dict()
         }
-        self.explicit_needs = dict()
-        self.implicit_needs = dict()
         self.test_drive_info = {
             "test_driver": "",
             "test_driver_name": "",
@@ -283,7 +271,7 @@ if __name__ == "__main__":
         "fuel_type": ["gasoline"]
     })
     print("Explicit needs before conversion:")
-    print(status_component.explicit_needs)
+    print(status_component.needs["explicit"])
     
     # Update implicit needs (with some overlapping keys)
     status_component.update_implicit_needs({
@@ -293,13 +281,13 @@ if __name__ == "__main__":
         "technology": ["navigation", "bluetooth", "backup camera"]
     })
     print("\nImplicit needs after update (notice budget and color are removed):")
-    print(status_component.implicit_needs)
+    print(status_component.needs["implicit"])
     
     # List values have been automatically converted to strings by the convert_list_need_to_str function
     print("\nFinal explicit needs (after list to string conversion):")
-    print(status_component.explicit_needs)
+    print(status_component.needs["explicit"])
     print("\nFinal implicit needs (after list to string conversion):")
-    print(status_component.implicit_needs)
+    print(status_component.needs["implicit"])
     
     # Test 3: Test drive information and auto-update of connection info
     print("\n=== Test 3: Test Drive Information ===")
@@ -382,25 +370,24 @@ if __name__ == "__main__":
     
     # Test 6: Testing convert_list_need_to_str with empty lists
     print("\n=== Test 6: List Conversion Edge Cases ===")
-    status_component.explicit_needs = {
+    status_component.needs["explicit"] = {
         "feature1": ["premium"],  # Single item list
         "feature2": [],           # Empty list
         "feature3": ["basic", "standard", "premium"],  # Multiple items
         "feature4": "not a list"  # Not a list
     }
-    status_component.needs["explicit"] = status_component.explicit_needs
     
     # Call the conversion function
     status_component.convert_list_need_to_str()
     
     print("Explicit needs after conversion:")
-    print(status_component.explicit_needs)
+    print(status_component.needs["explicit"])
     
     # Test 7: Reset status component
     print("\n=== Test 7: Reset Status Component ===")
     status_component.reset()
     print("After reset, explicit needs:")
-    print(status_component.explicit_needs)
+    print(status_component.needs["explicit"])
     print("After reset, matched car models:")
     print(status_component.matched_car_models)
         
