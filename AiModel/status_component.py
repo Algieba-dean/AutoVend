@@ -70,7 +70,16 @@ class StatusComponent:
                     found = True
                     break
         return found
-    
+
+    def update_stage(self, new_stage):
+        """Update the stage
+        
+        Args:
+            stage (str): The new stage
+        """
+        self.stage["previous_stage"] = self.stage["current_stage"]
+        self.stage["current_stage"] = new_stage
+
     def update_explicit_needs(self, explicit_needs):
         """Update explicit needs
         
