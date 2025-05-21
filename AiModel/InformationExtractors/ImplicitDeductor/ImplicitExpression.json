@@ -1,0 +1,498 @@
+{
+        "prize_alias": [
+            {"value": "cheap", "expressions": [
+                "I'm on a tight budget",
+                "I can't afford anything expensive",
+                "I'm looking for something economical",
+                "Money is a big concern for me",
+                "I need the most affordable option available"
+            ]},
+            {"value": "economy", "expressions": [
+                "I want a good value for my money",
+                "I'm willing to spend a bit more for quality, but nothing fancy",
+                "I'm budget-conscious but can afford something reliable",
+                "I need something practical without breaking the bank",
+                "I'm interested in a basic model with essential features"
+            ]},
+            {"value": "mid-range", "expressions": [
+                "I can afford something decent, but not luxurious",
+                "I'm looking for a balance between quality and cost",
+                "I have a moderate budget for this purchase",
+                "I want something nice but not extravagant",
+                "I'm willing to pay for extra features, but within reason"
+            ]},
+            {"value": "high-end", "expressions": [
+                "I want a premium vehicle with advanced features",
+                "I'm willing to invest in quality and performance",
+                "I prefer high-quality materials and craftsmanship",
+                "I'm looking for something upscale with cutting-edge technology",
+                "I expect top-tier performance and comfort"
+            ]},
+            {"value": "luxury", "expressions": [
+                "I want the absolute best, regardless of price",
+                "I'm looking for a prestigious brand with exceptional quality",
+                "Money is no object for this purchase",
+                "I expect the finest materials and craftsmanship available",
+                "I want all the luxury amenities and exclusive features"
+            ]}
+        ],
+        "passenger_space_volume_alias": [
+            {"value": "small", "expressions": [
+                "It's just me commuting most of the time",
+                "I rarely have passengers in my car",
+                "I prefer a cozy interior",
+                "I don't need much passenger space",
+                "I usually drive alone or with one other person"
+            ]},
+            {"value": "medium", "expressions": [
+                "I sometimes have a few friends riding with me",
+                "I need enough space for 3-4 people to be comfortable",
+                "I'd like reasonable space for passengers",
+                "I occasionally take my family on trips",
+                "I need a balance between compact size and adequate seating"
+            ]},
+            {"value": "large", "expressions": [
+                "I need to fit my whole family comfortably",
+                "I often drive with multiple passengers",
+                "I want everyone to have plenty of legroom",
+                "I need spacious seating for adults in all rows",
+                "I frequently travel with groups of people"
+            ]},
+            {"value": "luxury", "expressions": [
+                "I want extremely generous space for all passengers",
+                "I need executive-level comfort for everyone in the vehicle",
+                "I expect everyone to stretch out comfortably, even on long trips",
+                "I want limousine-like space in the back seats",
+                "I need exceptional roominess for VIP passengers"
+            ]}
+        ],
+        "trunk_volume_alias": [
+            {"value": "small", "expressions": [
+                "I just need space for a few grocery bags",
+                "I rarely carry much luggage",
+                "I don't need much cargo space",
+                "I only need room for my gym bag and laptop",
+                "I travel light and don't need much storage"
+            ]},
+            {"value": "medium", "expressions": [
+                "I need room for luggage for weekend trips",
+                "I want adequate space for shopping bags and sports equipment",
+                "I occasionally need to transport medium-sized items",
+                "I need space for a stroller and some shopping bags",
+                "I want enough trunk space for a family grocery run"
+            ]},
+            {"value": "large", "expressions": [
+                "I need to fit multiple suitcases for family trips",
+                "I frequently transport bulky items",
+                "I need space for my sports gear and equipment",
+                "I want room for camping equipment for the whole family",
+                "I need to carry lots of supplies for my work"
+            ]},
+            {"value": "luxury", "expressions": [
+                "I need an exceptionally spacious cargo area",
+                "I want to transport large items without folding seats",
+                "I need to fit multiple golf bags plus luggage",
+                "I want maximum storage capacity for long road trips",
+                "I need extensive cargo space for professional equipment"
+            ]}
+        ],
+        "chassis_height_alias": [
+            {"value": "low ride height", "expressions": [
+                "I enjoy a sporty driving feel",
+                "I prefer cars that hug the road",
+                "I want something that handles like a sports car",
+                "I like vehicles that are low to the ground",
+                "I want excellent cornering and stability at high speeds"
+            ]},
+            {"value": "medium ride height", "expressions": [
+                "I want a balance between sporty driving and practical entry/exit",
+                "I like being able to see the road better than in a sedan",
+                "I want something that's not too low or too high",
+                "I prefer a moderate height for ease of getting in and out",
+                "I want decent ground clearance for occasional rough roads"
+            ]},
+            {"value": "high ride height", "expressions": [
+                "I often drive on rough or uneven roads",
+                "I want a commanding view of the road",
+                "I need to navigate through occasional flooding",
+                "I live in an area with deep snow in winter",
+                "I want to easily see over traffic"
+            ]},
+            {"value": "off-road chassis", "expressions": [
+                "I frequently drive on unpaved mountain trails",
+                "I need to traverse extremely rough terrain",
+                "I go camping in remote areas with no roads",
+                "I cross streams and rocky paths in my adventures",
+                "I need maximum ground clearance for serious off-roading"
+            ]}
+        ],
+        "abs": [
+            {"value": "yes", "expressions": [
+                "Safety is my top priority when driving",
+                "I want all modern safety features",
+                "I need reliable braking in all conditions",
+                "I drive in areas with frequent rain or snow",
+                "I want the vehicle to have emergency braking support"
+            ]}
+        ],
+        "voice_interaction": [
+            {"value": "yes", "expressions": [
+                "I want to control features without taking my hands off the wheel",
+                "I'd like to use voice commands while driving",
+                "I need to make calls and send texts hands-free",
+                "I want to be able to ask for directions without typing",
+                "I like being able to control the music with my voice"
+            ]}
+        ],
+        "remote_parking": [
+            {"value": "yes", "expressions": [
+                "I'm really bad at parking in tight spaces",
+                "I struggle with parallel parking",
+                "I want to be able to park my car from outside the vehicle",
+                "I need help fitting into small garage spaces",
+                "I'd like to park my car without being inside it"
+            ]}
+        ],
+        "auto_parking": [
+            {"value": "yes", "expressions": [
+                "I find parking stressful and difficult",
+                "I'm not confident in my parking abilities",
+                "I want the car to park itself with minimal input from me",
+                "I need assistance with parallel and perpendicular parking",
+                "I want technology that helps me park perfectly every time"
+            ]}
+        ],
+        "battery_capacity_alias": [
+            {"value": "small", "expressions": [
+                "I only drive short distances around town",
+                "I just need enough range for my daily commute",
+                "I'm always near charging stations",
+                "I don't need much electric range",
+                "I only use my car for quick local errands"
+            ]},
+            {"value": "medium", "expressions": [
+                "I need enough range for my weekly activities without charging daily",
+                "I commute a moderate distance to work each day",
+                "I want to make a few day trips without recharging",
+                "I need decent range but don't go on long road trips",
+                "I want to go a few days between charges"
+            ]},
+            {"value": "large", "expressions": [
+                "I frequently take longer trips",
+                "I need extensive range for my lifestyle",
+                "I don't want to worry about charging on weekend getaways",
+                "I need to drive several hundred miles between charges",
+                "I want maximum electric range for convenience"
+            ]},
+            {"value": "extra-large", "expressions": [
+                "I take regular long-distance road trips",
+                "I need exceptional range for extended journeys",
+                "I travel between cities regularly without stopping",
+                "I want to minimize charging stops on interstate travel",
+                "I need the maximum possible range from an electric vehicle"
+            ]}
+        ],
+        "fuel_tank_capacity_alias": [
+            {"value": "small", "expressions": [
+                "I just drive around the city",
+                "I prefer stopping for gas more often with a lighter car",
+                "I don't mind refueling frequently",
+                "I only use my car for short trips",
+                "I rarely drive long distances"
+            ]},
+            {"value": "medium", "expressions": [
+                "I like a good balance between weight and range",
+                "I want to refuel about once a week",
+                "I take occasional road trips but nothing extreme",
+                "I commute a moderate distance daily",
+                "I need decent range without excessive weight"
+            ]},
+            {"value": "large", "expressions": [
+                "I hate stopping for gas on long trips",
+                "I travel long distances regularly",
+                "I want maximum driving range between fill-ups",
+                "I live in a remote area far from gas stations",
+                "I need to cover vast distances without refueling"
+            ]}
+        ],
+        "fuel_consumption_alias": [
+            {"value": "low", "expressions": [
+                "I'm concerned about gas prices",
+                "I want to minimize my fuel expenses",
+                "I care about efficiency and low running costs",
+                "I need excellent miles per gallon",
+                "I want to spend as little as possible on fuel"
+            ]},
+            {"value": "medium", "expressions": [
+                "I want reasonable fuel efficiency but also good performance",
+                "I'm fine with average fuel consumption",
+                "I need a balance between power and economy",
+                "I accept moderate fuel costs for better driving experience",
+                "I'm looking for decent but not exceptional fuel economy"
+            ]},
+            {"value": "high", "expressions": [
+                "I prioritize performance over fuel efficiency",
+                "I'm willing to pay more for gas to get more power",
+                "I don't mind higher fuel costs for a better driving experience",
+                "I want significant horsepower and acceleration",
+                "Fuel economy is not my main concern"
+            ]}
+        ],
+        "electric_consumption_alias": [
+            {"value": "low", "expressions": [
+                "I want to maximize my range per charge",
+                "I care about electrical efficiency",
+                "I want to minimize my electricity costs",
+                "I need to get the most miles from each kilowatt-hour",
+                "I'm looking for the most efficient electric vehicle possible"
+            ]},
+            {"value": "medium", "expressions": [
+                "I want a good balance of performance and efficiency",
+                "I'm fine with average electricity consumption",
+                "I need reasonable range with decent performance",
+                "I want normal energy usage for an electric vehicle",
+                "I'm looking for standard consumption rates"
+            ]},
+            {"value": "high", "expressions": [
+                "I prioritize performance over efficiency in my electric vehicle",
+                "I want maximum acceleration and don't mind charging more often",
+                "I'm willing to use more electricity for better performance",
+                "I want a high-performance electric vehicle",
+                "Range efficiency is less important than power to me"
+            ]}
+        ],
+        "cold_resistance": [
+            {"value": "low", "expressions": [
+                "I live in a warm climate year-round",
+                "I never drive in freezing temperatures",
+                "I'm in southern California where it's always warm",
+                "Winter doesn't exist where I live",
+                "I only drive in temperate or hot regions"
+            ]},
+            {"value": "medium", "expressions": [
+                "We get some cold weather in winter but nothing extreme",
+                "I occasionally drive in light snow",
+                "I experience mild winters in my region",
+                "We get a few freezing days each year",
+                "I sometimes travel to areas with colder weather"
+            ]},
+            {"value": "high", "expressions": [
+                "I live in Norway where winters are extremely cold",
+                "I drive in heavy snow and ice regularly",
+                "I need a vehicle that starts reliably at -20°F",
+                "I live in northern Canada with harsh winters",
+                "I frequently drive in mountain areas with sub-zero temperatures"
+            ]}
+        ],
+        "heat_resistance": [
+            {"value": "low", "expressions": [
+                "I live in a cool climate year-round",
+                "I never experience extremely hot weather",
+                "I'm in northern regions where heat isn't an issue",
+                "Summer temperatures are always mild where I live",
+                "I don't drive in hot climates"
+            ]},
+            {"value": "medium", "expressions": [
+                "We get warm summers but nothing extreme",
+                "I occasionally drive in hot weather",
+                "I experience moderate summers in my region",
+                "We get a few very hot days each year",
+                "I sometimes travel to warmer areas"
+            ]},
+            {"value": "high", "expressions": [
+                "I live in Arizona where it frequently exceeds 110°F",
+                "I drive in extreme desert heat regularly",
+                "I need a vehicle that performs well in scorching temperatures",
+                "I live in the Middle East with intense heat year-round",
+                "I frequently drive through Death Valley and similar hot regions"
+            ]}
+        ],
+        "size": [
+            {"value": "small", "expressions": [
+                "I need something compact for city parking",
+                "I prefer nimble cars that are easy to maneuver",
+                "I want something that fits in tight spaces",
+                "I navigate narrow streets and small parking spots daily",
+                "I prefer a vehicle with a small footprint"
+            ]},
+            {"value": "medium", "expressions": [
+                "I need something versatile for various situations",
+                "I want a balance between space and maneuverability",
+                "I'm looking for a standard-sized vehicle",
+                "I need enough room without being too large",
+                "I want something neither too big nor too small"
+            ]},
+            {"value": "large", "expressions": [
+                "I need maximum interior space for people and cargo",
+                "I want a substantial, imposing vehicle",
+                "I'm looking for something with plenty of room",
+                "I have a big family that needs lots of space",
+                "I want a vehicle with significant presence on the road"
+            ]}
+        ],
+        "vehicle_usability": [
+            {"value": "low", "expressions": [
+                "I want a weekend car for occasional fun drives",
+                "I'm looking for something focused on performance over practicality",
+                "I already have a practical car; this one is for enjoyment",
+                "I don't need this vehicle for everyday tasks",
+                "I want something special that isn't necessarily convenient"
+            ]},
+            {"value": "medium", "expressions": [
+                "I need something reasonably practical for regular use",
+                "I want a car that works for most of my needs",
+                "I'm looking for decent utility without sacrificing style",
+                "I need a vehicle that's versatile but still enjoyable",
+                "I want something that balances usability with other factors"
+            ]},
+            {"value": "high", "expressions": [
+                "I need maximum versatility for all life situations",
+                "I want something that can handle anything I throw at it",
+                "I'm looking for a do-everything vehicle with no compromises on utility",
+                "I need a car that adapts to all my lifestyle needs",
+                "I want supreme practicality and convenience"
+            ]}
+        ],
+        "aesthetics": [
+            {"value": "low", "expressions": [
+                "I don't care much about how the car looks",
+                "Functionality is far more important than style to me",
+                "I'm not concerned with appearance, just performance",
+                "I'm very practical and don't need a fancy-looking vehicle",
+                "How the car functions matters much more than its style"
+            ]},
+            {"value": "medium", "expressions": [
+                "I want something that looks decent but isn't flashy",
+                "I appreciate good design but it's not my top priority",
+                "I want a car with contemporary styling but nothing extreme",
+                "I like vehicles that have some style without being ostentatious",
+                "I want something presentable but not attention-grabbing"
+            ]},
+            {"value": "high", "expressions": [
+                "I want a car that turns heads",
+                "The vehicle's appearance is extremely important to me",
+                "I'm looking for something with striking, beautiful design",
+                "I want a car that expresses my personal style",
+                "I appreciate exceptional automotive design and aesthetics"
+            ]}
+        ],
+        "energy_consumption_level": [
+            {"value": "low", "expressions": [
+                "I'm very concerned about my carbon footprint",
+                "I want to minimize my environmental impact",
+                "Fuel efficiency is my absolute top priority",
+                "I need to keep my energy costs as low as possible",
+                "I want the most economical option available"
+            ]},
+            {"value": "medium", "expressions": [
+                "I want reasonable efficiency but not at the expense of performance",
+                "I'm looking for a good balance of economy and capability",
+                "I care about fuel costs but also want adequate power",
+                "I want something more efficient than average but still practical",
+                "I need decent energy efficiency for daily driving"
+            ]},
+            {"value": "high", "expressions": [
+                "I prioritize performance over efficiency",
+                "I'm willing to pay more for fuel to get the driving experience I want",
+                "I'm looking for powerful acceleration and high-speed capability",
+                "I want a high-performance vehicle even if it uses more energy",
+                "I'm interested in maximum power and don't mind the fuel costs"
+            ]}
+        ],
+        "comfort_level": [
+            {"value": "low", "expressions": [
+                "I care more about performance than comfort",
+                "I'm fine with a firmer ride for better handling",
+                "I want a car that feels connected to the road, even if it's less comfortable",
+                "I prefer driving engagement over plush comfort",
+                "I don't mind a stiffer suspension for better responsiveness"
+            ]},
+            {"value": "medium", "expressions": [
+                "I want a good balance between comfort and handling",
+                "I need reasonable comfort for daily driving",
+                "I prefer not to feel every bump but still want good control",
+                "I want decent ride quality without excessive softness",
+                "I'm looking for a comfortable ride that still feels responsive"
+            ]},
+            {"value": "high", "expressions": [
+                "I want to feel like I'm floating on a cloud",
+                "I need exceptional comfort for long drives",
+                "I want luxury-level suspension and seat comfort",
+                "Ride quality is extremely important to me",
+                "I prefer a soft, smooth ride that isolates me from road imperfections"
+            ]}
+        ],
+        "smartness": [
+            {"value": "low", "expressions": [
+                "I prefer simple cars without complicated technology",
+                "I don't need fancy gadgets and screens",
+                "I like basic, straightforward vehicles",
+                "I want minimal electronics and simple controls",
+                "I prefer traditional automotive design without high-tech features"
+            ]},
+            {"value": "medium", "expressions": [
+                "I want modern features but nothing too complicated",
+                "I appreciate useful technology that's intuitive",
+                "I need standard connectivity and assistance features",
+                "I want a car with current technology but not bleeding-edge",
+                "I like having convenient tech features that are easy to use"
+            ]},
+            {"value": "high", "expressions": [
+                "I want all the latest technological innovations",
+                "I love cutting-edge automotive technology",
+                "I need advanced driver assistance and connectivity",
+                "I want a car that integrates with my digital lifestyle",
+                "I'm interested in the most advanced features available in modern vehicles"
+            ]}
+        ],
+        "family_friendliness": [
+            {"value": "low", "expressions": [
+                "It's just me, I don't have kids or family to drive around",
+                "I rarely transport children",
+                "I'm single and don't need family-oriented features",
+                "I don't need child seats or family storage",
+                "I'm looking for something for just myself or another adult"
+            ]},
+            {"value": "medium", "expressions": [
+                "I occasionally need to transport friends or family",
+                "I have a small family with one child",
+                "I sometimes drive my nieces and nephews around",
+                "I need room for a car seat occasionally",
+                "I want something suitable for occasional family use"
+            ]},
+            {"value": "high", "expressions": [
+                "I have a big family with multiple children",
+                "I need to accommodate car seats and strollers easily",
+                "I transport my kids and their friends regularly",
+                "I want ample space and safety features for my children",
+                "Family transportation is my vehicle's primary purpose"
+            ]}
+        ],
+        "city_commuting": [
+            {"value": "yes", "expressions": [
+                "I drive mostly in urban areas with traffic",
+                "I need something easy to park downtown",
+                "I navigate through narrow city streets daily",
+                "My commute involves a lot of stop-and-go traffic",
+                "I primarily use my car for getting around the city"
+            ]}
+        ],
+        "highway_long_distance": [
+            {"value": "yes", "expressions": [
+                "I regularly take road trips across the country",
+                "I commute long distances on the interstate",
+                "I frequently drive hundreds of miles at a time",
+                "I spend hours on the highway each week",
+                "I need something comfortable for extended highway driving"
+            ]}
+        ],
+        "cargo_capability": [
+            {"value": "yes", "expressions": [
+                "I need to transport bulky items regularly",
+                "I carry a lot of equipment for my hobbies",
+                "I frequently haul supplies for home projects",
+                "I need space for my outdoor gear and equipment",
+                "I want to be able to move furniture and large items"
+            ]}
+        ]
+}
