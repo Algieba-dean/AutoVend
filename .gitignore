@@ -22,3 +22,5 @@ frontend/package-lock.json
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
+AiModel/InformationExtractors/ImplicitDeductor/outputs/** 
+AiModel/InformationExtractors/ImplicitDeductor/logs/** 
