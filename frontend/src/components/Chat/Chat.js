@@ -333,6 +333,15 @@ const Chat = () => {
             {userProfile?.parking_conditions && (
               <div className="profile-item">Parking Conditions: {userProfile.parking_conditions}</div>
             )}
+            {userProfile?.connection_information?.connection_phone_number && (
+              <div className="profile-item">Connection Phone: {userProfile.connection_information.connection_phone_number}</div>
+            )}
+            {userProfile?.connection_information?.connection_id_relationship && (
+              <div className="profile-item">Relationship: {userProfile.connection_information.connection_id_relationship}</div>
+            )}
+            {userProfile?.connection_information?.connection_user_name && (
+              <div className="profile-item">Connection Name: {userProfile.connection_information.connection_user_name}</div>
+            )}
           </div>
         </div>
         <div className="info-panel need-analysis">
