@@ -2,7 +2,7 @@ import json
 import random
 import os
 from utils import get_openai_client, get_openai_model, timer_decorator, clean_thinking_output
-from prompt_manager import PromptManager
+from Conversation.prompt_manager import PromptManager
 from Conversation.welcome_message import get_welcome_message
 from Conversation.ask_basic_informaton_messages import get_ask_name_message,get_ask_title_message,get_ask_target_driver_message
 from Conversation.ask_reservation_information_messages import get_congratulation_message,get_ask_test_driver_message,get_ask_reservation_date_message,get_ask_reservation_time_message,get_ask_reservation_location_message
@@ -44,7 +44,7 @@ class ConversationModule:
         
         # Initialize prompt manager
         self.prompt_manager = PromptManager()
-        self.__basic_information = {
+        self.basic_information = {
             "name":False, 
             "user_title":False, 
             "target_driver":False
@@ -87,6 +87,12 @@ class ConversationModule:
         selected_car_model = reservation_info.get("selected_car_model","")
         return f"Hi {user_profile.get("user_title","")} {user_profile.get("name")} ! {get_ask_target_driver_messages()}"
     
+    def add_message(self, role, message):
+        """
+        Add a message to the conversation history.
+        """
+        self.conversation_history.append({"role": role, "content": message})
+        
     @timer_decorator
     def generate_response(self, user_message, user_profile, explicit_needs, 
                            implicit_needs, test_drive_info, matched_car_models, matched_car_model_infos,
@@ -112,7 +118,7 @@ class ConversationModule:
             return get_welcome_message()
             
         # Add user message to conversation history
-        self.conversation_history.append({"role": "user", "content": user_message})
+        self.add_message("user", user_message)
         
         # Create simplified system message with optimized prompts
         system_message = self._create_simplified_system_message(
@@ -141,7 +147,7 @@ class ConversationModule:
         assistant_response = clean_thinking_output(assistant_response)
         
         # Add assistant response to conversation history
-        self.conversation_history.append({"role": "assistant", "content": assistant_response})
+        self.add_message("assistant", assistant_response)
         
         return assistant_response
     
