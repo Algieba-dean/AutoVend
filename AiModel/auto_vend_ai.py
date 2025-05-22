@@ -239,6 +239,13 @@ class AutoVend:
 
             # check also the needs
         self.check_needs_analysis_jump(message)
+        might_new_stage = self.stage_arbitrator.determine_stage(
+            message,
+            self.status_component.user_profile,
+            self.status_component.needs["explicit"],
+            self.status_component.needs["implicit"],
+            self.status_component.test_drive_info,
+        ) # almost from massage to check
 
         if self.status_component.stage["current_stage"] == "needs_analysis":
             # TODO

@@ -64,9 +64,18 @@ class StageArbitrator:
     def _contains_needs_keywords(self, user_input: str) -> bool:
         """Check if the user input contains keywords related to needs analysis."""
         needs_keywords = [
-            # General needs expressions
-            "need", "want", "like", "hope", "expect", "consider", 
-            "purchase", "buy", "looking for", "interested in", "prefer", "would like",
+            # General needs expressions (and updating/adding to needs)
+            "need",                       # Still a strong indicator
+            # "purchase", "buy",            # Clear intent
+            # "looking for", "interested in", # Clear intent
+
+            # Keywords for updating or adding to existing needs
+            "update my needs", "update need", "need to update", "revise my needs",
+            "add to my needs", "add requirement", "another requirement", "additional requirement",
+            "change my needs", "modify my needs", "new requirement",
+            "refine my needs", "adjust my needs", "further requirements",
+            "one more thing", "also need", "in addition", "forgot to mention",
+            "i have a new need", "i want to add a need", "any other needs",
             
             # Price related
             "budget", "price", "cost", "affordable", "cheap", "economy", "expensive",
@@ -99,7 +108,7 @@ class StageArbitrator:
             "slow", "fast", "extreme", "high performance",
             
             # Efficiency
-            "fuel efficiency", "economy", "consumption", "fuel consumption", 
+            "fuel efficiency", "consumption", "fuel consumption", 
             "electric consumption", "range", "driving range", "above 800km", "400-800km",
             "300-400km", "endurance", "efficiency",
             
@@ -174,9 +183,9 @@ class StageArbitrator:
             "test drive", "drive", "experience", "appointment", "schedule",
             "booking", "reserve", "when", "where", "dealership", "dealer",
             "store", "location", "phone", "contact", "available", "availability",
-            "time", "date", "visit", "try", "try out", "feel",
+            "visit", "try", "try out", 
             "behind the wheel", "drive it", "check it out", "see it in person",
-            "book a slot", "test it", "4s", "reservation", "showroom", "service center"
+            "book a slot", "test it", "4s", "4s store", "reservation", "showroom", "service center"
         ]
         
         # Special case for keywords that shouldn't trigger test drive detection
