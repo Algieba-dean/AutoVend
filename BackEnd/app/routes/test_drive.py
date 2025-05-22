@@ -17,6 +17,7 @@ def create_test_drive():
     # Validate required fields
     required_fields = [
         "test_driver",
+        "test_driver_name",
         "brand",
         "selected_car_model", 
         "reservation_phone_number", 
@@ -42,6 +43,7 @@ def create_test_drive():
     # Create test drive reservation
     test_drive = TestDrive(
         test_driver=test_drive_info["test_driver"],
+        test_driver_name=test_drive_info["test_driver_name"],
         brand=test_drive_info["brand"],
         reservation_date=test_drive_info["reservation_date"],
         selected_car_model=test_drive_info["selected_car_model"],

@@ -3,7 +3,7 @@ from datetime import datetime, UTC
 class TestDrive:
     """Test drive reservation model for AutoVend application"""
     
-    def __init__(self, test_driver : str, brand: str, reservation_date : str, selected_car_model : str, 
+    def __init__(self, test_driver : str, test_driver_name: str, brand: str, reservation_date : str, selected_car_model : str, 
                  reservation_time: str, reservation_location: str, reservation_phone_number = str,
                  salesman: str="", status= str or "Pending", notes= str or "empty"):
         """Initialize a new test drive reservation"""
@@ -11,6 +11,7 @@ class TestDrive:
         self.updated_at = self.created_at
         self.test_drive_info = {
             "test_driver": test_driver,
+            "test_driver_name":test_driver_name,
             "brand": brand,
             "reservation_date": reservation_date,
             "selected_car_model": selected_car_model,
@@ -28,6 +29,7 @@ class TestDrive:
         test_drive_info=data["test_drive_info"]
         test_drive = cls(
             test_driver=test_drive_info.get("test_driver", ""),
+            test_driver_name=test_drive_info.get("test_driver_name", ""),
             brand=test_drive_info.get("brand",""),
             reservation_date=test_drive_info.get("reservation_date", ""),
             selected_car_model=test_drive_info.get("selected_car_model", ""),

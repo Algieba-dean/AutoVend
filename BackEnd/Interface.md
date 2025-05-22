@@ -152,6 +152,7 @@ This document defines the API interface between the frontend and backend of Auto
       },
       "reservation_info": {
         "test_driver": "",
+        "test_driver_name": "",
         "reservation_date": "",
         "selected_car_model":"",
         "reservation_time": "",
@@ -232,6 +233,7 @@ This document defines the API interface between the frontend and backend of Auto
       },
       "reservation_info": {
         "test_driver": "",
+        "test_driver_name": "",
         "reservation_date": "",
         "reservation_time": "",
         "reservation_location": "",
@@ -312,6 +314,7 @@ This document defines the API interface between the frontend and backend of Auto
       },
       "reservation_info": {
         "test_driver": "",
+        "test_driver_name": "",
         "reservation_date": "",
         "selected_car_model":"Tesla Model Y",
         "reservation_time": "",
@@ -376,7 +379,8 @@ This document defines the API interface between the frontend and backend of Auto
         "current_stage": "farewell"
       },
       "reservation_info": {
-        "test_driver": "Mr. Zhang",
+        "test_driver": "self",
+        "test_driver_name": "Mr. Zhang",
         "reservation_date": "2025-06-05",
         "selected_car_model":"Tesla Model Y",
         "reservation_time": "14:00",
@@ -401,7 +405,8 @@ This document defines the API interface between the frontend and backend of Auto
   ```json
   {
     "test_drive_info": {
-      "test_driver": "Mr. Zhang",
+      "test_driver": "self",
+      "test_driver_name": "Mr. Zhang",
       "brand": "Tesla",
       "selected_car_model": "Model Y",
       "reservation_phone_number": "123456789",
@@ -414,7 +419,7 @@ This document defines the API interface between the frontend and backend of Auto
     }
   }
   ```
-- **Required Fields**: `test_driver`, `brand`, `selected_car_model`, `reservation_phone_number`, `reservation_date`, `reservation_time`
+- **Required Fields**: `test_driver`, `test_driver_name`, `brand`, `selected_car_model`, `reservation_phone_number`, `reservation_date`, `reservation_time`
 - **Response**:
   - Status: 201 Created
   - Body: 
@@ -423,7 +428,8 @@ This document defines the API interface between the frontend and backend of Auto
       "created_at": "2025-06-01T12:34:56Z",
       "updated_at": "2025-06-01T12:34:56Z",
       "test_drive_info": {
-        "test_driver": "Mr. Zhang",
+        "test_driver": "self",
+        "test_driver_name": "Mr. Zhang",
         "brand": "Tesla",
         "selected_car_model": "Model Y",
         "status": "Pending",
@@ -456,7 +462,8 @@ This document defines the API interface between the frontend and backend of Auto
       "created_at": "2025-06-01T12:34:56Z",
       "updated_at": "2025-06-01T14:34:56Z",
       "test_drive_info": {
-        "test_driver": "Mr. Zhang",
+        "test_driver": "self",
+        "test_driver_name": "Mr. Zhang",
         "brand": "Tesla",
         "selected_car_model": "Model Y",
         "status": "Confirmed",
@@ -483,7 +490,8 @@ This document defines the API interface between the frontend and backend of Auto
   ```json
   {
     "test_drive_info": {
-      "test_driver": "Mr. Zhang",
+      "test_driver": "self",
+      "test_driver_name": "Mr. Zhang",
       "brand": "Tesla",
       "selected_car_model": "Model Y",
       "status": "Confirmed",
@@ -505,7 +513,8 @@ This document defines the API interface between the frontend and backend of Auto
       "created_at": "2025-06-01T12:34:56Z",
       "updated_at": "2025-06-01T16:34:56Z",
       "test_drive_info": {
-        "test_driver": "Mr. Zhang",
+        "test_driver": "self",
+        "test_driver_name": "Mr. Zhang",
         "brand": "Tesla",
         "selected_car_model": "Model Y",
         "status": "Confirmed",
@@ -566,7 +575,8 @@ This document defines the API interface between the frontend and backend of Auto
           "created_at": "2025-06-01T12:34:56Z",
           "updated_at": "2025-06-01T16:34:56Z",
           "test_drive_info": {
-            "test_driver": "Mr. Zhang",
+            "test_driver": "self",
+            "test_driver_name": "Mr. Zhang",
             "brand": "Tesla",
             "selected_car_model": "Model Y",
             "status": "Pending",
@@ -582,7 +592,8 @@ This document defines the API interface between the frontend and backend of Auto
           "created_at": "2025-06-01T13:34:56Z",
           "updated_at": "2025-06-01T16:34:56Z",
           "test_drive_info": {
-            "test_driver": "Mrs. Li",
+            "test_driver": "self",
+            "test_driver_name": "Mrs. Li",
             "brand": "Nio",
             "selected_car_model": "ES6",
             "status": "Confirmed",
@@ -759,7 +770,8 @@ The reservation_info structure contains information about a test drive appointme
 
 ```
 reservation_info:
-  test_driver: String identifying the person who will test drive the vehicle
+  test_driver: String indicates the relation who test drive the vehicle, could be self, son ,father and so on
+  test_driver_name: String identifying the person who will test drive the vehicle
   reservation_date: String in YYYY-MM-DD format for the reservation date
   reservation_time: String in HH:MM format for the reservation time
   reservation_location: String describing the dealership or store location
@@ -771,7 +783,8 @@ reservation_info:
 
 | Field | Type | Required | Description | Example Values |
 |-------|------|----------|-------------|----------------|
-| test_driver | String | No | Name of test driver | "Mr. Zhang" |
+| test_driver | String | No | Relation of test driver | "father" |
+| test_driver_name | String | No | Name of test driver | "Mr. Zhang" |
 | reservation_date | String | No | Date of test drive | "2025-06-05" (YYYY-MM-DD format) |
 | reservation_time | String | No | Time of test drive | "14:00" (HH:MM format) |
 | reservation_location | String | No | Dealership location | "Tesla Beijing Haidian Store" |
@@ -784,7 +797,8 @@ The test_drive_info structure contains information about a test drive reservatio
 
 ```
 test_drive_info:
-  test_driver: String identifying the person who will test drive the vehicle
+  test_driver: String indicates the relation who test drive the vehicle, could be self, son ,father and so on
+  test_driver_name: String identifying the person who will test drive the vehicle
   brand: String indicating the car brand
   selected_car_model: String specifying the car model
   status: Enum indicating the current status of the test drive
@@ -798,7 +812,8 @@ test_drive_info:
 
 | Field | Type | Required | Description | Example Values |
 |-------|------|----------|-------------|----------------|
-| test_driver | String | Yes | Name of test driver | "Mr. Zhang" |
+| test_driver | String | No | Relation of test driver | "father" |
+| test_driver_name | String | Yes | Name of test driver | "Mr. Zhang" |
 | brand | String | Yes | Car manufacturer | "Tesla", "Nio", "BMW" |
 | selected_car_model | String | Yes | Specific car model | "Model Y", "ES6", "i4" |
 | status | String | Yes | Current status of test drive | "Pending", "Confirmed", "Completed" |
