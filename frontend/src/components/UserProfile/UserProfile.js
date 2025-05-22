@@ -62,7 +62,19 @@ const UserProfile = () => {
       console.error('Failed to save profile:', error);
       // Check error type to determine if user already exists
       if (error.response && error.response.status === 409) {
-        setError('Phone number already exists, please use another number');
+        if (userType === 'custom') {
+          try {
+            const existingProfile = await profileService.getUserProfile(profile.phone_number);
+            setProfile(existingProfile);
+            return true;
+          } catch (fetchError) {
+            console.error('Failed to fetch existing profile:', fetchError);
+            setError('Unable to retrieve existing user profile, please try again');
+            return false;
+          }
+        } else {
+          setError('Phone number already exists, please use another number');
+        }
       } else {
         setError('Save user failed, please try again');
       }
@@ -102,26 +114,6 @@ const UserProfile = () => {
       // Verify all required fields for custom users
       if (!profile.phone_number.trim()) {
         setError('Please enter the phone number');
-        return;
-      }
-
-      if (!profile.user_title.trim()) {
-        setError('Please enter the user title');
-        return;
-      }
-
-      if (!profile.name.trim()) {
-        setError('Please enter the name');
-        return;
-      }
-
-      if (!profile.target_driver.trim()) {
-        setError('Please select the target driver');
-        return;
-      }
-
-      if (!profile.expertise.trim()) {
-        setError('Please select the knowledge level about cars');
         return;
       }
 
@@ -280,7 +272,7 @@ const UserProfile = () => {
             </div>
           </div>
 
-          <div className="section-header">
+          {/* <div className="section-header">
             <h3>Additional Information(Optional)</h3>
           </div>
 
@@ -365,7 +357,7 @@ const UserProfile = () => {
                 <option value="No Parking">No Parking</option>
               </select>
             </div>
-          </div>
+          </div> */}
         </div>
       </>
     );
