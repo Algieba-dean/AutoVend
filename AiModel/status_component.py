@@ -90,7 +90,7 @@ class StatusComponent:
             self.needs["explicit"][key] = value
 
         # TODO as current, multiple value for single key is not supported on query model end, so we need to convert it to string
-        self.convert_list_need_to_str()
+        # self.convert_list_need_to_str()
     
     def update_implicit_needs(self, implicit_needs):
         """Update implicit needs, ensuring no overlap with explicit needs.
@@ -116,7 +116,7 @@ class StatusComponent:
                 # This key does not exist in explicit_needs, so update it
                 self.needs["implicit"][key] = value
         
-        self.convert_list_need_to_str()
+        # self.convert_list_need_to_str()
     
     def update_test_drive_info(self, test_drive_info):
         """Update test drive information and potentially update profile connection information
