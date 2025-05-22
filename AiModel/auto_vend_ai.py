@@ -67,7 +67,7 @@ class AutoVend:
         self.car_model_query = CarModelQuery()
         self.status_component = StatusComponent()
         # Create a thread pool executor
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
 
     @timer_decorator
     def generate_response(
@@ -95,9 +95,23 @@ class AutoVend:
         self.status_component.update_stage(new_stage)
         if message == "":
             self.status_component.update_profile(profile)
-            return self.conversation_module.get_initial_response(profile)
+            return self.conversation_module.get_initial_response(profile), self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
 
         # Use thread pool to run all extractors in parallel
+        future_basic_profile = self.executor.submit(self.basic_profile_extractor.extract_basic_profile, message)
+        future_additional_profile = self.executor.submit(self.additional_profile_extractor.extract_additional_profile, message)
+        future_expertise = self.executor.submit(self.expertise_analyst.analyze_expertise, message)
+        future_explicit_needs = self.executor.submit(self.explicit_in_extractor.extract_explicit_needs, message)
+        future_implicit_needs = self.executor.submit(self.implicit_deductor.extract_implicit_values, message)
+        future_test_drive = self.executor.submit(self.reservation_info_extractor.extract_all_info, message)
+        
+        basic_profile_info = future_basic_profile.result()
+        additional_profile_info = future_additional_profile.result()
+        expertise_info = future_expertise.result()
+        explicit_needs_info = future_explicit_needs.result()
+        implicit_needs_info = future_implicit_needs.result()
+        test_drive_info = future_test_drive.result()
+        
         if self.status_component.stage["current_stage"] == "initial":
             ...
         elif self.status_component.stage["current_stage"] == "welcome":
@@ -137,11 +151,13 @@ class AutoVend:
         # test_drive_info = future_test_drive.result()
 
         # Update state with results
-        if profile_info:
-            self.status_component.update_profile(profile_info)
+        if basic_profile_info:
+            self.status_component.update_profile(basic_profile_info)
+        if additional_profile_info:
+            self.status_component.update_profile(additional_profile_info)
 
-        if expertise_info and "expertise" in expertise_info:
-            self.status_component.update_profile(expertise_info)
+        if expertise_info:
+            self.status_component.update_profile({"expertise": expertise_info})
 
         if explicit_needs_info:
             self.status_component.update_explicit_needs(explicit_needs_info)
@@ -181,26 +197,20 @@ class AutoVend:
         self.status_component.update_stage(new_stage)
 
         # Generate response (this still needs to be sequential after we have all the extracted info)
-        response = self.conversation_module.generate_response(
-            message,
-            self.status_component.user_profile,
-            self.status_component.needs["explicit"],
-            self.status_component.needs["implicit"],
-            self.status_component.test_drive_info,
-            self.status_component.matched_car_models,
-            self.status_component.matched_car_model_infos,
-            self.status_component.stage["current_stage"],
-        )
+        response = "hard coded response"
+        # response = self.conversation_module.generate_response(
+        #     message,
+        #     self.status_component.user_profile,
+        #     self.status_component.needs["explicit"],
+        #     self.status_component.needs["implicit"],
+        #     self.status_component.test_drive_info,
+        #     self.status_component.matched_car_models,
+        #     self.status_component.matched_car_model_infos,
+        #     self.status_component.stage["current_stage"],
+        # )
 
         # Return complete result with all data
-        return (
-            response,
-            self.status_component.stage,
-            self.status_component.user_profile,
-            self.status_component.needs,
-            self.status_component.matched_car_models,
-            self.status_component.test_drive_info,
-        )
+        return response, self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
 
 
     def get_car_model_details(self, model_name):
@@ -242,16 +252,16 @@ if __name__ == "__main__":
         stage_ = {"previous_stage": "", "current_stage": "initial"}
         profile_ = {
             "phone_number": "123456789",
-            "age": "20-35",
-            "user_title": "Mr. Zhang",
-            "name": "John",
-            "target_driver": "Self",
-            "expertise": "6",
+            "age": "",
+            "user_title": "",
+            "name": "",
+            "target_driver": "",
+            "expertise": "",
             "additional_information": {
-                "family_size": "3",
-                "price_sensitivity": "Medium",
-                "residence": "China+Beijing+Haidian",
-                "parking_conditions": "Allocated Parking Space",
+                "family_size": "",
+                "price_sensitivity": "",
+                "residence": "",
+                "parking_conditions": "",
             },
             "connection_information": {
                 "connection_phone_number": "",
@@ -261,11 +271,8 @@ if __name__ == "__main__":
         }
         needs_ = {
             "explicit": {
-                "powertrain_type": "Battery Electric Vehicle",
-                "vehicle_category_bottom": "Compact SUV",
-                "driving_range": "Above 800km",
             },
-            "implicit": {"energy_consumption_level": "Low"},
+            "implicit": {},
         }
         reservation_info_ = {
             "test_driver": "",
@@ -276,7 +283,7 @@ if __name__ == "__main__":
             "reservation_phone_number": "",
             "salesman": "",
         }
-        matched_car_models_ = ["Model 3", "Model S", "Model X", "Model Y"]
+        matched_car_models_ = []
         # Process the message and get results
         response, stage_, profile_, needs_, matched_car_models_, reservation_info_ = (
             assistant.generate_response(

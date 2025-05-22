@@ -4,11 +4,11 @@ import os
 from typing import Dict, Any, Optional, List, Set
 from datetime import datetime
 import sys
-# sys.path.append('..')  # Add parent directory to path
-# from InformationExtractors.time_extractor import TimeExtractor
-# from InformationExtractors.date_extractor import DateExtractor
-from time_extractor import TimeExtractor
-from date_extractor import DateExtractor
+sys.path.append('..')  # Add parent directory to path
+from InformationExtractors.time_extractor import TimeExtractor
+from InformationExtractors.date_extractor import DateExtractor
+# from time_extractor import TimeExtractor
+# from date_extractor import DateExtractor
 
 
 class ReservationInfoExtractor:
