@@ -9,7 +9,7 @@ class ExplicitNeedsExtractor:
     Extracts only directly mentioned requirements based on QueryLabels.json.
     """
     
-    def __init__(self, api_key=None, model=None):
+    def __init__(self, api_key=None, model=None, explicit_labels=dict()):
         """
         Initialize the ExplicitNeedsExtractor.
         
@@ -22,7 +22,11 @@ class ExplicitNeedsExtractor:
         
         # Load car query labels
         with open("QueryLabels.json", "r") as f:
-            self.query_labels = json.load(f)
+            query_labels = json.load(f)
+            self.query_labels = dict()
+            for label in explicit_labels:
+                self.query_labels[label] = query_labels[label]
+
     
     @timer_decorator
     def extract_explicit_needs(self, user_message):

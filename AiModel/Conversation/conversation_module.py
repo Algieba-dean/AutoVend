@@ -33,6 +33,8 @@ class ConversationModule:
         self.prompt_loader = PromptLoader()
         self.needs_status = NeedsStatus()
         self.mocked_information = MockedInformation()
+        self.init_prompt = self.prompt_loader.render_base_prompt() +  self.prompt_loader.render_common_endding()
+        self.get_message_from_model("Hello you are AutoVend", self.init_prompt, no_add_history=True) # connect to the model to get the first response
 
     
     def add_message(self, role, message):
@@ -47,13 +49,12 @@ class ConversationModule:
         """
         # For welcome stage with first interaction, use predefined welcome message
         # Should directly ask user name, title, target driver at end of welcome message
-        if not self.conversation_history:
-            personalized_greeting = "Hi!"
-            if user_profile.get("name") :
-                personalized_greeting = f"Hi {user_profile.get("user_title","")} {user_profile.get("name")} !"
-            response = f"{personalized_greeting} {get_welcome_message()}"
-            self.add_message("assistant", response)
-            return response
+        personalized_greeting = "Hi!"
+        if user_profile.get("name") :
+            personalized_greeting = f"Hi {user_profile.get("user_title","")} {user_profile.get("name")} !"
+        response = f"{personalized_greeting} {get_welcome_message()}"
+        self.add_message("assistant", response)
+        return response
 
     def generate_initial_message(self):
         """
@@ -61,7 +62,7 @@ class ConversationModule:
         """
         # For initial stage, use predefined initial message
         return get_initial_message()
-    def get_message_from_model(self,user_message, prompt)->str:
+    def get_message_from_model(self,user_message, prompt, no_add_history=False)->str:
         # Add user message to conversation history
         self.add_message("user", user_message)
         
@@ -86,7 +87,8 @@ class ConversationModule:
         assistant_response = clean_thinking_output(assistant_response)
         
         # Add assistant response to conversation history
-        self.add_message("assistant", assistant_response)
+        if not no_add_history:
+            self.add_message("assistant", assistant_response)
         return assistant_response
 
     def generate_response_for_big_needs(self, user_profile, explicit_needs, implicit_needs, test_drive_info, matched_car_models, matched_car_model_infos, current_stage):

@@ -4,7 +4,7 @@ class PromptLoader:
     def __init__(self):
         # Base prompts
         self.base_prompt_template = string.Template(
-            "You are AutoVend, an intelligent, rigorous, and professional smart car **phone** sales assistant."
+            "You are AutoVend, an intelligent, rigorous, and professional smart car **phone** sales assistant. No need to introduce yourself and greet the customer. Answer should be short and like answer in a phone call."
         )
         self.expertise_prompt_template = string.Template(
             "The user's expertise level regarding car purchase needs is currently ${expertise} out of 10. The following communication needs to be adjusted to the corresponding level of professionalism. Please adjust vocabulary appropriately during the conversation."

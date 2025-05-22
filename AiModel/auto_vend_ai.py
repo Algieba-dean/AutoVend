@@ -6,14 +6,15 @@ from typing import Dict, Any, List
 from utils import get_openai_client, get_openai_model, timer_decorator
 
 from Conversation.mocked_information import MockedInformation
+
 # # LLMExtractors
 from Conversation.conversation_module import ConversationModule
 
-# from LLMExtractors.profile_extractor import ProfileExtractor
-# from LLMExtractors.expertise_evaluator import ExpertiseEvaluator
-# from LLMExtractors.explicit_needs_extractor import ExplicitNeedsExtractor
-# from LLMExtractors.implicit_needs_inferrer import ImplicitNeedsInferrer
-# from LLMExtractors.test_drive_extractor import TestDriveExtractor
+from LLMExtractors.profile_extractor import ProfileExtractor
+from LLMExtractors.expertise_evaluator import ExpertiseEvaluator
+from LLMExtractors.explicit_needs_extractor import ExplicitNeedsExtractor
+from LLMExtractors.implicit_needs_inferrer import ImplicitNeedsInferrer
+from LLMExtractors.test_drive_extractor import TestDriveExtractor
 
 # TranditionalExtractors
 from InformationExtractors.explicit_in_extractor import ExplicitInOneExtractor
@@ -53,6 +54,7 @@ class AutoVend:
         # self.explicit_needs_extractor = ExplicitNeedsExtractor(api_key=api_key, model=self.model)
         # self.implicit_needs_inferrer = ImplicitNeedsInferrer(api_key=api_key, model=self.model)
         # self.test_drive_extractor = TestDriveExtractor(api_key=api_key, model=self.model)
+
         self.conversation_module = ConversationModule(api_key=api_key, model=self.model)
 
         # Initialize tranditional extractors
@@ -70,6 +72,45 @@ class AutoVend:
         self.mocked_information = MockedInformation()
         # Create a thread pool executor
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
+
+    def query_model_related_info(self, message: str):
+        """
+        Query model related information from the model
+        """
+        # This depends on the results of the extractors, so it cannot be parallelized with them
+        if (
+            self.status_component.needs["explicit"]
+            or self.status_component.needs["implicit"]
+        ):
+            # Combine explicit and implicit needs
+            combined_needs = {
+                **self.status_component.needs["explicit"],
+                **self.status_component.needs["implicit"],
+            }
+            # Use existing query_car_model method
+            # TODO: filter_needs is not used yet
+            car_models, filter_needs = self.car_model_query.query_car_model(
+                combined_needs
+            )
+            # Construct matched car models information
+            self.status_component.update_matched_car_models(car_models)
+            self.status_component.update_matched_car_model_infos(
+                [self.car_model_query.get_car_model_info(model) for model in car_models]
+            )
+
+    def check_needs_analysis_jump(self, message: str):
+        """
+        Check if the user message is related to needs analysis
+        """
+        if "needs" in message.lower():
+            new_stage = "needs_analysis"
+            self.status_component.update_stage(new_stage)
+            # handle over to needs analysis in its stage handling
+    def update_expertise(self, expertise: str):
+        """
+        Update the expertise of the user
+        """
+        self.status_component.update_profile({"expertise": str(expertise)})
 
     @timer_decorator
     def generate_response(
@@ -95,56 +136,172 @@ class AutoVend:
             new_stage = "initial"
             self.status_component.update_stage(new_stage)
             self.status_component.update_profile(profile)
-            return self.conversation_module.generate_initial_message(), self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
-        if message.lower() == "Hi AutoVend".lower():
-            new_stage = "initial"
-        if message.lower() == "Hi AutoVend".lower():
-            new_stage = "welcome"
-            self.status_component.update_profile(profile)
-            self.status_component.update_stage(new_stage)
-            return self.conversation_module.generate_welcome_message(self.status_component.user_profile), self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
-        if self.status_component.stage["previous_stage"] == "welcome":
-            new_stage = "profile_analysis"
-            self.status_component.update_stage(new_stage)
+            return (
+                self.conversation_module.generate_initial_message(),
+                self.status_component.stage,
+                self.status_component.user_profile,
+                self.status_component.needs,
+                self.status_component.matched_car_models,
+                self.status_component.test_drive_info,
+            )
 
         # Use thread pool to run all extractors in parallel
-        future_basic_profile = self.executor.submit(self.basic_profile_extractor.extract_basic_profile, message)
-        future_additional_profile = self.executor.submit(self.additional_profile_extractor.extract_additional_profile, message)
-        future_expertise = self.executor.submit(self.expertise_analyst.analyze_expertise, message)
-        future_explicit_needs = self.executor.submit(self.explicit_in_extractor.extract_explicit_needs, message)
-        future_implicit_needs = self.executor.submit(self.implicit_deductor.extract_implicit_values, message)
-        future_test_drive = self.executor.submit(self.reservation_info_extractor.extract_all_info, message)
-        
+        future_basic_profile = self.executor.submit(
+            self.basic_profile_extractor.extract_basic_profile, message
+        )
+        future_additional_profile = self.executor.submit(
+            self.additional_profile_extractor.extract_additional_profile, message
+        )
+        future_expertise = self.executor.submit(
+            self.expertise_analyst.analyze_expertise, message
+        )
+        future_explicit_needs = self.executor.submit(
+            self.explicit_in_extractor.extract_explicit_needs, message
+        )
+        future_implicit_needs = self.executor.submit(
+            self.implicit_deductor.extract_implicit_values, message
+        )
+        future_test_drive = self.executor.submit(
+            self.reservation_info_extractor.extract_all_info, message
+        )
+
         basic_profile_info = future_basic_profile.result()
         additional_profile_info = future_additional_profile.result()
         expertise_info = future_expertise.result()
         explicit_needs_info = future_explicit_needs.result()
         implicit_needs_info = future_implicit_needs.result()
         test_drive_info = future_test_drive.result()
+
+        # all information is extracted, now determine the stage
+        if message.lower() == "Hi AutoVend".lower():
+            new_stage = "welcome"
+            self.status_component.update_profile(profile)
+            # self.status_component.update_profile(basic_profile_info) # TODO: check if this is needed
+            self.status_component.update_stage(new_stage)  # use
+            normal_welcome_message = self.conversation_module.generate_welcome_message(
+                self.status_component.user_profile
+            )
+            begin_profile_message = self.conversation_module.generate_profile_response(
+                message,
+                self.status_component.user_profile,
+                self.status_component.needs["explicit"],
+                self.status_component.needs["implicit"],
+                self.status_component.test_drive_info,
+                self.status_component.matched_car_models,
+                self.status_component.matched_car_model_infos,
+                self.status_component.stage["current_stage"],
+            )
+            new_stage = "profile_analysis"
+            self.status_component.update_stage(new_stage)
+            autovend_resonse = f"{normal_welcome_message}\n{begin_profile_message}"
+            return (
+                autovend_resonse,
+                self.status_component.stage,
+                self.status_component.user_profile,
+                self.status_component.needs,
+                self.status_component.matched_car_models,
+                self.status_component.test_drive_info,
+            )
+
+        self.status_component.update_profile({"expertise": str(expertise_info)})
+        if self.status_component.stage["current_stage"] == "profile_analysis":
+            self.status_component.update_profile(
+                basic_profile_info
+            )  # accuracy is not high
+            # if all basic information is done, go to needs analysis
+            if self.status_component.is_all_basic_info_done():
+                new_stage = "needs_analysis"
+                self.status_component.update_stage(new_stage)
+                # handle over to needs analysis in its stage handling
+            # if not all done, continue profile analysis
+            else:
+                # continue profile analysis
+                profile_message = self.conversation_module.generate_profile_response(
+                    message,
+                    self.status_component.user_profile,
+                    self.status_component.needs["explicit"],
+                    self.status_component.needs["implicit"],
+                    self.status_component.test_drive_info,
+                    self.status_component.matched_car_models,
+                    self.status_component.matched_car_model_infos,
+                    self.status_component.stage["current_stage"],
+                )
+                new_stage = "profile_analysis"
+                self.status_component.update_stage(new_stage)
+                return (
+                    profile_message,
+                    self.status_component.stage,
+                    self.status_component.user_profile,
+                    self.status_component.needs,
+                    self.status_component.matched_car_models,
+                    self.status_component.test_drive_info,
+                )
+
+            # check also the needs
+        self.check_needs_analysis_jump(message)
+
+        if self.status_component.stage["current_stage"] == "needs_analysis":
+            # TODO
+            # if all basic information is done, go to needs analysis
+            if self.status_component.is_all_basic_needs_done():
+                new_stage = "car_selection_confirmation"
+                self.status_component.update_stage(new_stage)
+                # handle over to needs analysis in its stage handling
+            # if not all done, continue profile analysis
         
-        if self.status_component.stage["current_stage"] == "initial":
-            ...
-        elif self.status_component.stage["current_stage"] == "welcome":
-            ...
-        elif self.status_component.stage["current_stage"] == "farewell":
-            ...
-        # below stages can't directly return results
-        elif self.status_component.stage["current_stage"] == "profile_analysis":
-            ...
-        elif self.status_component.stage["current_stage"] == "needs_analysis":
-            ...
-        elif (
-            self.status_component.stage["current_stage"] == "car_selection_confirmation"
-        ):
-            ...
-        elif self.status_component.stage["current_stage"] == "implicit_confirmation":
-            ...
-        elif self.status_component.stage["current_stage"] == "model_introduction":
-            ...
-        elif self.status_component.stage["current_stage"] == "reservation4s":
-            ...
-        elif self.status_component.stage["current_stage"] == "reservation_confirmation":
-            ...
+        if self.status_component.stage["current_stage"] == "reservation4s":
+            self.status_component.update_test_drive_info(test_drive_info)
+            if self.status_component.is_all_basic_reservation_info_done():
+                new_stage = "reservation_confirmation"
+                self.status_component.update_stage(new_stage)
+                # handle over to needs analysis in its stage handling
+            # if not all done, continue profile analysis
+            else:
+                # continue profile analysis
+                reservation_message = self.conversation_module.generate_reservation_response(
+                    message,
+                    self.status_component.user_profile,
+                    self.status_component.needs["explicit"],
+                    self.status_component.needs["implicit"],
+                    self.status_component.test_drive_info,
+                    self.status_component.matched_car_models,
+                    self.status_component.matched_car_model_infos,
+                    self.status_component.stage["current_stage"],
+                )
+                new_stage = "reservation4s"
+                self.status_component.update_stage(new_stage)
+                return (
+                    reservation_message,
+                    self.status_component.stage,
+                    self.status_component.user_profile,
+                    self.status_component.needs,
+                    self.status_component.matched_car_models,
+                    self.status_component.test_drive_info,
+                )
+        if self.status_component.stage["current_stage"] == "reservation_confirmation":
+            confirmation_message = self.conversation_module.generate_reservation_response(
+                message,
+                self.status_component.user_profile,
+                self.status_component.needs["explicit"],
+                self.status_component.needs["implicit"],
+                self.status_component.test_drive_info,
+                self.status_component.matched_car_models,
+                self.status_component.matched_car_model_infos,
+                self.status_component.stage["current_stage"],
+            )  
+            new_stage = "farewell"
+            self.status_component.update_stage(new_stage)
+            return (
+                confirmation_message,
+                self.status_component.stage,
+                self.status_component.user_profile,
+                self.status_component.needs,
+                self.status_component.matched_car_models,
+                self.status_component.test_drive_info,
+            )
+
+
+
 
         # # llm extractors
         # future_profile = self.executor.submit(self.profile_extractor.extract_profile, user_message)
@@ -179,22 +336,7 @@ class AutoVend:
             self.status_component.update_test_drive_info(test_drive_info)
 
         # Once we have needs information, query matching car models
-        # This depends on the results of the extractors, so it cannot be parallelized with them
-        if self.status_component.needs["explicit"] or self.status_component.needs["implicit"]:
-            # Combine explicit and implicit needs
-            combined_needs = {**self.status_component.needs["explicit"], **self.status_component.needs["implicit"]}
-            # Use existing query_car_model method
-            # TODO: filter_needs is not used yet
-            car_models, filter_needs = self.car_model_query.query_car_model(
-                combined_needs
-            )
-            # Construct matched car models information
-            self.status_component.update_matched_car_models(car_models)
-            self.status_component.update_matched_car_model_infos(
-                [
-                    self.car_model_query.get_car_model_info(model) for model in car_models
-                ]
-            )
+        self.query_model_related_info(message)
 
         # Determine next stage based on current information
         new_stage = self.stage_arbitrator.determine_stage(
@@ -224,8 +366,14 @@ class AutoVend:
         # )
 
         # Return complete result with all data
-        return response, self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
-
+        return (
+            response,
+            self.status_component.stage,
+            self.status_component.user_profile,
+            self.status_component.needs,
+            self.status_component.matched_car_models,
+            self.status_component.test_drive_info,
+        )
 
     def get_car_model_details(self, model_name):
         """
@@ -267,8 +415,8 @@ if __name__ == "__main__":
         profile_ = {
             "phone_number": "123456789",
             "age": "",
-            "user_title": "",
-            "name": "",
+            "user_title": "Mr.",
+            "name": "John",
             "target_driver": "",
             "expertise": "",
             "additional_information": {
@@ -284,8 +432,7 @@ if __name__ == "__main__":
             },
         }
         needs_ = {
-            "explicit": {
-            },
+            "explicit": {},
             "implicit": {},
         }
         reservation_info_ = {

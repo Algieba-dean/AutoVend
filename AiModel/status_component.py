@@ -41,6 +41,24 @@ class StatusComponent:
         self.matched_car_models = list()
         self.matched_car_model_infos = list()
     
+    def is_all_basic_reservation_info_done(self):
+        """Check if all basic reservation information is done"""
+        for key,value in self.test_drive_info.items():
+            if value == "":
+                return False
+        return True
+    
+    def is_all_basic_info_done(self):
+        """Check if all basic information is done"""
+        return all(self.user_profile.get(key, "") for key in ["user_title", "name", "target_driver"])
+    def is_all_basic_needs_done(self):
+        """Check if all basic needs are done"""
+        prize_done = self.needs["explicit"].get("prize", "") or self.needs["explicit"].get("price_alias", "")
+        model_category_done = self.needs["explicit"].get("vehicle_category_top", "") or self.needs["explicit"].get("vehicle_category_middle", "") or self.needs["explicit"].get("vehicle_category_bottom", "")
+        brand_done = self.needs["explicit"].get("brand", "") or self.needs["explicit"].get("brand_area", "") or self.needs["explicit"].get("brand_country", "")
+        powertrain_type_done = self.needs["explicit"].get("powertrain_type", "")
+        return prize_done and model_category_done and brand_done and powertrain_type_done
+    
     def update_profile(self, profile_info):
         """Update the user profile with new information"""
         for key, value in profile_info.items():
