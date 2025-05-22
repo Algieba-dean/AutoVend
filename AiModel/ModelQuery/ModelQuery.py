@@ -7,9 +7,8 @@ from pathlib import Path
 class CarModelQuery:
     def __init__(self):
         # query tree and vehicle date configure path
-        base_dir = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        self.label_tree_path = os.path.join(base_dir, "Config", "LabelsTree.json")
-        self.vehicle_file_dir = os.path.join(base_dir, "..","DataInUse", "VehicleData")
+        self.label_tree_path = Path(os.path.dirname(__file__)).parent.joinpath("Config", "LabelsTree.json")
+        self.vehicle_file_dir = Path(os.path.dirname(__file__)).parent.parent.joinpath("DataInUse", "VehicleData")
 
         self.vehicle_data_list =[]
         self.precise_labels={}

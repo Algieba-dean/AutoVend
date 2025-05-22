@@ -5,6 +5,7 @@ from typing import Dict, Any, List
 
 from utils import get_openai_client, get_openai_model, timer_decorator
 
+from Conversation.mocked_information import MockedInformation
 # # LLMExtractors
 from Conversation.conversation_module import ConversationModule
 
@@ -66,6 +67,7 @@ class AutoVend:
         # tools
         self.car_model_query = CarModelQuery()
         self.status_component = StatusComponent()
+        self.mocked_information = MockedInformation()
         # Create a thread pool executor
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
 
@@ -89,13 +91,21 @@ class AutoVend:
             dict: Dictionary containing the assistant's response and all extracted data
         """
         # first user_message will be empty string and just return initial response
-        new_stage = self.stage_arbitrator.determine_stage(
-            message, profile, needs, matched_car_models, reservation_info
-        )
-        self.status_component.update_stage(new_stage)
         if message == "":
+            new_stage = "initial"
+            self.status_component.update_stage(new_stage)
             self.status_component.update_profile(profile)
-            return self.conversation_module.get_initial_response(profile), self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
+            return self.conversation_module.generate_initial_message(), self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
+        if message.lower() == "Hi AutoVend".lower():
+            new_stage = "initial"
+        if message.lower() == "Hi AutoVend".lower():
+            new_stage = "welcome"
+            self.status_component.update_profile(profile)
+            self.status_component.update_stage(new_stage)
+            return self.conversation_module.generate_welcome_message(self.status_component.user_profile), self.status_component.stage, self.status_component.user_profile, self.status_component.needs, self.status_component.matched_car_models, self.status_component.test_drive_info
+        if self.status_component.stage["previous_stage"] == "welcome":
+            new_stage = "profile_analysis"
+            self.status_component.update_stage(new_stage)
 
         # Use thread pool to run all extractors in parallel
         future_basic_profile = self.executor.submit(self.basic_profile_extractor.extract_basic_profile, message)
@@ -194,7 +204,11 @@ class AutoVend:
             self.status_component.needs["implicit"],
             self.status_component.test_drive_info,
         )
-        self.status_component.update_stage(new_stage)
+
+        # post process after extraction
+        if self.status_component.stage["previous_stage"] == "welcome":
+            self.status_component.update_stage("profile_analysis")
+        # self.status_component.update_stage(new_stage)
 
         # Generate response (this still needs to be sequential after we have all the extracted info)
         response = "hard coded response"
