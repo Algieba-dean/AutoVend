@@ -125,7 +125,7 @@ class AutoVend:
             car_models, filter_needs = self.car_model_query.query_car_model(
                 self.status_component.needs["explicit"]
             )
-            car_models = ["Audi-A1","BYD-Atto 3 EV","GWM-Haval H6S"]# TODO: remove this, when query_car_model is fixed
+            # TODO: remove this, when query_car_model is fixed
             # Construct matched car models information
             self.status_component.update_matched_car_models(car_models)
             self.status_component.update_matched_car_model_infos(

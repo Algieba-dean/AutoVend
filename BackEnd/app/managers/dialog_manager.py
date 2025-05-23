@@ -97,6 +97,7 @@ class DialogManager:
     
     def end_session(self, session_id: str) -> bool:
         """End a chat session"""
+        self.is_initalized = False
         if session_id in self.active_sessions:
             del self.active_sessions[session_id]
             return True

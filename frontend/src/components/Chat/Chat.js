@@ -375,7 +375,7 @@ const Chat = () => {
             {matchedCars && matchedCars.length > 0 ? (
               matchedCars.map((car, index) => (
                 <div key={index} className="car-item">
-                  {car.brand} {car.model} {car.year}
+                  {car}
                 </div>
               ))
             ) : (
