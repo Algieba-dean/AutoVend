@@ -55,11 +55,7 @@ class ConversationModule:
         # Should directly ask user name, title, target driver at end of welcome message
         personalized_greeting = "Hi!"
         if user_profile.get("name") :
-<<<<<<< HEAD
-            personalized_greeting = f"Hi {user_profile.get('user_title','')} {user_profile.get('name')} !"
-=======
             personalized_greeting = f'Hi {user_profile.get("user_title","")} {user_profile.get("name")} !'
->>>>>>> 63870f1 (feat: fix a welcome loading message)
         response = f"{personalized_greeting} {get_welcome_message()}"
         self.add_message("assistant", response)
         return response
