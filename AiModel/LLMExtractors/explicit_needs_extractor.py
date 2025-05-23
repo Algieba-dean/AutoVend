@@ -20,12 +20,20 @@ class ExplicitNeedsExtractor:
         self.client = get_openai_client()
         self.model = model or get_openai_model()
         
-        # Load car query labels
-        with open("QueryLabels.json", "r") as f:
-            query_labels = json.load(f)
-            self.query_labels = dict()
-            for label in explicit_labels:
-                self.query_labels[label] = query_labels[label]
+        # Load car query labels from the Config directory
+        config_file_path = os.path.join(os.path.dirname(__file__), "../Config/QueryLabels.json")
+        
+        if not os.path.exists(config_file_path):
+            # Fallback if run from parent directory (e.g. AiModel) and Config is a direct subdir of it
+            config_file_path = "./Config/QueryLabels.json"
+
+        try:
+            with open(config_file_path, "r") as f:
+                self.query_labels = json.load(f)
+        except FileNotFoundError as e:
+            print(f"Error: QueryLabels.json not found in ExplicitNeedsExtractor. Attempted path: {os.path.abspath(config_file_path)}. Error: {e}")
+            self.query_labels = {}
+            # raise FileNotFoundError(f"QueryLabels.json is critical and was not found. Path: {os.path.abspath(config_file_path)}") from e
 
     
     @timer_decorator
@@ -76,19 +84,28 @@ class ExplicitNeedsExtractor:
         You are an AI assistant specializing in extracting EXPLICIT car requirements from user messages.
         
         Your task is to analyze the user message and extract car requirements that are DIRECTLY MENTIONED,
-        based on these available categories and values:
+        based on these available categories and their potential candidate values:
         {labels_json}
         
         INSTRUCTIONS:
         1. ONLY extract requirements that are EXPLICITLY mentioned by the user.
         2. DO NOT infer requirements that aren't directly stated.
-        3. For each identified requirement, use the exact key and allowed value from the provided structure.
-        4. Return the extracted requirements as a flat JSON object.
-        5. If no explicit requirements are mentioned, return an empty object {{}}.
+        3. For each identified requirement, use the exact key from the provided categories.
+        4. The value for a key should be based on the candidate values provided for that category.
+           - If the user explicitly mentions MULTIPLE candidate values for the SAME category that all apply, collect these values into a LIST for that key.
+           - If the user mentions a single value, use that single value directly (not in a list).
+        5. Return the extracted requirements as a flat JSON object. Keys should map to either a single string value or a list of string values.
+        6. If no explicit requirements are mentioned, return an empty object {{}}.
         
         EXAMPLES:
-        - For "I want a sedan with good fuel economy", extract: {{"vehicle_category_top": "sedan", "fuel_consumption_alias": "low"}}
-        - For "I need a car with 7 seats", extract: {{"seat_layout": "7-seat"}}
+        - User: "I want a sedan with good fuel economy."
+          Assistant: {{"vehicle_category_top": "sedan", "fuel_consumption_alias": "low"}}
+        - User: "I need a car with 7 seats."
+          Assistant: {{"seat_layout": "7-seat"}}
+        - User: "I'm looking for a Japanese or a German car."
+          Assistant: {{"brand_country": ["japan", "germany"]}}
+        - User: "I'd prefer a blue or red car."
+          Assistant: {{"color": ["blue", "red"]}}
         
         Only return the JSON object with extracted requirements. Do not include explanations.
         """ 

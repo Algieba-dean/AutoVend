@@ -3,6 +3,12 @@ import openai
 import os
 from utils import get_openai_client, get_openai_model, timer_decorator, clean_thinking_output
 
+# Define the path to the project's root directory if needed, or ensure correct relative paths
+# For example, if LLMExtractors is a sub-module and Config is a sibling to its parent.
+# CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# CONFIG_PATH = os.path.join(CURRENT_DIR, "../Config/QueryLabels.json") 
+# Fallback for general case, assuming Config is a sibling of the script's parent directory (LLMExtractors)
+
 class ExpertiseEvaluator:
     """
     Module for evaluating user's expertise in car knowledge from chat messages.
@@ -19,11 +25,26 @@ class ExpertiseEvaluator:
         """
         self.client = get_openai_client()
         self.model = model or get_openai_model()
-        self.max_expertise_level = 3
+        self.max_expertise_level = 3 # Default starting max, can be updated by LLM response
         
-        # Load car specification data for reference
-        with open("QueryLabels.json", "r") as f:
-            self.car_specs = json.load(f)
+        # Construct the path to QueryLabels.json relative to this file's location
+        config_file_path = os.path.join(os.path.dirname(__file__), "../Config/QueryLabels.json")
+        
+        if not os.path.exists(config_file_path):
+            # Fallback if run from parent directory (e.g. AiModel) and Config is a direct subdir of it
+            current_working_dir_config_path = "./Config/QueryLabels.json"
+            if os.path.exists(current_working_dir_config_path):
+                config_file_path = current_working_dir_config_path
+            # else: the original __file__ based path will be used, and likely fail in open(), handled by try-except
+
+        try:
+            with open(config_file_path, "r") as f:
+                self.query_labels = json.load(f)
+        except FileNotFoundError as e:
+            print(f"Error: QueryLabels.json not found in ExpertiseEvaluator. Attempted path: {os.path.abspath(config_file_path)}. Error: {e}")
+            self.query_labels = {} # Default to empty dict if not found
+            # Consider re-raising or more robust error handling if this file is critical
+            # raise FileNotFoundError(f"QueryLabels.json is critical and was not found. Path: {os.path.abspath(config_file_path)}") from e
     
     @timer_decorator
     def evaluate_expertise(self, user_message):
@@ -67,7 +88,7 @@ class ExpertiseEvaluator:
         """Create the system message with instructions for the AI."""
         # Extract some key car terms from QueryLabels to help with evaluation
         car_terms = []
-        for category, data in self.car_specs.items():
+        for category, data in self.query_labels.items():
             car_terms.append(category)
             if "candidates" in data:
                 car_terms.extend(data["candidates"][:3])  # Just add a few samples

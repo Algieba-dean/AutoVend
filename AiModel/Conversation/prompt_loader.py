@@ -1,3 +1,4 @@
+import json
 import string
 
 class PromptLoader:
@@ -85,6 +86,24 @@ class PromptLoader:
             "The user's reservation information is as follows: Test Driver: ${test_driver}, Contact Information: ${phone_number}, Appointment Location: ${store} dealership, Appointment Date: ${date}, Appointment Time: ${time}, Arranged Staff: ${salesman}. Please inform the customer of this information and then say goodbye."
         )
 
+        # LLM needs analysis prompts
+        self.llm_needs_analysis_main_template = string.Template(
+            "Current understanding of the user's requirements:\n"
+            "- Explicitly stated needs: ${explicit_needs_str}\n"
+            "- Inferred needs by AutoVend: ${implicit_needs_str}\n"
+            "- Recommended car models based on current information: ${matched_car_models_str}\n"
+            "- Corresponding details for these recommended models: ${filtered_informations_str}\n\n"
+            "Please engage the user based on the following prioritized guidelines:\n"
+            "1.  If budget information is missing from 'explicit_needs' (relevant labels: 'prize', 'prize_alias'), politely inquire about the user's budget.\n"
+            "2.  Else, if vehicle model category information is missing from 'explicit_needs' (relevant labels: 'vehicle_category_top', 'vehicle_category_middle', 'vehicle_category_bottom'), politely ask for their preferred model category. You can suggest options such as: ['sedan', 'suv', 'mpv', 'sports car'].\n"
+            "3.  Else, if powertrain type information is missing from 'explicit_needs' (relevant label: 'powertrain_type'), politely ask for their preferred powertrain type. You can suggest options such as: ['gasoline engine', 'diesel engine', 'hybrid electric vehicle', 'plug-in hybrid electric vehicle', 'range-extended electric vehicle', 'battery electric vehicle'].\n"
+            "4.  Else, if brand information is missing from 'explicit_needs' (relevant labels: 'brand', 'brand_country', 'brand_area'), politely ask for their brand preferences.\n"
+            "5.  Else, if all the above core explicit needs our inferred out are adequately covered, politely present these inferred needs to the user. Ask for their confirmation and guide them to specify which of these inferred needs they wish to retain.\n\n"
+            "General guidance:\n"
+            "-   At any appropriate point, especially after needs are clarified, you may offer to explain details about the recommended car models (${matched_car_models_str}) using the provided information (${filtered_informations_str}).\n"
+            "-   If the user clearly indicates a choice for a specific car, congratulate them warmly and smoothly transition the conversation towards discussing test drive arrangements."
+        )
+
     def render_base_prompt(self):
         return self.base_prompt_template.substitute()
 
@@ -158,6 +177,24 @@ class PromptLoader:
 
         # Test drive prompts include common_endding
         return f"{self.render_base_prompt()}\n\n{base}\n{main_prompt}\n{common_endding}"
+
+    def render_llm_needs_analysis_prompt(self, expertise, user_name, user_title, explicit_needs, implicit_needs, matched_car_models, filtered_informations):
+        base = self.test_drive_base_template.substitute(user_name=user_name, user_title=user_title)
+        common_endding = self.render_common_endding()
+        expertise_text = self.render_expertise_prompt(expertise)
+        # Convert lists and dictionaries to JSON strings
+        explicit_needs_str = json.dumps(explicit_needs)
+        implicit_needs_str = json.dumps(implicit_needs)
+        matched_car_models_str = json.dumps(matched_car_models)
+        filtered_informations_str = json.dumps(filtered_informations)
+
+        # Substitute the JSON strings into the template
+        return base+ expertise_text+self.llm_needs_analysis_main_template.substitute(
+            explicit_needs_str=explicit_needs_str,
+            implicit_needs_str=implicit_needs_str,
+            matched_car_models_str=matched_car_models_str,
+            filtered_informations_str=filtered_informations_str
+        )+common_endding
 
 if __name__ == '__main__':
     # Example Usage:

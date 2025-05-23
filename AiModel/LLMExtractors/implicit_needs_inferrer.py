@@ -20,9 +20,20 @@ class ImplicitNeedsInferrer:
         self.client = get_openai_client()
         self.model = model or get_openai_model()
         
-        # Load car query labels
-        with open("QueryLabels.json", "r") as f:
-            self.query_labels = json.load(f)
+        # Load car query labels from the Config directory
+        config_file_path = os.path.join(os.path.dirname(__file__), "../Config/QueryLabels.json")
+
+        if not os.path.exists(config_file_path):
+            # Fallback if run from parent directory (e.g. AiModel) and Config is a direct subdir of it
+            config_file_path = "./Config/QueryLabels.json"
+
+        try:
+            with open(config_file_path, "r") as f:
+                self.query_labels = json.load(f)
+        except FileNotFoundError as e:
+            print(f"Error: QueryLabels.json not found in ImplicitNeedsInferrer. Attempted path: {os.path.abspath(config_file_path)}. Error: {e}")
+            self.query_labels = {}
+            # raise FileNotFoundError(f"QueryLabels.json is critical and was not found. Path: {os.path.abspath(config_file_path)}") from e
     
     @timer_decorator
     def infer_implicit_needs(self, user_message):
@@ -62,11 +73,13 @@ class ImplicitNeedsInferrer:
         # Prepare simplified labels structure for the prompt
         labels_structure = {}
         for label, data in self.query_labels.items():
-            if "candidates" in data:
-                labels_structure[label] = {
-                    "candidates": data["candidates"],
-                    "description": data.get("description", "")
-                }
+            # Only include labels that have implicit_support set to true
+            if data.get("implicit_support") is True:
+                if "candidates" in data: # Ensure candidates exist, as per original logic
+                    labels_structure[label] = {
+                        "candidates": data["candidates"],
+                        "description": data.get("description", "")
+                    }
         
         labels_json = json.dumps(labels_structure, indent=2)
         

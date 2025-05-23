@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 class StatusComponent:
     def __init__(self):
         # Initialize state
@@ -217,14 +219,93 @@ class StatusComponent:
             self.user_profile["connection_information"]["connection_phone_number"] = reservation_phone
             self.user_profile["connection_information"]["connection_user_name"] = self.test_drive_info.get("test_driver_name", "")
     
-    def update_matched_car_models(self, car_models):
-        """Replace matched car models with new list"""
-        self.matched_car_models = car_models
-    
-    def update_matched_car_model_infos(self, car_model_infos):
-        """Replace matched car model infos with new list"""
-        self.matched_car_model_infos = car_model_infos 
+    def update_matched_car_models(self, car_models: list[str]):
+        """Update matched car models, up to 3, based on brand diversity rules."""
+        if not car_models:
+            self.matched_car_models = []
+            return
+
+        if len(car_models) <= 3:
+            self.matched_car_models = car_models[:]
+            return
+
+        # Store models under their brands, maintaining original order of brands and models within brands
+        brand_to_models_map = OrderedDict() 
+        for model_name in car_models:
+            parts = model_name.split('-', 1)
+            brand = parts[0] if parts else "UnknownBrand"
+            if brand not in brand_to_models_map:
+                brand_to_models_map[brand] = []
+            brand_to_models_map[brand].append(model_name)
+
+        ordered_unique_brands = list(brand_to_models_map.keys())
+        num_unique_brands = len(ordered_unique_brands)
+        selected_models = []
+
+        if num_unique_brands <= 3:
+            # If 3 or fewer unique brands, take all models from these brands in order of brand appearance,
+            # until 3 models are selected or all models from these brands are taken.
+            for brand in ordered_unique_brands:
+                if len(selected_models) >= 3:
+                    break
+                models_from_this_brand = brand_to_models_map[brand]
+                for model in models_from_this_brand:
+                    if len(selected_models) >= 3:
+                        break
+                    if model not in selected_models: # Should generally be true if iterating correctly
+                        selected_models.append(model)
+        else: # num_unique_brands > 3
+            # If more than 3 unique brands, pick one model from each of the first 3 unique brands.
+            for i in range(min(3, num_unique_brands)): # Iterate up to the first 3 unique brands
+                brand = ordered_unique_brands[i]
+                if brand_to_models_map[brand]: # Check if brand has models
+                    # Add the first model listed under this brand that hasn't been accidentally selected
+                    # (though with this logic, it shouldn't be an issue)
+                    first_model_of_brand = brand_to_models_map[brand][0]
+                    if first_model_of_brand not in selected_models: # Precaution
+                         selected_models.append(first_model_of_brand)
+                    if len(selected_models) >=3: # Should fill up to 3
+                        break 
         
+        self.matched_car_models = selected_models[:3] # Ensure strictly max 3, though logic above aims for it.
+
+    def update_matched_car_model_infos(self, car_model_infos: list[dict]):
+        """Update `self.matched_car_model_infos` to include only those info objects
+           from `car_model_infos` whose 'name' attribute matches a model name
+           present in `self.matched_car_models`.
+
+           Assumes each dict in `car_model_infos` has a 'name' key for the model name.
+           This method relies on `self.matched_car_models` being populated beforehand.
+        """
+        if not car_model_infos or not self.matched_car_models:
+            self.matched_car_model_infos = []
+            return
+
+        # `self.matched_car_models` should already contain the desired model names (max 3).
+        # We will filter `car_model_infos` to get the details for these models.
+        
+        selected_infos = []
+        # Using a set for efficient lookup of model names from self.matched_car_models.
+        target_model_names_set = set(self.matched_car_models)
+
+        # To ensure we add each unique info object only once, even if
+        # `car_model_infos` has duplicates or multiple items map to the same selected model name.
+        # We track added objects by their identity.
+        added_info_object_ids = set() # Store ids of already added objects
+
+        for info_obj in car_model_infos:
+            # Assuming the model name key in info_obj is "name".
+            # If the key is "car_model" as mentioned in the query, change info_obj.get("name") below.
+            model_name_in_info = info_obj.get("car_model") 
+            
+            if model_name_in_info in target_model_names_set:
+                # Check if this exact info object (by identity) has already been added
+                if id(info_obj) not in added_info_object_ids:
+                    selected_infos.append(info_obj)
+                    added_info_object_ids.add(id(info_obj))
+        
+        self.matched_car_model_infos = selected_infos
+    
     def convert_list_need_to_str(self):
         """Convert list values in needs (both explicit and implicit) to string values
         

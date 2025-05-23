@@ -34,6 +34,48 @@ class NeedsStatus:
     def ask_implicit_needs(self,needs_name, needs_value):
         self.asked_implicit_needs[needs_name] = needs_value
 
+    def get_car_model_comment_infos(self, explicit_needs: dict, car_model_infos: list[dict]) -> list[dict]:
+        """Filters car_model_infos to keep only explicit needs and the car_model.
+
+        For each info object in car_model_infos:
+        - Always keeps the top-level 'car_model' label.
+        - Flattens the structure: sub-labels from 'PriciseLabels', 'AmbiguousLabels',
+          and 'KeyDetails' are brought to the top level of the new dictionary
+          if their label name matches a key in explicit_needs.
+        """
+        filtered_results = []
+        if not car_model_infos:
+            return filtered_results
+
+        explicit_need_comments = set( )
+        for key, value in explicit_needs.items():
+            mappinged_key = self.mapping_alias_needs(key)
+            if mappinged_key in self.no_comments_needs:
+                continue
+            if mappinged_key in self.ignore_introduction_needs:
+                continue
+            explicit_need_comments.add(mappinged_key+"_comments")
+        
+        # Define the nested sections to check for explicit needs
+        for info_dict in car_model_infos:
+            filtered_info = {}
+            filtered_info["car_model"] = info_dict["car_model"]
+
+            pricise_infos = info_dict.get("PriciseLabels",{})
+            ambiguous_infos = info_dict.get("AmbiguousLabels",{})
+            key_details = info_dict.get("KeyDetails",{})
+            filtered_info["key_details"] = key_details["key_details"]
+
+            for label, value in pricise_infos.items():
+                if label in explicit_need_comments:
+                    filtered_info[label]=value
+            for label, value in ambiguous_infos.items():
+                    filtered_info[label]=value
+            
+            filtered_results.append(filtered_info)
+            
+        return filtered_results
+
 if __name__ == "__main__":
     # Initialize test instance
     needs_status = NeedsStatus()
@@ -89,4 +131,118 @@ if __name__ == "__main__":
     assert result == expected, "Test case 3.2 failed"
     
     print("\nAll test cases passed successfully!")
+
+    print("\nTest Case 4: get_car_model_comment_infos")
+    needs_status_for_comments = NeedsStatus()
+
+    explicit_needs_for_test = {
+        "prize": "high", 
+        "powertrain_type": "gasoline", 
+        "brand": "Audi",  # This will be ignored for _comments due to ignore_introduction_needs
+        "color": "black"  # A regular need to generate a _comments entry
+    }
+    car_model_infos_for_test = [
+        {
+            'car_model': 'Audi-Q7',
+            'PriciseLabels': {
+                'prize': '60,000~100,000', # Original value, not directly used by this function's logic for selection
+                'prize_comments': 'Prize comments for Q7', # Should be picked
+                'color': 'Black',
+                'color_comments': 'Color comments for Q7', # Should be picked
+                'brand_comments': 'Brand comments for Q7 (should NOT be picked)',
+                'fuel_type_comments': 'Fuel comments (not in explicit_needs_for_test, so fuel_type_comments not in set)'
+            },
+            'AmbiguousLabels': {
+                'size': 'Large', # Should be picked
+                'size_comments': 'Size comments for Q7', # Should be picked
+                'comfort_level': 'High', # Should be picked
+                'comfort_level_comments': 'Comfort comments for Q7' # Should be picked
+            },
+            'KeyDetails': {
+                'key_details': 'Key details for Audi-Q7', # Should be picked
+                'some_other_detail': 'This other detail in KeyDetails is not picked up'
+            }
+        },
+        {
+            'car_model': 'BMW-X5',
+            'PriciseLabels': {
+                'prize_comments': 'Prize comments for X5', # Should be picked
+                'color_comments': 'Color comments for X5',   # Should be picked
+                'powertrain_type_comments': 'Powertrain comments for X5', # Should be picked
+                'another_label_comments': 'Another comments (not relevant to explicit_needs_for_test)'
+            },
+            'AmbiguousLabels': {
+                'performance': 'High',
+                'performance_comments': 'Performance comments for X5'
+            },
+            'KeyDetails': {
+                'key_details': 'Key details for BMW-X5'
+            }
+        },
+        {
+             'car_model': 'Mercedes-GLE',
+             'PriciseLabels': { # No matching _comments for explicit_needs_for_test
+                'luxury_feature_comments': 'Luxury details'
+             },
+             'AmbiguousLabels':{
+                'style_comments': 'Style for GLE'
+             },
+             'KeyDetails':{
+                'key_details': 'Details for GLE'
+             }
+        }
+    ]
+
+    # Expected explicit_need_comments based on explicit_needs_for_test:
+    # "prize" -> "prize_comments"
+    # "powertrain_type" -> "powertrain_type_comments"
+    # "brand" -> ignored by ignore_introduction_needs
+    # "color" -> "color_comments"
+    # So, set = {"prize_comments", "powertrain_type_comments", "color_comments"}
+
+    expected_output_for_test = [
+        {
+            "car_model": "Audi-Q7",
+            "key_details": "Key details for Audi-Q7",
+            "prize_comments": "Prize comments for Q7",
+            "color_comments": "Color comments for Q7",
+            "size": "Large",
+            "size_comments": "Size comments for Q7",
+            "comfort_level": "High",
+            "comfort_level_comments": "Comfort comments for Q7"
+        },
+        {
+            "car_model": "BMW-X5",
+            "key_details": "Key details for BMW-X5",
+            "prize_comments": "Prize comments for X5",
+            "color_comments": "Color comments for X5",
+            "powertrain_type_comments": "Powertrain comments for X5",
+            "performance": "High",
+            "performance_comments": "Performance comments for X5"
+        },
+        {
+            "car_model": "Mercedes-GLE",
+            "key_details": "Details for GLE",
+            "style_comments": "Style for GLE" # Only from AmbiguousLabels, as no PriciseLabels matched
+        }
+    ]
+
+    actual_output = needs_status_for_comments.get_car_model_comment_infos(explicit_needs_for_test, car_model_infos_for_test)
+    
+    print(f"\n--- Test Case 4: get_car_model_comment_infos ---")
+    # print(f"Input explicit_needs: {explicit_needs_for_test}")
+    # print(f"Input car_model_infos: {car_model_infos_for_test}")
+    print(f"Expected output: {expected_output_for_test}")
+    print(f"Actual output:   {actual_output}")
+
+    assert len(actual_output) == len(expected_output_for_test), \
+        f"Test Case 4 failed: Length mismatch. Expected {len(expected_output_for_test)}, got {len(actual_output)}"
+    
+    for i in range(len(actual_output)):
+        # Comparing dictionaries directly works if keys and values are identical, regardless of order of keys within dict.
+        assert actual_output[i] == expected_output_for_test[i], \
+            f"Test Case 4 failed: Item {i} mismatch.\nExpected: {expected_output_for_test[i]}\nGot:      {actual_output[i]}"
+    
+    print("Test Case 4: get_car_model_comment_infos passed successfully!")
+
     
