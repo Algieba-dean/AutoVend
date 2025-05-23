@@ -20,9 +20,7 @@ from LLMExtractors.test_drive_extractor import TestDriveExtractor
 from InformationExtractors.explicit_in_extractor import ExplicitInOneExtractor
 from InformationExtractors.expertise_analyst import ExpertiseAnalyst
 from InformationExtractors.stage_arbitrator import StageArbitrator
-from InformationExtractors.additional_profile_extractor import (
-    AdditionalProfileExtractor,
-)
+from InformationExtractors.additional_profile_extractor import AdditionalProfileExtractor
 from InformationExtractors.basic_profile_extractor import BasicProfileExtractor
 from InformationExtractors.reservation_info_extractor import ReservationInfoExtractor
 from InformationExtractors.ImplicitDeductor import ImplicitDeductor
@@ -73,7 +71,7 @@ class AutoVend:
         # Create a thread pool executor
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
 
-    def query_model_related_info(self, message: str):
+    def query_model_related_info(self):
         """
         Query model related information from the model
         """
@@ -246,8 +244,20 @@ class AutoVend:
             self.status_component.needs["implicit"],
             self.status_component.test_drive_info,
         ) # almost from massage to check
+        if self.status_component.stage["current_stage"] not in ["needs_analysis","car_selection_confirmation","implicit_confirmation","model_introduction"] \
+        and might_new_stage == "needs_analysis":
+            self.status_component.update_stage(might_new_stage)
+            # handle over to the new stage in its stage handling
+        if self.status_component.stage["current_stage"] not in ["reservation4s","reservation_confirmation"] \
+        and might_new_stage == "reservation4s":
+            self.status_component.update_stage(might_new_stage)
+            # handle over to the new stage in its stage handling
+        
 
         if self.status_component.stage["current_stage"] == "needs_analysis":
+            self.status_component.update_explicit_needs(explicit_needs_info)
+            self.status_component.update_implicit_needs(implicit_needs_info)
+            self.query_model_related_info()
             # TODO
             # if all basic information is done, go to needs analysis
             if self.status_component.is_all_basic_needs_done():
@@ -342,35 +352,8 @@ class AutoVend:
         if test_drive_info:
             self.status_component.update_test_drive_info(test_drive_info)
 
-        # Once we have needs information, query matching car models
-        self.query_model_related_info(message)
 
-        # Determine next stage based on current information
-        new_stage = self.stage_arbitrator.determine_stage(
-            message,
-            self.status_component.user_profile,
-            self.status_component.needs["explicit"],
-            self.status_component.needs["implicit"],
-            self.status_component.test_drive_info,
-        )
-
-        # post process after extraction
-        if self.status_component.stage["previous_stage"] == "welcome":
-            self.status_component.update_stage("profile_analysis")
-        # self.status_component.update_stage(new_stage)
-
-        # Generate response (this still needs to be sequential after we have all the extracted info)
-        response = "hard coded response"
-        # response = self.conversation_module.generate_response(
-        #     message,
-        #     self.status_component.user_profile,
-        #     self.status_component.needs["explicit"],
-        #     self.status_component.needs["implicit"],
-        #     self.status_component.test_drive_info,
-        #     self.status_component.matched_car_models,
-        #     self.status_component.matched_car_model_infos,
-        #     self.status_component.stage["current_stage"],
-        # )
+        response = f"Unknown stage: {self.status_component.stage['current_stage']}"
 
         # Return complete result with all data
         return (

@@ -115,9 +115,33 @@ class ConversationModule:
         default_prompt = self.prompt_loader.render_base_prompt() + self.prompt_loader.render_expertise_prompt(expertise=expertise) + self.prompt_loader.render_common_endding()
         prompt = default_prompt
         if current_stage == "needs_analysis":
-            # TODO
-            prompt_type = ""
-            prompt = self.prompt_loader.render_needs_analysis_prompt(prompt_type,expertise,user_name,user_title,**needs_package_info)
+            prompt_type = "" # Default to empty
+            # Check for missing budget information
+            if not explicit_needs.get("prize") and not explicit_needs.get("prize_alias"):
+                prompt_type = "no_budget"
+            # Check for missing model category information
+            elif not explicit_needs.get("vehicle_category_top") and \
+                 not explicit_needs.get("vehicle_category_middle") and \
+                 not explicit_needs.get("vehicle_category_bottom"):
+                prompt_type = "no_model_category"
+            # Check for missing brand information
+            elif not explicit_needs.get("brand_area") and \
+                 not explicit_needs.get("brand_country") and \
+                 not explicit_needs.get("brand"):
+                prompt_type = "no_brand"
+            # Check for missing powertrain type information
+            elif not explicit_needs.get("powertrain_type"):
+                prompt_type = "no_powertrain_type"
+            
+            # If a prompt_type was determined, render the specific prompt
+            if prompt_type:
+                prompt = self.prompt_loader.render_needs_analysis_prompt(prompt_type,expertise,user_name,user_title,**needs_package_info)
+            else:
+                # TODO: Handle cases where all essential needs are present or a different logic is required
+                # For now, it will use the default_prompt if no specific prompt_type is matched.
+                # Consider what should happen if all initial checks pass.
+                # Maybe a general needs confirmation or moving to a different stage/prompt.
+                pass # Or assign a different default prompt for this situation
         if current_stage == "car_selection_confirmation":
             prompt_type = ""
             prompt = self.prompt_loader.render_needs_analysis_prompt(prompt_type,expertise,user_name,user_title,**needs_package_info)
@@ -187,19 +211,33 @@ class ConversationModule:
         }
 
         if current_stage == "reservation4s":
-            if not test_drive_info.get("date"):
-                prompt_type = "no_date"
+            prompt_type = None
+            if not test_drive_info.get("test_driver"):
+                prompt_type = "ask_test_driver"
+            elif not test_drive_info.get("test_driver_name") or not test_drive_info.get("reservation_phone_number"):
+                prompt_type = "ask_test_driver_name_and_phone"
+            elif not test_drive_info.get("reservation_location"):
+                prompt_type = "ask_location"
+            elif not test_drive_info.get("reservation_date"):
+                prompt_type = "ask_date"
+            elif not test_drive_info.get("reservation_time"):
+                prompt_type = "ask_time"
+            elif not test_drive_info.get("salesman"):
+                prompt_type = "ask_salesman"
+
+            if prompt_type:
                 prompt = self.prompt_loader.render_test_drive_prompt(
                     prompt_type=prompt_type,
                     user_name=user_name,
                     user_title=user_title,
-                    **test_drive_info)
-        elif current_stage == "reservation_confirmation":
+                    **test_drive_package
+                )
+        elif current_stage == "reservation_confirmation": # outside already checked if all basic info is done
                 prompt = self.prompt_loader.render_test_drive_prompt(
                     prompt_type="finished_reservation",
                     user_name=user_name,
                     user_title=user_title,
-                    **test_drive_info)
+                    **test_drive_package)
 
         assistant_response = self.get_message_from_model(user_message, prompt)
         return assistant_response

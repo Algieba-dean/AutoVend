@@ -62,11 +62,16 @@ class StatusComponent:
     def update_profile(self, profile_info):
         """Update the user profile with new information"""
         for key, value in profile_info.items():
+            if not value:  # Skip if the value is empty
+                continue
             # First try to update key at the top level
             if key in self.user_profile:
                 if isinstance(value, dict) and isinstance(self.user_profile[key], dict):
                     # Recursively update nested dictionaries
-                    self.user_profile[key].update(value)
+                    # Create a new dictionary with non-empty values for recursive update
+                    non_empty_value_dict = {k: v for k, v in value.items() if v}
+                    if non_empty_value_dict: # only update if there are non-empty values
+                        self.user_profile[key].update(non_empty_value_dict)
                 else:
                     # Direct assignment for non-dict values
                     self.user_profile[key] = value
@@ -76,10 +81,19 @@ class StatusComponent:
                 
     def _recursive_update(self, dictionary, search_key, new_value):
         """Recursively search for a key in nested dictionaries and update its value"""
+        if not new_value: # Skip if the new_value is empty
+            return False
+            
         found = False
         for key, value in dictionary.items():
             if key == search_key:
-                dictionary[key] = new_value
+                if isinstance(new_value, dict) and isinstance(dictionary[key], dict):
+                    # Create a new dictionary with non-empty values for recursive update
+                    non_empty_new_value_dict = {k: v for k, v in new_value.items() if v}
+                    if non_empty_new_value_dict: # only update if there are non-empty values
+                        dictionary[key].update(non_empty_new_value_dict)
+                else:
+                    dictionary[key] = new_value
                 found = True
                 break
             elif isinstance(value, dict):
@@ -105,10 +119,9 @@ class StatusComponent:
         """
         for key, value in explicit_needs.items():
             # Add new key or update existing key with new value
-            self.needs["explicit"][key] = value
+            if value: # Only update if value is not empty
+                self.needs["explicit"][key] = value
 
-        # TODO as current, multiple value for single key is not supported on query model end, so we need to convert it to string
-        # self.convert_list_need_to_str()
     
     def update_implicit_needs(self, implicit_needs):
         """Update implicit needs, ensuring no overlap with explicit needs.
@@ -132,9 +145,9 @@ class StatusComponent:
                     del self.needs["implicit"][key]
             else:
                 # This key does not exist in explicit_needs, so update it
-                self.needs["implicit"][key] = value
+                if value:  # Only update if value is not empty
+                    self.needs["implicit"][key] = value
         
-        # self.convert_list_need_to_str()
     
     def update_test_drive_info(self, test_drive_info):
         """Update test drive information and potentially update profile connection information
@@ -161,7 +174,8 @@ class StatusComponent:
         # First update the test drive info normally
         for key, value in test_drive_info.items():
             if key in self.test_drive_info:
-                self.test_drive_info[key] = value
+                if value:  # Only update if value is not empty
+                    self.test_drive_info[key] = value
         
         # Try to extract brand from selected_car_model
         selected_car_model = self.test_drive_info.get("selected_car_model", "")
