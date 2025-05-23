@@ -64,7 +64,7 @@ const UserProfile = () => {
       if (error.response && error.response.status === 409) {
         if (userType === 'custom') {
           try {
-            const existingProfile = await profileService.getUserProfile(profile.phone_number);
+            const existingProfile = await profileService.updateProfile(profile.phone_number, profile);
             setProfile(existingProfile);
             return true;
           } catch (fetchError) {

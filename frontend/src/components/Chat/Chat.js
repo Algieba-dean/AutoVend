@@ -197,7 +197,7 @@ const Chat = () => {
       }
 
       // If it's reservation stage, update appointment information
-      if (response && response.stage === 'reservation4s' && response.reservation_info) {
+      if (response && response.stage === 'reservation_4s' && response.reservation_info) {
         setAppointment(response.reservation_info);
       }
 
