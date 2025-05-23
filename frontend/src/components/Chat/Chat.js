@@ -156,9 +156,6 @@ const Chat = () => {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || !sessionId) return;
 
-    // 发送消息时启用轮询
-    setShouldPoll(true);
-
     const newMessage = {
       type: 'user',
       content: inputMessage,
