@@ -35,8 +35,8 @@ You are an AI assistant responsible for determining the current stage of a car p
 The user's basic profile information (title, name, target_driver) has already been collected.
 Based on the conversation history provided, identify which of the following stages the conversation is currently in. Only output the stage name.
 
-- needs_analysis: The user is expressing their requirements, preferences, budget, or use cases for the car. The assistant is working to understand these needs. also introduce the car models and their details.
-- reservation_4s: The user expresses a desire to book a test drive, schedule a visit to a dealership (4S store), or make a reservation related to a car.
+- needs_analysis: The user is discussing their car requirements (e.g., expressing needs, asking about key details of a car, agreeing to or inquiring about requirements, seeking to understand car information). The assistant is working to understand these needs, and may also introduce car models and their details.
+- reservation4s: The user expresses a desire to book a test drive, schedule a visit to a dealership (4S store), or make a reservation related to a car.
 - farewell: The conversation is concluding, with expressions of gratitude, goodbyes, or an indication that no further assistance is immediately needed.
 
 Conversation History:
@@ -62,7 +62,7 @@ Current Stage:
         assistant_response = response.choices[0].message.content
         assistant_response = clean_thinking_output(assistant_response)
 
-        valid_stages_after_profile = ["needs_analysis", "reservation_4s", "farewell"]
+        valid_stages_after_profile = ["needs_analysis", "reservation4s", "farewell"]
         if assistant_response in valid_stages_after_profile:
             return assistant_response
         else:
@@ -116,8 +116,8 @@ if __name__ == "__main__":
     # stage3 = arbitrator.get_chat_stage(sample_history_3, profile_complete)
     # print(f"Determined stage for history 3: {stage3}\n")
     
-    # Test case 5: Profile complete, booking test drive (expecting reservation_4s from LLM)
-    print("Testing with complete profile, sample_history_4 (expecting reservation_4s):")
+    # Test case 5: Profile complete, booking test drive (expecting reservation4s from LLM)
+    print("Testing with complete profile, sample_history_4 (expecting reservation4s):")
     sample_history_4 = [
         {"role": "user", "content": "I'd like to book a test drive for the Model S this Saturday."}, 
         {"role": "assistant", "content": "Sure, I can help with that. What time works for you?"}

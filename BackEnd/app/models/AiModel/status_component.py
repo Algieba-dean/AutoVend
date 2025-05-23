@@ -56,10 +56,11 @@ class StatusComponent:
     def is_all_basic_needs_done(self):
         """Check if all basic needs are done"""
         prize_done = self.needs["explicit"].get("prize", "") or self.needs["explicit"].get("price_alias", "")
-        model_category_done = self.needs["explicit"].get("vehicle_category_top", "") or self.needs["explicit"].get("vehicle_category_middle", "") or self.needs["explicit"].get("vehicle_category_bottom", "")
-        brand_done = self.needs["explicit"].get("brand", "") or self.needs["explicit"].get("brand_area", "") or self.needs["explicit"].get("brand_country", "")
-        powertrain_type_done = self.needs["explicit"].get("powertrain_type", "")
-        return prize_done and model_category_done and brand_done and powertrain_type_done
+        # model_category_done = self.needs["explicit"].get("vehicle_category_top", "") or self.needs["explicit"].get("vehicle_category_middle", "") or self.needs["explicit"].get("vehicle_category_bottom", "")
+        # brand_done = self.needs["explicit"].get("brand", "") or self.needs["explicit"].get("brand_area", "") or self.needs["explicit"].get("brand_country", "")
+        # powertrain_type_done = self.needs["explicit"].get("powertrain_type", "")
+        # return prize_done and model_category_done and brand_done and powertrain_type_done
+        return prize_done
     
     def update_profile(self, profile_info):
         """Update the user profile with new information"""
@@ -112,6 +113,7 @@ class StatusComponent:
         """
         self.stage["previous_stage"] = self.stage["current_stage"]
         self.stage["current_stage"] = new_stage
+        ...
 
     def update_explicit_needs(self, explicit_needs):
         """Update explicit needs

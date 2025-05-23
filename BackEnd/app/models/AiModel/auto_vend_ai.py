@@ -125,6 +125,7 @@ class AutoVend:
             car_models, filter_needs = self.car_model_query.query_car_model(
                 self.status_component.needs["explicit"]
             )
+            car_models = ["Audi-A1","BYD-Atto 3 EV","GWM-Haval H6S"]# TODO: remove this, when query_car_model is fixed
             # Construct matched car models information
             self.status_component.update_matched_car_models(car_models)
             self.status_component.update_matched_car_model_infos(
@@ -320,6 +321,21 @@ class AutoVend:
                 self.status_component.matched_car_models,
                 self.status_component.test_drive_info,
             )
+        if might_new_stage == "reservation4s":
+            self.status_component.update_stage("reservation4s")
+            self.status_component.update_test_drive_info(reservation_info)
+            self.status_component.update_matched_car_models(matched_car_models)
+        if might_new_stage == "farewell":
+            self.status_component.update_stage("farewell")
+            farewell_message = "Thank you for your time. Have a nice day!"
+            return (
+                farewell_message,
+                self.status_component.stage,
+                self.status_component.user_profile,
+                self.status_component.needs,
+                self.status_component.matched_car_models,
+                self.status_component.test_drive_info,
+            )
 
             # More general update if needed, e.g. if might_new_stage != self.status_component.stage["current_stage"]:
 
@@ -503,10 +519,8 @@ class AutoVend:
 
     # Helper method for common stage handling logic after arbitrator and updates
     def _handle_common_stage_logic(self, user_message: str):
-        if self.status_component.stage["current_stage"] == "needs_analysis":
-            self.query_model_related_info()
-            if self.status_component.is_all_basic_needs_done():
-                self.status_component.update_stage("car_selection_confirmation")
+        if self.status_component.stage["current_stage"] == "needs_analysis" and self.status_component.is_all_basic_needs_done():
+            self.status_component.update_stage("car_selection_confirmation")
 
         if self.status_component.stage["current_stage"] == "reservation4s":
             if self.status_component.is_all_basic_reservation_info_done():
@@ -533,7 +547,7 @@ class AutoVend:
                     self.status_component.test_drive_info,
                 )
 
-        if self.status_component.stage["current_stage"] == "reservation_confirmation":
+        if self.status_component.stage["current_stage"] == "reservation_confirmation": # llm don't have this stage
             confirmation_message = (
                 self.conversation_module.generate_reservation_response(
                     user_message,
@@ -556,6 +570,7 @@ class AutoVend:
                 self.status_component.test_drive_info,
             )
 
+
         # Fallback / Generic response generation for stages not explicitly returning a message above
         # unknown stage
         autovend_response = f"Unknown stage {self.status_component.stage['current_stage']}. How can I assist you further?"
@@ -568,17 +583,6 @@ class AutoVend:
             self.status_component.test_drive_info,
         )
 
-    def get_car_model_details(self, model_name):
-        """
-        Get detailed information about a specific car model.
-
-        Args:
-            model_name (str): Name of the car model
-
-        Returns:
-            dict: Dictionary containing detailed information about the car model
-        """
-        return self.car_model_query.get_car_model_info(model_name)
 
     def reset(self):
         """Reset the assistant state."""
@@ -628,10 +632,6 @@ if __name__ == "__main__":
     }
     current_needs = {
         "explicit": {
-            "prize": ["below 10,000", "10,000 ~ 20,000", "20,000 ~ 30,000"],
-            "vehicle_category_top": ["suv", "sedan"],
-            "brand_area": ["china", "european", "american"],
-            "powertrain_type":["battery electric vehicle"]
         },
         "implicit": {"family_size": ["1", "2", "3"]},
     }
