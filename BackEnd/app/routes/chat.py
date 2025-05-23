@@ -91,7 +91,7 @@ def send_chat_message():
     })
     
     # Update session with new information
-    session.stage = response["stage"]["current_stage"]
+    session.stage = response["stage"]
     session.needs = response["needs"]
     session.matched_car_models = response["matched_car_models"]
     session.reservation_info = response["reservation_info"]
