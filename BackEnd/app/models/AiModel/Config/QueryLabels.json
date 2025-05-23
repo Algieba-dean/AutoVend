@@ -11,7 +11,7 @@
         "candidates":["cheap","economy","mid-range low-end","mid-range","mid-range high-end","high-end","luxury"],
         "priority":1,
         "value_type":"fuzzy",
-        "implicit_support":true,
+        "implicit_support":false,
         "deduct_from_value":false,
         "description":"the prize of a vehicle model, but in level way instead of a range"
     },

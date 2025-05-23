@@ -183,6 +183,7 @@ class ConversationModule:
         elif not user_profile.get("target_driver"):
             prompt = self.prompt_loader.render_profile_analysis_prompt("no_target_driver",**basic_profile)
         else:
+            # as explict needs will be cleaned, so it will be empty, it's a correct path
             prompt = self.prompt_loader.render_needs_analysis_prompt("no_budget",expertise,user_name,user_title,**{})
         
         assistant_response = self.get_message_from_model(user_message, prompt)

@@ -8,7 +8,9 @@ class CarModelQuery:
     def __init__(self):
         # query tree and vehicle date configure path
         self.label_tree_path = Path(os.path.dirname(__file__)).parent.joinpath("Config", "LabelsTree.json")
-        self.vehicle_file_dir = Path(os.path.dirname(__file__)).parent.parent.joinpath("DataInUse", "VehicleData")
+        self.vehicle_file_dir = Path(os.path.dirname(__file__)).parent.parent.parent.parent.parent.joinpath("DataInUse", "VehicleData")
+        # print(f"label_tree_path: {self.label_tree_path.exists()}")
+        # print(f"label_tree_path: {self.label_tree_path.exists()}")
 
         self.vehicle_data_list =[]
         self.precise_labels={}
@@ -59,6 +61,7 @@ class CarModelQuery:
                 self.all_model_names.append(vehicle_data["car_model"])
                 self.all_model_infos[vehicle_data["car_model"]] = dict()
                 self.all_model_infos[vehicle_data["car_model"]] = vehicle_data
+        ...
         
             
     def get_all_model_names(self):
