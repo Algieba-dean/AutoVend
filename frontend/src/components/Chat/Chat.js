@@ -347,13 +347,23 @@ const Chat = () => {
         <div className="info-panel need-analysis">
           <h3>Need Analysis</h3>
           <div className="panel-content">
-            {needs && needs.length > 0 ? (
-              needs.map((need, index) => (
-                <div key={index} className="analysis-item">
-                  {need.category}: {need.value}
-                  {need.is_implicit && <span className="implicit-tag">, implicit</span>}
-                </div>
-              ))
+            {needs && (needs.explicit || needs.implicit) ? (
+              <>
+                {/* 处理显式需求 */}
+                {needs.explicit && Object.entries(needs.explicit).map(([category, value], index) => (
+                  <div key={`explicit-${index}`} className="analysis-item">
+                    {category}: {value}
+                  </div>
+                ))}
+                
+                {/* 处理隐式需求 */}
+                {needs.implicit && Object.entries(needs.implicit).map(([category, value], index) => (
+                  <div key={`implicit-${index}`} className="analysis-item">
+                    {category}: {value}
+                    <span className="implicit-tag">, implicit</span>
+                  </div>
+                ))}
+              </>
             ) : (
               <div className="empty-analysis"></div>
             )}
