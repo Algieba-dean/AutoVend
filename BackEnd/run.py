@@ -5,6 +5,15 @@ Run this script to start the AutoVend backend server
 """
 
 import os
+import sys
+
+# Add the AiModel directory to sys.path to resolve its internal modules
+# This assumes run.py is in the BackEnd directory
+project_root = os.path.dirname(os.path.abspath(__file__))
+ai_model_dir = os.path.join(project_root, 'app', 'models', 'AiModel')
+if ai_model_dir not in sys.path:
+    sys.path.insert(0, ai_model_dir)
+
 from app import create_app
 
 # Get environment configuration

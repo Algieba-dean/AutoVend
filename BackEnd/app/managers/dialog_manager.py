@@ -5,6 +5,7 @@ from functools import lru_cache
 from app.models.chat import ChatSession
 from app.models.mock_message import MockMessage
 from app.config import Config
+from app.models.ai_model_message import AiModelMessage
 
 class DialogManager:
     """Manager class for handling dialog interactions"""
@@ -13,6 +14,8 @@ class DialogManager:
         """Initialize the dialog manager"""
         self.active_sessions = {}
         self.response_cache = {}
+        self.ai_model_message = AiModelMessage()
+        self.is_initalized = False
     
     def process_message(self, session_id: str, message: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Process incoming message and generate response"""
@@ -68,38 +71,25 @@ class DialogManager:
         """Generate response for the message"""
 
         session_data = Config.storage.get_session(session_id)
-        # if not session_data:
-        #     return jsonify({"error": "Chat session not found"}), 404
-            
-        session = ChatSession.from_dict(session_data)
-        # Update session stage based on message content
-        current_stage = context["stage"]
-        previous_stage = current_stage
-        
-        # Simple stage transition logic
-        if current_stage == "welcome":
-            context["stage"] = "profile_analysis"
-        elif current_stage == "profile_analysis" and "car" in message.lower():
-            context["stage"] = "needs_analysis"
-        elif current_stage == "needs_analysis" and "model" in message.lower():
-            context["stage"] = "car_selection_confirmation"
-            # Mock car model matching
-            context["matched_car_models"] = ["Tesla Model Y", "Ford Mustang Mach-E"]
-        elif current_stage == "car_selection_confirmation" and "test" in message.lower():
-            context["stage"] = "reservation4s"
-        elif current_stage == "reservation4s" and any(word in message.lower() for word in ["yes", "sure", "ok"]):
-            context["stage"] = "reservation_confirmation"
-            # Mock reservation info
-            context["reservation_info"].update({
-                "reservation_date": "2024-03-20",
-                "reservation_time": "14:00",
-                "reservation_location": "Main Showroom"
-            })
-        
-        context["previous_stage"] = previous_stage
+        if not self.is_initalized:
+            message = ""
+            self.is_initalized = True
+        response, current_stage_info, current_profile, current_needs, current_matched_car_models, current_reservation_info = self.ai_model_message.generate_response(message,context["stage"],context["profile"],context["needs"],context["matched_car_models"],context["reservation_info"])
+        context["stage"] = current_stage_info["current_stage"]
+        context["profile"] = current_profile
+        context["needs"] = current_needs
+        context["matched_car_models"] = current_matched_car_models
+        context["reservation_info"] = current_reservation_info
         
         # Generate response using MockMessage
-        return MockMessage.generate_response(context["stage"], context)
+        return {
+            "message_id": f"msg_{datetime.now().timestamp()}",
+            "sender_type": "system",
+            "sender_id": "AutoVend",
+            "content": response,
+            "timestamp": datetime.now().isoformat(),
+            "status": "delivered"
+        } 
     
     def get_session_context(self, session_id: str) -> Optional[Dict[str, Any]]:
         """Get session context by ID"""

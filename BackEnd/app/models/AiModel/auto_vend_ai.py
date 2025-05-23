@@ -3,31 +3,31 @@ import json
 import concurrent.futures
 from typing import Dict, Any, List
 
-from utils import get_openai_client, get_openai_model, timer_decorator
+from .utils import get_openai_client, get_openai_model, timer_decorator
 
-from Conversation.mocked_information import MockedInformation
+from .Conversation.mocked_information import MockedInformation
 
 # # LLMExtractors
-from Conversation.conversation_module import ConversationModule
+from .Conversation.conversation_module import ConversationModule
 
-from LLMExtractors.profile_extractor import ProfileExtractor
-from LLMExtractors.expertise_evaluator import ExpertiseEvaluator
-from LLMExtractors.explicit_needs_extractor import ExplicitNeedsExtractor
-from LLMExtractors.implicit_needs_inferrer import ImplicitNeedsInferrer
-from LLMExtractors.test_drive_extractor import TestDriveExtractor
-from LLMExtractors.llm_stage_arbitrator import LLMStageArbitrator
+from .LLMExtractors.profile_extractor import ProfileExtractor
+from .LLMExtractors.expertise_evaluator import ExpertiseEvaluator
+from .LLMExtractors.explicit_needs_extractor import ExplicitNeedsExtractor
+from .LLMExtractors.implicit_needs_inferrer import ImplicitNeedsInferrer
+from .LLMExtractors.test_drive_extractor import TestDriveExtractor
+from .LLMExtractors.llm_stage_arbitrator import LLMStageArbitrator
 
 # TranditionalExtractors
-from InformationExtractors.explicit_in_extractor import ExplicitInOneExtractor
-from InformationExtractors.expertise_analyst import ExpertiseAnalyst
-from InformationExtractors.stage_arbitrator import StageArbitrator
-from InformationExtractors.additional_profile_extractor import AdditionalProfileExtractor
-from InformationExtractors.basic_profile_extractor import BasicProfileExtractor
-from InformationExtractors.reservation_info_extractor import ReservationInfoExtractor
-from InformationExtractors.ImplicitDeductor import ImplicitDeductor
+from .InformationExtractors.explicit_in_extractor import ExplicitInOneExtractor
+from .InformationExtractors.expertise_analyst import ExpertiseAnalyst
+from .InformationExtractors.stage_arbitrator import StageArbitrator
+from .InformationExtractors.additional_profile_extractor import AdditionalProfileExtractor
+from .InformationExtractors.basic_profile_extractor import BasicProfileExtractor
+from .InformationExtractors.reservation_info_extractor import ReservationInfoExtractor
+from .InformationExtractors.ImplicitDeductor import ImplicitDeductor
 
-from status_component import StatusComponent
-from ModelQuery.ModelQuery import CarModelQuery
+from .status_component import StatusComponent
+from .ModelQuery.ModelQuery import CarModelQuery
 
 
 class AutoVend:
