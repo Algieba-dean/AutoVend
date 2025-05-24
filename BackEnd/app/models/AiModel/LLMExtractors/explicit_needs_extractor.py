@@ -94,7 +94,9 @@ class ExplicitNeedsExtractor:
                 # If value is a list, filter its items
                 valid_list_values = [v for v in value if v in candidates]
                 if valid_list_values: # Only add if there's at least one valid value
-                    if len(valid_list_values) == 1 and self.query_labels[key].get("value_type") not in ["range", "multiple_choice"]: # Check for types that inherently can be lists
+                    # If only one valid value remains, and it's not a 'range' type, use the value directly.
+                    # Range types are often inherently list-like in their representation even if a single range is chosen.
+                    if len(valid_list_values) == 1 and self.query_labels[key].get("value_type") != "range": 
                         valid_needs[key] = valid_list_values[0]
                     else:
                         valid_needs[key] = valid_list_values
@@ -160,7 +162,9 @@ if __name__ == "__main__":
     print("--- Explicit Needs Extractor Test ---")
     
     # Initialize the extractor. It will try to load QueryLabels.json as per its __init__ method.
-    extractor = ExplicitNeedsExtractor()
+    # Pass api_key, e.g., from an environment variable.
+    api_key_to_use = os.environ.get("OPENAI_API_KEY")
+    extractor = ExplicitNeedsExtractor(api_key=api_key_to_use)
 
     # If QueryLabels.json was not found or is empty, extractor.query_labels will be {}.
     # This will affect the behavior of the tests below.

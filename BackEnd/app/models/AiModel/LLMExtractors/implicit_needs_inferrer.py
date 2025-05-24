@@ -64,10 +64,53 @@ class ImplicitNeedsInferrer:
             content = response.choices[0].message.content
             content = clean_thinking_output(content)
             inferred_needs = json.loads(content)
-            return inferred_needs
+            return self._validate_and_filter_needs(inferred_needs)
         except json.JSONDecodeError:
             return {}
     
+    def _validate_and_filter_needs(self, inferred_needs):
+        """
+        Validate inferred needs against QueryLabels and filter out invalid ones.
+        Only keeps keys that have implicit_support: true in QueryLabels.
+        """
+        if not isinstance(inferred_needs, dict):
+            return {}
+
+        valid_needs = {}
+        for key, value in inferred_needs.items():
+            if key not in self.query_labels:
+                # Key not defined in QueryLabels, skip
+                continue
+
+            label_data = self.query_labels[key]
+            # Crucially, for implicit needs, we only consider if implicit_support is true
+            if not label_data.get("implicit_support") is True:
+                continue
+
+            if "candidates" not in label_data:
+                # Key is valid for implicit support but has no candidates, skip.
+                continue
+
+            candidates = label_data["candidates"]
+            
+            if isinstance(value, list):
+                # If value is a list, filter its items
+                valid_list_values = [v for v in value if v in candidates]
+                if valid_list_values:
+                    # If only one valid value remains, and it's not a 'range' type, use the value directly.
+                    # Range types are often inherently list-like in their representation even if a single range is chosen.
+                    if len(valid_list_values) == 1 and label_data.get("value_type") != "range":
+                        valid_needs[key] = valid_list_values[0]
+                    else:
+                        valid_needs[key] = valid_list_values
+            elif isinstance(value, str):
+                # If value is a string, check if it's in candidates
+                if value in candidates:
+                    valid_needs[key] = value
+            # Other types are ignored
+            
+        return valid_needs
+
     def _create_system_message(self):
         """Create the system message with instructions for the AI."""
         # Prepare simplified labels structure for the prompt
@@ -91,16 +134,21 @@ class ImplicitNeedsInferrer:
         {labels_json}
         
         INSTRUCTIONS:
-        1. ONLY infer requirements that are NOT explicitly mentioned but can be logically deduced.
-        2. Make reasonable inferences based on lifestyle, family situation, mentioned activities, etc.
-        3. For each inferred requirement, use the exact key and allowed value from the provided structure.
-        4. Return the inferred requirements as a flat JSON object.
-        5. If no implicit requirements can be inferred, return an empty object {{}}.
-        6. Use high confidence inferences only - don't overreach in your analysis.
+        - ONLY infer requirements that are NOT explicitly mentioned but can be logically deduced.
+        - Make reasonable inferences based on lifestyle, family situation, mentioned activities, etc.
+        - For each inferred requirement, use the exact key and allowed value from the provided structure.
+        - Return the inferred requirements as a flat JSON object.
+        - If no implicit requirements can be inferred, return an empty object {{}}.
+        - Use high confidence inferences only - don't overreach in your analysis.
         
         EXAMPLES:
         - For "I have a big family with 5 children", infer: {{"family_friendliness": "high", "size": "large", "seat_layout": "7-seat"}}
         - For "I live in a mountain area with lots of snow", infer: {{"off_road_capability": "high", "cold_resistance": "high"}}
+        - For "I'm not good at parking", infer: {{"remote_parking": "yes", "auto_parking": "yes"}}
+
+        NEGATIVE EXAMPLES:
+        - For "I wanna buy a suv", do not infer: {{"size": "large"}} as it's not related to the user's statement
+        - For "I'd like to have an suv below 30000 dollars", do not infer:{{"highway_long_distance":"yes}}, as it's not related to the user's statement
         
         Only return the JSON object with inferred requirements. Do not include explanations.
         """ 
