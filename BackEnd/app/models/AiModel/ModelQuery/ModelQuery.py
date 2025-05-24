@@ -193,33 +193,33 @@ class CarModelQuery:
             # check vehicle data with query value
             if query_key in vehicle_data:
                 if isinstance(query_value,str):
-                    if vehicle_data[query_key].lower()!=query_value:
+                    if vehicle_data[query_key].lower().replace(" ","")!=query_value.lower().replace(" ",""):
                         return False
                 else:
-                    if vehicle_data[query_key].lower() not in query_value:
+                    if vehicle_data[query_key].lower().replace(" ","") not in query_value.lower().replace(" ",""):
                         return False
             else:
                 #check vehicle category and brand key
                 match query_key:
                     case "vehicle_category_top" | "vehicle_category_middle":
                         if isinstance(query_value,str):
-                            if vehicle_data["vehicle_category_bottom"].lower() not in self.vehicle_category_tree[query_value]:
+                            if vehicle_data["vehicle_category_bottom"].lower().replace(" ","") not in self.vehicle_category_tree[query_value].replace(" ",""):
                                 return False
                         else:
                             allowed_value_list=[]
                             for query_value_item in query_value:
                                 allowed_value_list.extend(self.vehicle_category_tree[query_value_item])
-                            if vehicle_data["vehicle_category_bottom"].lower() not in allowed_value_list:
+                            if vehicle_data["vehicle_category_bottom"].lower().replace(" ","") not in allowed_value_list:
                                     return False
                     case "brand_area" | "brand_country":
                         if isinstance(query_value,str):
-                            if vehicle_data["brand"].lower() not in self.brand_tree[query_value]:
+                            if vehicle_data["brand"].lower().replace(" ","") not in self.brand_tree[query_value].replace(" ",""):
                                 return False
                         else:
                             allowed_value_list=[]
                             for query_value_item in query_value:
                                 allowed_value_list.extend(self.brand_tree[query_value_item])
-                            if vehicle_data["brand"].lower() not in allowed_value_list:
+                            if vehicle_data["brand"].lower().replace(" ","") not in allowed_value_list:
                                 return False
                     case _:
                         return False
