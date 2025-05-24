@@ -1,6 +1,7 @@
 import json
 import random
 import os
+from copy import deepcopy
 from utils import get_openai_client, get_openai_model, timer_decorator, clean_thinking_output
 from Conversation.prompt_loader import PromptLoader
 from Conversation.needs_status import NeedsStatus
@@ -35,11 +36,15 @@ class ConversationModule:
         self.get_message_from_model("Hello you are AutoVend", self.init_prompt, no_add_history=True) # connect to the model to get the first response
 
     
-    def get_history_for_llm_arbitrator(self):
+    def get_history_for_llm_arbitrator(self, new_user_message:str):
         """
         Get the conversation history for the LLM arbitrator.
         """
-        return self.conversation_history
+        stage_arbitrator_history = deepcopy(self.conversation_history)
+        stage_arbitrator_history.append({"role": "user", "content": new_user_message})
+        # print("---- stage_arbitrator_history ----")# TODO: remove this
+        # print(stage_arbitrator_history) # TODO: remove this
+        return stage_arbitrator_history
     
     def add_message(self, role, message):
         """

@@ -2,6 +2,7 @@ import os
 import json
 import concurrent.futures
 from typing import Dict, Any, List
+from copy import deepcopy
 
 from utils import get_openai_client, get_openai_model, timer_decorator
 
@@ -289,12 +290,9 @@ class AutoVend:
                     self.status_component.test_drive_info,
                 )
 
-        formatted_history_raw = (
-            self.conversation_module.get_history_for_llm_arbitrator().copy()
-        )
-        formatted_history_raw.append({"role": "user", "content": user_message})
+        stage_arbitrator_history = self.conversation_module.get_history_for_llm_arbitrator(user_message)
         might_new_stage = self.stage_determining_module.get_chat_stage(
-            formatted_history_raw, self.status_component.user_profile
+            stage_arbitrator_history, self.status_component.user_profile
         )
         if might_new_stage == "needs_analysis":
             self.status_component.update_stage("needs_analysis")
