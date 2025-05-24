@@ -196,7 +196,7 @@ class ConversationModule:
         
     def generate_reservation_response(self, user_message, user_profile, explicit_needs, 
                            implicit_needs, test_drive_info, matched_car_models, matched_car_model_infos,
-                           current_stage):
+                           current_stage, mocked_stores, mocked_dates, mocked_salesman):
         """
         Generate a response based on the user message and contextual information.
         """
@@ -212,14 +212,15 @@ class ConversationModule:
         prompt = default_prompt
         test_drive_package = {
             "target_driver" : "Your"+target_driver, # should convert into human readable format, 
-            "stores_list" : self.mocked_information.get_random_stores(3), # need mock data
-            "available_date_list":self.mocked_information.get_random_appointment_dates(3), # need mock data
-            "salesman_list":self.mocked_information.get_random_salesmen(2), # need mock data
+            "stores_list" : mocked_stores, # need mock data
+            "available_date_list":mocked_dates, # need mock data
+            "salesman_list":mocked_salesman, # need mock data
             "store":test_drive_info.get("reservation_location",""),
             "date":test_drive_info.get("reservation_date",""),
             "time":test_drive_info.get("reservation_time",""),
             "test_driver":test_drive_info.get("test_driver_name",""),
             "phone_number":test_drive_info.get("reservation_phone_number",""),
+            "salesman":test_drive_info.get("salesman",""),
         }
 
         prompt_type = None

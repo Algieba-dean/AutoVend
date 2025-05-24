@@ -71,6 +71,8 @@ class StatusComponent:
         for key, value in profile_info.items():
             if not value:  # Skip if the value is empty
                 continue
+            # hard code way for name not update
+
             # First try to update key at the top level
             if key in self.user_profile:
                 if isinstance(value, dict) and isinstance(self.user_profile[key], dict):
@@ -81,6 +83,8 @@ class StatusComponent:
                         self.user_profile[key].update(non_empty_value_dict)
                 else:
                     # Direct assignment for non-dict values
+                    if key == "name" and self.user_profile.get("name", ""): # TODO, hard code way is stupid, need to fix
+                        continue
                     self.user_profile[key] = value
             else:
                 # If not found at top level, try to find it in nested dictionaries

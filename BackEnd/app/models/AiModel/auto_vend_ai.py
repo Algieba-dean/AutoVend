@@ -2,11 +2,10 @@ import os
 import json
 import concurrent.futures
 from typing import Dict, Any, List
-from copy import deepcopy
 
 from utils import get_openai_client, get_openai_model, timer_decorator
 
-from Conversation.mocked_information import MockedInformation
+from Conversation.mocked_information import mocked_information
 
 # # LLMExtractors
 from Conversation.conversation_module import ConversationModule
@@ -102,7 +101,7 @@ class AutoVend:
         # tools
         self.car_model_query = CarModelQuery()
         self.status_component = StatusComponent()
-        self.mocked_information = MockedInformation()
+        self.mocked_information = mocked_information
         # Create a thread pool executor
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
 
@@ -504,6 +503,9 @@ class AutoVend:
                         self.status_component.matched_car_models,
                         self.status_component.matched_car_model_infos,
                         self.status_component.stage["current_stage"],
+                        self.mocked_information.mocked_stores,
+                        self.mocked_information.mocked_dates,
+                        self.mocked_information.salesman_names,
                     )
                 )
 
@@ -529,6 +531,9 @@ class AutoVend:
                         self.status_component.matched_car_models,
                         self.status_component.matched_car_model_infos,
                         self.status_component.stage["current_stage"],
+                        self.mocked_information.mocked_stores,
+                        self.mocked_information.mocked_dates,
+                        self.mocked_information.salesman_names,
                     )
                 )
                 return (
@@ -551,6 +556,9 @@ class AutoVend:
                     self.status_component.matched_car_models,
                     self.status_component.matched_car_model_infos,
                     self.status_component.stage["current_stage"],
+                    self.mocked_information.mocked_stores,
+                    self.mocked_information.mocked_dates,
+                    self.mocked_information.salesman_names,
                 )
             )
             self.status_component.update_stage("farewell")

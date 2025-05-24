@@ -3,17 +3,6 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import calendar
 
-def get_current_time():
-    """
-    Get the current time in the format of YYYY-MM-DD HH:MM:SS
-    """
-    return datetime.now().time().strftime("%H:%M:%S")
-
-def get_current_date():
-    """
-    Get the current date in the format of YYYY-MM-DD
-    """
-    return datetime.now().strftime("%Y-%m-%d")
 class DateExtractor:
     """
     A class for extracting date information from user input strings.
@@ -57,6 +46,12 @@ class DateExtractor:
             "december": 12, "dec": 12
         }
     
+    @staticmethod
+    def get_current_date():
+        """
+        Get the current date in the format of YYYY-MM-DD
+        """
+        return datetime.now().strftime("%Y-%m-%d")
     def extract_dates(self, text):
         """
         Extract date information from the given text based on current date.
@@ -68,7 +63,7 @@ class DateExtractor:
             list: A list of datetime objects representing extracted dates
         """
         # Get current date as reference
-        current_date_str = get_current_date()
+        current_date_str = self.get_current_date()
         current_date = datetime.strptime(current_date_str, "%Y-%m-%d")
         
         extracted_dates = []

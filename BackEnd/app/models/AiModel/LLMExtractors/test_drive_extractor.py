@@ -3,6 +3,10 @@ import openai
 import os
 import re
 from datetime import datetime
+
+from Conversation.mocked_information import mocked_information
+from InformationExtractors.date_extractor import DateExtractor
+from InformationExtractors.time_extractor import TimeExtractor
 from utils import get_openai_client, get_openai_model
 
 class TestDriveExtractor:
@@ -21,7 +25,8 @@ class TestDriveExtractor:
         """
         self.client = get_openai_client()
         self.model = model or get_openai_model()
-        
+        self.date_extractor = DateExtractor()
+        self.time_extractor = TimeExtractor()
         # Load reservation info fields from JSON file
         # Adjust path if Config directory is not in the current working directory of execution
         # e.g., os.path.join(os.path.dirname(__file__), "../Config/ReservationInfo.json")
@@ -82,27 +87,37 @@ class TestDriveExtractor:
         """Validate and clean up extracted test drive information."""
         validated_info = {}
         
+        if "test_driver" in extracted_info and extracted_info["test_driver"]:
+            candidates = self.reservation_info_fields.get("test_driver", {}).get("candidates")
+            if candidates and extracted_info["test_driver"] in candidates:
+                validated_info["test_driver"] = extracted_info["test_driver"]
+            # else: # Optional: handle cases where test_driver is not in candidates
+                # print(f"Warning: Extracted test_driver '{extracted_info['test_driver']}' not in predefined candidates.")
+                # validated_info["test_driver"] = None # Or some default or keep original
+        
         if "reservation_date" in extracted_info and extracted_info["reservation_date"]:
             try:
                 date_str = extracted_info["reservation_date"]
-                for fmt in ["%Y-%m-%d", "%Y/%m/%d", "%m/%d/%Y", "%d/%m/%Y", "%B %d, %Y", "%b %d, %Y"]:
-                    try:
-                        parsed_date = datetime.strptime(date_str, fmt)
-                        validated_info["reservation_date"] = parsed_date.strftime("%Y-%m-%d")
-                        break
-                    except ValueError:
-                        continue
-                if "reservation_date" not in validated_info: # If no format matched
-                    validated_info["reservation_date"] = date_str # Keep original if parsing failed
+                extracted_data = self.date_extractor.extract_dates(date_str)
+                if len(extracted_data) > 0:
+                    validated_info["reservation_date"] = extracted_data[0].strftime("%Y-%m-%d")
+                else:
+                    validated_info["reservation_date"] = date_str.strftime("%Y-%m-%d")
             except Exception as e:
                 print(f"Error parsing date: {date_str}, Error: {e}")
                 validated_info["reservation_date"] = extracted_info["reservation_date"]
         
         if "reservation_phone_number" in extracted_info and extracted_info["reservation_phone_number"]:
             phone = str(extracted_info["reservation_phone_number"])
-            clean_phone = re.sub(r'[^\d\+\-\(\) ]', '', phone)
-            validated_info["reservation_phone_number"] = clean_phone
+            validated_info["reservation_phone_number"] = phone 
         
+        if "reservation_time" in extracted_info and extracted_info["reservation_time"]:
+            time_str = self.time_extractor.extract_times(extracted_info["reservation_time"])
+            if len(time_str) > 0:
+                validated_info["reservation_time"] = time_str[0].strftime("%H:%M")
+            else:
+                validated_info["reservation_time"] = extracted_info["reservation_time"]
+
         # Copy other fields defined in reservation_info_fields directly or with simple validation
         for field in self.reservation_info_fields.keys():
             if field not in validated_info and field in extracted_info: # Avoid overwriting already validated fields
@@ -131,12 +146,17 @@ class TestDriveExtractor:
         
         Your task is to analyze the user message and extract any test drive reservation details according to the fields listed below.
         Only return the fields for which you find information in the user's message.
+
+        The salesmen names are: {mocked_information.salesman_names}
+        The stores are: {mocked_information.mocked_stores}
+        The dates are: {mocked_information.mocked_dates}
         
         Available fields to extract:
 {template_json_for_llm}
 
         Detailed instructions for each field:
 {fields_description_for_llm}
+
 
         INSTRUCTIONS:
         1. Extract only information that is EXPLICITLY mentioned in the message.

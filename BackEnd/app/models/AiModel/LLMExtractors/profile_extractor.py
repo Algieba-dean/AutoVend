@@ -65,7 +65,30 @@ class ProfileExtractor:
         # Parse and return the extracted profile information
         try:
             extracted_data = json.loads(response.choices[0].message.content)
-            return extracted_data
+            
+            # Validate extracted data against candidates
+            validated_data = {}
+            for key, value in extracted_data.items():
+                if key in self.profile_template:
+                    # Check if the field has candidates defined in the template
+                    if "candidates" in self.profile_template[key]:
+                        # If candidates are defined, check if the extracted value is among them
+                        if value in self.profile_template[key]["candidates"]:
+                            validated_data[key] = value
+                        # If value is not in candidates, it's considered invalid for this key, so we don't add it.
+                        # Optionally, we could log a warning or handle this case differently.
+                    else:
+                        # If no candidates are defined, accept the value as is
+                        validated_data[key] = value
+                else:
+                    # If the key is not in the template at all, we might want to ignore it
+                    # or handle it based on specific requirements. For now, let's include it.
+                    # This case might indicate the LLM returned an unexpected field.
+                    # Depending on strictness, we could choose to ignore these.
+                    # For now, to be safe and retain all information not explicitly invalidated:
+                    validated_data[key] = value # Or decide to exclude keys not in template
+            
+            return validated_data
         except json.JSONDecodeError:
             return {}
     
