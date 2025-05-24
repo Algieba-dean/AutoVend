@@ -73,6 +73,7 @@ Determined Stage:
             {"role": "user", "content": prompt}
         ]
 
+
         # Call OpenAI API with optimized parameters
         response = self.client.chat.completions.create(
             model=self.model,

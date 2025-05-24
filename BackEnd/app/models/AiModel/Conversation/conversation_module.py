@@ -245,6 +245,7 @@ class ConversationModule:
                 user_title=user_title,
                 **test_drive_package
             )
+        
 
         assistant_response = self.get_message_from_model(user_message, prompt)
         return assistant_response
@@ -313,36 +314,20 @@ class ConversationModule:
         # clean matched_car_model_infos, only keep the explict mentioned 
         filtered_out_matched_informations = self.needs_status.get_car_model_comment_infos(explicit_needs, matched_car_model_infos)
         
-        prompt = self.prompt_loader.render_llm_needs_analysis_prompt(expertise, user_name, user_title, explicit_needs, implicit_needs, matched_car_models, filtered_out_matched_informations)
+        prompt = ""
+        if current_stage == "needs_analysis":
+            prompt = self.prompt_loader.render_llm_needs_analysis_prompt(expertise, user_name, user_title, explicit_needs, implicit_needs, matched_car_models, filtered_out_matched_informations)
+        elif current_stage == "model_introduce":
+            prompt = self.prompt_loader.render_llm_model_introduce_prompt(expertise, user_name, user_title, explicit_needs, implicit_needs, matched_car_models, filtered_out_matched_informations)
         
         # --- Actual LLM Call ---
+        ...
         if not prompt: # Safety check if prompt somehow ended up empty
             return "I'm sorry, I encountered an issue preparing my thoughts. Could you please try rephrasing?"
 
         try:
-            # Assuming 'prompt' contains the full instruction set for the LLM
-            # The role can be "system" if the prompt is a directive to the LLM,
-            # or "user" if it's phrased as user input for a conversational LLM.
-            # Given prompt_loader, it's likely a system-level instruction.
-            messages = [{"role": "system", "content": prompt}]
-            
-            llm_response = self.client.chat.completions.create(
-                model=self.model, # Ensure self.model is initialized in ConversationModule
-                messages=messages,
-                temperature=0.3, # Adjust as needed
-                max_tokens=200    # Adjust as needed
-            )
-            assistant_response = llm_response.choices[0].message.content
-            
+            assistant_response = self.get_message_from_model(user_message, prompt)
             # Assuming clean_thinking_output is available and imported if needed
-            if hasattr(self, 'clean_thinking_output'): # Or directly from utils if imported
-                 assistant_response = self.clean_thinking_output(assistant_response)
-            # from utils import clean_thinking_output # if you prefer to call it directly
-            # assistant_response = clean_thinking_output(assistant_response)
-
-
-            # Add to history (if you have an add_message method)
-            # self.add_message("assistant", assistant_response) 
             return assistant_response
         except Exception as e:
             print(f"Error during LLM call in generate_response_for_big_needs_llm: {e}")

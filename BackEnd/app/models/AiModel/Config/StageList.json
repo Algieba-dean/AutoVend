@@ -1,5 +1,6 @@
 {
-    "needs_analysis": "The user is discussing their car requirements (e.g., expressing needs, asking about key details of a car, agreeing to or inquiring about requirements, seeking to understand car information). The assistant is working to understand these needs, and may also introduce car models and their details.",
+    "needs_analysis": "The user is discussing their car requirements (e.g., expressing needs, agreeing to or inquiring about requirements, seeking to understand car information). The assistant is working to understand these needs",
+    "model_introduce":"the user ask to introduce some car models information or ask some car model recommandation",
     "reservation4s": "The user expresses a desire to book a test drive, schedule a visit to a dealership (4S store), or make a reservation related to a car.",
     "farewell": "The conversation is concluding, with expressions of gratitude, goodbyes, or an indication that no further assistance is immediately needed."
 }

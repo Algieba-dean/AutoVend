@@ -288,8 +288,8 @@ class AutoVend:
         might_new_stage = self.stage_determining_module.get_chat_stage(
             stage_arbitrator_history, self.status_component.user_profile
         )
-        if might_new_stage == "needs_analysis":
-            self.status_component.update_stage("needs_analysis")
+        if might_new_stage == "needs_analysis" or might_new_stage == "model_introduce":
+            self.status_component.update_stage(might_new_stage)
             self.status_component.update_explicit_needs(needs.get("explicit", {}))
             self.status_component.update_implicit_needs(needs.get("implicit", {}))
             self.query_model_related_info()  # update already matched car models and car model infos
@@ -314,11 +314,11 @@ class AutoVend:
                 self.status_component.test_drive_info,
             )
         if might_new_stage == "reservation4s":
-            self.status_component.update_stage("reservation4s")
+            self.status_component.update_stage(might_new_stage)
             self.status_component.update_test_drive_info(reservation_info)
             self.status_component.update_matched_car_models(matched_car_models)
         if might_new_stage == "farewell":
-            self.status_component.update_stage("farewell")
+            self.status_component.update_stage(might_new_stage)
             farewell_message = "Thank you for your time. Have a nice day!"
             return (
                 farewell_message,

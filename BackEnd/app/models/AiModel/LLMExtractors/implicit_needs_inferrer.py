@@ -149,6 +149,7 @@ class ImplicitNeedsInferrer:
         NEGATIVE EXAMPLES:
         - For "I wanna buy a suv", do not infer: {{"size": "large"}} as it's not related to the user's statement
         - For "I'd like to have an suv below 30000 dollars", do not infer:{{"highway_long_distance":"yes}}, as it's not related to the user's statement
+        - For "I'd like a battery electric car, and maybe a germany brand SUV", do not infer:{{"size": "large","highway_long_distance": "yes","family_friendliness": "medium","smartness": "high"}}, as it's not related to user's statement
         
         Only return the JSON object with inferred requirements. Do not include explanations.
         """ 
