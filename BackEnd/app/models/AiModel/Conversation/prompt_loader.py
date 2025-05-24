@@ -183,7 +183,7 @@ class PromptLoader:
         return f"{self.render_base_prompt()}\n\n{base}\n{main_prompt}\n{common_endding}"
 
     def render_llm_needs_analysis_prompt(self, expertise, user_name, user_title, explicit_needs, implicit_needs, matched_car_models, filtered_informations):
-        base = self.test_drive_base_template.substitute(user_name=user_name, user_title=user_title)
+        base = self.render_base_prompt()
         common_endding = self.render_common_endding()
         expertise_text = self.render_expertise_prompt(expertise)
         # Convert lists and dictionaries to JSON strings
