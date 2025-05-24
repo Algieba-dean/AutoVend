@@ -9,6 +9,7 @@ class LLMStageArbitrator:
     def __init__(self, model=None):
         self.client = get_openai_client()
         self.model = model or get_openai_model()
+        self.valid_stages = ["needs_analysis", "reservation4s", "farewell"]
 
     def get_chat_stage(self, conversation_history: list, user_profile: dict) -> str:
         """
@@ -32,9 +33,9 @@ class LLMStageArbitrator:
         # The prompt will be refined later based on your specific stage details for other stages.
         prompt_template = """
 You are an AI assistant responsible for determining the current stage of a car purchase conversation.
-The user's basic profile information (title, name, target_driver) has already been collected.
-Based on the conversation history provided, identify which of the following stages the conversation is currently in. Only output the stage name.
+Based on the conversation history provided, identify which of the following stages the conversation is currently in.
 
+Valid Stages:
 - needs_analysis: The user is discussing their car requirements (e.g., expressing needs, asking about key details of a car, agreeing to or inquiring about requirements, seeking to understand car information). The assistant is working to understand these needs, and may also introduce car models and their details.
 - reservation4s: The user expresses a desire to book a test drive, schedule a visit to a dealership (4S store), or make a reservation related to a car.
 - farewell: The conversation is concluding, with expressions of gratitude, goodbyes, or an indication that no further assistance is immediately needed.
@@ -42,7 +43,8 @@ Based on the conversation history provided, identify which of the following stag
 Conversation History:
 {history}
 
-Current Stage:
+Your response MUST be one of the exact stage names listed above (needs_analysis, reservation4s, farewell). Do not add any other text, explanations, or punctuation.
+Determined Stage:
         """
         prompt = prompt_template.format(history="\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history]))
 
@@ -55,15 +57,14 @@ Current Stage:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            temperature=0.7,
-            max_tokens=50
+            temperature=0.1,
+            max_tokens=10
         )
 
         assistant_response = response.choices[0].message.content
         assistant_response = clean_thinking_output(assistant_response)
 
-        valid_stages_after_profile = ["needs_analysis", "reservation4s", "farewell"]
-        if assistant_response in valid_stages_after_profile:
+        if assistant_response in self.valid_stages:
             return assistant_response
         else:
             print(f"Warning: OpenAI returned an unexpected stage (after profile completion): {assistant_response}")

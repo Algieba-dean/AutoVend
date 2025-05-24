@@ -58,7 +58,8 @@ class ProfileExtractor:
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": user_message}
             ],
-            response_format={"type": "json_object"}
+            response_format={"type": "json_object"},
+            temperature=0.1
         )
         
         # Parse and return the extracted profile information

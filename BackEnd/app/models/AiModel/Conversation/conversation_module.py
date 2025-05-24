@@ -329,8 +329,8 @@ class ConversationModule:
             llm_response = self.client.chat.completions.create(
                 model=self.model, # Ensure self.model is initialized in ConversationModule
                 messages=messages,
-                temperature=0.7, # Adjust as needed
-                max_tokens=1000    # Adjust as needed
+                temperature=0.3, # Adjust as needed
+                max_tokens=200    # Adjust as needed
             )
             assistant_response = llm_response.choices[0].message.content
             
