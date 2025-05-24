@@ -1,6 +1,6 @@
 {
     "prize":{
-        "candidates":["below 10,000","10,000 ~ 20,000","20,000 ~ 30,000","30,000 ~ 40,000","40,000 ~ 60,000","60,000 ~ 100,000","above 100,000"],
+        "candidates":["below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "above 100,000"],
         "priority":1,
         "value_type":"range",
         "implicit_support":false,
@@ -32,7 +32,7 @@
         "description":"the depper category of vehicle_category_top"
     },
     "vehicle_category_bottom":{
-        "candidates":["micro sedan","compact sedan","b-segment sedan","c-segment sedan","d-segment sedan","compact suv","mid-size suv","mid-to-large suv","off-road suv","all-terrain suv","compact mpv","mid-size mpv","large mpv","mid-size business mpv","large-size business mpv","two-door convertible sports car","four-door convertible sports car","two-door hardtop sports car","four-door hardtop sports car"],
+        "candidates":["micro sedan", "compact sedan", "b-segment sedan", "c-segment sedan", "d-segment sedan", "compact suv", "mid-size suv", "mid-to-large suv", "off-road suv", "all-terrain suv", "compact mpv", "mid-size mpv", "large mpv", "mid-size business mpv", "large-size busness mpv", "two-door convertible sprots car", "four-door convertible sprots car", "two-door hardtop sports car", "four-door hardtop sports car"],
         "priority":3,
         "value_type":"exact",
         "implicit_support":false,
@@ -56,7 +56,7 @@
         "description":"the country of the brand"
     },
     "brand":{
-        "candidates":["volkswagen","audi","porsche","bentley","bugatti","lamborghini","bmw","mercedes-benz","peugeot","renault","jaguar","land rover","rolls-royce","volvo","chevrolet","buick","cadillac","ford","tesla","toyota","honda","nissan","suzuki","mazda","hyundai","byd","geely","changan","great wall motor","nio","xpeng"],
+        "candidates":["volkswagen", "audi", "porsche", "bentley", "bugatti", "lamborghini", "bmw", "mercedes-benz", "peugeot", "renault", "jaguar", "land rover", "rolls-royce", "volvo", "chevrolet", "buick", "cadillac", "ford", "tesla", "toyota", "honda", "nissan", "suzuki", "mazda", "hyundai", "byd", "geely", "changan", "great wall motor", "nio", "xiaomi", "xpeng"],
         "priority":3,
         "value_type":"exact",
         "implicit_support":false,
@@ -64,7 +64,7 @@
         "description":"the name of the brand"
     },
     "powertrain_type":{
-        "candidates":["gasoline engine","diesel engine","hybrid electric vehicle","plug-in hybrid electric vehicle","range-extended electric vehicle","battery electric vehicle"],
+        "candidates":["gasoline engine", "diesel engine", "hybrid electric vehicle", "plug-in hybird electric vehicle", "range-extended electric vehicle", "battery electric vehicle"],
         "priority":4,
         "value_type":"exact",
         "implicit_support":false,
@@ -72,7 +72,7 @@
         "description":"more specific powertrain type of the vehicle"
     },
     "passenger_space_volume":{
-        "candidates":["2.5-3.5 m³","3.5-4.5 m³","4.5-5.5 m³","above 5.5 m³"],
+        "candidates":["2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "above 5.5 cubic meter"],
         "priority":5,
         "value_type":"range",
         "implicit_support":false,
@@ -88,7 +88,7 @@
         "description":"the alias value of passenger_space_volume"
     },
     "trunk_volume":{
-        "candidates":["200 - 300l","300-400l","400-500l","above 500l"],
+        "candidates":["200~300l", "300~400l", "400~500l", "above 500l"],
         "priority":6,
         "value_type":"range",
         "implicit_support":false,
@@ -104,7 +104,7 @@
         "description":"the alias value of the trunk_volume"
     },
     "wheelbase":{
-        "candidates":["2300-2650mm","2650-2800mm","2800-2950mm","2950-3100mm","above 3100mm"],
+        "candidates":["2300~2650mm", "2650~2800mm", "2800~2950mm", "2950~3100mm", "above 3100mm"],
         "priority":7,
         "value_type":"range",
         "implicit_support":false,
@@ -120,7 +120,7 @@
         "description":"the alias value of wheelbase"
     },
     "chassis_height":{
-        "candidates":["100-130mm","130-150mm","150-200mm","above 200mm"],
+        "candidates":["100~130mm", "130~150mm", "150~200mm", "above 200mm"],
         "priority":8,
         "value_type":"range",
         "implicit_support":false,
@@ -136,7 +136,7 @@
         "description":"the alias value of chassis_height"
     },
     "design_style":{
-        "candidates":["sporty","business"],
+        "candidates":["sporty", "business"],
         "priority":9,
         "value_type":"exact",
         "implicit_support":false,
@@ -144,7 +144,7 @@
         "description":"the design style of vehicle"
     },
     "body_line_smoothness":{
-        "candidates":["high","medium","low"],
+        "candidates":["high", "medium", "low"],
         "priority":12,
         "value_type":"fuzzy",
         "implicit_support":false,
@@ -152,7 +152,7 @@
         "description":"the smoothness of vehicle body line"
     },
     "color":{
-        "candidates":["bright colors","neutral colors","dark colors"],
+        "candidates":["bright colors", "neutral colors", "dark colors"],
         "priority":15,
         "value_type":"exact",
         "implicit_support":false,
@@ -160,7 +160,7 @@
         "description":"the color of vehicle"
     },
     "interior_material_texture":{
-        "candidates":["wood trim","metal trim"],
+        "candidates":["wood trim", "metal trim"],
         "priority":11,
         "value_type":"exact",
         "implicit_support":false,
@@ -168,7 +168,7 @@
         "description":"the texture of interior material in vehicle"
     },
     "abs":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":5,
         "value_type":"boolean",
         "implicit_support":true,
@@ -176,7 +176,7 @@
         "description":"vehicle has abs function or not"
     },
     "esp":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":6,
         "value_type":"boolean",
         "implicit_support":false,
@@ -184,7 +184,7 @@
         "description":"vehicle has esp function or not"
     },
     "airbag_count":{
-        "candidates":["2","4","6","8","10","above 10"],
+        "candidates":["2", "4", "6", "8", "10", "above 10"],
         "priority":6,
         "value_type":"exact",
         "implicit_support":false,
@@ -192,7 +192,7 @@
         "description":"the quantity of the airbag in vehicle"
     },
     "seat_material":{
-        "candidates":["leather","fabric"],
+        "candidates":["lether", "fabric"],
         "priority":10,
         "value_type":"exact",
         "implicit_support":false,
@@ -200,7 +200,7 @@
         "description":"the material texture of the seat"
     },
     "noise_insulation":{
-        "candidates":["high","medium","low"],
+        "candidates":["high", "medium", "low"],
         "priority":8,
         "value_type":"fuzzy",
         "implicit_support":false,
@@ -208,7 +208,7 @@
         "description":"the noise insulation level of the vehicle"
     },
     "voice_interaction":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":13,
         "value_type":"boolean",
         "implicit_support":true,
@@ -216,7 +216,7 @@
         "description":"the vehicle have the voice interaction or not"
     },
     "ota_updates":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":14,
         "value_type":"boolean",
         "implicit_support":false,
@@ -224,7 +224,7 @@
         "description":"the vehicle support ota update or not"
     },
     "autonomous_driving_level":{
-        "candidates":["l2","l3"],
+        "candidates":["l2", "l3"],
         "priority":9,
         "value_type":"exact",
         "implicit_support":false,
@@ -232,7 +232,7 @@
         "description":"the autonomous driving level of vehicle"
     },
     "adaptive_cruise_control":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":10,
         "value_type":"boolean",
         "implicit_support":false,
@@ -240,7 +240,7 @@
         "description":"the vehicle support adaptive cruise control or not"
     },
     "traffic_jam_assist":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":11,
         "value_type":"boolean",
         "implicit_support":false,
@@ -248,7 +248,7 @@
         "description":"the vehicle has traffic jam assist or not"
     },
     "automatic_emergency_braking":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":7,
         "value_type":"boolean",
         "implicit_support":false,
@@ -256,7 +256,7 @@
         "description":"the vehicle support automatic emergency braking or not"
     },
     "lane_keep_assist":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":10,
         "value_type":"boolean",
         "implicit_support":false,
@@ -264,7 +264,7 @@
         "description":"the vehicle has lane keep assist or not"
     },
     "remote_parking":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":13,
         "value_type":"boolean",
         "implicit_support":true,
@@ -272,7 +272,7 @@
         "description":"the vehicle support remote parking or not"
     },
     "auto_parking":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":12,
         "value_type":"boolean",
         "implicit_support":true,
@@ -280,7 +280,7 @@
         "description":"the vehicle support auto parking or not"
     },
     "blind_spot_detection":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":9,
         "value_type":"boolean",
         "implicit_support":false,
@@ -288,7 +288,7 @@
         "description":"the vehicle has blind-spot detection or not"
     },
     "fatigue_driving_detection":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":11,
         "value_type":"boolean",
         "implicit_support":false,
@@ -296,7 +296,7 @@
         "description":"the vehicle has fatigue driving detection or not"
     },
     "engine_displacement":{
-        "candidates":["below 1.0l","1.0-1.6l","1.6-2.0l","2.0-2.5l","2.5-3.5l","3.5-6.0l","above 6.0l","none"],
+        "candidates":["below 1.0l", "1.0~1.6l", "1.6~2.0l", "2.0~2.5l", "2.5~3.5l", "3.5~6.0l", "above 6.0l", "none"],
         "priority":6,
         "value_type":"range",
         "implicit_support":false,
@@ -304,7 +304,7 @@
         "description":"the displacement of vehicle engine, for battery electric vehicle the value can be none"
     },
     "motor_power":{
-        "candidates":["below 70kw","70-120kw","120-180kw","180-250kw","250-400kw","above 400kw"],
+        "candidates":["below 70kw", "70~120kw", "120~180kw", "180~250kw", "250~400kw", "above 400kw"],
         "priority":6,
         "value_type":"range",
         "implicit_support":false,
@@ -320,7 +320,7 @@
         "description":"the alias value of the motor_power"
     },
     "battery_capacity":{
-        "candidates":["30-50kwh","50-80kwh","80-100kwh","above 100kwh","none"],
+        "candidates":["30~50kwh", "50~80kwh", "80~100kwh", "above 100kwh", "none"],
         "priority":7,
         "value_type":"range",
         "implicit_support":false,
@@ -336,7 +336,7 @@
         "description":"the alias value of battery_capacity_alias"
     },
     "fuel_tank_capacity":{
-        "candidates":["30-50l","50-70l","above 70l","none"],
+        "candidates":["30~50l", "50~70l", "above 70l", "none"],
         "priority":8,
         "value_type":"range",
         "implicit_support":false,
@@ -352,7 +352,7 @@
         "description":"the alias value of fuel_tank_capacity"
     },
     "horsepower":{
-        "candidates":["below 100 hp","100-200 hp","200-300 hp","300-400 hp","above 400 hp"],
+        "candidates":["below 100hp", "100~200hp", "200~300hp", "300~400hp", "above 400hp"],
         "priority":7,
         "value_type":"range",
         "implicit_support":false,
@@ -368,7 +368,7 @@
         "description":"the alias value of horsepower"
     },
     "torque":{
-        "candidates":["200n·m","200-300 n·m","300-400 n·m","400-500 n·m","above 500 n·m"],
+        "candidates":["below 200n·m", "200~300n·m", "300~400n·m", "400~500n·m", "above 500n·m"],
         "priority":8,
         "value_type":"range",
         "implicit_support":false,
@@ -384,7 +384,7 @@
         "description":"the alias value of torque"
     },
     "zero_to_one_hundred_km_h_acceleration_time":{
-        "candidates":["above 10s","8-10s","6-8s","4-6s","below 4s"],
+        "candidates":["above 10s", "8~10s", "6~8s", "4~6s", "below 4s"],
         "priority":9,
         "value_type":"range",
         "implicit_support":false,
@@ -400,7 +400,7 @@
         "description":"the alias value of zero_to_one_hundred_km_h_acceleration_time"
     },
     "top_speed":{
-        "candidates":["below 160km/h","160-200km/h","200-240km/h","240-300km/h","above 300km/h"],
+        "candidates":["below 150km/h", "160~200km/h", "200~240km/h", "240~300km/h", "above 300km/h"],
         "priority":10,
         "value_type":"range",
         "implicit_support":false,
@@ -416,7 +416,7 @@
         "description":"the alias value of top_speed"
     },
     "fuel_consumption":{
-        "candidates":["4-6l/100km","6-8l/100km","above 8l/100km","none"],
+        "candidates":["4~6l/100km", "6~8l/100km", "above 8l/100km", "none"],
         "priority":5,
         "value_type":"range",
         "implicit_support":false,
@@ -432,7 +432,7 @@
         "description":"the alias value of fuel_consumption"
     },
     "electric_consumption":{
-        "candidates":["10-12kwh/100km","12-14kwh/100km","above 14kwh/100km","none"],
+        "candidates":["10~12kwh/100km", "12~14kwh/100km", "above 14kwh/100km", "none"],
         "priority":6,
         "value_type":"range",
         "implicit_support":false,
@@ -448,7 +448,7 @@
         "description":"the alias value of electric_consumption"
     },
     "driving_range":{
-        "candidates":["300-400km","400-800km","above 800km"],
+        "candidates":["300~400km", "400~800km", "above 800km"],
         "priority":5,
         "value_type":"range",
         "implicit_support":false,
@@ -464,7 +464,7 @@
         "description":"the alias value of driving_range"
     },
     "drive_type":{
-        "candidates":["front-wheel drive","rear-wheel drive","all-wheel drive"],
+        "candidates":["font-wheel drive", "rear-wheel drive", "all-wheel drive"],
         "priority":8,
         "value_type":"exact",
         "implicit_support":false,
@@ -472,7 +472,7 @@
         "description":"the drive type of vehicle"
     },
     "suspension":{
-        "candidates":["suspension","non-independent"],
+        "candidates":["independent suspension", "non-independent suspension"],
         "priority":9,
         "value_type":"exact",
         "implicit_support":false,
@@ -480,7 +480,7 @@
         "description":"the suspension type of vehicle"
     },
     "passability":{
-        "candidates":["low","medium","high"],
+        "candidates":["low", "medium", "high"],
         "priority":10,
         "value_type":"fuzzy",
         "implicit_support":false,
@@ -488,7 +488,7 @@
         "description":"the passability level of the vehicle"
     },
     "seat_layout":{
-        "candidates":["2-seat","4-seat","5-seat","6-seat","7-seat"],
+        "candidates":["2-seat", "4-seat", "5-seat", "6-seat", "7-seat"],
         "priority":5,
         "value_type":"exact",
         "implicit_support":false,
@@ -496,7 +496,7 @@
         "description":"the seat layout count of the vehicle"
     },
     "city_commuting":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":7,
         "value_type":"boolean",
         "implicit_support":true,
@@ -504,7 +504,7 @@
         "description":"whether the vehicle is good at city commuting"
     },
     "highway_long_distance":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":8,
         "value_type":"boolean",
         "implicit_support":true,
@@ -512,7 +512,7 @@
         "description":"whether the vehicle is suitable for highway long-distance travel"
     },
     "off_road_capability":{
-        "candidates":["low","medium","high"],
+        "candidates":["low", "medium", "high"],
         "priority":11,
         "value_type":"fuzzy",
         "implicit_support":false,
@@ -520,7 +520,7 @@
         "description":"the off-road capability level of the vehicle"
     },
     "cargo_capability":{
-        "candidates":["yes","no"],
+        "candidates":["yes", "no"],
         "priority":8,
         "value_type":"boolean",
         "implicit_support":true,
@@ -528,7 +528,7 @@
         "description":"whether the vehicle has good cargo capability"
     },
     "cold_resistance":{
-        "candidates":["low","medium","high"],
+        "candidates":["high", "medium", "low"],
         "priority":12,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -536,7 +536,7 @@
         "description":"the cold resistance level of the vehicle"
     },
     "heat_resistance":{
-        "candidates":["low","medium","high"],
+        "candidates":["high", "medium", "low"],
         "priority":12,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -544,7 +544,7 @@
         "description":"the heat resistance level of the vehicle"
     },
     "size":{
-        "candidates":["small","medium","large"],
+        "candidates":["small", "medium", "large"],
         "priority":5,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -552,7 +552,7 @@
         "description":"the estimated size of the vehicle"
     },
     "vehicle_usability":{
-        "candidates":["low","medium","high"],
+        "candidates":["small", "medium", "large"],
         "priority":5,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -560,7 +560,7 @@
         "description":"the usability level of the vehicle"
     },
     "aesthetics":{
-        "candidates":["low","medium","high"],
+        "candidates":["low", "medium", "high"],
         "priority":5,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -568,7 +568,7 @@
         "description":"the aesthetic level of the vehicle"
     },
     "energy_consumption_level":{
-        "candidates":["low","medium","high"],
+        "candidates":["low", "medium", "high"],
         "priority":5,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -576,7 +576,7 @@
         "description":"the energy consumption level of the vehicle"
     },
     "comfort_level":{
-        "candidates":["low","medium","high"],
+        "candidates":["low", "medium", "high"],
         "priority":6,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -584,7 +584,7 @@
         "description":"the comfort level of the vehicle"
     },
     "smartness":{
-        "candidates":["low","medium","high"],
+        "candidates":["low", "medium", "high"],
         "priority":6,
         "value_type":"fuzzy",
         "implicit_support":true,
@@ -592,7 +592,7 @@
         "description":"the smartness level of the vehicle"
     },
     "family_friendliness":{
-        "candidates":["low","medium","high"],
+        "candidates":["low", "medium", "high"],
         "priority":6,
         "value_type":"fuzzy",
         "implicit_support":true,
