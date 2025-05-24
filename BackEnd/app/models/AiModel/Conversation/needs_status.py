@@ -64,13 +64,17 @@ class NeedsStatus:
             pricise_infos = info_dict.get("PriciseLabels",{})
             ambiguous_infos = info_dict.get("AmbiguousLabels",{})
             key_details = info_dict.get("KeyDetails",{})
-            filtered_info["key_details"] = key_details["key_details"]
 
             for label, value in pricise_infos.items():
-                if label in explicit_need_comments:
-                    filtered_info[label]=value
+                if label not in explicit_need_comments:
+                    continue
+                filtered_info[label]=value
             for label, value in ambiguous_infos.items():
-                    filtered_info[label]=value
+                if label not in explicit_need_comments:
+                    continue
+                filtered_info[label]=value
+
+            filtered_info["key_details"] = key_details["key_details"]
             
             filtered_results.append(filtered_info)
             
