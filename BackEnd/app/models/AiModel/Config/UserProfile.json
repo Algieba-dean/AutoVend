@@ -1,64 +1,75 @@
 {
-    "BasicInformation": {
-        "age": {
-            "description": "Required",
-            "value": "20-35"
-        },
-        "user_title": {
-            "candidates": ["Mr.", "Mrs.", "Miss.", "Ms."],
-            "description": "Required, should be the like \"Mr.\" or \"Mrs.\"",
-            "value": ""
-        },
-        "name": {
-            "description": "Optional, the name of the user",
-            "value": ""
-        },
-        "target_driver": {
-            "candidates": ["Self", "Wife", "Husband", "Parents", "Father","Mother","Son", "Daughter", "Grandparents", "Grandchildren", "Brother", "Sister", "Uncle", "Aunt", "Cousin", "Friend", "Other"],
-            "description": "Required, the person who will drive the car",
-            "value": ""
-        },
-        "expertise": {
-            "description": "Required, number from 0 to 10 to mark how deep user know cars",
-            "value": ""
-        }
+    "user_title": {
+        "candidates": [
+            "Mr.",
+            "Mrs.",
+            "Miss.",
+            "Ms."
+        ],
+        "description": "Required, should be returned like {\"user_title\": \"Mr.\" or \"Mrs.\"}",
+        "value": ""
     },
-    "AdditionalInformation": {
-        "family_size": {
-            "description": "Optional, the family size of user, should be a number",
-            "value": ""
-        },
-        "price_sensitivy": {
-            "candidates": ["High", "Medium", "Low"],
-            "description": "Optional, the price sensitivy of the user for buying a car",
-            "value": ""
-        },
-        "residence": {
-            "description": "Optional, where the user live, format should be \"country+province+city\"",
-            "value": ""
-        },
-        "parking_conditions": {
-            "candidates": ["Allocated Parking Space", "Temporary Parking Alllowed", "Charging Pile Facilites Available"],
-            "description": "Optional, the parking conditions of the user",
-            "value": ""
-        }
+    "name": {
+        "description": "Optional, the name of the user, should be returned like {\"name\": \"John\"}",
+        "value": ""
     },
-    "ConnectionInformation": {
-        "connection_id": {
-            "description": "Optional, the user id for another connection user",
-            "value": ""
-        },
-        "connection_phone_number": {
-            "description": "Optional, the phone number of the connection",
-            "value": ""
-        },
-        "connection_id_relationship": {
-            "description": "the relastionship of connection",
-            "value": ""
-        },
-        "connection_user_name": {
-            "description": "the name of the connection",
-            "value": ""
-        }
+    "target_driver": {
+        "candidates": [
+            "Self",
+            "Wife",
+            "Husband",
+            "Parents",
+            "Father",
+            "Mother",
+            "Son",
+            "Daughter",
+            "Grandparents",
+            "Grandchildren",
+            "Brother",
+            "Sister",
+            "Uncle",
+            "Aunt",
+            "Cousin",
+            "Friend",
+            "Other"
+        ],
+        "description": "Required, the person who will drive the car, should be returned like {\"target_driver\": \"Self\"}",
+        "value": ""
+    },
+    "age": {
+        "candidates": [
+            "20-35",
+            "35-50",
+            "50-65",
+            "65-80"
+        ],
+        "description": "Optional, the age of the user, should be returned like {\"age\": \"20-35\"}",
+        "value": ""
+    },
+    "family_size": {
+        "description": "Optional, the family size of user, should be a number, should be returned like {\"family_size\": \"1\"}",
+        "value": ""
+    },
+    "price_sensitivy": {
+        "candidates": [
+            "High",
+            "Medium",
+            "Low"
+        ],
+        "description": "Optional, the price sensitivy of the user for buying a car, should be returned like {\"price_sensitivy\": \"High\"}",
+        "value": ""
+    },
+    "residence": {
+        "description": "Optional, where the user live, format should be \"country+province+city\", should be returned like {\"residence\": \"China+Beijing+Beijing\"}",
+        "value": ""
+    },
+    "parking_conditions": {
+        "candidates": [
+            "Allocated Parking Space",
+            "Temporary Parking Alllowed",
+            "Charging Pile Facilites Available"
+        ],
+        "description": "Optional, the parking conditions of the user, should be returned like {\"parking_conditions\": \"Allocated Parking Space\"}",
+        "value": ""
     }
-} 
+}
