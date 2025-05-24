@@ -2,6 +2,7 @@ import os
 import json
 import concurrent.futures
 from typing import Dict, Any, List
+from copy import deepcopy
 
 from utils import get_openai_client, get_openai_model, timer_decorator
 
@@ -231,7 +232,7 @@ class AutoVend:
         if implicit_needs_info:
             self.status_component.update_implicit_needs(implicit_needs_info)
         if test_drive_info:
-            self.status_component.update_test_drive_info(test_drive_info)
+            self.status_component.update_test_drive_info(test_drive_info, is_before_reservation=True)
 
         # Common "Hi AutoVend" logic (could be further refactored if needed)
         if user_message.lower() == "Hi AutoVend".lower():

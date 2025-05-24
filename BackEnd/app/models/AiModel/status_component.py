@@ -161,7 +161,7 @@ class StatusComponent:
                     self.needs["implicit"][key] = value
         
     
-    def update_test_drive_info(self, test_drive_info):
+    def update_test_drive_info(self, test_drive_info, is_before_reservation=False):
         """Update test drive information and potentially update profile connection information
         
         If after updating:
@@ -184,9 +184,12 @@ class StatusComponent:
         - Try to extract brand from selected_car_model and update the brand field
         """
         # First update the test drive info normally
-        for key, value in test_drive_info.items():
-            if key in self.test_drive_info:
-                if value:  # Only update if value is not empty
+
+        if is_before_reservation and test_drive_info.get("selected_car_model", ""):
+            self.test_drive_info["selected_car_model"] = test_drive_info.get("selected_car_model")
+        else:
+            for key, value in test_drive_info.items():
+                if key in self.test_drive_info and value:
                     self.test_drive_info[key] = value
         
         # Try to extract brand from selected_car_model
@@ -198,7 +201,7 @@ class StatusComponent:
                 "bmw", "mercedes-benz", "peugeot", "renault", "jaguar", "land rover", 
                 "rolls-royce", "volvo", "chevrolet", "buick", "cadillac", "ford", 
                 "tesla", "toyota", "honda", "nissan", "suzuki", "mazda", "hyundai", 
-                "byd", "geely", "changan", "great wall motor", "nio", "xiaomi", "xpeng"
+                "byd", "geely", "changan", "great wall motor", "nio", "xpeng"
             ]
             
             # Convert selected_car_model to lowercase for case-insensitive matching
@@ -215,6 +218,9 @@ class StatusComponent:
                     self.test_drive_info["brand"] = brand
                     break
         
+            
+        if is_before_reservation:
+            return
         # Check conditions for updating profile connection information
         test_driver = self.test_drive_info.get("test_driver", "")
         reservation_phone = self.test_drive_info.get("reservation_phone_number", "")
