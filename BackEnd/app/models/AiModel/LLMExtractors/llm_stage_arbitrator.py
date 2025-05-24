@@ -1,6 +1,7 @@
 import openai
 import sys
 import os
+import json # Added to handle JSON operations
 # Add the parent directory (AiModel) to sys.path to allow importing utils
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import get_openai_client, clean_thinking_output, get_openai_model
@@ -9,7 +10,21 @@ class LLMStageArbitrator:
     def __init__(self, model=None):
         self.client = get_openai_client()
         self.model = model or get_openai_model()
-        self.valid_stages = ["needs_analysis", "reservation4s", "farewell"]
+        self.stages_config = self._load_stages_config()
+        self.valid_stages = list(self.stages_config.keys()) # Get valid stage names from config
+
+    def _load_stages_config(self) -> dict:
+        """Loads stage definitions from the JSON config file."""
+        config_path = os.path.join(os.path.dirname(__file__), '..', 'Config', 'StageList.json')
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            print(f"Error: StageList.json not found at {config_path}")
+            return {}
+        except json.JSONDecodeError:
+            print(f"Error: Could not decode StageList.json at {config_path}")
+            return {}
 
     def get_chat_stage(self, conversation_history: list, user_profile: dict) -> str:
         """
@@ -29,24 +44,29 @@ class LLMStageArbitrator:
            not user_profile.get("target_driver"):
             return "profile_analysis"
 
+        # Dynamically build the valid stages description for the prompt
+        stage_descriptions = "\n".join([f"- {name}: {description}" for name, description in self.stages_config.items()])
+        valid_stage_names = ", ".join(self.valid_stages)
+
         # If not profile_analysis, proceed to LLM for other stages
-        # The prompt will be refined later based on your specific stage details for other stages.
         prompt_template = """
 You are an AI assistant responsible for determining the current stage of a car purchase conversation.
 Based on the conversation history provided, identify which of the following stages the conversation is currently in.
 
 Valid Stages:
-- needs_analysis: The user is discussing their car requirements (e.g., expressing needs, asking about key details of a car, agreeing to or inquiring about requirements, seeking to understand car information). The assistant is working to understand these needs, and may also introduce car models and their details.
-- reservation4s: The user expresses a desire to book a test drive, schedule a visit to a dealership (4S store), or make a reservation related to a car.
-- farewell: The conversation is concluding, with expressions of gratitude, goodbyes, or an indication that no further assistance is immediately needed.
+{stage_descriptions}
 
 Conversation History:
 {history}
 
-Your response MUST be one of the exact stage names listed above (needs_analysis, reservation4s, farewell). Do not add any other text, explanations, or punctuation.
+Your response MUST be one of the exact stage names listed (e.g., {valid_stage_names}). Do not add any other text, explanations, or punctuation.
 Determined Stage:
         """
-        prompt = prompt_template.format(history="\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history]))
+        prompt = prompt_template.format(
+            stage_descriptions=stage_descriptions,
+            history="\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history]),
+            valid_stage_names=valid_stage_names
+        )
 
         messages = [
             {"role": "system", "content": "You are an AI assistant that helps determine the current stage of a car purchase conversation, excluding the initial profile analysis."},
@@ -58,7 +78,7 @@ Determined Stage:
             model=self.model,
             messages=messages,
             temperature=0.1,
-            max_tokens=10
+            max_tokens=15 # Increased slightly to accommodate potentially longer stage names
         )
 
         assistant_response = response.choices[0].message.content
@@ -68,8 +88,9 @@ Determined Stage:
             return assistant_response
         else:
             print(f"Warning: OpenAI returned an unexpected stage (after profile completion): {assistant_response}")
-            # Fallback to needs_analysis if LLM output is unclear after profile completion
-            return "needs_analysis" 
+            # Fallback to the first stage in config if LLM output is unclear after profile completion
+            # or a more sophisticated fallback, e.g., 'needs_analysis' if it's always present
+            return self.valid_stages[0] if self.valid_stages else "needs_analysis"
 
 if __name__ == "__main__":
     arbitrator = LLMStageArbitrator()
