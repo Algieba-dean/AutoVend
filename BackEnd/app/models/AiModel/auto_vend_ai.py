@@ -2,7 +2,6 @@ import os
 import json
 import concurrent.futures
 from typing import Dict, Any, List
-from copy import deepcopy
 
 from utils import get_openai_client, get_openai_model, timer_decorator
 
@@ -142,12 +141,6 @@ class AutoVend:
             self.status_component.update_stage(new_stage)
             # handle over to needs analysis in its stage handling
 
-    def update_expertise(self, expertise: str):
-        """
-        Update the expertise of the user
-        """
-        self.status_component.update_profile({"expertise": str(expertise)})
-
     # Dispatcher method
     @timer_decorator
     def generate_response(
@@ -159,6 +152,7 @@ class AutoVend:
         matched_car_models: List[str],
         reservation_info: Dict[str, Any],
     ):
+        self.status_component.clear_implicit_needs() # clear implicit needs, if user wants them they will become explicict needs
         if self.extractor_type == "llm":
             return self.generate_response_llm(
                 message, stage, profile, needs, matched_car_models, reservation_info
@@ -631,7 +625,7 @@ if __name__ == "__main__":
     current_needs = {
         "explicit": {
         },
-        "implicit": {"family_size": ["1", "2", "3"]},
+        "implicit": {},
     }
     current_reservation_info = {
         "test_driver": "",
@@ -660,6 +654,7 @@ if __name__ == "__main__":
         current_matched_car_models,
         current_reservation_info,
     )
+    # confirm to use autovend
     (
         initial_response,
         current_stage_info,

@@ -52,7 +52,11 @@ class StatusComponent:
     
     def is_all_basic_info_done(self):
         """Check if all basic information is done"""
-        return all(self.user_profile.get(key, "") for key in ["user_title", "name", "target_driver"])
+        name_done = self.user_profile.get("user_title","") != ""
+        user_title_done = self.user_profile.get("user_title","") !=""
+        target_driver_done = self.user_profile.get("target_driver","") !=""
+        return name_done and user_title_done and target_driver_done
+    
     def is_all_basic_needs_done(self):
         """Check if all basic needs are done"""
         prize_done = self.needs["explicit"].get("prize", "") or self.needs["explicit"].get("price_alias", "")
@@ -126,6 +130,10 @@ class StatusComponent:
             if value: # Only update if value is not empty
                 self.needs["explicit"][key] = value
 
+    
+    def clear_implicit_needs(self):
+        """Clear implicit needs"""
+        self.needs["implicit"] = dict()
     
     def update_implicit_needs(self, implicit_needs):
         """Update implicit needs, ensuring no overlap with explicit needs.
