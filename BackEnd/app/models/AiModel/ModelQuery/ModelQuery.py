@@ -196,14 +196,14 @@ class CarModelQuery:
                     if vehicle_data[query_key].lower().replace(" ","")!=query_value.lower().replace(" ",""):
                         return False
                 else:
-                    if vehicle_data[query_key].lower().replace(" ","") not in query_value.lower().replace(" ",""):
+                    if vehicle_data[query_key].lower().replace(" ","") not in query_value:
                         return False
             else:
                 #check vehicle category and brand key
                 match query_key:
                     case "vehicle_category_top" | "vehicle_category_middle":
                         if isinstance(query_value,str):
-                            if vehicle_data["vehicle_category_bottom"].lower().replace(" ","") not in self.vehicle_category_tree[query_value].replace(" ",""):
+                            if vehicle_data["vehicle_category_bottom"].lower().replace(" ","") not in self.vehicle_category_tree[query_value]:
                                 return False
                         else:
                             allowed_value_list=[]
@@ -213,7 +213,7 @@ class CarModelQuery:
                                     return False
                     case "brand_area" | "brand_country":
                         if isinstance(query_value,str):
-                            if vehicle_data["brand"].lower().replace(" ","") not in self.brand_tree[query_value].replace(" ",""):
+                            if vehicle_data["brand"].lower().replace(" ","") not in self.brand_tree[query_value]:
                                 return False
                         else:
                             allowed_value_list=[]
