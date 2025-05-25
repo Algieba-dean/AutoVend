@@ -4,7 +4,7 @@ from openai import OpenAI
 from datetime import datetime
 
 # Deepseek API配置
-api_key = "sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8"
+api_key = "sk-1a2v23fdad34513d51234"
 client = OpenAI(
     api_key=api_key,
     base_url='https://api.deepseek.com/v1'  # 设置API基础URL

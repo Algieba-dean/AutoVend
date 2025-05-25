@@ -77,7 +77,7 @@ def get_openai_client():
     # OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "ollama")
     # OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", OLLAMA_API_KEY)
     # OPENAI_URL = os.getenv("OPENAI_URL", OLLAMA_URL)
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "sk-1a2v23fdad34513d51234")
     OPENAI_URL = os.getenv("OPENAI_URL", "https://api.deepseek.com/v1")
     
     client = openai.OpenAI(

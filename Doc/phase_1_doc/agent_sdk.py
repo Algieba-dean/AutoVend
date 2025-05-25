@@ -3,7 +3,7 @@ from agents import OpenAIChatCompletionsModel,Agent,Runner,set_default_openai_cl
 from agents.model_settings import ModelSettings
 import asyncio
 
-API_KEY= "sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8"
+API_KEY= "sk-1a2v23fdad34513d51234"
 
 external_client = AsyncOpenAI(
     base_url = "https://api.deepseek.com",

@@ -16,7 +16,7 @@ import time
 from brand_list import brand_list
 
 # OpenAI API configuration
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "sk-1a2v23fdad34513d51234")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "deepseek-chat")
 OPENAI_URL = os.getenv("OPENAI_URL", "https://api.deepseek.com/v1")
 

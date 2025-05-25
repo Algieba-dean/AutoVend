@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import datetime
 
 class TestDrive:
     """Test drive reservation model for AutoVend application"""
@@ -7,7 +7,7 @@ class TestDrive:
                  reservation_time: str, reservation_location: str, reservation_phone_number : str,
                  salesman="Jennifer Li", status="Pending", notes="empty"):
         """Initialize a new test drive reservation"""
-        self.created_at = datetime.now(UTC).isoformat()
+        self.created_at = datetime.now().isoformat()
         self.updated_at = self.created_at
         self.test_drive_info = {
             "test_driver": test_driver_name,
@@ -59,5 +59,5 @@ class TestDrive:
                 self.test_drive_info[key] = value
         
         # Update timestamp
-        self.updated_at = datetime.now(UTC).isoformat()
+        self.updated_at = datetime.now().isoformat()
         return True

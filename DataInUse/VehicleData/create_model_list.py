@@ -18,7 +18,7 @@ from brand_list import brand_list
 # openai.api_key = "your_openai_api_key"  # Replace with your API key or set environment variable
 # Alternatively, set it as an environment variable:
 # export OPENAI_API_KEY="your_openai_api_key"
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY","sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY","sk-1a2v23fdad34513d51234")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL","deepseek-chat")
 OPENAI_URL = os.getenv("OPENAI_URL","https://api.deepseek.com/v1")
 
