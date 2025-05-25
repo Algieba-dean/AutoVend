@@ -47,6 +47,7 @@ class FileStorage:
         """Get user profile"""
         try:
             file_path = self._get_profile_path(phone_number)
+            print(Path(file_path).absolute())
             if not os.path.exists(file_path):
                 return None
             with open(file_path, "r", encoding="utf-8") as f:

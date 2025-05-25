@@ -62,6 +62,22 @@ class ProfileManager:
         if existing_profile:
             return None, "Phone number already exists", None
             
+        # load from connection if exists
+        connection_data = Config.storage.get_profiles_from_connection(phone_number)
+        from_user_name = connection_data.get("raw_name","")
+        from_phone_number = connection_data.get("raw_phone_number","")
+        connection_name = connection_data.get("connection_user_name","")
+        # connection_phone_number = phone_number
+        if connection_data:
+            connection_profile_data , error, validation_errors  = Config.storage.create_profile(phone_number)
+            if error:
+                return None, error, None
+            if validation_errors:
+                return None, validation_errors, None
+            connection_profile_data["name"] = connection_name
+            connection_profile_data["connection_information"]["connection_phone_number"] = from_phone_number
+            connection_profile_data["connection_information"]["connection_user_name"] = from_user_name
+            return connection_profile_data, None, None
         # Create and validate profile
         profile = UserProfile.from_dict(profile_data)
         validation_errors = profile.validate()
