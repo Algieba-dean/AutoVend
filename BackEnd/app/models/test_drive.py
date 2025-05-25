@@ -10,7 +10,7 @@ class TestDrive:
         self.created_at = datetime.now(UTC).isoformat()
         self.updated_at = self.created_at
         self.test_drive_info = {
-            "test_driver": test_driver,
+            "test_driver": test_driver_name,
             "test_driver_name":test_driver_name,
             "brand": brand,
             "reservation_date": reservation_date,
