@@ -66,6 +66,7 @@ class DialogManager:
                 "previous_stage": session_context.get("previous_stage", ""),
                 "current_stage": session_context["stage"],
             },
+            "profile": session_context["profile"],
             "needs": session_context["needs"],
             "matched_car_models": session_context["matched_car_models"],
             "reservation_info": session_context["reservation_info"],
