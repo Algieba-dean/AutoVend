@@ -1,0 +1,12 @@
+{
+  "test_drive_info": {
+    "test_driver": "self",
+    "test_driver_name": "Wang Zi",
+    "brand": "mercedes-benz",
+    "reservation_date": "2025-05-26",
+    "selected_car_model": "Mercedes-Benz GLB 250",
+    "reservation_time": "15:30",
+    "reservation_location": "Elite Auto Center",
+    "reservation_phone_number": "13888888888",
+    "salesman": "Jennifer Li",
+    "status": 

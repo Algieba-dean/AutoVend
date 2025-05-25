@@ -11,3 +11,5 @@ class AiModelMessage:
       result = self.ai_model.generate_response(message,stage,profile,needs,matched_car_models,reservation_info)
       print(result)
       return result
+    def reset(self):
+      self.ai_model.reset()

@@ -4,8 +4,8 @@ class TestDrive:
     """Test drive reservation model for AutoVend application"""
     
     def __init__(self, test_driver : str, test_driver_name: str, brand: str, reservation_date : str, selected_car_model : str, 
-                 reservation_time: str, reservation_location: str, reservation_phone_number = str,
-                 salesman: str="", status= str or "Pending", notes= str or "empty"):
+                 reservation_time: str, reservation_location: str, reservation_phone_number : str,
+                 salesman="Jennifer Li", status="Pending", notes="empty"):
         """Initialize a new test drive reservation"""
         self.created_at = datetime.now(UTC).isoformat()
         self.updated_at = self.created_at
