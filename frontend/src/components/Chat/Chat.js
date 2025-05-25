@@ -232,6 +232,13 @@ const Chat = () => {
     }
   };
 
+  const formatValue = (value) => {
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return value;
+  };
+
   // Modify the Need Analysis part in renderInfoPanels function
   const renderInfoPanels = () => {
     if (currentStage === 'reservation4s') {
@@ -373,14 +380,14 @@ const Chat = () => {
                 {/* 处理显式需求 */}
                 {needs.explicit && Object.entries(needs.explicit).map(([category, value], index) => (
                   <div key={`explicit-${index}`} className="analysis-item">
-                    {category}: {value}
+                    {category}: {formatValue(value)}
                   </div>
                 ))}
                 
                 {/* 处理隐式需求 */}
                 {needs.implicit && Object.entries(needs.implicit).map(([category, value], index) => (
                   <div key={`implicit-${index}`} className="analysis-item">
-                    {category}: {value}
+                    {category}: {formatValue(value)}
                     <span className="implicit-tag">, implicit</span>
                   </div>
                 ))}
