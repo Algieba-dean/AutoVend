@@ -322,8 +322,9 @@ class AutoVend:
             self.status_component.update_stage("farewell")
         if might_new_stage == "farewell" or self.status_component.stage["current_stage"] == "farewell":
             self.status_component.update_stage(might_new_stage)
+            farewell_message = "Thank you for your time. Have a nice day!"
             if self.status_component.is_all_basic_reservation_info_done():
-                farewell_message = f"I already contact {self.status_component.test_drive_info.get('reservation_location', '')} from {self.status_component.test_drive_info.get('store', '')} for you. He will contact you shortly. Thank you for your time. Have a nice day!"
+                farewell_message = f"I already contact {self.status_component.test_drive_info.get('reservation_location', '')} for you. They will contact you shortly. Thank you for your time. Have a nice day!"
             final_user_profile = deepcopy(self.status_component.user_profile)
             final_needs = deepcopy(self.status_component.needs)
             final_matched_car_models = deepcopy(self.status_component.matched_car_models)
