@@ -52,9 +52,9 @@ const Chat = () => {
         }]);
       }
 
-      // If there is session stage information, set it
-      if (sessionData.stage) {
-        setCurrentStage(sessionData.stage);
+      // If there is current session stage information, set it
+      if (sessionData.stage && sessionData.stage.current_stage) {
+        setCurrentStage(sessionData.stage.current_stage);
       }
     } else {
       // If there is no sessionData, display default welcome message
@@ -188,13 +188,13 @@ const Chat = () => {
         setShouldPoll(true);
       }
 
-      // Update current stage
-      if (response && response.stage) {
-        setCurrentStage(response.stage);
+      // Update stage information
+       if (response.stage && response.stage.current_stage) {
+        setCurrentStage(response.stage.current_stage);
       }
 
       // If it's reservation stage, update appointment information
-      if (response && response.stage === 'reservation_4s' && response.reservation_info) {
+      if (response && response.stage === 'reservation4s' && response.reservation_info) {
         setAppointment(response.reservation_info);
       }
 
@@ -258,6 +258,24 @@ const Chat = () => {
                       <span className="item-value">{appointment.test_driver}</span>
                     </div>
                   )}
+                  {appointment.test_driver_name && (
+                    <div className="appointment-item">
+                      <span className="item-label">Driver Name:</span>
+                      <span className="item-value">{appointment.test_driver_name}</span>
+                    </div>
+                  )}
+                  {appointment.brand && (
+                    <div className="appointment-item">
+                      <span className="item-label">Brand:</span>
+                      <span className="item-value">{appointment.brand}</span>
+                    </div>
+                  )}
+                  {appointment.selected_car_model && (
+                    <div className="appointment-item">
+                      <span className="item-label">Car Model:</span>
+                      <span className="item-value">{appointment.selected_car_model}</span>
+                    </div>
+                  )}
                   {appointment.reservation_date && (
                     <div className="appointment-item">
                       <span className="item-label">Date:</span>
@@ -280,6 +298,12 @@ const Chat = () => {
                     <div className="appointment-item">
                       <span className="item-label">Contact:</span>
                       <span className="item-value">{appointment.reservation_phone_number}</span>
+                    </div>
+                  )}
+                  {appointment.salesman && (
+                    <div className="appointment-item">
+                      <span className="item-label">Salesman:</span>
+                      <span className="item-value">{appointment.salesman}</span>
                     </div>
                   )}
                 </>

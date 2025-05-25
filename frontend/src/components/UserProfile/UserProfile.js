@@ -242,7 +242,18 @@ const UserProfile = () => {
                 <option value="Wife">Wife</option>
                 <option value="Husband">Husband</option>
                 <option value="Parents">Parents</option>
-                <option value="Children">Children</option>
+                <option value="Father">Father</option>
+                <option value="Mother">Mother</option>
+                <option value="Son">Son</option>
+                <option value="Daughter">Daughter</option>
+                <option value="Grandparents">Grandparents</option>
+                <option value="Grandchildren">Grandchildren</option>
+                <option value="Brother">Brother</option>
+                <option value="Sister">Sister</option>
+                <option value="Uncle">Uncle</option>
+                <option value="Aunt">Aunt</option>
+                <option value="Cousin">Cousin</option>
+                <option value="Friend">Friend</option>
                 <option value="Other">Other</option>
               </select>
             </div>
