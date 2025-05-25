@@ -6,6 +6,7 @@ from app.models.chat import ChatSession
 from app.models.mock_message import MockMessage
 from app.config import Config
 from app.models.ai_model_message import AiModelMessage
+from app.models.test_drive import TestDrive
 
 class DialogManager:
     """Manager class for handling dialog interactions"""
@@ -67,6 +68,31 @@ class DialogManager:
             "reservation_info": session_context["reservation_info"]
         }
     
+    def _try_to_create_test_drive(self, reservation_info: Dict[str, Any]) -> Dict[str, Any]:
+        """Try to create a test drive"""
+        
+        if reservation_info["reservation_date"] == "":
+            return None
+        if reservation_info["reservation_time"] == "":
+            return None
+        if reservation_info["reservation_location"] == "":
+            return None
+        if reservation_info["reservation_phone_number"] == "":
+            return None
+        if reservation_info["test_driver"] == "":
+            return None
+        if reservation_info["test_driver_name"] == "":
+            return None
+        if reservation_info["salesman"] == "":
+            return None
+        if reservation_info["selected_car_model"] == "":
+            return None
+        if reservation_info["brand"] == "":
+            return None
+        test_drive = TestDrive(reservation_info)
+        Config.storage.save_test_drive(test_drive.to_dict())
+        return test_drive
+    
     def _generate_response(self, session_id: str, message: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Generate response for the message"""
 
@@ -80,6 +106,7 @@ class DialogManager:
         context["needs"] = current_needs
         context["matched_car_models"] = current_matched_car_models
         context["reservation_info"] = current_reservation_info
+        self._try_to_create_test_drive(current_reservation_info)
         
         # Generate response using MockMessage
         return {
@@ -98,6 +125,7 @@ class DialogManager:
     def end_session(self, session_id: str) -> bool:
         """End a chat session"""
         self.is_initalized = False
+        self.ai_model_message.reset()
         if session_id in self.active_sessions:
             del self.active_sessions[session_id]
             return True

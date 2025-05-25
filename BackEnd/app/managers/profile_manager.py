@@ -29,18 +29,14 @@ class ProfileManager:
         from_user_name = connection_data.get("raw_name","")
         from_phone_number = connection_data.get("raw_phone_number","")
         connection_name = connection_data.get("connection_user_name","")
-        # connection_phone_number = phone_number
+        connection_profile = UserProfile(phone_number)
+        connection_profile.name = connection_name
+        connection_profile.connection_information["connection_phone_number"] = from_phone_number
+        connection_profile.connection_information["connection_user_name"] = from_user_name
         if not connection_data:
             return None, "Profile not found"
-        connection_profile_data , error, validation_errors  = Config.storage.create_profile(phone_number)
-        if error:
-            return None, error
-        if validation_errors:
-            return None, validation_errors
-        connection_profile_data["name"] = connection_name
-        connection_profile_data["connection_information"]["connection_phone_number"] = from_phone_number
-        connection_profile_data["connection_information"]["connection_user_name"] = from_user_name
-        return connection_profile_data, None
+        Config.storage.save_profile(phone_number, connection_profile.to_dict())
+        return connection_profile.to_dict(), None
     
     @staticmethod
     def create_profile(profile_data: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], Optional[str], Optional[List[str]]]:
@@ -64,22 +60,20 @@ class ProfileManager:
             
         # load from connection if exists
         connection_data = Config.storage.get_profiles_from_connection(phone_number)
-        from_user_name = connection_data.get("raw_name","")
-        from_phone_number = connection_data.get("raw_phone_number","")
-        connection_name = connection_data.get("connection_user_name","")
+        profile = UserProfile.from_dict(profile_data)
         # connection_phone_number = phone_number
         if connection_data:
-            connection_profile_data , error, validation_errors  = Config.storage.create_profile(phone_number)
-            if error:
-                return None, error, None
-            if validation_errors:
-                return None, validation_errors, None
-            connection_profile_data["name"] = connection_name
-            connection_profile_data["connection_information"]["connection_phone_number"] = from_phone_number
-            connection_profile_data["connection_information"]["connection_user_name"] = from_user_name
-            return connection_profile_data, None, None
+            from_user_name = connection_data.get("raw_name","")
+            from_phone_number = connection_data.get("raw_phone_number","")
+            connection_name = connection_data.get("connection_user_name","")
+            connected_profile = UserProfile(phone_number)
+            connected_profile.name = connection_name
+            connected_profile.phone_number = phone_number
+            connected_profile.connection_information["connection_phone_number"] = from_phone_number
+            connected_profile.connection_information["connection_user_name"] = from_user_name
+            Config.storage.save_profile(phone_number, connected_profile.to_dict())
+            return connected_profile.to_dict(), "From connection", None
         # Create and validate profile
-        profile = UserProfile.from_dict(profile_data)
         validation_errors = profile.validate()
         
         if validation_errors:

@@ -27,6 +27,8 @@ def create_profile():
         
     profile_data, error, validation_errors = ProfileManager.create_profile(data)
     if error:
+        if error == "From connection":
+            return jsonify(profile_data), 200
         if error == "Phone number already exists":
             return jsonify({"error": error}), 409
         if validation_errors:

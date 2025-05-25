@@ -19,6 +19,8 @@ class FileStorage:
         # Create necessary directories
         for directory in [self.profiles_dir, self.sessions_dir, self.messages_dir, self.test_drives_dir]:
             os.makedirs(directory, exist_ok=True)
+    def update_connection_data_dict(self):
+        self.connection_data_dict = self._get_all_connection_number_with_user_name()
     
     def _get_profile_path(self, phone_number: str) -> str:
         """Get profile file path"""
@@ -38,6 +40,7 @@ class FileStorage:
             file_path = self._get_profile_path(phone_number)
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(profile, f, ensure_ascii=False, indent=2)
+            self.update_connection_data_dict()
             return True
         except Exception as e:
             print(f"Error saving profile: {e}")
@@ -47,7 +50,7 @@ class FileStorage:
         """Get user profile"""
         try:
             file_path = self._get_profile_path(phone_number)
-            print(Path(file_path).absolute())
+            # print(Path(file_path).absolute())
             if not os.path.exists(file_path):
                 return None
             with open(file_path, "r", encoding="utf-8") as f:
@@ -92,10 +95,10 @@ class FileStorage:
                     return_dict = {
                         "connection_phone_number":connection_phone_number,
                         "connection_user_name":connection_user_name,
-                        "raw_phone_number":raw_phone_number,
-                        "raw_name":raw_name
+                        "raw_phone_number":raw_phone_number, # source phone number
+                        "raw_name":raw_name # source name
                     }
-                    connection_data_list[raw_phone_number]=return_dict
+                    connection_data_list[connection_phone_number]=return_dict
             except Exception as e:
                 # print(f"Error loading connection data from {file}: {e}")
                 return dict()

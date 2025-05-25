@@ -335,7 +335,7 @@ class AutoVend:
         final_needs = deepcopy(self.status_component.needs)
         final_matched_car_models = deepcopy(self.status_component.matched_car_models)
         final_test_drive_info = deepcopy(self.status_component.test_drive_info)
-        self.status_component.reset()
+        self.reset()
         return (
             farewell_message,
             self.status_component.stage,
