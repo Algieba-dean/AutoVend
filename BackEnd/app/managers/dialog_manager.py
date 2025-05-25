@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, Any
-from datetime import datetime, UTC
+from datetime import datetime
 import json
 from functools import lru_cache
 from app.models.chat import ChatSession
@@ -42,7 +42,7 @@ class DialogManager:
 
         # Update session context with new message
         session_context["last_message"] = message
-        session_context["last_update"] = datetime.now(UTC).isoformat()
+        session_context["last_update"] = datetime.now().isoformat()
 
         # Generate response
         response = self._generate_response(session_id, message, session_context)
@@ -58,7 +58,7 @@ class DialogManager:
                 "sender_type": "user",
                 "sender_id": session_id,
                 "content": message,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now().isoformat(),
                 "status": "delivered",
             },
             "response": response,

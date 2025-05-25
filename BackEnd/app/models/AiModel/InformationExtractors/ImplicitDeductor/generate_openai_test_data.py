@@ -662,7 +662,7 @@ def generate_user_prompt(example_data: Dict[str, Any], num_samples: int) -> str:
 def call_openai_api(api_key: str, model: str, system_prompt: str, user_prompt: str, api_url: str = None, verbose: bool = False) -> List[Dict[str, Any]]:
     """Call OpenAI API to generate the test data"""
     # Use specified API key, URL and model, or get from environment with defaults
-    OPENAI_API_KEY = api_key or os.getenv("OPENAI_API_KEY", "sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8")
+    OPENAI_API_KEY = api_key or os.getenv("OPENAI_API_KEY", "sk-1a2v23fdad34513d51234")
     OPENAI_MODEL = model or os.getenv("OPENAI_MODEL", "deepseek-chat")
     OPENAI_URL = api_url or os.getenv("OPENAI_URL", "https://api.deepseek.com/v1")
     

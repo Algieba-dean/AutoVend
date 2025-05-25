@@ -7,7 +7,7 @@ output_dir = Path(__file__).parent
 output_dir.mkdir(exist_ok=True)
 
 # 设置Deepseek API密钥
-api_key = "sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8"
+api_key = "sk-1a2v23fdad34513d51234"
 
 openai.api_key = api_key
 

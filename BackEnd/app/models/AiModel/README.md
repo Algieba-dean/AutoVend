@@ -50,7 +50,7 @@ The system guides the conversation through different stages:
    export OPENAI_MODEL=gpt-4o  # optional, defaults to deepseek-chat
    
    # For DeepSeek (default)
-   export OPENAI_API_KEY=your_deepseek_api_key_here  # default: sk-40f9ea6f41bd4cbbae8a9d4adb07fbf8
+   export OPENAI_API_KEY=your_deepseek_api_key_here  
    export OPENAI_MODEL=deepseek-chat  # optional, defaults to deepseek-chat
    export OPENAI_URL=https://api.deepseek.com/v1  # optional, defaults to https://api.deepseek.com/v1
    ```

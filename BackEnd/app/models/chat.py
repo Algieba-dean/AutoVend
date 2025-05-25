@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, UTC
+from datetime import datetime
 
 class ChatSession:
     """Chat session model for AutoVend application"""
@@ -8,7 +8,7 @@ class ChatSession:
         """Initialize a new chat session"""
         self.session_id = str(uuid.uuid4())
         self.phone_number = phone_number
-        self.created_at = datetime.now(UTC).isoformat()
+        self.created_at = datetime.now().isoformat()
         self.ended_at = None
         self.status = "active"
         self.profile = profile or {}
@@ -65,7 +65,7 @@ class ChatSession:
             return False
             
         self.status = "closed"
-        self.ended_at = datetime.now(UTC).isoformat()
+        self.ended_at = datetime.now().isoformat()
         self.stage["previous_stage"] = self.stage["current_stage"]
         self.stage["current_stage"] = "farewell"
         return True
@@ -81,7 +81,7 @@ class ChatMessage:
         self.sender_type = sender_type  # "user" or "system"
         self.sender_id = sender_id or (str(uuid.uuid4()) if sender_type == "user" else "AutoVend")
         self.content = content
-        self.timestamp = datetime.now(UTC).isoformat()
+        self.timestamp = datetime.now().isoformat()
         self.status = "delivered"
     
     def to_dict(self):
