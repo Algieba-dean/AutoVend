@@ -251,7 +251,7 @@ class AutoVend:
                 "profile_analysis",
             )
             self.status_component.update_stage("profile_analysis")
-            autovend_response = f"{normal_welcome_message}\\n{begin_profile_message}"
+            autovend_response = f"{normal_welcome_message}.{begin_profile_message}"
             return (
                 autovend_response,
                 self.status_component.stage,
@@ -314,35 +314,37 @@ class AutoVend:
                 self.status_component.matched_car_models,
                 self.status_component.test_drive_info,
             )
-        if might_new_stage == "reservation4s":
+        if might_new_stage == "reservation4s" or self.status_component.stage["current_stage"] == "reservation4s":
             self.status_component.update_stage(might_new_stage)
             self.status_component.update_test_drive_info(reservation_info)
             self.status_component.update_matched_car_models(matched_car_models)
         if self.status_component.stage["current_stage"] == "reservation4s" and self.status_component.is_all_basic_reservation_info_done():
             self.status_component.update_stage("farewell")
         if might_new_stage == "farewell" or self.status_component.stage["current_stage"] == "farewell":
-            self.status_component.update_stage(might_new_stage)
-            farewell_message = "Thank you for your time. Have a nice day!"
-            if self.status_component.is_all_basic_reservation_info_done():
-                farewell_message = f"I already contact {self.status_component.test_drive_info.get('reservation_location', '')} for you. They will contact you shortly. Thank you for your time. Have a nice day!"
-            final_user_profile = deepcopy(self.status_component.user_profile)
-            final_needs = deepcopy(self.status_component.needs)
-            final_matched_car_models = deepcopy(self.status_component.matched_car_models)
-            final_test_drive_info = deepcopy(self.status_component.test_drive_info)
-            self.status_component.reset()
-            return (
-                farewell_message,
-                self.status_component.stage,
-                final_user_profile,
-                final_needs,
-                final_matched_car_models,
-                final_test_drive_info,
-            )
-
-            # More general update if needed, e.g. if might_new_stage != self.status_component.stage["current_stage"]:
+            return self.handle_farewell()
 
         # Common stage processing logic (shared with traditional, but called with LLM context)
         return self._handle_common_stage_logic(user_message)
+
+    def handle_farewell(self):
+        self.status_component.update_stage("farewell")
+        farewell_message = "Thank you for your time. Have a nice day!"
+        if self.status_component.is_all_basic_reservation_info_done():
+            farewell_message = f"I already contact {self.status_component.test_drive_info.get('reservation_location', '')} for you. They will contact you shortly. Thank you for your time. Have a nice day!"
+        final_user_profile = deepcopy(self.status_component.user_profile)
+        final_needs = deepcopy(self.status_component.needs)
+        final_matched_car_models = deepcopy(self.status_component.matched_car_models)
+        final_test_drive_info = deepcopy(self.status_component.test_drive_info)
+        self.status_component.reset()
+        return (
+            farewell_message,
+            self.status_component.stage,
+            final_user_profile,
+            final_needs,
+            final_matched_car_models,
+            final_test_drive_info,
+        )
+        
 
     # Method for Traditional extractors
     def generate_response_traditional(
