@@ -2,6 +2,7 @@ import os
 import json
 import concurrent.futures
 from typing import Dict, Any, List
+from copy import deepcopy
 
 from utils import get_openai_client, get_openai_model, timer_decorator
 
@@ -317,16 +318,24 @@ class AutoVend:
             self.status_component.update_stage(might_new_stage)
             self.status_component.update_test_drive_info(reservation_info)
             self.status_component.update_matched_car_models(matched_car_models)
-        if might_new_stage == "farewell":
+        if self.status_component.stage["current_stage"] == "reservation4s" and self.status_component.is_all_basic_reservation_info_done():
+            self.status_component.update_stage("farewell")
+        if might_new_stage == "farewell" or self.status_component.stage["current_stage"] == "farewell":
             self.status_component.update_stage(might_new_stage)
-            farewell_message = "Thank you for your time. Have a nice day!"
+            if self.status_component.is_all_basic_reservation_info_done():
+                farewell_message = f"I already contact {self.status_component.test_drive_info.get('reservation_location', '')} from {self.status_component.test_drive_info.get('store', '')} for you. He will contact you shortly. Thank you for your time. Have a nice day!"
+            final_user_profile = deepcopy(self.status_component.user_profile)
+            final_needs = deepcopy(self.status_component.needs)
+            final_matched_car_models = deepcopy(self.status_component.matched_car_models)
+            final_test_drive_info = deepcopy(self.status_component.test_drive_info)
+            self.status_component.reset()
             return (
                 farewell_message,
                 self.status_component.stage,
-                self.status_component.user_profile,
-                self.status_component.needs,
-                self.status_component.matched_car_models,
-                self.status_component.test_drive_info,
+                final_user_profile,
+                final_needs,
+                final_matched_car_models,
+                final_test_drive_info,
             )
 
             # More general update if needed, e.g. if might_new_stage != self.status_component.stage["current_stage"]:

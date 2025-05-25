@@ -106,6 +106,7 @@ class PromptLoader:
         
             EXAMPLES:\n
             - For user says "can you give me some recommandation?",and [matched_car_models] is not {{}}, you can recommand the car models from [matched_car_models] to user.\n
+            - For user says "can you give me some recommandation?",and [matched_car_models] is {{}}, you can tell user that no matched car models, maybe change some needs from [explicit_needs]
             - For user says like "Can you introduce more details for **Model A**" and [matched_car_models] looks like {{["Model A","Model B","Model C"]}}, you should introduce the information from [car_model_informations]\n
             - For [matched_car_models] looks like{{["Model A","Model B","Model C"]}}, and user says like "I like Model A" or "I'd like pick Model A", you should congratulate them warmly and smoothly transition the conversation towards discussing test drive arrangements, like "congrats! nice choice, should we have a test drive for Model A?"\n
 
