@@ -1,12 +1,12 @@
 {
   "phone_number": "13888888888",
-  "age": "60+",
-  "user_title": "Mr. Wang",
+  "age": "35-50",
+  "user_title": "Mr.",
   "name": "Wang Zi",
-  "target_driver": "Family",
+  "target_driver": "Self",
   "expertise": "2",
   "additional_information": {
-    "family_size": "1",
+    "family_size": "5",
     "price_sensitivity": "",
     "residence": "",
     "parking_conditions": ""
@@ -14,6 +14,6 @@
   "connection_information": {
     "connection_phone_number": "14555758496",
     "connection_id_relationship": "daughter",
-    "connection_user_name": "Ms. Wang"
+    "connection_user_name": "Wang Kong Kong"
   }
 }
