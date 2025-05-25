@@ -235,7 +235,7 @@ class AutoVend:
             self.status_component.update_test_drive_info(test_drive_info, is_before_reservation=True)
 
         # Common "Hi AutoVend" logic (could be further refactored if needed)
-        if user_message.lower() == "Hi AutoVend".lower():
+        if user_message.lower().replace(" ","") == "HiAutoVend".lower():
             self.status_component.update_stage("welcome")
             normal_welcome_message = self.conversation_module.generate_welcome_message(
                 self.status_component.user_profile

@@ -65,6 +65,7 @@ class FileStorage:
             if not phone_number:
                 return None
 
+            self.update_connection_data_dict()
             if phone_number in self.connection_data_dict:
                 return self.connection_data_dict[phone_number]
             else:
