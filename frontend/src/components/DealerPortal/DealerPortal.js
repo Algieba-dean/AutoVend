@@ -120,7 +120,7 @@ const DealerPortal = () => {
 
   // 过滤用户列表的函数
   const filteredUsers = users.filter(user => {
-    const matchBrand = !selectedBrand || user.carBrand === selectedBrand;
+    const matchBrand = !selectedBrand || user.carBrand.toLowerCase() === selectedBrand.toLowerCase();
     const matchDate = !selectedDate || user.date === selectedDate;
     const matchStatus = !selectedStatus || user.status === selectedStatus;
     const matchSearch = !searchTerm || 
