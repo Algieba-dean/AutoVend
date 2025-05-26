@@ -69,7 +69,8 @@ class ExpertiseEvaluator:
             ],
             response_format={"type": "json_object"},
             temperature=0.1,
-            max_tokens=50
+            max_tokens=50,
+            seed=213,
         )
         
         content = response.choices[0].message.content

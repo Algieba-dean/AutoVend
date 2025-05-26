@@ -57,7 +57,8 @@ class ImplicitNeedsInferrer:
                 {"role": "user", "content": user_message}
             ],
             response_format={"type": "json_object"},
-            temperature=0.1
+            temperature=0.1,
+            seed=213
         )
         # Parse and return the inferred needs
         try:

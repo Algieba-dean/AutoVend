@@ -88,6 +88,7 @@ class ConversationModule:
             model=self.model,
             messages=messages,
             temperature=0.7,  # Add temperature for more consistent responses
+            seed=213,
             max_tokens=500# Limit response length
         )
         
@@ -400,6 +401,7 @@ class ConversationModule:
                 model=self.model,
                 messages=messages,
                 temperature=0.7,
+                seed=213,
                 max_tokens=1000 
             )
             assistant_response = llm_response.choices[0].message.content

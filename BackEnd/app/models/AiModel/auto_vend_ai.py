@@ -3,6 +3,7 @@ import json
 import concurrent.futures
 from typing import Dict, Any, List
 from copy import deepcopy
+import random
 
 from utils import get_openai_client, get_openai_model, timer_decorator
 
@@ -48,6 +49,7 @@ class AutoVend:
             model (str, optional): OpenAI model to use. Defaults to environment variable.
             extractor_type (str, optional): Type of extractors to use ("llm" or "traditional"). Defaults to "traditional".
         """
+        random.seed(213)
         self.extractor_type = extractor_type
         self.model = model or get_openai_model()
         self.api_key = api_key  # Store api_key for LLM extractors

@@ -79,7 +79,8 @@ Determined Stage:
             model=self.model,
             messages=messages,
             temperature=0.1,
-            max_tokens=15 # Increased slightly to accommodate potentially longer stage names
+            max_tokens=15, # Increased slightly to accommodate potentially longer stage names
+            seed=213
         )
 
         assistant_response = response.choices[0].message.content
