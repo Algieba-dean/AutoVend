@@ -249,7 +249,9 @@ const Chat = () => {
         appointment.reservation_time || 
         appointment.reservation_location || 
         appointment.reservation_phone_number || 
-        appointment.salesman
+        appointment.salesman ||
+        appointment.brand ||
+        appointment.selected_car_model
       );
       
       return (

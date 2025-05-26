@@ -64,8 +64,24 @@ const UserProfile = () => {
       if (error.response && error.response.status === 409) {
         if (userType === 'custom') {
           try {
-            const existingProfile = await profileService.updateProfile(profile.phone_number, profile);
-            setProfile(existingProfile);
+            // 检查当前profile是否只有手机号，其他字段为空
+            const onlyHasPhoneNumber = !profile.user_title && !profile.name && 
+                                      !profile.target_driver && !profile.expertise && profile.phone_number;
+            
+            if (onlyHasPhoneNumber) {
+              // 如果只有手机号，先获取现有用户的完整资料
+              const existingProfile = await profileService.getUserProfile(profile.phone_number);
+              
+              if (existingProfile) {
+                // 使用现有用户资料更新状态
+                setProfile(existingProfile);
+                return true;
+              }
+            }
+            
+            // 如果不只有手机号或获取现有资料失败，则尝试更新用户资料
+            const updatedProfile = await profileService.updateProfile(profile.phone_number, profile);
+            setProfile(updatedProfile);
             return true;
           } catch (fetchError) {
             console.error('Failed to fetch existing profile:', fetchError);
@@ -170,7 +186,7 @@ const UserProfile = () => {
         return process.env.PUBLIC_URL + '/images/video-chat-default.png';
     }
   };
-
+  
   const renderCustomProfileContent = () => {
     return (
       <>
@@ -186,12 +202,17 @@ const UserProfile = () => {
                 type="tel"
                 placeholder="Enter the phone number"
                 value={profile.phone_number}
-                onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.trim() !== '') {
+                    setProfile({ ...profile, phone_number: value });
+                  }
+                }}
                 className="custom-input"
               />
             </div>
           </div>
-
+  
           <div className="info-item custom-item">
             <div className="input-group">
               <span className="input-label">Title:</span>
@@ -199,10 +220,12 @@ const UserProfile = () => {
                 value={profile.user_title}
                 onChange={(e) => {
                   const title = e.target.value;
-                  setProfile(prevProfile => ({
-                    ...prevProfile,
-                    user_title: title
-                  }));
+                  if (title !== '') {
+                    setProfile(prevProfile => ({
+                      ...prevProfile,
+                      user_title: title
+                    }));
+                  }
                 }}
                 className="custom-input"
               >
@@ -218,23 +241,30 @@ const UserProfile = () => {
                 value={profile.name}
                 onChange={(e) => {
                   const name = e.target.value;
-                  setProfile(prevProfile => ({
-                    ...prevProfile,
-                    name: name
-                  }));
+                  if (name.trim() !== '') {
+                    setProfile(prevProfile => ({
+                      ...prevProfile,
+                      name: name
+                    }));
+                  }
                 }}
                 className="custom-input"
                 style={{ marginLeft: '10px' }}
               />
             </div>
           </div>
-
+  
           <div className="info-item custom-item">
             <div className="input-group">
               <span className="input-label">Target driver:</span>
               <select
                 value={profile.target_driver}
-                onChange={(e) => setProfile({ ...profile, target_driver: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value !== '') {
+                    setProfile({ ...profile, target_driver: value });
+                  }
+                }}
                 className="custom-input"
               >
                 <option value="">Select target driver</option>
@@ -258,13 +288,18 @@ const UserProfile = () => {
               </select>
             </div>
           </div>
-
+  
           <div className="info-item custom-item">
             <div className="input-group">
               <span className="input-label">Expertise:</span>
               <select
                 value={profile.expertise}
-                onChange={(e) => setProfile({ ...profile, expertise: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value !== '') {
+                    setProfile({ ...profile, expertise: value });
+                  }
+                }}
                 className="custom-input"
               >
                 <option value="">Select the expertise (0-10)</option>
@@ -282,93 +317,6 @@ const UserProfile = () => {
               </select>
             </div>
           </div>
-
-          {/* <div className="section-header">
-            <h3>Additional Information(Optional)</h3>
-          </div>
-
-          <div className="info-item custom-item">
-            <div className="input-group">
-              <span className="input-label">Family Size:</span>
-              <input
-                type="text"
-                placeholder="e.g. 3"
-                value={profile.additional_information.family_size}
-                onChange={(e) => setProfile({
-                  ...profile,
-                  additional_information: {
-                    ...profile.additional_information,
-                    family_size: e.target.value
-                  }
-                })}
-                className="custom-input"
-              />
-            </div>
-          </div>
-
-          <div className="info-item custom-item">
-            <div className="input-group">
-              <span className="input-label">Price Sensitivity:</span>
-              <select
-                value={profile.additional_information.price_sensitivity}
-                onChange={(e) => setProfile({
-                  ...profile,
-                  additional_information: {
-                    ...profile.additional_information,
-                    price_sensitivity: e.target.value
-                  }
-                })}
-                className="custom-input"
-              >
-                <option value="">Select price sensitivity</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="info-item custom-item">
-            <div className="input-group">
-              <span className="input-label">Residence:</span>
-              <input
-                type="text"
-                placeholder="e.g. China+Beijing+Haidian"
-                value={profile.additional_information.residence}
-                onChange={(e) => setProfile({
-                  ...profile,
-                  additional_information: {
-                    ...profile.additional_information,
-                    residence: e.target.value
-                  }
-                })}
-                className="custom-input"
-              />
-            </div>
-          </div>
-
-          <div className="info-item custom-item">
-            <div className="input-group">
-              <span className="input-label">Parking Conditions:</span>
-              <select
-                value={profile.additional_information.parking_conditions}
-                onChange={(e) => setProfile({
-                  ...profile,
-                  additional_information: {
-                    ...profile.additional_information,
-                    parking_conditions: e.target.value
-                  }
-                })}
-                className="custom-input"
-              >
-                <option value="">Select parking conditions</option>
-                <option value="Allocated Parking Space">Allocated Parking Space</option>
-                <option value="Street Parking">Street Parking</option>
-                <option value="Public Parking Lot">Public Parking Lot</option>
-                <option value="No Parking">No Parking</option>
-              </select>
-            </div>
-          </div> */}
         </div>
       </>
     );
