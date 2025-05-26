@@ -195,6 +195,7 @@ class StatusComponent:
             for key, value in test_drive_info.items():
                 if key in self.test_drive_info and value:
                     self.test_drive_info[key] = value
+            
         
         # Try to extract brand from selected_car_model
         selected_car_model = self.test_drive_info.get("selected_car_model", "")
@@ -238,6 +239,10 @@ class StatusComponent:
             self.user_profile["connection_information"]["connection_id_relationship"] = test_driver
             self.user_profile["connection_information"]["connection_phone_number"] = reservation_phone
             self.user_profile["connection_information"]["connection_user_name"] = self.test_drive_info.get("test_driver_name", "")
+        # if it's a known connected test driver, update the test drive info with the profile information
+        elif test_driver and self.user_profile["connection_information"]["connection_id_relationship"].lower().replace(" ", "") == test_driver.lower().replace(" ", ""): 
+            self.test_drive_info["reservation_phone_number"] = self.user_profile["connection_information"]["connection_phone_number"]
+            self.test_drive_info["test_driver_name"] = self.user_profile["connection_information"]["connection_user_name"]
     
     def update_matched_car_models(self, car_models: list[str]):
         """Update matched car models, up to 3, based on brand diversity rules."""
