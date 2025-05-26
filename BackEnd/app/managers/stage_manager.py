@@ -1,6 +1,6 @@
 from typing import Dict, Any, Optional
 from enum import Enum
-from datetime import datetime, UTC
+from datetime import datetime
 
 class Stage(Enum):
     """Enumeration of possible conversation stages"""
@@ -53,7 +53,7 @@ class StageManager:
         self.stage_history.append({
             "from_stage": self.current_stage.value,
             "to_stage": new_stage.value,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "data": data
         })
         

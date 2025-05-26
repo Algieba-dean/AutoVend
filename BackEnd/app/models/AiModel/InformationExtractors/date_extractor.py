@@ -65,6 +65,7 @@ class DateExtractor:
         # Get current date as reference
         current_date_str = self.get_current_date()
         current_date = datetime.strptime(current_date_str, "%Y-%m-%d")
+        # current_date = datetime.strptime(current_date_str, "%Y-%m-%d")+timedelta(days=1)
         
         extracted_dates = []
         
@@ -297,7 +298,18 @@ if __name__ == "__main__":
         "Let's discuss this on Wednesday"
     ]
     
-    for text in test_texts:
+    appointment_dates = [
+            "I like tomorrow", 
+            "I like this Friday", 
+            "I like next Sunday",
+            "I like June 5th",
+            "I like June 10th", 
+            "I like August 22nd",
+            "I like the 30th",
+            "I like June 1st", 
+            "I like this Saturday"
+        ]
+    for text in appointment_dates:
         dates = extractor.extract_dates(text)
         print(f"Input: {text}")
         print(f"Extracted dates: {[extractor.format_date(d) for d in dates]}")

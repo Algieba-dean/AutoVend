@@ -9,37 +9,24 @@ class MockedInformation:
         
         # Mocked salesman names
         self.salesman_names = [
-            "Alex Johnson", "Sarah Chen", "Michael Wang", "Lisa Zhang", 
-            "David Liu", "Emma Wu", "Robert Lee", "Jennifer Li",
-            "Thomas Yang", "Jessica Zhao", "Daniel Huang", "Michelle Lin",
-            "Kevin Sun", "Rachel Gao", "Brian Xu", "Sophia Tang"
+            "Emma Wu", "Robert Lee", "Jennifer Li",
         ]
         
         # Mocked 4S stores
         self.stores = [
             "Elite Auto Center", "Premium Motors", "Golden Star Automotive",
-            "First Class Auto Mall", "Luxury Vehicle Emporium", "Superior Cars",
-            "Diamond Auto Plaza", "Royal Motors", "Prestige Auto Gallery",
-            "Crown Automobile Center", "Star Auto Experience", "Pinnacle Motors"
         ]
         
         # Mocked appointment dates with diverse expressions
         self.appointment_dates = [
             "tomorrow", 
-            "the day after tomorrow",
-            "next Monday", 
-            "next Wednesday",
             "this Friday", 
             "next Sunday",
-            "May 15th", 
             "June 5th",
-            "July 10th", 
+            "June 10th", 
             "August 22nd",
-            "the 25th", 
             "the 30th",
             "June 1st", 
-            "May 20th",
-            "next Tuesday", 
             "this Saturday"
         ]
         self.mocked_stores = self.get_random_stores(count=3)
