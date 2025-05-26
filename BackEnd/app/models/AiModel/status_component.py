@@ -245,12 +245,12 @@ class StatusComponent:
             self.test_drive_info["test_driver_name"] = self.user_profile["connection_information"]["connection_user_name"]
     
     def update_matched_car_models(self, car_models: list[str]):
-        """Update matched car models, up to 3, based on brand diversity rules."""
+        """Update matched car models, up to 5, based on brand diversity rules."""
         if not car_models:
             self.matched_car_models = []
             return
 
-        if len(car_models) <= 3:
+        if len(car_models) <= 5:
             self.matched_car_models = car_models[:]
             return
 
@@ -267,21 +267,21 @@ class StatusComponent:
         num_unique_brands = len(ordered_unique_brands)
         selected_models = []
 
-        if num_unique_brands <= 3:
+        if num_unique_brands <= 5:
             # If 3 or fewer unique brands, take all models from these brands in order of brand appearance,
             # until 3 models are selected or all models from these brands are taken.
             for brand in ordered_unique_brands:
-                if len(selected_models) >= 3:
+                if len(selected_models) >= 5:
                     break
                 models_from_this_brand = brand_to_models_map[brand]
                 for model in models_from_this_brand:
-                    if len(selected_models) >= 3:
+                    if len(selected_models) >= 5:
                         break
                     if model not in selected_models: # Should generally be true if iterating correctly
                         selected_models.append(model)
         else: # num_unique_brands > 3
             # If more than 3 unique brands, pick one model from each of the first 3 unique brands.
-            for i in range(min(3, num_unique_brands)): # Iterate up to the first 3 unique brands
+            for i in range(min(5, num_unique_brands)): # Iterate up to the first 3 unique brands
                 brand = ordered_unique_brands[i]
                 if brand_to_models_map[brand]: # Check if brand has models
                     # Add the first model listed under this brand that hasn't been accidentally selected
@@ -289,10 +289,10 @@ class StatusComponent:
                     first_model_of_brand = brand_to_models_map[brand][0]
                     if first_model_of_brand not in selected_models: # Precaution
                          selected_models.append(first_model_of_brand)
-                    if len(selected_models) >=3: # Should fill up to 3
+                    if len(selected_models) >=5: # Should fill up to 3
                         break 
         
-        self.matched_car_models = selected_models[:3] # Ensure strictly max 3, though logic above aims for it.
+        self.matched_car_models = selected_models[:5] # Ensure strictly max 3, though logic above aims for it.
 
     def update_matched_car_model_infos(self, car_model_infos: list[dict]):
         """Update `self.matched_car_model_infos` to include only those info objects
