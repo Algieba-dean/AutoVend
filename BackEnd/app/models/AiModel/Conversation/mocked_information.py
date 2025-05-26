@@ -29,9 +29,12 @@ class MockedInformation:
             "June 1st", 
             "this Saturday"
         ]
-        self.mocked_stores = self.get_random_stores(count=3)
-        self.mocked_dates = self.get_random_appointment_dates(count=3)
-        self.salesman_names = self.get_random_salesmen(count=3)
+        # self.mocked_stores = self.get_random_stores(count=3)
+        # self.mocked_dates = self.get_random_appointment_dates(count=3)
+        # self.salesman_names = self.get_random_salesmen(count=3)
+        self.mocked_stores = self.stores[:3]
+        self.mocked_dates = self.appointment_dates[:3]
+        self.salesman_names = self.salesman_names[:3]
 
     def get_random_salesmen(self, count=1):
         """
