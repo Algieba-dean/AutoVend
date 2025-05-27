@@ -9,11 +9,11 @@ class FileStorage:
     
     def __init__(self, storage_dir: str = "storage"):
         """Initialize file storage with storage directory"""
-        self.storage_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.joinpath(storage_dir)
-        self.profiles_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath(storage_dir,"profiles")
-        self.sessions_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath(storage_dir,"sessions")
-        self.messages_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath(storage_dir,"messages")
-        self.test_drives_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath(storage_dir,"test_drives")
+        self.storage_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath(storage_dir)
+        self.profiles_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath("storage","profiles")
+        self.sessions_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath("storage","sessions")
+        self.messages_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath("storage","messages")
+        self.test_drives_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent.joinpath("storage","test_drives")
         self.connection_data_dict = self._get_all_connection_number_with_user_name()
         
         # Create necessary directories
