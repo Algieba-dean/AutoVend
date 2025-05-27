@@ -500,6 +500,7 @@ const Chat = () => {
                 if (window.confirm('Are you sure you want to end the current conversation? This conversation will be recorded')) {
                   try {
                     if (sessionId) {
+                      await profileService.updateProfile(userProfile.phone_number, userProfile);
                       await chatService.endSession(sessionId);
                       console.log('Session terminated');
                     }
