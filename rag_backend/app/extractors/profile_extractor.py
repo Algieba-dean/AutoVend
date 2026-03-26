@@ -1,19 +1,13 @@
 """
 Extract user profile information from conversation text using LLM.
-
-Uses LlamaIndex structured output with Pydantic models to reliably
-extract profile fields from natural language conversation.
 """
 
-import json
-import logging
 from typing import Optional
 
 from llama_index.core.llms import LLM
 
+from app.extractors.base import extract_with_llm
 from app.models.schemas import UserProfile
-
-logger = logging.getLogger(__name__)
 
 PROFILE_EXTRACTION_PROMPT = """You are an information extraction assistant for an automotive sales system.
 Given the conversation history below, extract any user profile information mentioned.
@@ -66,27 +60,4 @@ def extract_profile(
         conversation=conversation,
     )
 
-    try:
-        response = llm.complete(prompt)
-        response_text = response.text.strip()
-
-        # Try to parse JSON from the response
-        # Handle potential markdown code blocks
-        if "```json" in response_text:
-            response_text = response_text.split("```json")[1].split("```")[0].strip()
-        elif "```" in response_text:
-            response_text = response_text.split("```")[1].split("```")[0].strip()
-
-        extracted = json.loads(response_text)
-
-        # Merge: keep existing non-empty values, update with new non-empty values
-        merged = current_profile.model_dump()
-        for key, value in extracted.items():
-            if key in merged and value and str(value).strip():
-                merged[key] = str(value).strip()
-
-        return UserProfile(**merged)
-
-    except Exception as e:
-        logger.warning(f"Profile extraction failed: {e}")
-        return current_profile
+    return extract_with_llm(llm, prompt, current_profile)

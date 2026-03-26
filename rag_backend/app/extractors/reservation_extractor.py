@@ -2,15 +2,12 @@
 Extract test drive reservation information from conversation text.
 """
 
-import json
-import logging
 from typing import Optional
 
 from llama_index.core.llms import LLM
 
+from app.extractors.base import extract_with_llm
 from app.models.schemas import ReservationInfo
-
-logger = logging.getLogger(__name__)
 
 RESERVATION_EXTRACTION_PROMPT = """You are a reservation extraction assistant for an automotive sales system.
 Given the conversation history, extract any test drive reservation details the user has mentioned.
@@ -59,24 +56,4 @@ def extract_reservation(
         conversation=conversation,
     )
 
-    try:
-        response = llm.complete(prompt)
-        response_text = response.text.strip()
-
-        if "```json" in response_text:
-            response_text = response_text.split("```json")[1].split("```")[0].strip()
-        elif "```" in response_text:
-            response_text = response_text.split("```")[1].split("```")[0].strip()
-
-        extracted = json.loads(response_text)
-
-        merged = current_reservation.model_dump()
-        for key, value in extracted.items():
-            if key in merged and value and str(value).strip():
-                merged[key] = str(value).strip()
-
-        return ReservationInfo(**merged)
-
-    except Exception as e:
-        logger.warning(f"Reservation extraction failed: {e}")
-        return current_reservation
+    return extract_with_llm(llm, prompt, current_reservation)

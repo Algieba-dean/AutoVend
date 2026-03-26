@@ -1,19 +1,13 @@
 """
 Extract explicit vehicle needs from conversation text using LLM.
-
-Parses user statements about desired vehicle characteristics into
-structured ExplicitNeeds fields.
 """
 
-import json
-import logging
 from typing import Optional
 
 from llama_index.core.llms import LLM
 
+from app.extractors.base import extract_with_llm
 from app.models.schemas import ExplicitNeeds
-
-logger = logging.getLogger(__name__)
 
 NEEDS_EXTRACTION_PROMPT = """You are a vehicle needs extraction assistant for an automotive sales system.
 Given the conversation history below, extract any explicit vehicle requirements the user has mentioned.
@@ -69,24 +63,4 @@ def extract_explicit_needs(
         conversation=conversation,
     )
 
-    try:
-        response = llm.complete(prompt)
-        response_text = response.text.strip()
-
-        if "```json" in response_text:
-            response_text = response_text.split("```json")[1].split("```")[0].strip()
-        elif "```" in response_text:
-            response_text = response_text.split("```")[1].split("```")[0].strip()
-
-        extracted = json.loads(response_text)
-
-        merged = current_needs.model_dump()
-        for key, value in extracted.items():
-            if key in merged and value and str(value).strip():
-                merged[key] = str(value).strip()
-
-        return ExplicitNeeds(**merged)
-
-    except Exception as e:
-        logger.warning(f"Needs extraction failed: {e}")
-        return current_needs
+    return extract_with_llm(llm, prompt, current_needs)
