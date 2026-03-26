@@ -14,11 +14,11 @@ LlamaIndex-based intelligent automotive sales assistant with RAG (Retrieval-Augm
 
 ### 1. Install Dependencies
 
+Requires [uv](https://docs.astral.sh/uv/) for project management.
+
 ```bash
 cd rag_backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+uv sync --extra dev
 ```
 
 ### 2. Configure Environment
@@ -63,7 +63,8 @@ rag_backend/
 ├── scripts/                 # Utility scripts
 ├── tests/                   # Test suite
 ├── .env.example
-├── requirements.txt
+├── pyproject.toml
+├── uv.lock
 └── README.md
 ```
 
@@ -71,30 +72,33 @@ rag_backend/
 
 ```bash
 # Run all tests
-pytest
+uv run pytest
 
 # Run with coverage
-pytest --cov=app --cov-report=html
+uv run pytest --cov=app --cov-report=html
 
 # Run specific test module
-pytest tests/test_toml_parser.py -v
+uv run pytest tests/test_toml_parser.py -v
 ```
 
 ## API Endpoints
 
 ### Chat
+
 - `POST /api/chat/session` — Start new chat session
 - `POST /api/chat/message` — Send message
 - `GET /api/chat/session/{id}/messages` — Get message history
 - `PUT /api/chat/session/{id}/end` — End session
 
 ### Profile
+
 - `GET /api/profile/default` — Get default profile
 - `GET /api/profile/{phone}` — Get user profile
 - `POST /api/profile` — Create profile
 - `PUT /api/profile/{phone}` — Update profile
 
 ### Test Drive
+
 - `POST /api/test-drive` — Create reservation
 - `GET /api/test-drive/{phone}` — Get reservation
 - `PUT /api/test-drive/{phone}` — Update reservation

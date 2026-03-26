@@ -1,0 +1,24 @@
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ChromaDB persistent data
+data/chroma_db/
+
+# Storage runtime data
+storage/
+
+# IDE
+.idea/
+.vscode/
+
+# Coverage
+htmlcov/
+.coverage
+
+# pytest
+.pytest_cache/
