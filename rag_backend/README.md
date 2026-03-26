@@ -96,6 +96,8 @@ uv run pytest tests/test_toml_parser.py -v
 - `GET /api/profile/{phone}` — Get user profile
 - `POST /api/profile` — Create profile
 - `PUT /api/profile/{phone}` — Update profile
+- `DELETE /api/profile/{phone}` — Delete profile
+- `GET /api/profile` — List all profiles
 
 ### Test Drive
 
@@ -104,3 +106,25 @@ uv run pytest tests/test_toml_parser.py -v
 - `PUT /api/test-drive/{phone}` — Update reservation
 - `DELETE /api/test-drive/{phone}` — Delete reservation
 - `GET /api/test-drive` — List reservations
+
+### System
+
+- `GET /` — API info
+- `GET /health` — Health check
+
+## Documentation
+
+- [Architecture](docs/architecture.md) — System design, module breakdown, data flow
+- [KPI Metrics](docs/kpi.md) — Test coverage, code quality, performance metrics
+
+## Conversation Stages
+
+```
+WELCOME → PROFILE_ANALYSIS → NEEDS_ANALYSIS → CAR_SELECTION
+                                                    ↓ ↑
+                                          RESERVATION_4S
+                                                    ↓ ↑
+                                    RESERVATION_CONFIRMATION → FAREWELL
+```
+
+Each stage drives specific extractors, retrieval, and response generation.
