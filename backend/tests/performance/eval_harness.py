@@ -64,10 +64,22 @@ def create_scenario_llm(scenario: dict) -> MagicMock:
         "reservation": "好的，我来帮您安排试驾预约。请问您方便的日期和时间是？",
         "confirmation": "好的，我确认一下您的预约信息。请确认以上信息是否正确？",
         "farewell": "感谢您的咨询！祝您用车愉快，如有任何问题随时联系我们。再见！",
-        "english_welcome": "Hello! Welcome to AutoVend. I'm your dedicated automotive consultant. May I have your name please?",
-        "english_profile": "Thank you for sharing! To recommend the best options, could you tell me about your driving needs?",
-        "english_needs": "Great, I understand your requirements. Let me find the best matches for you. Any brand preferences?",
-        "english_selection": "Based on your needs, I'd recommend these models. They match your criteria well. Which one interests you?",
+        "english_welcome": (
+            "Hello! Welcome to AutoVend. I'm your dedicated automotive consultant. "
+            "May I have your name please?"
+        ),
+        "english_profile": (
+            "Thank you for sharing! To recommend the best options, "
+            "could you tell me about your driving needs?"
+        ),
+        "english_needs": (
+            "Great, I understand your requirements. Let me find the best matches for you. "
+            "Any brand preferences?"
+        ),
+        "english_selection": (
+            "Based on your needs, I'd recommend these models. They match your criteria well. "
+            "Which one interests you?"
+        ),
     }
 
     def side_effect(prompt):

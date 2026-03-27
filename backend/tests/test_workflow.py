@@ -6,13 +6,6 @@ import json
 from unittest.mock import MagicMock
 
 from agent.memory import ChatMemoryManager
-from app.models.schemas import (
-    ExplicitNeeds,
-    ReservationInfo,
-    Stage,
-    UserProfile,
-    VehicleNeeds,
-)
 from agent.response_generator import (
     _format_matched_cars,
     _get_missing_needs_fields,
@@ -20,7 +13,6 @@ from agent.response_generator import (
     _get_missing_reservation_fields,
     generate_response,
 )
-from app.workflow.stage_workflow import SessionState, StageWorkflow
 from agent.stages import (
     STAGE_ORDER,
     STAGE_TRANSITIONS,
@@ -32,6 +24,14 @@ from agent.stages import (
     should_advance_to_needs,
     should_advance_to_reservation,
 )
+from app.models.schemas import (
+    ExplicitNeeds,
+    ReservationInfo,
+    Stage,
+    UserProfile,
+    VehicleNeeds,
+)
+from app.workflow.stage_workflow import SessionState, StageWorkflow
 
 # ============================================================
 # Stage transition tests

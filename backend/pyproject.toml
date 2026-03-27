@@ -48,6 +48,7 @@ select = ["E", "F", "W", "I"]
 "agent/extractors/*.py" = ["E501"]
 "agent/response_generator.py" = ["E501"]
 "tests/kpi_report.py" = ["E501"]
+"tests/performance/*.py" = ["E501"]
 
 [tool.coverage.run]
 source = ["app", "agent"]
