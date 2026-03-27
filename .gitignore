@@ -1,8 +1,12 @@
+# Virtual environments
 **/venv/**
-DialogFlow/app/data/vehicles/*.json
-DialogFlow/app/data/needs/*.json
+**/.venv/**
+
+# Frontend
 frontend/node_modules/**
 frontend/package-lock.json
+
+# Python bytecode
 **/*.pyc
 **/*.pyo
 **/*.pyd
@@ -10,17 +14,38 @@ frontend/package-lock.json
 **/*.pyz
 **/*.pywz
 **/*.pyzw
-**/*.env
-**/storage/messages/** 
-**/storage/profiles/**
-**/storage/sessions/** 
-**/.idea/**
-**/.vscode/**
-**/.DS_Store
+**/__pycache__/
+
+# Environment files
 **/.env
 **/.env.local
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
-**/BackEnd/app/models/AiModel/InformationExtractors/ImplicitDeductor/outputs/** 
-**/BackEnd/app/models/AiModel/InformationExtractors/ImplicitDeductor/logs/** 
+
+# Storage (runtime data)
+**/storage/messages/**
+**/storage/profiles/**
+**/storage/sessions/**
+**/storage/test_drives/**
+
+# IDE
+**/.idea/**
+**/.vscode/**
+**/.DS_Store
+
+# Test & coverage artifacts
+**/.coverage
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+**/htmlcov/
+**/coverage.xml
+**/test-results.xml
+
+# Evaluation results (generated, not source)
+backend/eval_results/
+
+# uv lock (large, machine-generated)
+# Uncomment if you want to track it:
+# backend/uv.lock
