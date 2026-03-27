@@ -10,13 +10,11 @@ import pytest
 from tests.performance.eval_harness import evaluate_dialogue, run_full_evaluation, save_report
 from tests.performance.scenarios import (
     ADVERSARIAL_SCENARIOS,
-    ALL_SCENARIOS,
     BILINGUAL_SCENARIOS,
     EDGE_CASE_SCENARIOS,
     FULL_FUNNEL_SCENARIOS,
     NORMAL_SCENARIOS,
 )
-
 
 # ── Per-Dialogue Tests ────────────────────────────────────────────────────────
 
@@ -56,14 +54,18 @@ class TestNormalDialogues:
 class TestEdgeCaseDialogues:
     """Edge cases: agent should remain stable and not crash."""
 
-    @pytest.mark.parametrize("scenario", EDGE_CASE_SCENARIOS, ids=[s["id"] for s in EDGE_CASE_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", EDGE_CASE_SCENARIOS, ids=[s["id"] for s in EDGE_CASE_SCENARIOS]
+    )
     def test_no_crash(self, scenario):
         sc = evaluate_dialogue(scenario)
         assert sc.response_generation_rate == 1.0, (
             f"[{scenario['id']}] agent crashed or produced empty response"
         )
 
-    @pytest.mark.parametrize("scenario", EDGE_CASE_SCENARIOS, ids=[s["id"] for s in EDGE_CASE_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", EDGE_CASE_SCENARIOS, ids=[s["id"] for s in EDGE_CASE_SCENARIOS]
+    )
     def test_overall_score(self, scenario):
         sc = evaluate_dialogue(scenario)
         # Edge cases have lower bar
@@ -75,14 +77,18 @@ class TestEdgeCaseDialogues:
 class TestAdversarialDialogues:
     """Adversarial inputs: agent must not crash, must stay professional."""
 
-    @pytest.mark.parametrize("scenario", ADVERSARIAL_SCENARIOS, ids=[s["id"] for s in ADVERSARIAL_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", ADVERSARIAL_SCENARIOS, ids=[s["id"] for s in ADVERSARIAL_SCENARIOS]
+    )
     def test_no_crash(self, scenario):
         sc = evaluate_dialogue(scenario)
         assert sc.response_generation_rate == 1.0, (
             f"[{scenario['id']}] agent crashed on adversarial input"
         )
 
-    @pytest.mark.parametrize("scenario", ADVERSARIAL_SCENARIOS, ids=[s["id"] for s in ADVERSARIAL_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", ADVERSARIAL_SCENARIOS, ids=[s["id"] for s in ADVERSARIAL_SCENARIOS]
+    )
     def test_stays_professional(self, scenario):
         sc = evaluate_dialogue(scenario)
         assert sc.avg_professionalism >= 25.0, (
@@ -93,12 +99,16 @@ class TestAdversarialDialogues:
 class TestBilingualDialogues:
     """Bilingual: agent must handle mixed-language well."""
 
-    @pytest.mark.parametrize("scenario", BILINGUAL_SCENARIOS, ids=[s["id"] for s in BILINGUAL_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", BILINGUAL_SCENARIOS, ids=[s["id"] for s in BILINGUAL_SCENARIOS]
+    )
     def test_response_generation(self, scenario):
         sc = evaluate_dialogue(scenario)
         assert sc.response_generation_rate == 1.0
 
-    @pytest.mark.parametrize("scenario", BILINGUAL_SCENARIOS, ids=[s["id"] for s in BILINGUAL_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", BILINGUAL_SCENARIOS, ids=[s["id"] for s in BILINGUAL_SCENARIOS]
+    )
     def test_overall_score(self, scenario):
         sc = evaluate_dialogue(scenario)
         assert sc.overall_score >= 35.0, (
@@ -109,14 +119,18 @@ class TestBilingualDialogues:
 class TestFullFunnelDialogues:
     """Full funnel: complete journey should score high."""
 
-    @pytest.mark.parametrize("scenario", FULL_FUNNEL_SCENARIOS, ids=[s["id"] for s in FULL_FUNNEL_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", FULL_FUNNEL_SCENARIOS, ids=[s["id"] for s in FULL_FUNNEL_SCENARIOS]
+    )
     def test_conversion_score(self, scenario):
         sc = evaluate_dialogue(scenario)
         assert sc.conversion_score >= 40.0, (
             f"[{scenario['id']}] conversion={sc.conversion_score:.1f} — target ≥ 40"
         )
 
-    @pytest.mark.parametrize("scenario", FULL_FUNNEL_SCENARIOS, ids=[s["id"] for s in FULL_FUNNEL_SCENARIOS])
+    @pytest.mark.parametrize(
+        "scenario", FULL_FUNNEL_SCENARIOS, ids=[s["id"] for s in FULL_FUNNEL_SCENARIOS]
+    )
     def test_task_completion(self, scenario):
         sc = evaluate_dialogue(scenario)
         assert sc.task_completion_score >= 40.0, (

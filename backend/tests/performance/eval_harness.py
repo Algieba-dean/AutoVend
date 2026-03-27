@@ -15,17 +15,14 @@ import json
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
 from unittest.mock import MagicMock
 
 from agent.sales_agent import SalesAgent
 from agent.schemas import AgentInput, SessionState, Stage
-
 from tests.performance.scenarios import ALL_SCENARIOS
 from tests.performance.scoring import (
     DialogueScorecard,
     EvaluationReport,
-    ExtractionScore,
     LatencyStats,
     TurnScore,
     score_extraction,
@@ -61,7 +58,9 @@ def create_scenario_llm(scenario: dict) -> MagicMock:
         "welcome": "您好！欢迎来到AutoVend智能选车助手。我是您的专属汽车顾问，请问您怎么称呼？",
         "profile": "感谢您的信息！为了更好地为您推荐车型，请问您主要在什么场景用车呢？",
         "needs": "了解了您的需求。根据您的偏好，我来为您筛选合适的车型。请问您对品牌有特别的偏好吗？",
-        "selection": "根据您的需求，我为您推荐以下车型。这些车都很好地匹配了您的要求，您觉得哪款更感兴趣？",
+        "selection": (
+            "根据您的需求，我为您推荐以下车型。这些车都很好地匹配了您的要求，您觉得哪款更感兴趣？"
+        ),
         "reservation": "好的，我来帮您安排试驾预约。请问您方便的日期和时间是？",
         "confirmation": "好的，我确认一下您的预约信息。请确认以上信息是否正确？",
         "farewell": "感谢您的咨询！祝您用车愉快，如有任何问题随时联系我们。再见！",
@@ -88,13 +87,23 @@ def create_scenario_llm(scenario: dict) -> MagicMock:
             # Generation prompt — detect stage and language
             is_english = "english" in p or "hello" in p or "hi " in p or "i'm" in p
             if "welcome" in p or "greet" in p:
-                resp.text = stage_responses["english_welcome"] if is_english else stage_responses["welcome"]
+                resp.text = (
+                    stage_responses["english_welcome"] if is_english else stage_responses["welcome"]
+                )
             elif "profile" in p and "missing" in p:
-                resp.text = stage_responses["english_profile"] if is_english else stage_responses["profile"]
+                resp.text = (
+                    stage_responses["english_profile"] if is_english else stage_responses["profile"]
+                )
             elif "needs" in p or "vehicle" in p and "explore" in p:
-                resp.text = stage_responses["english_needs"] if is_english else stage_responses["needs"]
+                resp.text = (
+                    stage_responses["english_needs"] if is_english else stage_responses["needs"]
+                )
             elif "recommend" in p or "matched" in p or "selection" in p:
-                resp.text = stage_responses["english_selection"] if is_english else stage_responses["selection"]
+                resp.text = (
+                    stage_responses["english_selection"]
+                    if is_english
+                    else stage_responses["selection"]
+                )
             elif "reservation" in p and "collect" in p:
                 resp.text = stage_responses["reservation"]
             elif "confirm" in p:
@@ -157,7 +166,11 @@ def evaluate_dialogue(scenario: dict) -> DialogueScorecard:
         context_keywords = [w for w in turn["msg"].split() if len(w) > 1]
 
         # Score this turn
-        expected_stage_val = turn["expected_stage"].value if isinstance(turn["expected_stage"], Stage) else turn["expected_stage"]
+        expected_stage_val = (
+            turn["expected_stage"].value
+            if isinstance(turn["expected_stage"], Stage)
+            else turn["expected_stage"]
+        )
         actual_stage_val = state.stage.value if isinstance(state.stage, Stage) else state.stage
 
         turn_score = TurnScore(
@@ -167,7 +180,9 @@ def evaluate_dialogue(scenario: dict) -> DialogueScorecard:
             expected_stage=expected_stage_val,
             actual_stage=actual_stage_val,
             stage_correct=(actual_stage_val == expected_stage_val),
-            response_relevance=score_response_relevance(response, actual_stage_val, context_keywords),
+            response_relevance=score_response_relevance(
+                response, actual_stage_val, context_keywords
+            ),
             language_consistency=score_language_consistency(turn["msg"], response),
             professionalism=score_response_professionalism(response),
             info_gathering_rate=score_information_gathering_rate(
@@ -190,7 +205,9 @@ def evaluate_dialogue(scenario: dict) -> DialogueScorecard:
     if expected_profile:
         scorecard.profile_extraction = score_extraction(scorecard.final_profile, expected_profile)
     if expected_needs:
-        scorecard.needs_extraction = score_extraction(scorecard.final_needs_explicit, expected_needs)
+        scorecard.needs_extraction = score_extraction(
+            scorecard.final_needs_explicit, expected_needs
+        )
 
     return scorecard
 
@@ -217,7 +234,9 @@ def save_report(report: EvaluationReport, filename: str | None = None) -> Path:
         filename = f"eval_{ts}.json"
 
     filepath = EVAL_RESULTS_DIR / filename
-    filepath.write_text(json.dumps(report.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
+    filepath.write_text(
+        json.dumps(report.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     return filepath
 
 
@@ -246,17 +265,21 @@ def print_summary(report: EvaluationReport) -> None:
     # By category
     print("  ── By Category ───────────────────────────────────────────")
     for cat, info in d.get("by_category", {}).items():
-        print(f"  [{cat:12s}] count={info['count']:2d}  overall={info['avg_overall']:.1f}  "
-              f"stage_acc={info['avg_stage_accuracy']:.1f}%  task={info['avg_task_completion']:.1f}")
+        print(
+            f"  [{cat:12s}] count={info['count']:2d}  overall={info['avg_overall']:.1f}  "
+            f"stage_acc={info['avg_stage_accuracy']:.1f}%  task={info['avg_task_completion']:.1f}"
+        )
     print()
 
     # Per-dialogue summary
     print("  ── Per-Dialogue Scores ───────────────────────────────────")
     for sc in d["dialogues"]:
         scores = sc["scores"]
-        print(f"  [{sc['dialogue_id']:4s}] {sc['persona'][:30]:30s} "
-              f"overall={scores['overall']:5.1f}  stage={scores['stage_accuracy']:5.1f}%  "
-              f"task={scores['task_completion']:5.1f}  prof={scores['professionalism']:5.1f}")
+        print(
+            f"  [{sc['dialogue_id']:4s}] {sc['persona'][:30]:30s} "
+            f"overall={scores['overall']:5.1f}  stage={scores['stage_accuracy']:5.1f}%  "
+            f"task={scores['task_completion']:5.1f}  prof={scores['professionalism']:5.1f}"
+        )
 
     print()
     print("=" * 72)
