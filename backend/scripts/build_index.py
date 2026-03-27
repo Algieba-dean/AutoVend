@@ -4,8 +4,8 @@ Usage: python -m scripts.build_index
 """
 
 import logging
-import time
 import sys
+import time
 
 logging.basicConfig(
     level=logging.INFO,

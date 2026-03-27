@@ -5,10 +5,6 @@ Tests profile, test drive, and session CRUD operations
 using tmp_path to avoid polluting real storage.
 """
 
-import json
-
-import pytest
-
 from app.models.schemas import UserProfile
 from app.models.storage import FileStorage
 

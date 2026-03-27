@@ -19,7 +19,6 @@ import statistics
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-
 # ── Extraction Accuracy ──────────────────────────────────────────────────────
 
 
@@ -80,9 +79,38 @@ def score_response_relevance(response: str, stage: str, context_keywords: List[s
     stage_keywords = {
         "welcome": ["你好", "欢迎", "hello", "hi", "welcome", "autovend", "请问", "what"],
         "profile_analysis": ["名字", "年龄", "家", "name", "age", "family", "请问", "who", "住"],
-        "needs_analysis": ["预算", "品牌", "车型", "budget", "brand", "type", "偏好", "prefer", "需求"],
-        "car_selection_confirmation": ["推荐", "recommend", "车型", "model", "试驾", "test drive", "对比", "compare"],
-        "reservation4s": ["预约", "日期", "时间", "地点", "reservation", "date", "time", "location", "schedule"],
+        "needs_analysis": [
+            "预算",
+            "品牌",
+            "车型",
+            "budget",
+            "brand",
+            "type",
+            "偏好",
+            "prefer",
+            "需求",
+        ],
+        "car_selection_confirmation": [
+            "推荐",
+            "recommend",
+            "车型",
+            "model",
+            "试驾",
+            "test drive",
+            "对比",
+            "compare",
+        ],
+        "reservation4s": [
+            "预约",
+            "日期",
+            "时间",
+            "地点",
+            "reservation",
+            "date",
+            "time",
+            "location",
+            "schedule",
+        ],
         "reservation_confirmation": ["确认", "confirm", "信息", "details", "预约", "reservation"],
         "farewell": ["感谢", "thank", "再见", "goodbye", "祝", "期待", "look forward"],
     }
@@ -114,8 +142,9 @@ def score_language_consistency(user_message: str, response: str) -> float:
     Score whether the agent responds in the same language as the user.
     0 = wrong language, 50 = mixed, 100 = correct language.
     """
+
     def has_chinese(text: str) -> bool:
-        return bool(re.search(r'[\u4e00-\u9fff]', text))
+        return bool(re.search(r"[\u4e00-\u9fff]", text))
 
     user_cn = has_chinese(user_message)
     resp_cn = has_chinese(response)
@@ -156,7 +185,7 @@ def score_response_professionalism(response: str) -> float:
         score += 30.0
 
     # Structured response (multi-sentence)
-    sentences = re.split(r'[。！？.!?\n]', response)
+    sentences = re.split(r"[。！？.!?\n]", response)
     meaningful = [s for s in sentences if len(s.strip()) > 5]
     if len(meaningful) >= 2:
         score += 30.0
@@ -179,6 +208,7 @@ def score_information_gathering_rate(
     Measure how effectively the agent gathers information per turn.
     Returns 0-100 based on new fields filled.
     """
+
     def count_filled(d: dict) -> int:
         return sum(1 for v in d.values() if v and str(v).strip())
 
@@ -238,9 +268,13 @@ def score_task_completion(
     else:
         # Partial credit for partial progress
         funnel = [
-            "welcome", "profile_analysis", "needs_analysis",
-            "car_selection_confirmation", "reservation4s",
-            "reservation_confirmation", "farewell",
+            "welcome",
+            "profile_analysis",
+            "needs_analysis",
+            "car_selection_confirmation",
+            "reservation4s",
+            "reservation_confirmation",
+            "farewell",
         ]
         if expected_final_stage in funnel:
             target_idx = funnel.index(expected_final_stage)
@@ -343,7 +377,9 @@ class TurnScore:
         d = {
             "turn": self.turn_idx,
             "user_message": self.user_message,
-            "agent_response": self.agent_response[:200] + ("..." if len(self.agent_response) > 200 else ""),
+            "agent_response": (
+                self.agent_response[:200] + ("..." if len(self.agent_response) > 200 else "")
+            ),
             "expected_stage": self.expected_stage,
             "actual_stage": self.actual_stage,
             "stage_correct": self.stage_correct,
@@ -438,7 +474,9 @@ class DialogueScorecard:
         biz = 0.5 * self.task_completion_score + 0.5 * self.conversion_score
 
         # Response quality
-        resp = (self.avg_response_relevance + self.avg_professionalism + self.avg_language_consistency) / 3.0
+        resp = (
+            self.avg_response_relevance + self.avg_professionalism + self.avg_language_consistency
+        ) / 3.0
 
         # Extraction
         prof_f1 = self.profile_extraction.f1 * 100 if self.profile_extraction.expected > 0 else 100
@@ -452,13 +490,7 @@ class DialogueScorecard:
         avg_lat = self.latency.avg
         latency_score = max(0, 100 - (avg_lat / 50.0) * 100) if avg_lat < 50 else 0
 
-        return (
-            0.35 * biz
-            + 0.30 * resp
-            + 0.20 * extraction
-            + 0.10 * stage
-            + 0.05 * latency_score
-        )
+        return 0.35 * biz + 0.30 * resp + 0.20 * extraction + 0.10 * stage + 0.05 * latency_score
 
     def to_dict(self) -> dict:
         return {
@@ -548,8 +580,12 @@ class EvaluationReport:
             cat_summaries[cat] = {
                 "count": len(cards),
                 "avg_overall": round(statistics.mean([c.overall_score for c in cards]), 1),
-                "avg_stage_accuracy": round(statistics.mean([c.stage_accuracy * 100 for c in cards]), 1),
-                "avg_task_completion": round(statistics.mean([c.task_completion_score for c in cards]), 1),
+                "avg_stage_accuracy": round(
+                    statistics.mean([c.stage_accuracy * 100 for c in cards]), 1
+                ),
+                "avg_task_completion": round(
+                    statistics.mean([c.task_completion_score for c in cards]), 1
+                ),
             }
 
         return {
