@@ -1,0 +1,170 @@
+name: AutoVend Backend CI
+
+on:
+  push:
+    branches: [main, feature/*, develop]
+    paths:
+      - "backend/**"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: backend
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ── Lint ────────────────────────────────────────────────────
+  lint:
+    name: "Lint (Ruff)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Ruff check
+        run: uv run ruff check agent/ app/ tests/
+
+      - name: Ruff format check
+        run: uv run ruff format --check agent/ app/ tests/
+
+  # ── Unit + Integration Tests ────────────────────────────────
+  test:
+    name: "Tests + Coverage"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Run tests with coverage
+        run: |
+          uv run pytest tests/ \
+            --cov=agent --cov=app \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            --cov-report=html:htmlcov \
+            --junitxml=test-results.xml \
+            -v
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            backend/coverage.xml
+            backend/htmlcov/
+          retention-days: 30
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: backend/test-results.xml
+          retention-days: 30
+
+  # ── KPI Report ──────────────────────────────────────────────
+  kpi-report:
+    name: "KPI Metrics Report"
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Run KPI tests and generate report
+        run: |
+          uv run python tests/kpi_report.py | tee kpi-report.md
+
+      - name: Run full test suite for summary counts
+        run: |
+          uv run pytest tests/ \
+            --cov=agent --cov=app \
+            --cov-report=term-missing \
+            -q 2>&1 | tee test-summary.txt
+
+      - name: Upload KPI report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kpi-report
+          path: |
+            backend/kpi-report.md
+            backend/test-summary.txt
+          retention-days: 90
+
+  # ── Architecture Guard ──────────────────────────────────────
+  arch-guard:
+    name: "Architecture Isolation Check"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Check agent isolation (zero backend imports)
+        run: |
+          uv run pytest tests/test_agent_isolation.py -v
+
+      - name: Check for circular imports
+        run: |
+          uv run python -c "
+          import agent.sales_agent
+          import agent.schemas
+          import agent.stages
+          import agent.memory
+          import agent.response_generator
+          import agent.extractors.base
+          import agent.extractors.profile_extractor
+          import agent.extractors.needs_extractor
+          import agent.extractors.implicit_deductor
+          import agent.extractors.reservation_extractor
+          print('All agent modules imported successfully — no circular imports.')
+          "
