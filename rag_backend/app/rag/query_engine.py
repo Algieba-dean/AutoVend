@@ -123,8 +123,7 @@ def retrieve_vehicles(
     retriever = build_query_engine(index, top_k, metadata_filters)
 
     logger.info(
-        f"Retrieving vehicles: query='{query[:80]}...', "
-        f"top_k={top_k}, filters={metadata_filters}"
+        f"Retrieving vehicles: query='{query[:80]}...', top_k={top_k}, filters={metadata_filters}"
     )
 
     results = retriever.retrieve(query)
@@ -132,7 +131,7 @@ def retrieve_vehicles(
     logger.info(f"Retrieved {len(results)} vehicles.")
     for i, node in enumerate(results):
         car_model = node.metadata.get("car_model", "Unknown")
-        logger.debug(f"  [{i+1}] {car_model} (score={node.score:.4f})")
+        logger.debug(f"  [{i + 1}] {car_model} (score={node.score:.4f})")
 
     return results
 
@@ -151,14 +150,12 @@ def format_retrieval_results(
     """
     formatted = []
     for node in results:
-        formatted.append({
-            "car_model": node.metadata.get("car_model", "Unknown"),
-            "score": round(node.score, 4) if node.score is not None else None,
-            "metadata": {
-                k: v
-                for k, v in node.metadata.items()
-                if k != "source_file"
-            },
-            "text_snippet": node.text[:300] if node.text else "",
-        })
+        formatted.append(
+            {
+                "car_model": node.metadata.get("car_model", "Unknown"),
+                "score": round(node.score, 4) if node.score is not None else None,
+                "metadata": {k: v for k, v in node.metadata.items() if k != "source_file"},
+                "text_snippet": node.text[:300] if node.text else "",
+            }
+        )
     return formatted

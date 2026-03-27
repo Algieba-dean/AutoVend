@@ -48,14 +48,17 @@ def _mock_llm_error() -> MagicMock:
 
 # --- Profile Extractor Tests ---
 
+
 class TestProfileExtractor:
     def test_extract_new_profile(self):
-        llm = _mock_llm({
-            "name": "John",
-            "age": "35",
-            "family_size": "4",
-            "expertise": "beginner",
-        })
+        llm = _mock_llm(
+            {
+                "name": "John",
+                "age": "35",
+                "family_size": "4",
+                "expertise": "beginner",
+            }
+        )
         profile = extract_profile(llm, "My name is John, I'm 35 and have a family of 4.")
         assert profile.name == "John"
         assert profile.age == "35"
@@ -105,13 +108,16 @@ class TestProfileExtractor:
 
 # --- Needs Extractor Tests ---
 
+
 class TestNeedsExtractor:
     def test_extract_basic_needs(self):
-        llm = _mock_llm({
-            "brand": "Tesla",
-            "prize": "40,000~60,000",
-            "powertrain_type": "Battery Electric Vehicle",
-        })
+        llm = _mock_llm(
+            {
+                "brand": "Tesla",
+                "prize": "40,000~60,000",
+                "powertrain_type": "Battery Electric Vehicle",
+            }
+        )
         needs = extract_explicit_needs(llm, "I want a Tesla EV around $50k")
         assert needs.brand == "Tesla"
         assert needs.prize == "40,000~60,000"
@@ -141,14 +147,17 @@ class TestNeedsExtractor:
 
 # --- Implicit Deductor Tests ---
 
+
 class TestImplicitDeductor:
     def test_deduce_from_profile(self):
-        llm = _mock_llm({
-            "family_friendliness": "High",
-            "space": "Large",
-            "safety": "High",
-            "comfort_level": "High",
-        })
+        llm = _mock_llm(
+            {
+                "family_friendliness": "High",
+                "space": "Large",
+                "safety": "High",
+                "comfort_level": "High",
+            }
+        )
         profile = UserProfile(family_size="5", expertise="beginner")
         explicit = ExplicitNeeds()
 
@@ -161,9 +170,7 @@ class TestImplicitDeductor:
         existing = ImplicitNeeds(size="Medium", comfort_level="High")
         llm = _mock_llm({"safety": "High"})
 
-        implicit = deduce_implicit_needs(
-            llm, UserProfile(), ExplicitNeeds(), existing
-        )
+        implicit = deduce_implicit_needs(llm, UserProfile(), ExplicitNeeds(), existing)
         assert implicit.size == "Medium"  # Preserved
         assert implicit.comfort_level == "High"  # Preserved
         assert implicit.safety == "High"  # New
@@ -171,23 +178,24 @@ class TestImplicitDeductor:
     def test_handles_error_gracefully(self):
         llm = _mock_llm_error()
         existing = ImplicitNeeds(size="Large")
-        implicit = deduce_implicit_needs(
-            llm, UserProfile(), ExplicitNeeds(), existing
-        )
+        implicit = deduce_implicit_needs(llm, UserProfile(), ExplicitNeeds(), existing)
         assert implicit.size == "Large"  # Falls back
 
 
 # --- Reservation Extractor Tests ---
 
+
 class TestReservationExtractor:
     def test_extract_reservation(self):
-        llm = _mock_llm({
-            "test_driver": "John",
-            "reservation_date": "2024-03-15",
-            "reservation_time": "14:00",
-            "reservation_location": "Downtown Tesla Center",
-            "reservation_phone_number": "13888888888",
-        })
+        llm = _mock_llm(
+            {
+                "test_driver": "John",
+                "reservation_date": "2024-03-15",
+                "reservation_time": "14:00",
+                "reservation_location": "Downtown Tesla Center",
+                "reservation_phone_number": "13888888888",
+            }
+        )
         res = extract_reservation(llm, "I'd like to test drive on March 15th at 2pm")
         assert res.test_driver == "John"
         assert res.reservation_date == "2024-03-15"
@@ -196,13 +204,13 @@ class TestReservationExtractor:
         assert res.reservation_phone_number == "13888888888"
 
     def test_merge_with_existing(self):
-        existing = ReservationInfo(
-            test_driver="John", reservation_phone_number="13888888888"
+        existing = ReservationInfo(test_driver="John", reservation_phone_number="13888888888")
+        llm = _mock_llm(
+            {
+                "reservation_date": "2024-03-15",
+                "reservation_time": "10:00",
+            }
         )
-        llm = _mock_llm({
-            "reservation_date": "2024-03-15",
-            "reservation_time": "10:00",
-        })
 
         res = extract_reservation(llm, "Let's do March 15 at 10am", existing)
         assert res.test_driver == "John"  # Preserved
@@ -217,10 +225,12 @@ class TestReservationExtractor:
         assert res.test_driver == "John"  # Falls back
 
     def test_handles_markdown_response(self):
-        llm = _mock_llm_markdown({
-            "test_driver": "Alice",
-            "reservation_location": "BMW Center",
-        })
+        llm = _mock_llm_markdown(
+            {
+                "test_driver": "Alice",
+                "reservation_location": "BMW Center",
+            }
+        )
         res = extract_reservation(llm, "I'm Alice, at BMW center")
         assert res.test_driver == "Alice"
         assert res.reservation_location == "BMW Center"

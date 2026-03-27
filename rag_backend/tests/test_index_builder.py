@@ -7,7 +7,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import toml
-
 from llama_index.core.schema import Document
 
 from app.ingestion.index_builder import (
@@ -141,6 +140,7 @@ class TestVehicleIndexManager:
         reset_vehicle_index()
         # After reset, the module-level cache should be None
         from app.rag.vehicle_index import _vehicle_index
+
         assert _vehicle_index is None
 
     def test_get_raises_on_empty_collection(self, tmp_path):

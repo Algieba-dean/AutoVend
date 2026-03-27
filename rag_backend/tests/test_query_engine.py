@@ -31,30 +31,36 @@ class TestBuildMetadataFilters:
         assert filters.filters[0].operator == FilterOperator.EQ
 
     def test_multiple_filters(self):
-        filters = _build_metadata_filters({
-            "brand": "Tesla",
-            "prize": "40,000~60,000",
-            "powertrain_type": "Battery Electric Vehicle",
-        })
+        filters = _build_metadata_filters(
+            {
+                "brand": "Tesla",
+                "prize": "40,000~60,000",
+                "powertrain_type": "Battery Electric Vehicle",
+            }
+        )
         assert filters is not None
         assert len(filters.filters) == 3
         assert filters.condition == FilterCondition.AND
 
     def test_ignores_unknown_fields(self):
-        filters = _build_metadata_filters({
-            "brand": "Tesla",
-            "unknown_field": "value",
-            "another_unknown": "xyz",
-        })
+        filters = _build_metadata_filters(
+            {
+                "brand": "Tesla",
+                "unknown_field": "value",
+                "another_unknown": "xyz",
+            }
+        )
         assert filters is not None
         assert len(filters.filters) == 1
         assert filters.filters[0].key == "brand"
 
     def test_ignores_empty_values(self):
-        filters = _build_metadata_filters({
-            "brand": "",
-            "prize": "10,000~20,000",
-        })
+        filters = _build_metadata_filters(
+            {
+                "brand": "",
+                "prize": "10,000~20,000",
+            }
+        )
         assert filters is not None
         assert len(filters.filters) == 1
         assert filters.filters[0].key == "prize"
@@ -163,9 +169,12 @@ class TestFormatRetrievalResults:
     def test_formats_correctly(self):
         results = [
             _make_node(
-                "Tesla-Model Y", 0.95,
+                "Tesla-Model Y",
+                0.95,
                 "The Tesla Model Y is an all-electric compact SUV.",
-                brand="Tesla", prize="40,000~60,000", source_file="test.toml",
+                brand="Tesla",
+                prize="40,000~60,000",
+                source_file="test.toml",
             ),
             _make_node("BYD-Seal", 0.88, "A sporty EV sedan.", brand="BYD"),
         ]

@@ -44,8 +44,13 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 
+[tool.ruff.lint.per-file-ignores]
+"agent/extractors/*.py" = ["E501"]
+"agent/response_generator.py" = ["E501"]
+"tests/kpi_report.py" = ["E501"]
+
 [tool.coverage.run]
-source = ["app"]
+source = ["app", "agent"]
 omit = ["tests/*"]
 
 [tool.coverage.report]

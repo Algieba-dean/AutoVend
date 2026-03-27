@@ -25,12 +25,8 @@ OPENAI_URL: str = os.getenv("OPENAI_URL", "https://api.deepseek.com/v1")
 EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
 
 # ChromaDB
-CHROMA_PERSIST_DIR: str = os.getenv(
-    "CHROMA_PERSIST_DIR", str(DATA_DIR / "chroma_db")
-)
-CHROMA_COLLECTION_NAME: str = os.getenv(
-    "CHROMA_COLLECTION_NAME", "vehicle_knowledge"
-)
+CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", str(DATA_DIR / "chroma_db"))
+CHROMA_COLLECTION_NAME: str = os.getenv("CHROMA_COLLECTION_NAME", "vehicle_knowledge")
 
 # Vehicle Data Source
 VEHICLE_DATA_DIR: str = os.getenv(

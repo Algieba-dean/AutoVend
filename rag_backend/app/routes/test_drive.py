@@ -57,8 +57,13 @@ async def update_test_drive(phone_number: str, request: TestDriveRequest):
 
     # Merge non-empty fields
     reservation = existing.get("reservation", {})
-    for key in ["test_driver", "reservation_date", "reservation_time",
-                "reservation_location", "salesman"]:
+    for key in [
+        "test_driver",
+        "reservation_date",
+        "reservation_time",
+        "reservation_location",
+        "salesman",
+    ]:
         new_val = getattr(request, key, "")
         if new_val:
             reservation[key] = new_val

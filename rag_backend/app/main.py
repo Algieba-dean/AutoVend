@@ -1,11 +1,11 @@
 """
 FastAPI entry point for AutoVend RAG Backend.
 
-Wires up routes, initializes the LLM and workflow engine on startup.
+Wires up routes, initializes the LLM and SalesAgent on startup.
+Backend is a thin orchestrator; all AI logic lives in agent/.
 """
 
 import logging
-
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -13,9 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from llama_index.llms.openai_like import OpenAILike
 
+from agent.sales_agent import SalesAgent
 from app.config import APP_ENVIRONMENT, DEBUG, OPENAI_API_KEY, OPENAI_MODEL, OPENAI_URL
 from app.routes import chat, profile, test_drive
-from app.workflow.stage_workflow import StageWorkflow
 
 # Configure logging
 logging.basicConfig(
@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """App lifespan: initialize LLM and workflow on startup."""
-    logger.info("Initializing LLM and workflow engine...")
+    """App lifespan: initialize LLM, SalesAgent, and vehicle index on startup."""
+    logger.info("Initializing LLM and SalesAgent...")
 
     llm = OpenAILike(
         api_key=OPENAI_API_KEY,
@@ -39,11 +39,15 @@ async def lifespan(app: FastAPI):
         max_tokens=500,
     )
 
+    agent = SalesAgent(llm=llm)
+    chat.set_agent(agent)
+
     # Try to load vehicle index (may not exist yet)
-    vehicle_index = None
     try:
         from app.rag.vehicle_index import get_vehicle_index
+
         vehicle_index = get_vehicle_index()
+        chat.set_vehicle_index(vehicle_index)
         logger.info("Vehicle index loaded successfully.")
     except Exception as e:
         logger.warning(
@@ -52,10 +56,7 @@ async def lifespan(app: FastAPI):
             "Run 'python -m scripts.build_index' to build the index."
         )
 
-    workflow = StageWorkflow(llm=llm, vehicle_index=vehicle_index)
-    chat.set_workflow(workflow)
-
-    logger.info("Workflow engine initialized.")
+    logger.info("SalesAgent initialized.")
     yield
     logger.info("Shutting down.")
 

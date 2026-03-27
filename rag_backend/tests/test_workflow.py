@@ -13,6 +13,13 @@ from app.models.schemas import (
     UserProfile,
     VehicleNeeds,
 )
+from app.workflow.response_generator import (
+    _format_matched_cars,
+    _get_missing_needs_fields,
+    _get_missing_profile_fields,
+    _get_missing_reservation_fields,
+    generate_response,
+)
 from app.workflow.stage_workflow import SessionState, StageWorkflow
 from app.workflow.stages import (
     STAGE_ORDER,
@@ -25,18 +32,11 @@ from app.workflow.stages import (
     should_advance_to_needs,
     should_advance_to_reservation,
 )
-from app.workflow.response_generator import (
-    _format_matched_cars,
-    _get_missing_needs_fields,
-    _get_missing_profile_fields,
-    _get_missing_reservation_fields,
-    generate_response,
-)
-
 
 # ============================================================
 # Stage transition tests
 # ============================================================
+
 
 class TestCanTransition:
     def test_valid_transitions(self):
@@ -79,9 +79,7 @@ class TestShouldAdvanceFunctions:
         assert not should_advance_to_needs(profile)
 
     def test_advance_to_car_selection_enough_fields(self):
-        needs = VehicleNeeds(
-            explicit=ExplicitNeeds(brand="Tesla", prize="40,000~60,000")
-        )
+        needs = VehicleNeeds(explicit=ExplicitNeeds(brand="Tesla", prize="40,000~60,000"))
         assert should_advance_to_car_selection(needs)
 
     def test_advance_to_car_selection_not_enough(self):
@@ -145,9 +143,7 @@ class TestDetermineNextStage:
         assert result == Stage.NEEDS_ANALYSIS
 
     def test_needs_advances_with_enough_info(self):
-        needs = VehicleNeeds(
-            explicit=ExplicitNeeds(brand="Tesla", powertrain_type="BEV")
-        )
+        needs = VehicleNeeds(explicit=ExplicitNeeds(brand="Tesla", powertrain_type="BEV"))
         result = determine_next_stage(
             Stage.NEEDS_ANALYSIS, UserProfile(), needs, [], ReservationInfo()
         )
@@ -157,6 +153,7 @@ class TestDetermineNextStage:
 # ============================================================
 # Chat memory tests
 # ============================================================
+
 
 class TestChatMemoryManager:
     def test_create_and_get(self):
@@ -201,6 +198,7 @@ class TestChatMemoryManager:
 # Response generator helper tests
 # ============================================================
 
+
 class TestResponseGeneratorHelpers:
     def test_missing_profile_fields(self):
         profile = UserProfile(name="John")
@@ -210,9 +208,15 @@ class TestResponseGeneratorHelpers:
 
     def test_complete_profile(self):
         profile = UserProfile(
-            phone_number="123", name="John", title="Mr.", age="35",
-            target_driver="self", expertise="beginner", family_size="4",
-            price_sensitivity="medium", residence="Beijing",
+            phone_number="123",
+            name="John",
+            title="Mr.",
+            age="35",
+            target_driver="self",
+            expertise="beginner",
+            family_size="4",
+            price_sensitivity="medium",
+            residence="Beijing",
             parking_conditions="garage",
         )
         missing = _get_missing_profile_fields(profile)
@@ -250,8 +254,13 @@ class TestResponseGeneratorHelpers:
         mock_llm.complete.return_value = mock_response
 
         result = generate_response(
-            mock_llm, Stage.WELCOME, "", UserProfile(),
-            VehicleNeeds(), [], ReservationInfo(),
+            mock_llm,
+            Stage.WELCOME,
+            "",
+            UserProfile(),
+            VehicleNeeds(),
+            [],
+            ReservationInfo(),
         )
         assert "Welcome" in result
 
@@ -260,8 +269,13 @@ class TestResponseGeneratorHelpers:
         mock_llm.complete.side_effect = Exception("API error")
 
         result = generate_response(
-            mock_llm, Stage.WELCOME, "", UserProfile(),
-            VehicleNeeds(), [], ReservationInfo(),
+            mock_llm,
+            Stage.WELCOME,
+            "",
+            UserProfile(),
+            VehicleNeeds(),
+            [],
+            ReservationInfo(),
         )
         assert "apologize" in result
 
@@ -269,6 +283,7 @@ class TestResponseGeneratorHelpers:
 # ============================================================
 # Session state tests
 # ============================================================
+
 
 class TestSessionState:
     def test_default_state(self):
@@ -295,6 +310,7 @@ class TestSessionState:
 # ============================================================
 # StageWorkflow integration tests (mock LLM)
 # ============================================================
+
 
 def _mock_llm_for_workflow() -> MagicMock:
     """Create a mock LLM that returns appropriate JSON for each extractor call."""

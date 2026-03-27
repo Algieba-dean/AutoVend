@@ -11,8 +11,8 @@ from unittest.mock import MagicMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.routes.chat import set_workflow
-from app.workflow.stage_workflow import StageWorkflow
+from agent.sales_agent import SalesAgent
+from app.routes.chat import set_agent
 
 
 def _mock_llm() -> MagicMock:
@@ -38,18 +38,21 @@ def _mock_llm() -> MagicMock:
 
 
 @pytest.fixture
-def workflow():
-    """Create a workflow with mock LLM."""
+def agent():
+    """Create a SalesAgent with mock LLM."""
     llm = _mock_llm()
-    wf = StageWorkflow(llm=llm, vehicle_index=None)
-    set_workflow(wf)
-    return wf
+    a = SalesAgent(llm=llm)
+    set_agent(a)
+    return a
 
 
 @pytest.fixture
-async def client(workflow):
+async def client(agent):
     """Create an async test client."""
     from app.main import app
+    from app.routes.chat import _sessions
+
+    _sessions.clear()  # ensure clean state between tests
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
@@ -58,6 +61,7 @@ async def client(workflow):
 # ============================================================
 # Health / Root
 # ============================================================
+
 
 class TestRootEndpoints:
     @pytest.mark.asyncio
@@ -77,6 +81,7 @@ class TestRootEndpoints:
 # ============================================================
 # Chat endpoints
 # ============================================================
+
 
 class TestChatAPI:
     @pytest.mark.asyncio
@@ -162,6 +167,7 @@ class TestChatAPI:
 # ============================================================
 # Profile endpoints
 # ============================================================
+
 
 class TestProfileAPI:
     @pytest.mark.asyncio
@@ -262,6 +268,7 @@ class TestProfileAPI:
 # ============================================================
 # Test Drive endpoints
 # ============================================================
+
 
 class TestTestDriveAPI:
     @pytest.mark.asyncio

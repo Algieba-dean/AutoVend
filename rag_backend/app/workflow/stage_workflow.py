@@ -162,10 +162,7 @@ class StageWorkflow:
         )
 
         if state.stage != old_stage:
-            logger.info(
-                f"[{session_id}] Stage transition: "
-                f"{old_stage.value} → {state.stage.value}"
-            )
+            logger.info(f"[{session_id}] Stage transition: {old_stage.value} → {state.stage.value}")
 
         # 5. Retrieve vehicles if in needs/selection stage
         if state.stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
@@ -219,17 +216,13 @@ class StageWorkflow:
             reservation_info=state.reservation,
         )
 
-    def _extract_information(
-        self, state: SessionState, conversation_text: str
-    ) -> SessionState:
+    def _extract_information(self, state: SessionState, conversation_text: str) -> SessionState:
         """Run extractors relevant to the current stage."""
         stage = state.stage
 
         # Profile extraction: active during welcome and profile_analysis
         if stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS):
-            state.profile = extract_profile(
-                self.llm, conversation_text, state.profile
-            )
+            state.profile = extract_profile(self.llm, conversation_text, state.profile)
 
         # Needs extraction: active during needs_analysis and car_selection
         if stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
@@ -242,9 +235,7 @@ class StageWorkflow:
 
         # Reservation extraction: active during reservation stages
         if stage in (Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION):
-            state.reservation = extract_reservation(
-                self.llm, conversation_text, state.reservation
-            )
+            state.reservation = extract_reservation(self.llm, conversation_text, state.reservation)
 
         return state
 
