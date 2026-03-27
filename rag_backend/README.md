@@ -1,14 +1,35 @@
 # AutoVend RAG Backend
 
+[![CI](https://github.com/Algieba-dean/AutoVend/actions/workflows/ci.yml/badge.svg)](https://github.com/Algieba-dean/AutoVend/actions/workflows/ci.yml)
+
 LlamaIndex-based intelligent automotive sales assistant with RAG (Retrieval-Augmented Generation) architecture.
 
-## Architecture
+## Architecture (v2 — Decoupled)
+
+```
+┌─────────────────────────────────────────────────┐
+│  agent/  (Pure AI logic, zero backend deps)     │
+│  ┌─────────┐ ┌────────────┐ ┌───────────────┐  │
+│  │Extractors│ │ Stages FSM │ │Resp. Generator│  │
+│  └────┬─────┘ └─────┬──────┘ └──────┬────────┘  │
+│       └─────────┬───┘───────────────┘            │
+│           SalesAgent.process(AgentInput)          │
+│                 → AgentResult                     │
+└────────────────────┬────────────────────────────┘
+                     │ protocol boundary
+┌────────────────────┴────────────────────────────┐
+│  app/  (FastAPI, Storage, RAG Index)            │
+│  Routes → ChatService → SalesAgent              │
+│  RAG retrieval, session lifecycle, JSON storage  │
+└─────────────────────────────────────────────────┘
+```
 
 - **LLM**: DeepSeek (OpenAI-compatible API)
 - **Embedding**: bge-m3 (local HuggingFace, Chinese + English)
 - **Vector Store**: ChromaDB (persistent local storage)
 - **Web Framework**: FastAPI
 - **Dialog Memory**: LlamaIndex ChatMemoryBuffer
+- **Agent**: Standalone `agent/` package — no backend dependencies
 
 ## Quick Start
 
@@ -48,23 +69,24 @@ API docs available at: http://localhost:8000/docs
 
 ```
 rag_backend/
-├── app/
-│   ├── main.py              # FastAPI entry point
+├── agent/                   # Standalone AI agent (zero backend deps)
+│   ├── sales_agent.py       # SalesAgent.process(AgentInput) → AgentResult
+│   ├── schemas.py           # Protocol: AgentInput, AgentResult, SessionState
+│   ├── stages.py            # Conversation stage FSM
+│   ├── memory.py            # Chat memory (LlamaIndex ChatMemoryBuffer)
+│   ├── response_generator.py # Stage-aware response generation
+│   └── extractors/          # Profile, needs, reservation extraction
+├── app/                     # FastAPI backend (thin orchestrator)
+│   ├── main.py              # App entry point + SalesAgent wiring
 │   ├── config.py            # Unified configuration
 │   ├── ingestion/           # Data parsing & indexing
 │   ├── rag/                 # RAG query engine
-│   ├── extractors/          # Structured information extraction
-│   ├── workflow/            # Dialog stage workflow
-│   ├── memory/              # Chat memory management
-│   ├── models/              # Pydantic schemas & storage
-│   └── routes/              # API endpoints
-├── data/                    # ChromaDB persistent storage
-├── docs/                    # KPI, architecture, API docs
-├── scripts/                 # Utility scripts
-├── tests/                   # Test suite
-├── .env.example
+│   ├── models/              # API schemas & file storage
+│   └── routes/              # API endpoints (delegate to agent)
+├── .github/workflows/       # CI pipeline (lint, test, KPI report)
+├── docs/                    # Architecture, KPI, testing docs
+├── tests/                   # Full test suite (unit, KPI, e2e)
 ├── pyproject.toml
-├── uv.lock
 └── README.md
 ```
 
@@ -75,10 +97,16 @@ rag_backend/
 uv run pytest
 
 # Run with coverage
-uv run pytest --cov=app --cov-report=html
+uv run pytest --cov=agent --cov=app --cov-report=term-missing
 
-# Run specific test module
-uv run pytest tests/test_toml_parser.py -v
+# Run KPI tests only
+uv run pytest tests/test_kpi_extraction.py tests/test_kpi_stages.py tests/test_kpi_e2e_dialogues.py -v
+
+# Generate KPI report
+uv run python tests/kpi_report.py
+
+# Architecture isolation check
+uv run pytest tests/test_agent_isolation.py -v
 ```
 
 ## API Endpoints
@@ -114,8 +142,11 @@ uv run pytest tests/test_toml_parser.py -v
 
 ## Documentation
 
-- [Architecture](docs/architecture.md) — System design, module breakdown, data flow
-- [KPI Metrics](docs/kpi.md) — Test coverage, code quality, performance metrics
+- [Architecture v1](docs/architecture.md) — Original system design and module breakdown
+- [Architecture v2](docs/v2_architecture.md) — Decoupled Agent/Backend architecture and KPI targets
+- [KPI Metrics v1](docs/kpi.md) — v1 test coverage, code quality, performance metrics
+- [KPI Testing Guide](docs/kpi_testing_guide.md) — How to run, interpret, and extend KPI tests
+- [CI Pipeline](.github/workflows/ci.yml) — Lint, test, coverage, KPI report, arch guard
 
 ## Conversation Stages
 
