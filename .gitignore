@@ -43,6 +43,9 @@ frontend/package-lock.json
 **/coverage.xml
 **/test-results.xml
 
+# Evaluation results (generated, not source)
+backend/eval_results/
+
 # uv lock (large, machine-generated)
 # Uncomment if you want to track it:
 # backend/uv.lock
