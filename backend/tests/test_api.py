@@ -40,9 +40,12 @@ def _mock_llm() -> MagicMock:
 @pytest.fixture
 def agent():
     """Create a SalesAgent with mock LLM."""
+    from app.main import _startup_status
+
     llm = _mock_llm()
     a = SalesAgent(llm=llm)
     set_agent(a)
+    _startup_status["agent_ready"] = True
     return a
 
 
@@ -69,13 +72,46 @@ class TestRootEndpoints:
         resp = await client.get("/")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["name"] == "AutoVend RAG API"
+        assert data["name"] == "AutoVend API"
+        assert data["version"] == "2.0.0"
 
     @pytest.mark.asyncio
     async def test_health(self, client):
         resp = await client.get("/health")
         assert resp.status_code == 200
-        assert resp.json()["status"] == "ok"
+        data = resp.json()
+        assert data["status"] in ("ok", "degraded", "unhealthy")
+        assert "components" in data
+        assert data["components"]["agent"] == "ok"
+
+    @pytest.mark.asyncio
+    async def test_health_reports_rag_status(self, client):
+        resp = await client.get("/health")
+        data = resp.json()
+        assert "rag_index" in data["components"]
+
+    @pytest.mark.asyncio
+    async def test_request_id_header(self, client):
+        resp = await client.get("/")
+        assert "x-request-id" in resp.headers
+
+    @pytest.mark.asyncio
+    async def test_request_id_passthrough(self, client):
+        custom_id = "test-req-12345"
+        resp = await client.get("/", headers={"X-Request-ID": custom_id})
+        assert resp.headers["x-request-id"] == custom_id
+
+    @pytest.mark.asyncio
+    async def test_validation_error_structured(self, client):
+        # Send invalid body to an endpoint that requires specific fields
+        resp = await client.post("/api/chat/message", json={"bad_field": "x"})
+        assert resp.status_code == 422
+        data = resp.json()
+        assert "errors" in data
+        assert isinstance(data["errors"], list)
+        assert len(data["errors"]) > 0
+        assert "field" in data["errors"][0]
+        assert "message" in data["errors"][0]
 
 
 # ============================================================
