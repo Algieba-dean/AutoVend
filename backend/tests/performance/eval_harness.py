@@ -19,9 +19,9 @@ from unittest.mock import MagicMock
 
 from agent.sales_agent import SalesAgent
 from agent.schemas import AgentInput, SessionState, Stage
-from tests.performance.scenarios import ALL_SCENARIOS
 from tests.performance.llm_judge import JudgeScore, _heuristic_judge  # noqa: F401
 from tests.performance.rag_metrics import RAGEvaluation, evaluate_rag  # noqa: F401
+from tests.performance.scenarios import ALL_SCENARIOS
 from tests.performance.scoring import (
     DialogueScorecard,
     EvaluationReport,
