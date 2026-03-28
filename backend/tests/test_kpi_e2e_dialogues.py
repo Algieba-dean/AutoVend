@@ -89,14 +89,19 @@ def _create_dialogue_llm(
     def side_effect(prompt):
         resp = MagicMock()
         p = prompt.lower()
-        if "explicit" in p and "implicit" in p:
-            # Combined needs extractor: returns both explicit and implicit
-            resp.text = json.dumps(
-                {
-                    "explicit": needs_response,
-                    "implicit": implicit_response,
-                }
-            )
+        # Global extraction prompt must be checked FIRST
+        if "category 1" in p and "category 2" in p and "category 4" in p:
+            resp.text = json.dumps({
+                "profile": profile_response,
+                "explicit": needs_response,
+                "implicit": implicit_response,
+                "reservation": reservation_response,
+            })
+        elif "explicit" in p and "implicit" in p:
+            resp.text = json.dumps({
+                "explicit": needs_response,
+                "implicit": implicit_response,
+            })
         elif "profile" in p and "extract" in p:
             resp.text = json.dumps(profile_response)
         elif "vehicle requirements" in p or "explicit" in p or "vehicle needs" in p:
@@ -152,8 +157,8 @@ DIALOGUE_SCENARIOS = [
             "reservation_phone_number": "13800138000",
         },
         "turns": [
-            {"msg": "你好，我想看看车", "expected_stage": Stage.PROFILE_ANALYSIS},
-            {"msg": "我叫李明，26岁，在杭州", "expected_stage": Stage.NEEDS_ANALYSIS},
+            {"msg": "你好，我想看看车", "expected_stage": Stage.CAR_SELECTION},
+            {"msg": "我叫李明，26岁，在杭州", "expected_stage": Stage.CAR_SELECTION},
             {"msg": "我想要纯电SUV，预算15到25万", "expected_stage": Stage.CAR_SELECTION},
             {"msg": "比亚迪元Plus看起来不错，我想试驾", "expected_stage": Stage.CAR_SELECTION},
             {"msg": "6月15号上午10点，杭州西湖店", "expected_stage": Stage.CAR_SELECTION},
@@ -192,8 +197,8 @@ DIALOGUE_SCENARIOS = [
             "reservation_phone_number": "13900139000",
         },
         "turns": [
-            {"msg": "你好", "expected_stage": Stage.PROFILE_ANALYSIS},
-            {"msg": "我是张伟，38岁，家里五口人", "expected_stage": Stage.NEEDS_ANALYSIS},
+            {"msg": "你好", "expected_stage": Stage.CAR_SELECTION},
+            {"msg": "我是张伟，38岁，家里五口人", "expected_stage": Stage.CAR_SELECTION},
             {"msg": "要7座SUV，25到35万，插电混动", "expected_stage": Stage.CAR_SELECTION},
             {"msg": "理想L8不错，周六下午2点试驾", "expected_stage": Stage.CAR_SELECTION},
         ],
@@ -231,10 +236,10 @@ DIALOGUE_SCENARIOS = [
             "reservation_phone_number": "13700137000",
         },
         "turns": [
-            {"msg": "Hi there", "expected_stage": Stage.PROFILE_ANALYSIS},
+            {"msg": "Hi there", "expected_stage": Stage.CAR_SELECTION},
             {
                 "msg": "I'm David, 45, car enthusiast from Shenzhen",
-                "expected_stage": Stage.NEEDS_ANALYSIS,
+                "expected_stage": Stage.CAR_SELECTION,
             },
             {
                 "msg": "Want a BMW, sporty, under 4s 0-100, RWD, 50万+",
@@ -268,8 +273,8 @@ DIALOGUE_SCENARIOS = [
         },
         "reservation_resp": {},
         "turns": [
-            {"msg": "你好啊", "expected_stage": Stage.PROFILE_ANALYSIS},
-            {"msg": "我是小陈，24岁刚毕业", "expected_stage": Stage.NEEDS_ANALYSIS},
+            {"msg": "你好啊", "expected_stage": Stage.CAR_SELECTION},
+            {"msg": "我是小陈，24岁刚毕业", "expected_stage": Stage.CAR_SELECTION},
             {"msg": "预算8万以下，省油的小车就行", "expected_stage": Stage.CAR_SELECTION},
         ],
     },
@@ -301,8 +306,8 @@ DIALOGUE_SCENARIOS = [
             "reservation_phone_number": "13600136000",
         },
         "turns": [
-            {"msg": "你好", "expected_stage": Stage.PROFILE_ANALYSIS},
-            {"msg": "我姓王，62岁，给老伴选车", "expected_stage": Stage.NEEDS_ANALYSIS},
+            {"msg": "你好", "expected_stage": Stage.CAR_SELECTION},
+            {"msg": "我姓王，62岁，给老伴选车", "expected_stage": Stage.CAR_SELECTION},
             {"msg": "舒适的中型轿车，20到30万", "expected_stage": Stage.CAR_SELECTION},
         ],
     },

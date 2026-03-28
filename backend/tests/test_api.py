@@ -21,13 +21,22 @@ def _mock_llm() -> MagicMock:
 
     def side_effect(prompt):
         resp = MagicMock()
-        if "profile" in prompt.lower() and "extract" in prompt.lower():
+        p = prompt.lower()
+        # Global extraction prompt (all four categories in one call)
+        if "category 1" in p and "category 2" in p and "category 3" in p:
+            resp.text = json.dumps({
+                "profile": {"name": "TestUser", "age": "30"},
+                "explicit": {"brand": "Tesla"},
+                "implicit": {"comfort_level": "High"},
+                "reservation": {},
+            })
+        elif "profile" in p and "extract" in p:
             resp.text = json.dumps({"name": "TestUser", "age": "30"})
-        elif "vehicle requirements" in prompt.lower() or "explicit" in prompt.lower():
+        elif "vehicle requirements" in p or "explicit" in p:
             resp.text = json.dumps({"brand": "Tesla"})
-        elif "deduce" in prompt.lower() or "implicit" in prompt.lower():
+        elif "deduce" in p or "implicit" in p:
             resp.text = json.dumps({"comfort_level": "High"})
-        elif "reservation" in prompt.lower() and "extract" in prompt.lower():
+        elif "reservation" in p and "extract" in p:
             resp.text = json.dumps({})
         else:
             resp.text = "Hello! Welcome to AutoVend."

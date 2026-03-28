@@ -65,20 +65,23 @@ def _mock_llm_dynamic() -> MagicMock:
 
     def side_effect(prompt):
         resp = MagicMock()
-        if "profile" in prompt.lower() or "extract" in prompt.lower():
+        p = prompt.lower()
+        # Global extraction prompt (all four categories in one call)
+        if "category 1" in p and "category 2" in p and "category 4" in p:
+            resp.text = json.dumps({
+                "profile": {"name": "TestUser", "age": "30"},
+                "explicit": {"brand": "Tesla", "powertrain_type": "EV"},
+                "implicit": {"comfort_level": "High", "safety": "High"},
+                "reservation": {"reservation_date": "2024-06-01", "reservation_time": "10:00", "reservation_location": "East Store"},
+            })
+        elif "profile" in p and "extract" in p:
             resp.text = json.dumps({"name": "TestUser", "age": "30"})
-        elif "needs" in prompt.lower() or "vehicle" in prompt.lower():
+        elif "needs" in p or "vehicle" in p:
             resp.text = json.dumps({"brand": "Tesla", "powertrain_type": "EV"})
-        elif "implicit" in prompt.lower() or "deduce" in prompt.lower():
+        elif "implicit" in p or "deduce" in p:
             resp.text = json.dumps({"comfort_level": "High", "safety": "High"})
-        elif "reservation" in prompt.lower():
-            resp.text = json.dumps(
-                {
-                    "reservation_date": "2024-06-01",
-                    "reservation_time": "10:00",
-                    "reservation_location": "East Store",
-                }
-            )
+        elif "reservation" in p:
+            resp.text = json.dumps({"reservation_date": "2024-06-01", "reservation_time": "10:00", "reservation_location": "East Store"})
         else:
             resp.text = "Hello! Welcome to AutoVend."
         return resp
@@ -502,7 +505,7 @@ class TestSalesAgent:
         result = agent.process(inp)
 
         assert isinstance(result, AgentResult)
-        assert result.session_state.stage == Stage.PROFILE_ANALYSIS  # welcome always advances
+        assert result.session_state.stage == Stage.CAR_SELECTION  # global extraction jumps to car selection
         assert result.stage_changed is True
         assert result.response_text  # has some response
 
