@@ -17,7 +17,11 @@ from __future__ import annotations
 import re
 import statistics
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
+if TYPE_CHECKING:
+    from tests.performance.llm_judge import JudgeScore  # noqa: F401
+    from tests.performance.rag_metrics import RAGEvaluation  # noqa: F401
 
 # ── Extraction Accuracy ──────────────────────────────────────────────────────
 
@@ -372,6 +376,8 @@ class TurnScore:
     latency_ms: float = 0.0
     extraction_profile: Optional[ExtractionScore] = None
     extraction_needs: Optional[ExtractionScore] = None
+    judge_score: Optional[Any] = None     # JudgeScore from LLM-as-a-Judge
+    rag_eval: Optional[Any] = None        # RAGEvaluation metrics
 
     def to_dict(self) -> dict:
         d = {
@@ -393,6 +399,10 @@ class TurnScore:
             d["extraction_profile_f1"] = round(self.extraction_profile.f1, 3)
         if self.extraction_needs:
             d["extraction_needs_f1"] = round(self.extraction_needs.f1, 3)
+        if self.judge_score:
+            d["judge"] = self.judge_score.to_dict()
+        if self.rag_eval:
+            d["rag"] = self.rag_eval.to_dict()
         return d
 
 

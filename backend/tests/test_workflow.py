@@ -41,7 +41,10 @@ from app.workflow.stage_workflow import SessionState, StageWorkflow
 class TestCanTransition:
     def test_valid_transitions(self):
         assert can_transition(Stage.WELCOME, Stage.PROFILE_ANALYSIS)
+        assert can_transition(Stage.WELCOME, Stage.NEEDS_ANALYSIS)
+        assert can_transition(Stage.WELCOME, Stage.CAR_SELECTION)
         assert can_transition(Stage.PROFILE_ANALYSIS, Stage.NEEDS_ANALYSIS)
+        assert can_transition(Stage.PROFILE_ANALYSIS, Stage.CAR_SELECTION)
         assert can_transition(Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION)
         assert can_transition(Stage.CAR_SELECTION, Stage.RESERVATION_4S)
         assert can_transition(Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION)
@@ -49,7 +52,6 @@ class TestCanTransition:
 
     def test_invalid_transitions(self):
         assert not can_transition(Stage.WELCOME, Stage.FAREWELL)
-        assert not can_transition(Stage.PROFILE_ANALYSIS, Stage.CAR_SELECTION)
         assert not can_transition(Stage.FAREWELL, Stage.WELCOME)
 
     def test_backwards_allowed_for_car_selection(self):
@@ -318,13 +320,22 @@ def _mock_llm_for_workflow() -> MagicMock:
 
     def side_effect(prompt):
         resp = MagicMock()
-        if "profile" in prompt.lower() and "extract" in prompt.lower():
+        p = prompt.lower()
+        # Global extraction prompt (all four categories in one call)
+        if "category 1" in p and "category 2" in p and "category 3" in p:
+            resp.text = json.dumps({
+                "profile": {"name": "John", "age": "35"},
+                "explicit": {"brand": "Tesla", "prize": "40,000~60,000"},
+                "implicit": {"comfort_level": "High"},
+                "reservation": {"reservation_date": "2024-03-15"},
+            })
+        elif "profile" in p and "extract" in p:
             resp.text = json.dumps({"name": "John", "age": "35"})
-        elif "explicit" in prompt.lower() or "vehicle requirements" in prompt.lower():
+        elif "explicit" in p or "vehicle requirements" in p:
             resp.text = json.dumps({"brand": "Tesla", "prize": "40,000~60,000"})
-        elif "implicit" in prompt.lower() or "deduce" in prompt.lower():
+        elif "implicit" in p or "deduce" in p:
             resp.text = json.dumps({"comfort_level": "High"})
-        elif "reservation" in prompt.lower() and "extract" in prompt.lower():
+        elif "reservation" in p and "extract" in p:
             resp.text = json.dumps({"reservation_date": "2024-03-15"})
         else:
             resp.text = "Hello! Welcome to AutoVend. How can I help you today?"
@@ -368,8 +379,10 @@ class TestStageWorkflow:
         llm = _mock_llm_for_workflow()
         wf = StageWorkflow(llm)
         response = wf.process_message("s1", "Hi, I'm looking for a car")
-        # Should advance from WELCOME to PROFILE_ANALYSIS
-        assert response.stage.current_stage == Stage.PROFILE_ANALYSIS.value
+        # With global extraction, agent advances beyond WELCOME.
+        # Cross-stage jumping may skip to NEEDS_ANALYSIS or CAR_SELECTION
+        # if profile and needs are both filled.
+        assert response.stage.current_stage != Stage.WELCOME.value
 
     def test_process_message_returns_valid_chat_response(self):
         llm = _mock_llm_for_workflow()

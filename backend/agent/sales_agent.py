@@ -12,16 +12,13 @@ import logging
 
 from llama_index.core.llms import LLM
 
-from agent.extractors.combined_needs_extractor import extract_combined_needs
-from agent.extractors.profile_extractor import extract_profile
-from agent.extractors.reservation_extractor import extract_reservation
+from agent.extractors.global_extractor import extract_global
 from agent.memory import ChatMemoryManager
 from agent.response_generator import generate_response
 from agent.schemas import (
     AgentInput,
     AgentResult,
     SessionState,
-    Stage,
 )
 from agent.stages import determine_next_stage
 
@@ -123,21 +120,12 @@ class SalesAgent:
         return self.memory.get_history_as_text(session_id)
 
     def _extract_information(self, state: SessionState, conversation_text: str) -> SessionState:
-        """Run extractors relevant to the current stage."""
-        stage = state.stage
+        """
+        Run global extraction on every turn regardless of stage.
 
-        # Profile extraction: active during welcome and profile_analysis
-        if stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS):
-            state.profile = extract_profile(self.llm, conversation_text, state.profile)
-
-        # Combined needs extraction: explicit + implicit in one LLM call
-        if stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
-            state.needs = extract_combined_needs(
-                self.llm, conversation_text, state.profile, state.needs
-            )
-
-        # Reservation extraction: active during reservation stages
-        if stage in (Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION):
-            state.reservation = extract_reservation(self.llm, conversation_text, state.reservation)
-
-        return state
+        Unlike the previous stage-gated approach, this extracts profile,
+        needs, and reservation info simultaneously. This means if a user
+        says "I'm Zhang San, 30 years old, want a Tesla SUV under 300K"
+        in one message, all fields are captured immediately.
+        """
+        return extract_global(self.llm, conversation_text, state)
