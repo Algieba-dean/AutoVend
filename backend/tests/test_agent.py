@@ -513,7 +513,8 @@ class TestSalesAgent:
         result = agent.process(inp)
 
         assert isinstance(result, AgentResult)
-        assert result.session_state.stage == Stage.CAR_SELECTION  # global extraction jumps to car selection
+        assert result.session_state.stage == Stage.CAR_SELECTION  # global extraction jumps
+        # to car selection
         assert result.stage_changed is True
         assert result.response_text  # has some response
 
