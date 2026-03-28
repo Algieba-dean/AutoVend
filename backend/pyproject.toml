@@ -57,3 +57,8 @@ omit = ["tests/*"]
 [tool.coverage.report]
 fail_under = 85
 show_missing = true
+
+[dependency-groups]
+dev = [
+    "safety>=2.3.0",
+]
