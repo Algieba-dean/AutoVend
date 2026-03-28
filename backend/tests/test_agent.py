@@ -72,7 +72,11 @@ def _mock_llm_dynamic() -> MagicMock:
                 "profile": {"name": "TestUser", "age": "30"},
                 "explicit": {"brand": "Tesla", "powertrain_type": "EV"},
                 "implicit": {"comfort_level": "High", "safety": "High"},
-                "reservation": {"reservation_date": "2024-06-01", "reservation_time": "10:00", "reservation_location": "East Store"},
+                "reservation": {
+                    "reservation_date": "2024-06-01",
+                    "reservation_time": "10:00",
+                    "reservation_location": "East Store"
+                },
             })
         elif "profile" in p and "extract" in p:
             resp.text = json.dumps({"name": "TestUser", "age": "30"})
@@ -81,7 +85,11 @@ def _mock_llm_dynamic() -> MagicMock:
         elif "implicit" in p or "deduce" in p:
             resp.text = json.dumps({"comfort_level": "High", "safety": "High"})
         elif "reservation" in p:
-            resp.text = json.dumps({"reservation_date": "2024-06-01", "reservation_time": "10:00", "reservation_location": "East Store"})
+            resp.text = json.dumps({
+                "reservation_date": "2024-06-01",
+                "reservation_time": "10:00",
+                "reservation_location": "East Store"
+            })
         else:
             resp.text = "Hello! Welcome to AutoVend."
         return resp
