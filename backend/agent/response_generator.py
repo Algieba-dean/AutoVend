@@ -205,22 +205,25 @@ def generate_response(
     """
     prompt_template = STAGE_PROMPTS.get(stage, STAGE_PROMPTS[Stage.WELCOME])
 
-    prompt = prompt_template.format(
-        conversation_history=conversation_history,
-        profile=profile.model_dump_json(indent=2),
-        explicit_needs=needs.explicit.model_dump_json(indent=2),
-        implicit_needs=needs.implicit.model_dump_json(indent=2),
-        matched_cars=_format_matched_cars(matched_cars),
-        reservation=reservation.model_dump_json(indent=2),
-        missing_profile_fields=_get_missing_profile_fields(profile),
-        missing_needs_fields=_get_missing_needs_fields(needs),
-        missing_reservation_fields=_get_missing_reservation_fields(reservation),
-        reservation_driver=reservation.test_driver,
-        reservation_date=reservation.reservation_date,
-        reservation_time=reservation.reservation_time,
-        reservation_location=reservation.reservation_location,
-        reservation_phone=reservation.reservation_phone_number,
-    )
+    # Build format kwargs — only include what the template actually uses
+    format_kwargs = {
+        "conversation_history": conversation_history,
+        "profile": profile.model_dump_json(indent=2),
+        "missing_profile_fields": _get_missing_profile_fields(profile),
+        "explicit_needs": needs.explicit.model_dump_json(indent=2),
+        "implicit_needs": needs.implicit.model_dump_json(indent=2),
+        "missing_needs_fields": _get_missing_needs_fields(needs),
+        "matched_cars": _format_matched_cars(matched_cars),
+        "reservation": reservation.model_dump_json(indent=2),
+        "missing_reservation_fields": _get_missing_reservation_fields(reservation),
+        "reservation_driver": reservation.test_driver,
+        "reservation_date": reservation.reservation_date,
+        "reservation_time": reservation.reservation_time,
+        "reservation_location": reservation.reservation_location,
+        "reservation_phone": reservation.reservation_phone_number,
+    }
+
+    prompt = prompt_template.format(**format_kwargs)
 
     try:
         response = llm.complete(prompt)

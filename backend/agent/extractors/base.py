@@ -72,22 +72,27 @@ def extract_with_llm(
     llm,
     prompt: str,
     current: T,
+    max_retries: int = 2,
 ) -> T:
     """
     Generic extraction: call LLM, parse JSON, merge into model.
+
+    Retries up to max_retries times on JSON parse failures.
 
     Args:
         llm: LLM instance with .complete() method.
         prompt: Formatted prompt string.
         current: Current Pydantic model to merge into.
+        max_retries: Maximum number of attempts (default 2).
 
     Returns:
         Updated model instance, or current if extraction fails.
     """
-    try:
-        response = llm.complete(prompt)
-        extracted = parse_llm_json(response.text)
-        return merge_model(current, extracted)
-    except Exception as e:
-        logger.warning(f"Extraction failed: {e}")
-        return current
+    for attempt in range(max_retries):
+        try:
+            response = llm.complete(prompt)
+            extracted = parse_llm_json(response.text)
+            return merge_model(current, extracted)
+        except Exception as e:
+            logger.warning(f"Extraction attempt {attempt + 1}/{max_retries} failed: {e}")
+    return current

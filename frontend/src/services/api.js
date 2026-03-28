@@ -46,7 +46,7 @@ export const profileService = {
       throw error;
     }
   },
-  
+
   // 添加删除用户资料的方法
   deleteProfile: async (phoneNumber) => {
     try {
@@ -57,11 +57,11 @@ export const profileService = {
       throw error;
     }
   },
-  
+
   // 添加获取所有用户资料的方法
   getAllProfiles: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/profiles`);
+      const response = await axios.get(`${API_BASE_URL}/profile`);
       return response.data;
     } catch (error) {
       console.error('Failed to get all profiles:', error);
@@ -99,7 +99,7 @@ export const chatService = {
     try {
       const params = new URLSearchParams();
       if (limit) params.append('limit', limit);
-      
+
       const response = await axios.get(
         `${API_BASE_URL}/chat/session/${sessionId}/messages?${params.toString()}`
       );
@@ -119,7 +119,7 @@ export const chatService = {
       throw error;
     }
   },
-  
+
   // 添加获取所有会话的方法
   getAllSessions: async () => {
     try {
@@ -130,7 +130,7 @@ export const chatService = {
       throw error;
     }
   },
-  
+
   // 添加获取单个会话详情的方法
   getSessionDetails: async (sessionId) => {
     try {
@@ -154,7 +154,7 @@ export const needsService = {
       throw error;
     }
   },
-  
+
   addNeed: async (profileId, category, value, isImplicit = false) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/needs/${profileId}`, {
@@ -168,7 +168,7 @@ export const needsService = {
       throw error;
     }
   },
-  
+
   // 添加更新需求的方法
   updateNeed: async (profileId, needId, needData) => {
     try {
@@ -179,7 +179,7 @@ export const needsService = {
       throw error;
     }
   },
-  
+
   // 添加删除需求的方法
   deleteNeed: async (profileId, needId) => {
     try {
@@ -203,7 +203,7 @@ export const recommendationService = {
       throw error;
     }
   },
-  
+
   // 添加获取特定车型详情的方法
   getCarDetails: async (carId) => {
     try {
@@ -214,7 +214,7 @@ export const recommendationService = {
       throw error;
     }
   },
-  
+
   // 添加搜索车型的方法
   searchCars: async (searchParams) => {
     try {
@@ -242,7 +242,7 @@ export const reservationService = {
       throw error;
     }
   },
-  
+
   getReservation: async (phoneNumber) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/test-drive/${phoneNumber}`);
@@ -252,7 +252,7 @@ export const reservationService = {
       throw error;
     }
   },
-  
+
   updateReservation: async (phoneNumber, reservationData) => {
     try {
       const response = await axios.put(`${API_BASE_URL}/test-drive/${phoneNumber}`, {
@@ -266,7 +266,7 @@ export const reservationService = {
       throw error;
     }
   },
-  
+
   cancelReservation: async (phoneNumber) => {
     try {
       const response = await axios.delete(`${API_BASE_URL}/test-drive/${phoneNumber}`);
@@ -276,7 +276,7 @@ export const reservationService = {
       throw error;
     }
   },
-  
+
   getAllReservations: async (filters = {}) => {
     try {
       // 支持可选的筛选参数
@@ -287,7 +287,7 @@ export const reservationService = {
       if (filters.to_date) params.append('to_date', filters.to_date);
       if (filters.limit) params.append('limit', filters.limit);
       if (filters.offset) params.append('offset', filters.offset);
-      
+
       const url = `${API_BASE_URL}/test-drive${params.toString() ? '?' + params.toString() : ''}`;
       const response = await axios.get(url);
       return response.data.test_drives || [];

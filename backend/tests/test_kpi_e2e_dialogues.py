@@ -89,7 +89,15 @@ def _create_dialogue_llm(
     def side_effect(prompt):
         resp = MagicMock()
         p = prompt.lower()
-        if "profile" in p and "extract" in p:
+        if "explicit" in p and "implicit" in p:
+            # Combined needs extractor: returns both explicit and implicit
+            resp.text = json.dumps(
+                {
+                    "explicit": needs_response,
+                    "implicit": implicit_response,
+                }
+            )
+        elif "profile" in p and "extract" in p:
             resp.text = json.dumps(profile_response)
         elif "vehicle requirements" in p or "explicit" in p or "vehicle needs" in p:
             resp.text = json.dumps(needs_response)

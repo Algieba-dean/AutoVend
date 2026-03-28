@@ -189,7 +189,7 @@ const Chat = () => {
       }
 
       // Update stage information
-       if (response.stage && response.stage.current_stage) {
+      if (response.stage && response.stage.current_stage) {
         setCurrentStage(response.stage.current_stage);
       }
 
@@ -244,16 +244,16 @@ const Chat = () => {
     if (currentStage === 'reservation4s') {
       // Check if there is any appointment information
       const hasAppointmentInfo = appointment && (
-        appointment.test_driver || 
-        appointment.reservation_date || 
-        appointment.reservation_time || 
-        appointment.reservation_location || 
-        appointment.reservation_phone_number || 
+        appointment.test_driver ||
+        appointment.reservation_date ||
+        appointment.reservation_time ||
+        appointment.reservation_location ||
+        appointment.reservation_phone_number ||
         appointment.salesman ||
         appointment.brand ||
         appointment.selected_car_model
       );
-      
+
       return (
         <>
           <div className="info-panel test-drive-appointment">
@@ -379,20 +379,24 @@ const Chat = () => {
           <div className="panel-content">
             {needs && (needs.explicit || needs.implicit) ? (
               <>
-                {/* 处理显式需求 */}
-                {needs.explicit && Object.entries(needs.explicit).map(([category, value], index) => (
-                  <div key={`explicit-${index}`} className="analysis-item">
-                    {category}: {formatValue(value)}
-                  </div>
-                ))}
-                
-                {/* 处理隐式需求 */}
-                {needs.implicit && Object.entries(needs.implicit).map(([category, value], index) => (
-                  <div key={`implicit-${index}`} className="analysis-item">
-                    {category}: {formatValue(value)}
-                    <span className="implicit-tag">, implicit</span>
-                  </div>
-                ))}
+                {/* 处理显式需求 - 仅显示非空字段 */}
+                {needs.explicit && Object.entries(needs.explicit)
+                  .filter(([, value]) => value && String(value).trim())
+                  .map(([category, value], index) => (
+                    <div key={`explicit-${index}`} className="analysis-item">
+                      {category}: {formatValue(value)}
+                    </div>
+                  ))}
+
+                {/* 处理隐式需求 - 仅显示非空字段 */}
+                {needs.implicit && Object.entries(needs.implicit)
+                  .filter(([, value]) => value && String(value).trim())
+                  .map(([category, value], index) => (
+                    <div key={`implicit-${index}`} className="analysis-item">
+                      {category}: {formatValue(value)}
+                      <span className="implicit-tag">, implicit</span>
+                    </div>
+                  ))}
               </>
             ) : (
               <div className="empty-analysis"></div>
@@ -405,7 +409,8 @@ const Chat = () => {
             {matchedCars && matchedCars.length > 0 ? (
               matchedCars.map((car, index) => (
                 <div key={index} className="car-item">
-                  {car}
+                  {typeof car === 'string' ? car : (car.car_model || JSON.stringify(car))}
+                  {car.score != null && <span className="car-score"> (score: {car.score})</span>}
                 </div>
               ))
             ) : (
@@ -435,7 +440,7 @@ const Chat = () => {
           await chatService.endSession(sessionId);
           console.log('Session terminated');
         }
-        
+
         // If user profile exists, delete the user profile, default user cannot be deleted
         if (userProfile && userProfile.phone_number && userProfile.phone_number !== '13888888888') {
           await profileService.deleteProfile(userProfile.phone_number);

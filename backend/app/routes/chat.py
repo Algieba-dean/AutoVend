@@ -34,6 +34,9 @@ _vehicle_index = None
 # In-memory session state store (session_id → SessionState)
 _sessions: Dict[str, SessionState] = {}
 
+# Cache of previous explicit needs per session (for change detection)
+_prev_explicit: Dict[str, dict] = {}
+
 
 def set_agent(agent: SalesAgent) -> None:
     """Inject the SalesAgent instance (called from main.py on startup)."""
@@ -60,6 +63,15 @@ def _retrieve_cars(state: SessionState) -> list:
     if state.stage not in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
         return state.matched_cars
 
+    # Skip retrieval if explicit needs haven't changed (performance optimization)
+    sid = state.session_id
+    current_explicit = state.needs.explicit.model_dump()
+    if sid in _prev_explicit and _prev_explicit[sid] == current_explicit:
+        if state.matched_cars:
+            logger.debug(f"[{sid}] Skipping RAG: explicit needs unchanged.")
+            return state.matched_cars
+    _prev_explicit[sid] = current_explicit
+
     from app.rag.query_engine import format_retrieval_results, retrieve_vehicles
 
     explicit = state.needs.explicit
@@ -72,14 +84,18 @@ def _retrieve_cars(state: SessionState) -> list:
         query_parts.append(explicit.design_style)
     if explicit.brand:
         query_parts.append(f"{explicit.brand} brand")
+    if explicit.prize:
+        query_parts.append(f"price range {explicit.prize}")
+    if explicit.seat_layout:
+        query_parts.append(explicit.seat_layout)
     if not query_parts:
         query_parts.append("recommend a good vehicle")
 
     filters: Dict[str, Any] = {}
     if explicit.brand:
         filters["brand"] = explicit.brand
-    if explicit.prize:
-        filters["prize"] = explicit.prize
+    if explicit.powertrain_type:
+        filters["powertrain_type"] = explicit.powertrain_type
 
     try:
         results = retrieve_vehicles(
@@ -179,11 +195,28 @@ async def get_messages(session_id: str):
     if state is None:
         raise HTTPException(status_code=404, detail="Session not found.")
 
-    history_text = agent.get_history_text(session_id)
+    history = agent.memory.get_history(session_id)
+    messages = []
+    for msg in history:
+        messages.append(
+            {
+                "message_id": f"msg_{id(msg)}",
+                "sender_type": "user" if msg.role.value == "user" else "system",
+                "content": msg.content,
+            }
+        )
+
     return {
         "session_id": session_id,
-        "history": history_text,
-        "stage": state.stage.value,
+        "messages": messages,
+        "stage": StageInfo(
+            previous_stage=state.previous_stage,
+            current_stage=state.stage.value,
+        ),
+        "profile": state.profile,
+        "needs": state.needs,
+        "matched_car_models": state.matched_cars,
+        "reservation_info": state.reservation,
     }
 
 
@@ -196,5 +229,6 @@ async def end_session(session_id: str):
     if state is None:
         raise HTTPException(status_code=404, detail="Session not found.")
 
+    _prev_explicit.pop(session_id, None)
     agent.clear_session(session_id)
     return {"message": "Session ended successfully.", "session_id": session_id}
