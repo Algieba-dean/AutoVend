@@ -71,6 +71,16 @@ class TestAgentImportIsolation:
             "os",
             "pathlib",
             "re",
+            # voice module dependencies
+            "asyncio",
+            "io",
+            "tempfile",
+            "time",
+            "dataclasses",
+            "numpy",
+            "soundfile",
+            "faster_whisper",
+            "edge_tts",
         )
         violations = []
         for py_file in _get_all_python_files(AGENT_DIR):

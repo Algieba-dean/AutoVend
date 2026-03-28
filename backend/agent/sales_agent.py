@@ -12,8 +12,7 @@ import logging
 
 from llama_index.core.llms import LLM
 
-from agent.extractors.implicit_deductor import deduce_implicit_needs
-from agent.extractors.needs_extractor import extract_explicit_needs
+from agent.extractors.combined_needs_extractor import extract_combined_needs
 from agent.extractors.profile_extractor import extract_profile
 from agent.extractors.reservation_extractor import extract_reservation
 from agent.memory import ChatMemoryManager
@@ -131,13 +130,10 @@ class SalesAgent:
         if stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS):
             state.profile = extract_profile(self.llm, conversation_text, state.profile)
 
-        # Needs extraction: active during needs_analysis and car_selection
+        # Combined needs extraction: explicit + implicit in one LLM call
         if stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
-            state.needs.explicit = extract_explicit_needs(
-                self.llm, conversation_text, state.needs.explicit
-            )
-            state.needs.implicit = deduce_implicit_needs(
-                self.llm, state.profile, state.needs.explicit, state.needs.implicit
+            state.needs = extract_combined_needs(
+                self.llm, conversation_text, state.profile, state.needs
             )
 
         # Reservation extraction: active during reservation stages

@@ -176,7 +176,15 @@ class TestChatAPI:
         # Get messages
         resp = await client.get(f"/api/chat/session/{session_id}/messages")
         assert resp.status_code == 200
-        assert "history" in resp.json()
+        data = resp.json()
+        assert "messages" in data
+        assert isinstance(data["messages"], list)
+        assert len(data["messages"]) >= 2  # user + assistant
+        assert "stage" in data
+        assert "profile" in data
+        assert "needs" in data
+        assert "matched_car_models" in data
+        assert "reservation_info" in data
 
     @pytest.mark.asyncio
     async def test_get_messages_not_found(self, client):
