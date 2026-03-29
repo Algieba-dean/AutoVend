@@ -18,9 +18,15 @@ from agent.schemas import (
 logger = logging.getLogger(__name__)
 
 # Valid stage transitions: current_stage → set of allowed next stages
+# Now includes multi-hop transitions for cross-stage jumping
 STAGE_TRANSITIONS: Dict[Stage, Set[Stage]] = {
-    Stage.WELCOME: {Stage.PROFILE_ANALYSIS},
-    Stage.PROFILE_ANALYSIS: {Stage.NEEDS_ANALYSIS},
+    Stage.WELCOME: {
+        Stage.PROFILE_ANALYSIS, Stage.NEEDS_ANALYSIS,
+        Stage.CAR_SELECTION,
+    },
+    Stage.PROFILE_ANALYSIS: {
+        Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION,
+    },
     Stage.NEEDS_ANALYSIS: {Stage.CAR_SELECTION},
     Stage.CAR_SELECTION: {Stage.RESERVATION_4S, Stage.NEEDS_ANALYSIS},
     Stage.RESERVATION_4S: {Stage.RESERVATION_CONFIRMATION},
@@ -128,6 +134,11 @@ def determine_next_stage(
     """
     Determine the next conversation stage based on current state.
 
+    Supports cross-stage jumping: if the user provides profile AND needs
+    in a single message, the agent can skip directly from WELCOME to
+    CAR_SELECTION (if enough info is present). This scans forward through
+    the stage order and returns the furthest reachable stage.
+
     Args:
         current_stage: Current conversation stage.
         profile: Current user profile.
@@ -138,32 +149,53 @@ def determine_next_stage(
     Returns:
         The next Stage (may be the same as current if no transition).
     """
+    # FAREWELL is terminal
+    if current_stage == Stage.FAREWELL:
+        return current_stage
+
+    # WELCOME always advances at minimum to PROFILE_ANALYSIS
     if current_stage == Stage.WELCOME:
-        return Stage.PROFILE_ANALYSIS
+        candidate = Stage.PROFILE_ANALYSIS
+    else:
+        candidate = current_stage
 
-    if current_stage == Stage.PROFILE_ANALYSIS:
+    # Scan forward: try to advance as far as the data supports
+    # Each check tests whether we can PASS THROUGH a stage
+    current_idx = STAGE_ORDER.index(candidate)
+
+    # Can we reach or pass NEEDS_ANALYSIS?
+    if current_idx <= STAGE_ORDER.index(Stage.PROFILE_ANALYSIS):
         if should_advance_to_needs(profile):
-            return Stage.NEEDS_ANALYSIS
-        return current_stage
+            candidate = Stage.NEEDS_ANALYSIS
+        else:
+            return candidate
 
-    if current_stage == Stage.NEEDS_ANALYSIS:
+    # Can we reach or pass CAR_SELECTION?
+    if candidate == Stage.NEEDS_ANALYSIS:
         if should_advance_to_car_selection(needs):
-            return Stage.CAR_SELECTION
-        return current_stage
+            candidate = Stage.CAR_SELECTION
+        else:
+            return candidate
 
-    if current_stage == Stage.CAR_SELECTION:
+    # Can we reach RESERVATION_4S?
+    if candidate == Stage.CAR_SELECTION:
         if should_advance_to_reservation(matched_cars):
-            return Stage.RESERVATION_4S
-        return current_stage
+            candidate = Stage.RESERVATION_4S
+        else:
+            return candidate
 
-    if current_stage == Stage.RESERVATION_4S:
+    # Can we reach RESERVATION_CONFIRMATION?
+    if candidate == Stage.RESERVATION_4S:
         if should_advance_to_confirmation(reservation):
-            return Stage.RESERVATION_CONFIRMATION
-        return current_stage
+            candidate = Stage.RESERVATION_CONFIRMATION
+        else:
+            return candidate
 
-    if current_stage == Stage.RESERVATION_CONFIRMATION:
+    # Can we reach FAREWELL?
+    if candidate == Stage.RESERVATION_CONFIRMATION:
         if should_advance_to_farewell(reservation):
-            return Stage.FAREWELL
-        return current_stage
+            candidate = Stage.FAREWELL
+        else:
+            return candidate
 
-    return current_stage
+    return candidate

@@ -19,6 +19,8 @@ from unittest.mock import MagicMock
 
 from agent.sales_agent import SalesAgent
 from agent.schemas import AgentInput, SessionState, Stage
+from tests.performance.llm_judge import JudgeScore, _heuristic_judge  # noqa: F401
+from tests.performance.rag_metrics import RAGEvaluation, evaluate_rag  # noqa: F401
 from tests.performance.scenarios import ALL_SCENARIOS
 from tests.performance.scoring import (
     DialogueScorecard,
@@ -86,8 +88,21 @@ def create_scenario_llm(scenario: dict) -> MagicMock:
         resp = MagicMock()
         p = prompt.lower()
 
-        # Extraction prompts → JSON
-        if "profile" in p and "extract" in p:
+        # Global extraction prompt (contains all four categories)
+        if "category 1" in p and "category 2" in p and "category 3" in p:
+            resp.text = json.dumps({
+                "profile": profile_resp,
+                "explicit": needs_resp,
+                "implicit": implicit_resp,
+                "reservation": reservation_resp,
+            })
+        # Legacy extraction prompts (backward compatibility)
+        elif "explicit" in p and "implicit" in p:
+            resp.text = json.dumps({
+                "explicit": needs_resp,
+                "implicit": implicit_resp,
+            })
+        elif "profile" in p and "extract" in p:
             resp.text = json.dumps(profile_resp)
         elif "vehicle requirements" in p or "explicit" in p or "vehicle needs" in p:
             resp.text = json.dumps(needs_resp)
@@ -95,6 +110,9 @@ def create_scenario_llm(scenario: dict) -> MagicMock:
             resp.text = json.dumps(implicit_resp)
         elif "reservation" in p and "extract" in p:
             resp.text = json.dumps(reservation_resp)
+        # Query rewriter prompt
+        elif "query optimizer" in p or "search query" in p:
+            resp.text = f"{needs_resp.get('vehicle_category_bottom', '')} {needs_resp.get('powertrain_type', '')} {needs_resp.get('brand', '')} {needs_resp.get('prize', '')}"
         else:
             # Generation prompt — detect stage and language
             is_english = "english" in p or "hello" in p or "hi " in p or "i'm" in p
@@ -185,6 +203,18 @@ def evaluate_dialogue(scenario: dict) -> DialogueScorecard:
         )
         actual_stage_val = state.stage.value if isinstance(state.stage, Stage) else state.stage
 
+        # LLM-as-a-Judge scoring (heuristic fallback in mock environment)
+        judge = _heuristic_judge(response, actual_stage_val, turn["msg"])
+
+        # RAG evaluation (if retrieved cars are present)
+        rag_eval = None
+        if state.matched_cars:
+            rag_eval = evaluate_rag(
+                response,
+                state.matched_cars,
+                needs_after,
+            )
+
         turn_score = TurnScore(
             turn_idx=turn_idx,
             user_message=turn["msg"],
@@ -201,6 +231,8 @@ def evaluate_dialogue(scenario: dict) -> DialogueScorecard:
                 profile_before, profile_after, needs_before, needs_after
             ),
             latency_ms=elapsed_ms,
+            judge_score=judge,
+            rag_eval=rag_eval,
         )
 
         scorecard.turn_scores.append(turn_score)
