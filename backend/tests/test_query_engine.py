@@ -149,9 +149,15 @@ class TestRetrieveVehicles:
             metadata_filters={"brand": "Tesla"},
             top_k=3,
         )
-        call_kwargs = mock_index.as_retriever.call_args[1]
-        assert call_kwargs["similarity_top_k"] == 3
-        assert call_kwargs["filters"] is not None
+        # Dual-path retrieval: coarse_top_k=max(3*4,20)=20, half_k=10
+        # First call is Path 1 (metadata-filtered), second is Path 2 (semantic)
+        calls = mock_index.as_retriever.call_args_list
+        assert len(calls) == 2  # dual-path: filtered + semantic
+        # Path 1 should have filters
+        assert calls[0][1]["filters"] is not None
+        assert calls[0][1]["similarity_top_k"] == 10
+        # Path 2 has no filters
+        assert calls[1][1].get("filters") is None
 
     def test_empty_results(self):
         mock_index = MagicMock()
