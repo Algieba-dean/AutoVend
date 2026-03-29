@@ -137,6 +137,7 @@ class SessionState(BaseModel):
     needs: VehicleNeeds = Field(default_factory=VehicleNeeds)
     matched_cars: List[Dict[str, Any]] = Field(default_factory=list)
     reservation: ReservationInfo = Field(default_factory=ReservationInfo)
+    rewrite_result: Any = None
 
 
 class AgentInput(BaseModel):
