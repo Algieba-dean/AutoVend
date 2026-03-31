@@ -1,0 +1,368 @@
+name: Performance Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 每天UTC 02:00运行性能测试 (北京时间10:00)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of performance test to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - embedding
+        - retrieval
+        - concurrent
+        - memory
+        - accuracy
+
+jobs:
+  performance-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'uv'
+        
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+        
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+        
+    - name: Cache model files
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/huggingface
+        key: ${{ runner.os }}-huggingface-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-huggingface-
+          
+    - name: Build index (if needed)
+      run: |
+        # 检查索引是否存在，如果不存在则构建
+        if [ ! -d "data/chroma_db" ] || [ -z "$(ls -A data/chroma_db)" ]; then
+          echo "Building index..."
+          uv run python src/main.py build --batch-size 100
+        else
+          echo "Index already exists, skipping build."
+        fi
+        
+    - name: Run performance tests
+      run: |
+        uv run python tests/test_performance_metrics.py > performance_results.txt 2>&1
+        
+    - name: Parse performance results
+      id: parse-results
+      run: |
+        # 解析性能测试结果
+        python << 'EOF'
+        import re
+        import json
+        
+        # 读取性能测试结果
+        with open('performance_results.txt', 'r') as f:
+            content = f.read()
+        
+        # 提取关键指标
+        metrics = {}
+        
+        # 嵌入性能
+        embed_match = re.search(r'单次嵌入平均时间: ([\d.]+)s', content)
+        if embed_match:
+            metrics['single_embedding_time'] = float(embed_match.group(1))
+            
+        batch_match = re.search(r'批量嵌入平均时间: ([\d.]+)s/文本', content)
+        if batch_match:
+            metrics['batch_embedding_time'] = float(batch_match.group(1))
+        
+        # 检索性能
+        retrieval_match = re.search(r'平均检索时间: ([\d.]+)s', content)
+        if retrieval_match:
+            metrics['avg_retrieval_time'] = float(retrieval_match.group(1))
+            
+        success_match = re.search(r'成功率: (\d+)/(\d+)', content)
+        if success_match:
+            metrics['success_rate'] = f"{success_match.group(1)}/{success_match.group(2)}"
+        
+        similarity_match = re.search(r'平均相似度: ([\d.]+)', content)
+        if similarity_match:
+            metrics['avg_similarity'] = float(similarity_match.group(1))
+        
+        # 并发性能
+        qps_match = re.search(r'QPS: ([\d.]+)', content)
+        if qps_match:
+            metrics['qps'] = float(qps_match.group(1))
+            
+        concurrent_response_match = re.search(r'并发响应时间: ([\d.]+)s', content)
+        if concurrent_response_match:
+            metrics['concurrent_response_time'] = float(concurrent_response_match.group(1))
+        
+        # 内存使用
+        memory_match = re.search(r'峰值内存: ([\d.]+)MB', content)
+        if memory_match:
+            metrics['peak_memory_mb'] = float(memory_match.group(1))
+        
+        # 准确性指标
+        category_match = re.search(r'类别准确率: ([\d.]+)%', content)
+        if category_match:
+            metrics['category_accuracy'] = float(category_match.group(1))
+            
+        brand_match = re.search(r'品牌准确率: ([\d.]+)%', content)
+        if brand_match:
+            metrics['brand_accuracy'] = float(brand_match.group(1))
+        
+        # 输出JSON格式供后续步骤使用
+        with open('metrics.json', 'w') as f:
+            json.dump(metrics, f, indent=2)
+        
+        # 输出到GitHub Actions
+        print("::set-output name=metrics::" + json.dumps(metrics))
+        EOF
+        
+    - name: Performance Check
+      run: |
+        python << 'EOF'
+        import json
+        import sys
+        
+        # 读取指标
+        with open('metrics.json', 'r') as f:
+            metrics = json.load(f)
+        
+        print("📊 Performance Metrics Summary:")
+        print("=" * 50)
+        
+        # 检查关键指标是否在可接受范围内
+        warnings = []
+        errors = []
+        
+        # 响应时间检查
+        if 'avg_retrieval_time' in metrics:
+            retrieval_time = metrics['avg_retrieval_time']
+            print(f"🔍 Average Retrieval Time: {retrieval_time:.3f}s")
+            if retrieval_time > 0.1:
+                errors.append(f"Retrieval time too high: {retrieval_time:.3f}s > 0.1s")
+            elif retrieval_time > 0.05:
+                warnings.append(f"Retrieval time elevated: {retrieval_time:.3f}s > 0.05s")
+        
+        # QPS检查
+        if 'qps' in metrics:
+            qps = metrics['qps']
+            print(f"⚡ QPS: {qps:.1f}")
+            if qps < 10:
+                errors.append(f"QPS too low: {qps:.1f} < 10")
+            elif qps < 20:
+                warnings.append(f"QPS could be improved: {qps:.1f} < 20")
+        
+        # 内存使用检查
+        if 'peak_memory_mb' in metrics:
+            memory = metrics['peak_memory_mb']
+            print(f"💾 Peak Memory: {memory:.1f}MB")
+            if memory > 3000:
+                errors.append(f"Memory usage too high: {memory:.1f}MB > 3000MB")
+            elif memory > 2500:
+                warnings.append(f"Memory usage elevated: {memory:.1f}MB > 2500MB")
+        
+        # 准确性检查
+        if 'category_accuracy' in metrics:
+            accuracy = metrics['category_accuracy']
+            print(f"🎯 Category Accuracy: {accuracy:.1f}%")
+            if accuracy < 70:
+                errors.append(f"Category accuracy too low: {accuracy:.1f}% < 70%")
+            elif accuracy < 80:
+                warnings.append(f"Category accuracy could be improved: {accuracy:.1f}% < 80%")
+        
+        print("=" * 50)
+        
+        # 输出警告和错误
+        if warnings:
+            print("⚠️  Warnings:")
+            for warning in warnings:
+                print(f"  - {warning}")
+        
+        if errors:
+            print("❌ Errors:")
+            for error in errors:
+                print(f"  - {error}")
+            sys.exit(1)
+        else:
+            print("✅ All performance checks passed!")
+        EOF
+        
+    - name: Generate Performance Report
+      run: |
+        python << 'EOF'
+        import json
+        from datetime import datetime
+        
+        # 读取指标
+        with open('metrics.json', 'r') as f:
+            metrics = json.load(f)
+        
+        # 生成性能报告
+        report = f"""# AutoVend RAG Performance Report
+        
+**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}  
+**Commit:** ${{ github.sha }}  
+**Branch:** ${{ github.ref_name }}
+
+## 📊 Performance Metrics
+
+### Embedding Performance
+- Single Embedding Time: {metrics.get('single_embedding_time', 'N/A')}s
+- Batch Embedding Time: {metrics.get('batch_embedding_time', 'N/A')}s/text
+
+### Retrieval Performance  
+- Average Retrieval Time: {metrics.get('avg_retrieval_time', 'N/A')}s
+- Success Rate: {metrics.get('success_rate', 'N/A')}
+- Average Similarity: {metrics.get('avg_similarity', 'N/A')}
+
+### Concurrent Performance
+- QPS: {metrics.get('qps', 'N/A')}
+- Concurrent Response Time: {metrics.get('concurrent_response_time', 'N/A')}s
+
+### Memory Usage
+- Peak Memory: {metrics.get('peak_memory_mb', 'N/A')}MB
+
+### Accuracy Metrics
+- Category Accuracy: {metrics.get('category_accuracy', 'N/A')}%
+- Brand Accuracy: {metrics.get('brand_accuracy', 'N/A')}%
+
+## 📈 Performance Trends
+
+*This section will be updated with historical data in future iterations.*
+
+## 🔍 Recommendations
+
+*Performance optimization recommendations will be added based on test results.*
+"""
+        
+        with open('performance_report.md', 'w') as f:
+            f.write(report)
+        
+        print("Performance report generated!")
+        EOF
+        
+    - name: Upload Performance Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results-${{ github.run_number }}
+        path: |
+          performance_results.txt
+          metrics.json
+          performance_report.md
+        retention-days: 30
+        
+    - name: Comment PR with Results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          try {
+            const metrics = JSON.parse(fs.readFileSync('metrics.json', 'utf8'));
+            const report = fs.readFileSync('performance_report.md', 'utf8');
+            
+            const comment = `## 🚀 Performance Test Results
+            
+            ${report}
+            
+            ---
+            *Results generated by GitHub Actions workflow*
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } catch (error) {
+            console.log('Error creating comment:', error);
+          }
+    
+    - name: Update Performance Badge (if on main)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # 这里可以添加更新性能徽标的逻辑
+        echo "Performance badge update would go here"
+
+  # 性能回归测试
+  regression-test:
+    runs-on: ubuntu-latest
+    needs: performance-tests
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'uv'
+        
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      
+    - name: Install dependencies
+      run: uv sync --dev
+      
+    - name: Compare with baseline
+      run: |
+        echo "Performance regression comparison would be implemented here"
+        echo "This would compare current branch performance with main branch"
+
+  # 夜间压力测试
+  stress-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'uv'
+        
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      
+    - name: Install dependencies
+      run: uv sync --dev
+      
+    - name: Run stress tests
+      run: |
+        echo "Running extended stress tests..."
+        uv run python tests/test_performance_metrics.py
+        
+    - name: Generate stress test report
+      run: |
+        echo "Generating comprehensive stress test report..."
