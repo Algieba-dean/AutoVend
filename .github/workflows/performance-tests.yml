@@ -58,16 +58,22 @@ jobs:
           
     - name: Build index (if needed)
       run: |
+        # 设置设备为CPU（GitHub Actions没有GPU）
+        echo "EMBEDDING_DEVICE=cpu" >> $GITHUB_ENV
+        
         # 检查索引是否存在，如果不存在则构建
         if [ ! -d "data/chroma_db" ] || [ -z "$(ls -A data/chroma_db)" ]; then
           echo "Building index..."
-          uv run python src/main.py build --batch-size 100
+          uv run python src/main.py build --batch-size 50
         else
           echo "Index already exists, skipping build."
         fi
         
     - name: Run performance tests
       run: |
+        # 设置设备为CPU（GitHub Actions没有GPU）
+        echo "EMBEDDING_DEVICE=cpu" >> $GITHUB_ENV
+        
         uv run python tests/test_performance_metrics.py > performance_results.txt 2>&1
         
     - name: Parse performance results

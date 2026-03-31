@@ -14,23 +14,23 @@ from pydantic_settings import BaseSettings
 class Config(BaseSettings):
     """应用配置类"""
     
-    # Groq API配置
-    groq_api_key: str = Field(..., env="GROQ_API_KEY")
+    # Groq API配置 - 在性能测试时可选
+    groq_api_key: Optional[str] = Field(default=None, env="GROQ_API_KEY")
     groq_model: str = Field(default="llama-3.1-70b-versatile", env="GROQ_MODEL")
     groq_base_url: str = Field(default="https://api.groq.com/openai/v1", env="GROQ_BASE_URL")
     
-    # ChromaDB配置
+    # Vector Database Configuration
     chroma_persist_dir: str = Field(default="./data/chroma_db", env="CHROMA_PERSIST_DIR")
     chroma_collection_name: str = Field(default="vehicle_knowledge", env="CHROMA_COLLECTION_NAME")
     
-    # 嵌入模型配置
+    # Embedding Model Configuration - BGE-M3
     embedding_model: str = Field(default="BAAI/bge-m3", env="EMBEDDING_MODEL")
     embedding_device: str = Field(default="auto", env="EMBEDDING_DEVICE")
     
-    # 数据配置
+    # Data Configuration
     vehicle_data_dir: str = Field(default="./DataInUse/VehicleData", env="VEHICLE_DATA_DIR")
     
-    # 应用配置
+    # Application Settings
     app_environment: str = Field(default="development", env="APP_ENVIRONMENT")
     debug: bool = Field(default=False, env="DEBUG")
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
