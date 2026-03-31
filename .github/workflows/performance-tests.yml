@@ -258,7 +258,7 @@ jobs:
         EOF
         
     - name: Upload Performance Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-results-${{ github.run_number }}
         path: |
