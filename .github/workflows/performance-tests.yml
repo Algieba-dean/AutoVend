@@ -2,9 +2,9 @@ name: Performance Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, feature/from_zero ]  # 添加您的分支
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]             # PR到main和develop时触发
   schedule:
     # 每天UTC 02:00运行性能测试 (北京时间10:00)
     - cron: '0 2 * * *'
@@ -220,42 +220,36 @@ jobs:
             metrics = json.load(f)
         
         # 生成性能报告
-        report = f"""# AutoVend RAG Performance Report
+        generated_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')
+        commit_sha = "${{ github.sha }}"
+        branch_name = "${{ github.ref_name }}"
         
-**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}  
-**Commit:** ${{ github.sha }}  
-**Branch:** ${{ github.ref_name }}
-
-## 📊 Performance Metrics
-
-### Embedding Performance
-- Single Embedding Time: {metrics.get('single_embedding_time', 'N/A')}s
-- Batch Embedding Time: {metrics.get('batch_embedding_time', 'N/A')}s/text
-
-### Retrieval Performance  
-- Average Retrieval Time: {metrics.get('avg_retrieval_time', 'N/A')}s
-- Success Rate: {metrics.get('success_rate', 'N/A')}
-- Average Similarity: {metrics.get('avg_similarity', 'N/A')}
-
-### Concurrent Performance
-- QPS: {metrics.get('qps', 'N/A')}
-- Concurrent Response Time: {metrics.get('concurrent_response_time', 'N/A')}s
-
-### Memory Usage
-- Peak Memory: {metrics.get('peak_memory_mb', 'N/A')}MB
-
-### Accuracy Metrics
-- Category Accuracy: {metrics.get('category_accuracy', 'N/A')}%
-- Brand Accuracy: {metrics.get('brand_accuracy', 'N/A')}%
-
-## 📈 Performance Trends
-
-*This section will be updated with historical data in future iterations.*
-
-## 🔍 Recommendations
-
-*Performance optimization recommendations will be added based on test results.*
-"""
+        report = (
+            f"# AutoVend RAG Performance Report\n\n"
+            f"**Generated:** {generated_time}  \n"
+            f"**Commit:** {commit_sha}  \n"
+            f"**Branch:** {branch_name}\n\n"
+            f"## 📊 Performance Metrics\n\n"
+            f"### Embedding Performance\n"
+            f"- Single Embedding Time: {metrics.get('single_embedding_time', 'N/A')}s\n"
+            f"- Batch Embedding Time: {metrics.get('batch_embedding_time', 'N/A')}s/text\n\n"
+            f"### Retrieval Performance  \n"
+            f"- Average Retrieval Time: {metrics.get('avg_retrieval_time', 'N/A')}s\n"
+            f"- Success Rate: {metrics.get('success_rate', 'N/A')}\n"
+            f"- Average Similarity: {metrics.get('avg_similarity', 'N/A')}\n\n"
+            f"### Concurrent Performance\n"
+            f"- QPS: {metrics.get('qps', 'N/A')}\n"
+            f"- Concurrent Response Time: {metrics.get('concurrent_response_time', 'N/A')}s\n\n"
+            f"### Memory Usage\n"
+            f"- Peak Memory: {metrics.get('peak_memory_mb', 'N/A')}MB\n\n"
+            f"### Accuracy Metrics\n"
+            f"- Category Accuracy: {metrics.get('category_accuracy', 'N/A')}%\n"
+            f"- Brand Accuracy: {metrics.get('brand_accuracy', 'N/A')}%\n\n"
+            f"## 📈 Performance Trends\n\n"
+            f"*This section will be updated with historical data in future iterations.*\n\n"
+            f"## 🔍 Recommendations\n\n"
+            f"*Performance optimization recommendations will be added based on test results.*\n"
+        )
         
         with open('performance_report.md', 'w') as f:
             f.write(report)
