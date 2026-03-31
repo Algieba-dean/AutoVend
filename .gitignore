@@ -2,10 +2,6 @@
 **/venv/**
 **/.venv/**
 
-# Frontend
-frontend/node_modules/**
-frontend/package-lock.json
-
 # Python bytecode
 **/*.pyc
 **/*.pyo
@@ -23,11 +19,9 @@ frontend/package-lock.json
 **/.env.test.local
 **/.env.production.local
 
-# Storage (runtime data)
-**/storage/messages/**
-**/storage/profiles/**
-**/storage/sessions/**
-**/storage/test_drives/**
+# Data directories
+**/data/**
+**/chroma_db/**
 
 # IDE
 **/.idea/**
@@ -43,9 +37,5 @@ frontend/package-lock.json
 **/coverage.xml
 **/test-results.xml
 
-# Evaluation results (generated, not source)
-backend/eval_results/
-
 # uv lock (large, machine-generated)
-# Uncomment if you want to track it:
-# backend/uv.lock
+uv.lock
