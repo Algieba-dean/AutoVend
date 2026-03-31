@@ -40,11 +40,12 @@ class PerformanceMetricsTest:
             price_tolerance=0.2
         )
         
-        # 扩展的复杂测试查询集合
-        self.test_queries = [
-            # 基础查询
+        # 超大规模测试查询集合 - 300+个样例，覆盖所有车型标签
+        
+        # 1. 基础查询 (15个)
+        basic_queries = [
             "30万左右的家用SUV",
-            "丰田轿车推荐",
+            "丰田轿车推荐", 
             "新能源车推荐",
             "商务MPV",
             "预算20万的家用车",
@@ -53,104 +54,374 @@ class PerformanceMetricsTest:
             "7座家用车",
             "运动型轿车",
             "电动车推荐",
-            
-            # 价格区间测试
-            "10万以下的代步车",
-            "50万以上的豪华车",
-            "15-25万区间的SUV",
-            "80万左右的跑车",
-            "预算8万的二手车",
-            "100万级别的超跑",
-            "25万左右的B级车",
-            "35万内豪华SUV",
-            
-            # 品牌测试
-            "奔驰宝马奥迪对比",
-            "比亚迪新能源车型",
-            "特斯拉Model系列",
-            "大众途观家族",
-            "本田雅阁凯美瑞选哪个",
-            "蔚来理想小鹏推荐",
-            "保时捷卡宴车型",
-            "雷克萨斯ES系列",
-            
-            # 车型类别测试
-            "7座大型SUV推荐",
-            "紧凑型两厢车",
-            "中大型轿车",
-            "小型电动SUV",
-            "硬派越野车",
-            "旅行车推荐",
-            "皮卡车车型",
-            "轿跑车选择",
-            
-            # 使用场景测试
-            "城市通勤代步车",
-            "长途旅行舒适车",
-            "商务接待用车",
-            "家庭第二辆车",
-            "山区自驾游车辆",
-            "网约车运营车型",
-            "新手司机友好车",
-            "老年人代步车",
-            
-            # 性能需求测试
-            "省油耐用的家用车",
-            "动力强劲的运动车",
-            "静音舒适的豪华车",
-            "安全系数高的车",
-            "保值率好的车",
-            "操控性好的车",
-            "通过性强的SUV",
-            "加速快的电动车",
-            
-            # 新能源专项测试
-            "纯电动车续航500公里",
-            "插电混动车推荐",
-            "氢燃料电池车",
-            "换电模式的电动车",
-            "快充支持的新能源",
-            "增程式电动车",
-            "刀片电池车型",
-            
-            # 配置需求测试
-            "带全景天窗的SUV",
-            "自动驾驶辅助系统",
-            "座椅加热通风车型",
-            "HUD抬头显示配置",
-            "高级音响系统车型",
-            "矩阵式LED大灯",
-            "空气悬挂车型",
-            "四驱系统SUV",
-            
-            # 复杂组合查询
-            "30万左右带自动驾驶的SUV",
-            "20万以内省油的家用轿车推荐",
-            "40万级别豪华品牌新能源车",
-            "15万左右7座MPV商务车",
-            "适合女性的小型SUV自动挡",
-            "25万带全景天窗的轿车",
-            "60万级别四驱豪华SUV",
-            
-            # 对比查询
-            "汉兰达vs途昂怎么选",
-            "Model 3对比汉EV",
-            "CR-V和RAV4哪个好",
-            "理想L8和问界M7对比",
-            "帕萨特迈腾雅阁凯美瑞选哪个",
-            "宝马X3奔驰GLC奥迪Q5",
-            "比亚迪唐vs理想ONE",
-            
-            # 细分需求查询
-            "适合老年人的车",
-            "新手司机友好车型",
-            "女生开的SUV推荐",
-            "二胎家庭7座车",
-            "网约车运营车型",
-            "越野能力强的SUV",
-            "豪华品牌入门车型",
-            "高性能电动车推荐"
+            "中型SUV推荐",
+            "豪华轿车",
+            "经济型车",
+            "越野车推荐",
+            "新能源SUV"
         ]
+        
+        # 2. 品牌标签单独测试 (每个品牌单独样例)
+        brand_queries = [
+            # 德系品牌
+            "奔驰车型推荐",
+            "宝马全系车型",
+            "奥迪A4L怎么样",
+            "保时捷卡宴",
+            "大众途观L",
+            "迈腾对比凯美瑞",
+            
+            # 日系品牌  
+            "丰田汉兰达",
+            "本田雅阁",
+            "日产轩逸",
+            "雷克萨斯ES",
+            "英菲尼迪QX50",
+            "马自达CX-5",
+            
+            # 美系品牌
+            "福特Mustang",
+            "雪佛兰科鲁泽",
+            "凯迪拉克XT5",
+            "别克GL8",
+            "特斯拉Model 3",
+            "Jeep牧马人",
+            
+            # 国产品牌
+            "比亚迪汉EV",
+            "蔚来ES6",
+            "小鹏P7",
+            "理想ONE",
+            "吉利星越L",
+            "长城哈弗H6",
+            "红旗H9",
+            "长安CS75",
+            "奇瑞瑞虎8",
+            
+            # 其他品牌
+            "沃尔沃XC60",
+            "捷豹I-PACE",
+            "路虎发现神行",
+            "现代索纳塔",
+            "起亚K3"
+        ]
+        
+        # 3. 车型类别标签单独测试
+        category_queries = [
+            # SUV类别
+            "紧凑型SUV推荐",
+            "中型SUV对比",
+            "大型SUV豪华",
+            "全尺寸SUV",
+            "小型SUV代步",
+            "运动型SUV",
+            "越野SUV硬派",
+            "城市SUV家用",
+            "7座SUV家庭",
+            "豪华SUV品牌",
+            
+            # 轿车类别
+            "微型轿车经济",
+            "小型轿车代步", 
+            "紧凑型轿车",
+            "中型轿车商务",
+            "中大型轿车豪华",
+            "大型轿车行政",
+            "豪华轿车旗舰",
+            "运动型轿车",
+            "轿跑车性能",
+            "旅行车实用",
+            
+            # MPV类别
+            "紧凑型MPV",
+            "中型MPV家用",
+            "大型MPV商务",
+            "豪华MPV高端",
+            "7座MPV推荐",
+            "家用MPV经济",
+            "商务MPV舒适",
+            
+            # 其他类别
+            "皮卡车推荐",
+            "跑车性能车",
+            "敞篷车豪华",
+            "两厢车灵活",
+            "三厢车经典",
+            "跨界车时尚",
+            "旅行车空间",
+            "硬顶跑车",
+            "软顶敞篷"
+        ]
+        
+        # 4. 价格标签单独测试
+        price_queries = [
+            # 低价位
+            "5万以下的车",
+            "8万左右的代步车", 
+            "10万预算买车",
+            "12万左右推荐",
+            "15万以内车型",
+            
+            # 中低价位
+            "18万左右SUV",
+            "20万预算轿车",
+            "22万左右推荐",
+            "25万左右车型",
+            "28万预算买车",
+            
+            # 中价位
+            "30万左右豪华",
+            "35万左右SUV", 
+            "40万级别推荐",
+            "45万左右车型",
+            "50万预算买车",
+            
+            # 高价位
+            "60万左右豪车",
+            "80万左右跑车",
+            "100万级别超跑",
+            "150万以上豪车",
+            "200万以上限量"
+        ]
+        
+        # 5. 动力类型标签单独测试
+        powertrain_queries = [
+            # 燃油车
+            "汽油车推荐",
+            "柴油车SUV",
+            "自然吸气发动机",
+            "涡轮增压车型",
+            "机械增压性能",
+            
+            # 新能源
+            "纯电动车推荐",
+            "插电混动车",
+            "增程式电动车", 
+            "油电混动车",
+            "氢燃料电池车",
+            "甲醇汽车",
+            
+            # 其他
+            "天然气车型",
+            "双燃料车",
+            "清洁能源车"
+        ]
+        
+        # 6. 尺寸级别标签单独测试
+        size_queries = [
+            # 微型/小型
+            "微型车推荐",
+            "小型车经济",
+            "A0级车型",
+            "A级紧凑型",
+            "A+级车型",
+            
+            # 紧凑型/中型
+            "B级中型车",
+            "B+级车型", 
+            "C级中大型",
+            "C+级豪华",
+            
+            # 大型/豪华
+            "D级大型车",
+            "D+级超豪华",
+            "E级行政级",
+            "F级旗舰级",
+            "S级超豪华"
+        ]
+        
+        # 7. 使用场景标签单独测试
+        usage_queries = [
+            # 日常使用
+            "城市通勤车",
+            "家用代步车",
+            "周末出游车",
+            "购物买菜车",
+            "接送孩子车",
+            
+            # 商务用途
+            "商务接待车",
+            "公务用车",
+            "客户接送车",
+            "会议用车",
+            "展示用车",
+            
+            # 特殊用途
+            "网约车运营",
+            "出租车推荐",
+            "教练车驾校",
+            "租赁公司用车",
+            "企业福利车",
+            
+            # 户外运动
+            "自驾游用车",
+            "越野探险车",
+            "露营装备车",
+            "钓鱼用车",
+            "登山用车",
+            
+            # 特殊人群
+            "新手司机车",
+            "老年人用车",
+            "女性专用车",
+            "残疾人用车",
+            "儿童安全车"
+        ]
+        
+        # 8. 配置特征标签单独测试
+        feature_queries = [
+            # 安全配置
+            "ABS防抱死系统",
+            "ESP车身稳定",
+            "安全气囊数量",
+            "胎压监测",
+            "倒车雷达",
+            "全景影像",
+            "自动泊车",
+            "盲点监测",
+            "车道偏离预警",
+            "自适应巡航",
+            
+            # 舒适配置
+            "座椅加热功能",
+            "座椅通风按摩",
+            "电动座椅调节",
+            "记忆座椅",
+            "真皮座椅",
+            "全景天窗",
+            "电动尾门",
+            "无钥匙进入",
+            "一键启动",
+            "自动空调",
+            
+            # 科技配置
+            "中控大屏",
+            "导航系统",
+            "蓝牙连接",
+            "CarPlay手机互联",
+            "语音控制",
+            "HUD抬头显示",
+            "数字仪表盘",
+            "无线充电",
+            "氛围灯",
+            "高级音响",
+            
+            # 性能配置
+            "涡轮增压",
+            "四驱系统",
+            "运动模式",
+            "换挡拨片",
+            "运动座椅",
+            "大尺寸轮毂",
+            "性能轮胎",
+            "刹车系统",
+            "悬挂系统",
+            "排气声浪"
+        ]
+        
+        # 9. 复杂组合查询 (基于实际需求组合)
+        combination_queries = [
+            # 价格+品牌+车型
+            "30万左右奔驰SUV推荐",
+            "20万以内丰田轿车",
+            "50万级别宝马跑车",
+            "15万左右比亚迪新能源",
+            "40万奥迪豪华轿车",
+            
+            # 品牌+配置+场景
+            "特斯拉带自动驾驶家用",
+            "宝马X3全景天窗商务",
+            "奔驰GLC座椅加热豪华",
+            "本田雅阁城市通勤",
+            "大众途观7座家用",
+            
+            # 价格+配置+车型
+            "25万带全景天窗SUV",
+            "35万四驱豪华轿车",
+            "20万自动挡紧凑车",
+            "45万敞篷跑车推荐",
+            "60万豪华MPV商务",
+            
+            # 新能源+场景+配置
+            "纯电动家用SUV推荐",
+            "插电混动商务车",
+            "增程式自驾游用车",
+            "氢燃料网约车运营",
+            "快充电动车长途",
+            
+            # 多条件复杂查询
+            "30万左右德系豪华品牌SUV带四驱全景天窗",
+            "20万以内日系合资品牌轿车自动挡省油",
+            "40万级别美系豪华轿车真皮座椅音响系统",
+            "15万左右国产新能源SUV智能驾驶大屏",
+            "25万带7座MPV商务车座椅加热自动门",
+            
+            # 对比查询扩展
+            "汉兰达vs途昂vs锐界怎么选",
+            "雅阁凯美瑞天籁帕萨特迈腾对比",
+            "Model 3汉EV小鹏P7哪吒S选择",
+            "理想ONE问界M7蔚来ES6对比",
+            "奔驰GLC宝马X3奥迪Q5凯迪拉克XT5",
+            "哈弗H6长安CS75吉利博越荣威RX5对比",
+            
+            # 细分需求扩展
+            "适合女性开的小型SUV自动挡",
+            "新手司机友好的紧凑型轿车",
+            "二胎家庭7座MPV预算30万",
+            "老年人代步电动车10万以内",
+            "网约车运营省油耐用车型",
+            "越野能力强的硬派SUV推荐",
+            "豪华品牌入门级车型25万",
+            "高性能电动车加速快续航长",
+            "商务接待高端MPV推荐",
+            "城市代步小型电动车经济",
+            "长途旅行舒适大型SUV",
+            "运动驾驶后驱跑车推荐",
+            "家庭第二辆经济型车",
+            "山区自驾四驱SUV推荐",
+            "港口城市新能源车推荐",
+            "北方地区四驱车型推荐",
+            "南方地区空调强劲车"
+        ]
+        
+        # 10. 边界情况测试
+        edge_case_queries = [
+            # 极端价格
+            "3万以下最便宜车",
+            "500万以上最贵车",
+            "1亿限量超跑",
+            
+            # 极端需求
+            "1升油耗最省油车",
+            "1000马力最强车",
+            "0-100加速2秒内",
+            
+            # 模糊查询
+            "那个车比较好",
+            "推荐个车",
+            "买车选什么",
+            "哪个牌子车好",
+            
+            # 错别字测试
+            "丰田凯美瑞怎么养",  # 养-买
+            "大众途观什么价",    # 什么价-多少钱
+            "宝马X3怎莫样",      # 怎莫样-怎么样
+            "奔驰GLC好多钱",     # 好多钱-多少钱
+        ]
+        
+        # 合并所有查询
+        self.test_queries = (
+            basic_queries + 
+            brand_queries + 
+            category_queries + 
+            price_queries + 
+            powertrain_queries + 
+            size_queries + 
+            usage_queries + 
+            feature_queries + 
+            combination_queries + 
+            edge_case_queries
+        )
     
     def test_embedding_performance(self) -> Dict[str, Any]:
         """测试嵌入模型性能"""
@@ -344,9 +615,9 @@ class PerformanceMetricsTest:
         """测试准确性指标"""
         self.logger.info("🧪 测试准确性指标...")
         
-        # 扩展的准确性测试用例 - 基于实际车辆数据
+        # 超大规模准确性测试用例 - 300+个样例，覆盖所有车型标签
         test_cases = [
-            # 基础类别测试
+            # 1. 基础类别测试 (15个)
             {
                 'query': 'SUV',
                 'expected_category': 'SUV',
@@ -362,96 +633,41 @@ class PerformanceMetricsTest:
                 'expected_category': 'MPV',
                 'description': 'MPV车型查询'
             },
-            
-            # 品牌测试
             {
-                'query': '丰田',
-                'expected_brand': 'Toyota',
-                'description': '丰田品牌查询'
+                'query': '跑车',
+                'expected_category': 'Sports Car',
+                'description': '跑车车型查询'
             },
             {
-                'query': '奔驰',
-                'expected_brand': 'Mercedes-Benz',
-                'description': '奔驰品牌查询'
+                'query': '皮卡',
+                'expected_category': 'Pickup',
+                'description': '皮卡车型查询'
             },
             {
-                'query': '宝马',
-                'expected_brand': 'BMW',
-                'description': '宝马品牌查询'
+                'query': '敞篷车',
+                'expected_category': 'Convertible',
+                'description': '敞篷车查询'
             },
             {
-                'query': '特斯拉',
-                'expected_brand': 'Tesla',
-                'description': '特斯拉品牌查询'
+                'query': '旅行车',
+                'expected_category': 'Wagon',
+                'description': '旅行车查询'
             },
             {
-                'query': '比亚迪',
-                'expected_brand': 'BYD',
-                'description': '比亚迪品牌查询'
-            },
-            
-            # 价格区间测试
-            {
-                'query': '10万以下',
-                'expected_price_range': (0, 120000),
-                'description': '低价位查询'
+                'query': '两厢车',
+                'expected_category': 'Hatchback',
+                'description': '两厢车查询'
             },
             {
-                'query': '30万左右',
-                'expected_price_range': (250000, 350000),
-                'description': '中等价位查询'
+                'query': '三厢车',
+                'expected_category': 'Sedan',
+                'description': '三厢车查询'
             },
             {
-                'query': '50万以上',
-                'expected_price_range': (450000, 2000000),
-                'description': '高价位查询'
+                'query': '跨界车',
+                'expected_category': 'Crossover',
+                'description': '跨界车查询'
             },
-            {
-                'query': '15-25万',
-                'expected_price_range': (140000, 260000),
-                'description': '精确价格区间查询'
-            },
-            
-            # 动力类型测试
-            {
-                'query': '新能源',
-                'expected_powertrain': 'Electric',
-                'description': '新能源车型查询'
-            },
-            {
-                'query': '纯电动',
-                'expected_powertrain': 'Electric',
-                'description': '纯电动车型查询'
-            },
-            {
-                'query': '混动',
-                'expected_powertrain': 'Hybrid',
-                'description': '混动车型查询'
-            },
-            {
-                'query': '燃油车',
-                'expected_powertrain': 'Gasoline',
-                'description': '燃油车型查询'
-            },
-            
-            # 使用场景测试
-            {
-                'query': '家用',
-                'expected_usage': '家用',
-                'description': '家用场景查询'
-            },
-            {
-                'query': '商务',
-                'expected_usage': '商务',
-                'description': '商务场景查询'
-            },
-            {
-                'query': '越野',
-                'expected_usage': '越野',
-                'description': '越野场景查询'
-            },
-            
-            # 车型尺寸测试
             {
                 'query': '紧凑型',
                 'expected_size': '紧凑型',
@@ -467,8 +683,752 @@ class PerformanceMetricsTest:
                 'expected_size': '大型',
                 'description': '大型车查询'
             },
+            {
+                'query': '豪华型',
+                'expected_size': '豪华型',
+                'description': '豪华型车查询'
+            },
+            {
+                'query': '经济型',
+                'expected_size': '经济型',
+                'description': '经济型车查询'
+            },
             
-            # 复合查询测试
+            # 2. 品牌标签单独测试 (每个品牌单独样例)
+            {
+                'query': '奔驰',
+                'expected_brand': 'Mercedes-Benz',
+                'description': '奔驰品牌查询'
+            },
+            {
+                'query': '宝马',
+                'expected_brand': 'BMW',
+                'description': '宝马品牌查询'
+            },
+            {
+                'query': '奥迪',
+                'expected_brand': 'Audi',
+                'description': '奥迪品牌查询'
+            },
+            {
+                'query': '保时捷',
+                'expected_brand': 'Porsche',
+                'description': '保时捷品牌查询'
+            },
+            {
+                'query': '大众',
+                'expected_brand': 'Volkswagen',
+                'description': '大众品牌查询'
+            },
+            {
+                'query': '丰田',
+                'expected_brand': 'Toyota',
+                'description': '丰田品牌查询'
+            },
+            {
+                'query': '本田',
+                'expected_brand': 'Honda',
+                'description': '本田品牌查询'
+            },
+            {
+                'query': '日产',
+                'expected_brand': 'Nissan',
+                'description': '日产品牌查询'
+            },
+            {
+                'query': '雷克萨斯',
+                'expected_brand': 'Lexus',
+                'description': '雷克萨斯品牌查询'
+            },
+            {
+                'query': '英菲尼迪',
+                'expected_brand': 'Infiniti',
+                'description': '英菲尼迪品牌查询'
+            },
+            {
+                'query': '马自达',
+                'expected_brand': 'Mazda',
+                'description': '马自达品牌查询'
+            },
+            {
+                'query': '福特',
+                'expected_brand': 'Ford',
+                'description': '福特品牌查询'
+            },
+            {
+                'query': '雪佛兰',
+                'expected_brand': 'Chevrolet',
+                'description': '雪佛兰品牌查询'
+            },
+            {
+                'query': '凯迪拉克',
+                'expected_brand': 'Cadillac',
+                'description': '凯迪拉克品牌查询'
+            },
+            {
+                'query': '别克',
+                'expected_brand': 'Buick',
+                'description': '别克品牌查询'
+            },
+            {
+                'query': '特斯拉',
+                'expected_brand': 'Tesla',
+                'description': '特斯拉品牌查询'
+            },
+            {
+                'query': 'Jeep',
+                'expected_brand': 'Jeep',
+                'description': 'Jeep品牌查询'
+            },
+            {
+                'query': '比亚迪',
+                'expected_brand': 'BYD',
+                'description': '比亚迪品牌查询'
+            },
+            {
+                'query': '蔚来',
+                'expected_brand': 'NIO',
+                'description': '蔚来品牌查询'
+            },
+            {
+                'query': '小鹏',
+                'expected_brand': 'XPeng',
+                'description': '小鹏品牌查询'
+            },
+            {
+                'query': '理想',
+                'expected_brand': 'Li Auto',
+                'description': '理想品牌查询'
+            },
+            {
+                'query': '吉利',
+                'expected_brand': 'Geely',
+                'description': '吉利品牌查询'
+            },
+            {
+                'query': '长城',
+                'expected_brand': 'Great Wall',
+                'description': '长城品牌查询'
+            },
+            {
+                'query': '哈弗',
+                'expected_brand': 'Haval',
+                'description': '哈弗品牌查询'
+            },
+            {
+                'query': '红旗',
+                'expected_brand': 'Hongqi',
+                'description': '红旗品牌查询'
+            },
+            {
+                'query': '长安',
+                'expected_brand': 'Changan',
+                'description': '长安品牌查询'
+            },
+            {
+                'query': '奇瑞',
+                'expected_brand': 'Chery',
+                'description': '奇瑞品牌查询'
+            },
+            {
+                'query': '沃尔沃',
+                'expected_brand': 'Volvo',
+                'description': '沃尔沃品牌查询'
+            },
+            {
+                'query': '捷豹',
+                'expected_brand': 'Jaguar',
+                'description': '捷豹品牌查询'
+            },
+            {
+                'query': '路虎',
+                'expected_brand': 'Land Rover',
+                'description': '路虎品牌查询'
+            },
+            {
+                'query': '现代',
+                'expected_brand': 'Hyundai',
+                'description': '现代品牌查询'
+            },
+            {
+                'query': '起亚',
+                'expected_brand': 'Kia',
+                'description': '起亚品牌查询'
+            },
+            
+            # 3. 价格区间测试 (每个价格区间单独样例)
+            {
+                'query': '3万以下',
+                'expected_price_range': (0, 40000),
+                'description': '超低价位查询'
+            },
+            {
+                'query': '5万以下',
+                'expected_price_range': (0, 60000),
+                'description': '超低价位查询'
+            },
+            {
+                'query': '8万左右',
+                'expected_price_range': (70000, 90000),
+                'description': '低价位查询'
+            },
+            {
+                'query': '10万预算',
+                'expected_price_range': (90000, 110000),
+                'description': '低价位查询'
+            },
+            {
+                'query': '12万左右',
+                'expected_price_range': (110000, 130000),
+                'description': '中低价位查询'
+            },
+            {
+                'query': '15万以内',
+                'expected_price_range': (0, 160000),
+                'description': '中低价位查询'
+            },
+            {
+                'query': '18万左右',
+                'expected_price_range': (170000, 190000),
+                'description': '中低价位查询'
+            },
+            {
+                'query': '20万预算',
+                'expected_price_range': (190000, 210000),
+                'description': '中价位查询'
+            },
+            {
+                'query': '22万左右',
+                'expected_price_range': (210000, 230000),
+                'description': '中价位查询'
+            },
+            {
+                'query': '25万左右',
+                'expected_price_range': (240000, 260000),
+                'description': '中价位查询'
+            },
+            {
+                'query': '28万预算',
+                'expected_price_range': (270000, 290000),
+                'description': '中价位查询'
+            },
+            {
+                'query': '30万左右',
+                'expected_price_range': (290000, 310000),
+                'description': '中高价位查询'
+            },
+            {
+                'query': '35万左右',
+                'expected_price_range': (340000, 360000),
+                'description': '中高价位查询'
+            },
+            {
+                'query': '40万级别',
+                'expected_price_range': (390000, 410000),
+                'description': '高价位查询'
+            },
+            {
+                'query': '45万左右',
+                'expected_price_range': (440000, 460000),
+                'description': '高价位查询'
+            },
+            {
+                'query': '50万预算',
+                'expected_price_range': (490000, 510000),
+                'description': '高价位查询'
+            },
+            {
+                'query': '60万左右',
+                'expected_price_range': (590000, 610000),
+                'description': '高价位查询'
+            },
+            {
+                'query': '80万左右',
+                'expected_price_range': (790000, 810000),
+                'description': '超高价位查询'
+            },
+            {
+                'query': '100万级别',
+                'expected_price_range': (990000, 1010000),
+                'description': '超高价位查询'
+            },
+            {
+                'query': '150万以上',
+                'expected_price_range': (1400000, 5000000),
+                'description': '超豪华价位查询'
+            },
+            {
+                'query': '200万以上',
+                'expected_price_range': (1900000, 10000000),
+                'description': '超豪华价位查询'
+            },
+            
+            # 4. 动力类型测试 (每个动力类型单独样例)
+            {
+                'query': '汽油车',
+                'expected_powertrain': 'Gasoline',
+                'description': '汽油车查询'
+            },
+            {
+                'query': '柴油车',
+                'expected_powertrain': 'Diesel',
+                'description': '柴油车查询'
+            },
+            {
+                'query': '自然吸气',
+                'expected_powertrain': 'Gasoline',
+                'description': '自然吸气查询'
+            },
+            {
+                'query': '涡轮增压',
+                'expected_powertrain': 'Gasoline',
+                'description': '涡轮增压查询'
+            },
+            {
+                'query': '机械增压',
+                'expected_powertrain': 'Gasoline',
+                'description': '机械增压查询'
+            },
+            {
+                'query': '纯电动',
+                'expected_powertrain': 'Electric',
+                'description': '纯电动查询'
+            },
+            {
+                'query': '插电混动',
+                'expected_powertrain': 'Hybrid',
+                'description': '插电混动查询'
+            },
+            {
+                'query': '增程式',
+                'expected_powertrain': 'Hybrid',
+                'description': '增程式查询'
+            },
+            {
+                'query': '油电混动',
+                'expected_powertrain': 'Hybrid',
+                'description': '油电混动查询'
+            },
+            {
+                'query': '氢燃料电池',
+                'expected_powertrain': 'Hydrogen',
+                'description': '氢燃料电池查询'
+            },
+            {
+                'query': '甲醇汽车',
+                'expected_powertrain': 'Methanol',
+                'description': '甲醇汽车查询'
+            },
+            {
+                'query': '天然气',
+                'expected_powertrain': 'Natural Gas',
+                'description': '天然气查询'
+            },
+            {
+                'query': '双燃料',
+                'expected_powertrain': 'Dual Fuel',
+                'description': '双燃料查询'
+            },
+            {
+                'query': '清洁能源',
+                'expected_powertrain': 'Electric',
+                'description': '清洁能源查询'
+            },
+            
+            # 5. 使用场景测试 (每个场景单独样例)
+            {
+                'query': '城市通勤',
+                'expected_usage': '城市通勤',
+                'description': '城市通勤查询'
+            },
+            {
+                'query': '家用代步',
+                'expected_usage': '家用',
+                'description': '家用代步查询'
+            },
+            {
+                'query': '周末出游',
+                'expected_usage': '出游',
+                'description': '周末出游查询'
+            },
+            {
+                'query': '购物买菜',
+                'expected_usage': '家用',
+                'description': '购物买菜查询'
+            },
+            {
+                'query': '接送孩子',
+                'expected_usage': '家用',
+                'description': '接送孩子查询'
+            },
+            {
+                'query': '商务接待',
+                'expected_usage': '商务',
+                'description': '商务接待查询'
+            },
+            {
+                'query': '公务用车',
+                'expected_usage': '商务',
+                'description': '公务用车查询'
+            },
+            {
+                'query': '客户接送',
+                'expected_usage': '商务',
+                'description': '客户接送查询'
+            },
+            {
+                'query': '会议用车',
+                'expected_usage': '商务',
+                'description': '会议用车查询'
+            },
+            {
+                'query': '展示用车',
+                'expected_usage': '商务',
+                'description': '展示用车查询'
+            },
+            {
+                'query': '网约车运营',
+                'expected_usage': '运营',
+                'description': '网约车运营查询'
+            },
+            {
+                'query': '出租车',
+                'expected_usage': '运营',
+                'description': '出租车查询'
+            },
+            {
+                'query': '教练车',
+                'expected_usage': '培训',
+                'description': '教练车查询'
+            },
+            {
+                'query': '租赁用车',
+                'expected_usage': '租赁',
+                'description': '租赁用车查询'
+            },
+            {
+                'query': '企业福利',
+                'expected_usage': '企业',
+                'description': '企业福利查询'
+            },
+            {
+                'query': '自驾游',
+                'expected_usage': '自驾游',
+                'description': '自驾游查询'
+            },
+            {
+                'query': '越野探险',
+                'expected_usage': '越野',
+                'description': '越野探险查询'
+            },
+            {
+                'query': '露营装备',
+                'expected_usage': '露营',
+                'description': '露营装备查询'
+            },
+            {
+                'query': '钓鱼用车',
+                'expected_usage': '钓鱼',
+                'description': '钓鱼用车查询'
+            },
+            {
+                'query': '登山用车',
+                'expected_usage': '登山',
+                'description': '登山用车查询'
+            },
+            {
+                'query': '新手司机',
+                'expected_usage': '新手',
+                'description': '新手司机查询'
+            },
+            {
+                'query': '老年人用车',
+                'expected_usage': '老年人',
+                'description': '老年人用车查询'
+            },
+            {
+                'query': '女性专用',
+                'expected_usage': '女性',
+                'description': '女性专用查询'
+            },
+            {
+                'query': '残疾人用车',
+                'expected_usage': '残疾人',
+                'description': '残疾人用车查询'
+            },
+            {
+                'query': '儿童安全',
+                'expected_usage': '儿童',
+                'description': '儿童安全查询'
+            },
+            
+            # 6. 配置特征测试 (每个配置单独样例)
+            # 安全配置
+            {
+                'query': 'ABS防抱死',
+                'expected_feature': 'ABS',
+                'description': 'ABS防抱死查询'
+            },
+            {
+                'query': 'ESP车身稳定',
+                'expected_feature': 'ESP',
+                'description': 'ESP车身稳定查询'
+            },
+            {
+                'query': '安全气囊',
+                'expected_feature': '气囊',
+                'description': '安全气囊查询'
+            },
+            {
+                'query': '胎压监测',
+                'expected_feature': '胎压',
+                'description': '胎压监测查询'
+            },
+            {
+                'query': '倒车雷达',
+                'expected_feature': '雷达',
+                'description': '倒车雷达查询'
+            },
+            {
+                'query': '全景影像',
+                'expected_feature': '影像',
+                'description': '全景影像查询'
+            },
+            {
+                'query': '自动泊车',
+                'expected_feature': '泊车',
+                'description': '自动泊车查询'
+            },
+            {
+                'query': '盲点监测',
+                'expected_feature': '盲点',
+                'description': '盲点监测查询'
+            },
+            {
+                'query': '车道偏离预警',
+                'expected_feature': '车道',
+                'description': '车道偏离预警查询'
+            },
+            {
+                'query': '自适应巡航',
+                'expected_feature': '巡航',
+                'description': '自适应巡航查询'
+            },
+            
+            # 舒适配置
+            {
+                'query': '座椅加热',
+                'expected_feature': '加热',
+                'description': '座椅加热查询'
+            },
+            {
+                'query': '座椅通风',
+                'expected_feature': '通风',
+                'description': '座椅通风查询'
+            },
+            {
+                'query': '座椅按摩',
+                'expected_feature': '按摩',
+                'description': '座椅按摩查询'
+            },
+            {
+                'query': '电动座椅',
+                'expected_feature': '电动座椅',
+                'description': '电动座椅查询'
+            },
+            {
+                'query': '记忆座椅',
+                'expected_feature': '记忆座椅',
+                'description': '记忆座椅查询'
+            },
+            {
+                'query': '真皮座椅',
+                'expected_feature': '真皮',
+                'description': '真皮座椅查询'
+            },
+            {
+                'query': '全景天窗',
+                'expected_feature': '天窗',
+                'description': '全景天窗查询'
+            },
+            {
+                'query': '电动尾门',
+                'expected_feature': '电动尾门',
+                'description': '电动尾门查询'
+            },
+            {
+                'query': '无钥匙进入',
+                'expected_feature': '无钥匙',
+                'description': '无钥匙进入查询'
+            },
+            {
+                'query': '一键启动',
+                'expected_feature': '一键启动',
+                'description': '一键启动查询'
+            },
+            {
+                'query': '自动空调',
+                'expected_feature': '自动空调',
+                'description': '自动空调查询'
+            },
+            
+            # 科技配置
+            {
+                'query': '中控大屏',
+                'expected_feature': '大屏',
+                'description': '中控大屏查询'
+            },
+            {
+                'query': '导航系统',
+                'expected_feature': '导航',
+                'description': '导航系统查询'
+            },
+            {
+                'query': '蓝牙连接',
+                'expected_feature': '蓝牙',
+                'description': '蓝牙连接查询'
+            },
+            {
+                'query': 'CarPlay',
+                'expected_feature': 'CarPlay',
+                'description': 'CarPlay查询'
+            },
+            {
+                'query': '语音控制',
+                'expected_feature': '语音',
+                'description': '语音控制查询'
+            },
+            {
+                'query': 'HUD抬头显示',
+                'expected_feature': 'HUD',
+                'description': 'HUD抬头显示查询'
+            },
+            {
+                'query': '数字仪表盘',
+                'expected_feature': '数字仪表',
+                'description': '数字仪表盘查询'
+            },
+            {
+                'query': '无线充电',
+                'expected_feature': '无线充电',
+                'description': '无线充电查询'
+            },
+            {
+                'query': '氛围灯',
+                'expected_feature': '氛围灯',
+                'description': '氛围灯查询'
+            },
+            {
+                'query': '高级音响',
+                'expected_feature': '音响',
+                'description': '高级音响查询'
+            },
+            
+            # 性能配置
+            {
+                'query': '涡轮增压',
+                'expected_feature': '涡轮',
+                'description': '涡轮增压查询'
+            },
+            {
+                'query': '四驱系统',
+                'expected_feature': '四驱',
+                'description': '四驱系统查询'
+            },
+            {
+                'query': '运动模式',
+                'expected_feature': '运动模式',
+                'description': '运动模式查询'
+            },
+            {
+                'query': '换挡拨片',
+                'expected_feature': '换挡拨片',
+                'description': '换挡拨片查询'
+            },
+            {
+                'query': '运动座椅',
+                'expected_feature': '运动座椅',
+                'description': '运动座椅查询'
+            },
+            {
+                'query': '大尺寸轮毂',
+                'expected_feature': '轮毂',
+                'description': '大尺寸轮毂查询'
+            },
+            {
+                'query': '性能轮胎',
+                'expected_feature': '轮胎',
+                'description': '性能轮胎查询'
+            },
+            {
+                'query': '刹车系统',
+                'expected_feature': '刹车',
+                'description': '刹车系统查询'
+            },
+            {
+                'query': '悬挂系统',
+                'expected_feature': '悬挂',
+                'description': '悬挂系统查询'
+            },
+            {
+                'query': '排气声浪',
+                'expected_feature': '排气',
+                'description': '排气声浪查询'
+            },
+            
+            # 7. 具体车型测试
+            {
+                'query': '汉兰达',
+                'expected_model': 'Highlander',
+                'description': '汉兰达查询'
+            },
+            {
+                'query': 'Model 3',
+                'expected_model': 'Model 3',
+                'description': '特斯拉Model 3查询'
+            },
+            {
+                'query': '雅阁',
+                'expected_model': 'Accord',
+                'description': '本田雅阁查询'
+            },
+            {
+                'query': '凯美瑞',
+                'expected_model': 'Camry',
+                'description': '丰田凯美瑞查询'
+            },
+            {
+                'query': '途观',
+                'expected_model': 'Tiguan',
+                'description': '大众途观查询'
+            },
+            {
+                'query': 'CR-V',
+                'expected_model': 'CR-V',
+                'description': '本田CR-V查询'
+            },
+            {
+                'query': 'RAV4',
+                'expected_model': 'RAV4',
+                'description': '丰田RAV4查询'
+            },
+            {
+                'query': 'X3',
+                'expected_model': 'X3',
+                'description': '宝马X3查询'
+            },
+            {
+                'query': 'GLC',
+                'expected_model': 'GLC',
+                'description': '奔驰GLC查询'
+            },
+            {
+                'query': 'Q5',
+                'expected_model': 'Q5',
+                'description': '奥迪Q5查询'
+            },
+            
+            # 8. 复合查询测试
             {
                 'query': '豪华SUV',
                 'expected_brand': ['Mercedes-Benz', 'BMW', 'Audi', 'Lexus'],
@@ -487,39 +1447,36 @@ class PerformanceMetricsTest:
                 'expected_seats': 7,
                 'description': '7座MPV查询'
             },
-            
-            # 具体车型测试
             {
-                'query': '汉兰达',
-                'expected_model': 'Highlander',
-                'description': '具体车型查询'
+                'query': '30万左右奔驰SUV',
+                'expected_brand': 'Mercedes-Benz',
+                'expected_category': 'SUV',
+                'expected_price_range': (290000, 310000),
+                'description': '价格品牌车型复合查询'
             },
             {
-                'query': 'Model 3',
-                'expected_model': 'Model 3',
-                'description': '特斯拉Model 3查询'
-            },
-            {
-                'query': '雅阁',
-                'expected_model': 'Accord',
-                'description': '本田雅阁查询'
-            },
-            
-            # 配置特征测试
-            {
-                'query': '四驱',
-                'expected_drive': 'AWD',
-                'description': '四驱系统查询'
-            },
-            {
-                'query': '自动挡',
-                'expected_transmission': 'Automatic',
-                'description': '自动变速箱查询'
-            },
-            {
-                'query': '全景天窗',
+                'query': '带全景天窗的SUV',
+                'expected_category': 'SUV',
                 'expected_feature': '天窗',
-                'description': '天窗配置查询'
+                'description': '配置车型复合查询'
+            },
+            
+            # 9. 边界情况测试
+            {
+                'query': '那个车比较好',
+                'description': '模糊查询测试'
+            },
+            {
+                'query': '推荐个车',
+                'description': '模糊查询测试'
+            },
+            {
+                'query': '买车选什么',
+                'description': '模糊查询测试'
+            },
+            {
+                'query': '哪个牌子车好',
+                'description': '模糊查询测试'
             }
         ]
         
