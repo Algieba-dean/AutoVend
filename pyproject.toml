@@ -1,0 +1,59 @@
+[project]
+name = "autovend-rag-agent"
+version = "1.0.0"
+description = "Intelligent automotive sales assistant powered by LlamaIndex and Groq"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # LlamaIndex core
+    "llama-index-core>=0.10.0",
+    "llama-index-llms-openai-like>=0.1.0",
+    # Vector database
+    "chromadb>=0.5.0",
+    # Embeddings
+    "llama-index-embeddings-huggingface>=0.1.0",
+    "sentence-transformers>=2.2.0",
+    "numpy>=1.24.0",
+    # Data processing
+    "toml>=0.10.2",
+    "pydantic>=2.10.0",
+    # Configuration
+    "python-dotenv>=1.0.0",
+    # Logging
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.0",
+]
