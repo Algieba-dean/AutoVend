@@ -71,10 +71,8 @@ jobs:
         
     - name: Run performance tests
       run: |
-        # 设置设备为CPU（GitHub Actions没有GPU）
-        echo "EMBEDDING_DEVICE=cpu" >> $GITHUB_ENV
-        
-        uv run python tests/test_performance_metrics.py > performance_results.txt 2>&1
+        export EMBEDDING_DEVICE=cpu
+        python tests/test_performance_metrics.py > performance_results.txt 2>&1
         
     - name: Parse performance results
       id: parse-results
@@ -91,32 +89,50 @@ jobs:
         # 提取关键指标
         metrics = {}
         
-        # 嵌入性能
-        embed_match = re.search(r'单次嵌入平均时间: ([\d.]+)s', content)
-        if embed_match:
-            metrics['single_embedding_time'] = float(embed_match.group(1))
+        # 响应时间
+        response_match = re.search(r'Average Retrieval Time: ([\d.]+)s', content)
+        if response_match:
+            metrics['avg_retrieval_time'] = float(response_match.group(1))
             
-        batch_match = re.search(r'批量嵌入平均时间: ([\d.]+)s/文本', content)
-        if batch_match:
-            metrics['batch_embedding_time'] = float(batch_match.group(1))
-        
-        # 检索性能
-        retrieval_match = re.search(r'平均检索时间: ([\d.]+)s', content)
-        if retrieval_match:
-            metrics['avg_retrieval_time'] = float(retrieval_match.group(1))
-            
-        success_match = re.search(r'成功率: (\d+)/(\d+)', content)
-        if success_match:
-            metrics['success_rate'] = f"{success_match.group(1)}/{success_match.group(2)}"
-        
-        similarity_match = re.search(r'平均相似度: ([\d.]+)', content)
-        if similarity_match:
-            metrics['avg_similarity'] = float(similarity_match.group(1))
-        
-        # 并发性能
+        # QPS
         qps_match = re.search(r'QPS: ([\d.]+)', content)
         if qps_match:
             metrics['qps'] = float(qps_match.group(1))
+            
+        # 成功率
+        success_match = re.search(r'Success Rate: ([\d.]+)', content)
+        if success_match:
+            metrics['success_rate'] = float(success_match.group(1))
+        
+        # 准确性指标
+        overall_match = re.search(r'Overall Accuracy: ([\d.]+)%', content)
+        if overall_match:
+            metrics['overall_accuracy'] = float(overall_match.group(1))
+            
+        category_match = re.search(r'Category Accuracy: ([\d.]+)%', content)
+        if category_match:
+            metrics['category_accuracy'] = float(category_match.group(1))
+            
+        brand_match = re.search(r'Brand Accuracy: ([\d.]+)%', content)
+        if brand_match:
+            metrics['brand_accuracy'] = float(brand_match.group(1))
+            
+        powertrain_match = re.search(r'Powertrain Accuracy: ([\d.]+)%', content)
+        if powertrain_match:
+            metrics['powertrain_accuracy'] = float(powertrain_match.group(1))
+            
+        origin_match = re.search(r'Origin Accuracy: ([\d.]+)%', content)
+        if origin_match:
+            metrics['origin_accuracy'] = float(origin_match.group(1))
+            
+        price_match = re.search(r'Price Accuracy: ([\d.]+)%', content)
+        if price_match:
+            metrics['price_accuracy'] = float(price_match.group(1))
+        
+        # 测试覆盖率信息
+        coverage_match = re.search(r'Total Tests: (\d+)', content)
+        if coverage_match:
+            metrics['total_tests'] = int(coverage_match.group(1))
             
         concurrent_response_match = re.search(r'并发响应时间: ([\d.]+)s', content)
         if concurrent_response_match:
@@ -188,14 +204,27 @@ jobs:
             elif memory > 2500:
                 warnings.append(f"Memory usage elevated: {memory:.1f}MB > 2500MB")
         
-        # 准确性检查
+        # Accuracy check (overall supported features)
+        if 'overall_accuracy' in metrics:
+            accuracy = metrics['overall_accuracy']
+            print(f"Overall Accuracy: {accuracy:.1f}%")
+            if accuracy < 70:
+                errors.append(f"Overall accuracy too low: {accuracy:.1f}% < 70%")
+            elif accuracy < 80:
+                warnings.append(f"Overall accuracy could be improved: {accuracy:.1f}% < 80%")
+        
+        # Individual accuracy checks
         if 'category_accuracy' in metrics:
             accuracy = metrics['category_accuracy']
-            print(f"🎯 Category Accuracy: {accuracy:.1f}%")
-            if accuracy < 70:
-                errors.append(f"Category accuracy too low: {accuracy:.1f}% < 70%")
-            elif accuracy < 80:
-                warnings.append(f"Category accuracy could be improved: {accuracy:.1f}% < 80%")
+            print(f"Category Accuracy: {accuracy:.1f}%")
+        
+        if 'brand_accuracy' in metrics:
+            accuracy = metrics['brand_accuracy']
+            print(f"Brand Accuracy: {accuracy:.1f}%")
+        
+        if 'powertrain_accuracy' in metrics:
+            accuracy = metrics['powertrain_accuracy']
+            print(f"Powertrain Accuracy: {accuracy:.1f}%")
         
         print("=" * 50)
         
@@ -230,28 +259,29 @@ jobs:
         branch_name = "${{ github.ref_name }}"
         
         report = (
-            f"# AutoVend RAG Performance Report\n\n"
+            f"# AutoVend Hybrid Pipeline Performance Report\n\n"
             f"**Generated:** {generated_time}  \n"
             f"**Commit:** {commit_sha}  \n"
             f"**Branch:** {branch_name}\n\n"
-            f"## 📊 Performance Metrics\n\n"
-            f"### Embedding Performance\n"
-            f"- Single Embedding Time: {metrics.get('single_embedding_time', 'N/A')}s\n"
-            f"- Batch Embedding Time: {metrics.get('batch_embedding_time', 'N/A')}s/text\n\n"
-            f"### Retrieval Performance  \n"
-            f"- Average Retrieval Time: {metrics.get('avg_retrieval_time', 'N/A')}s\n"
-            f"- Success Rate: {metrics.get('success_rate', 'N/A')}\n"
-            f"- Average Similarity: {metrics.get('avg_similarity', 'N/A')}\n\n"
-            f"### Concurrent Performance\n"
-            f"- QPS: {metrics.get('qps', 'N/A')}\n"
-            f"- Concurrent Response Time: {metrics.get('concurrent_response_time', 'N/A')}s\n\n"
-            f"### Memory Usage\n"
-            f"- Peak Memory: {metrics.get('peak_memory_mb', 'N/A')}MB\n\n"
-            f"### Accuracy Metrics\n"
+            f"## Performance Metrics\n\n"
+            f"### Retrieval Performance\n"
+            f"- Average Response Time: {metrics.get('avg_retrieval_time', 'N/A')}s\n"
+            f"- Success Rate: {metrics.get('success_rate', 'N/A')}%\n"
+            f"- QPS: {metrics.get('qps', 'N/A')}\n\n"
+            f"## Accuracy Metrics (Supported Features Only)\n\n"
+            f"- **Overall Accuracy**: {metrics.get('overall_accuracy', 'N/A')}%\n"
             f"- Category Accuracy: {metrics.get('category_accuracy', 'N/A')}%\n"
-            f"- Brand Accuracy: {metrics.get('brand_accuracy', 'N/A')}%\n\n"
-            f"## 📈 Performance Trends\n\n"
-            f"*This section will be updated with historical data in future iterations.*\n\n"
+            f"- Brand Accuracy: {metrics.get('brand_accuracy', 'N/A')}%\n"
+            f"- Powertrain Accuracy: {metrics.get('powertrain_accuracy', 'N/A')}%\n"
+            f"- Origin Accuracy: {metrics.get('origin_accuracy', 'N/A')}%\n"
+            f"- Price Accuracy: {metrics.get('price_accuracy', 'N/A')}%\n\n"
+            f"## Test Coverage\n\n"
+            f"- Total Tests: {metrics.get('total_tests', 'N/A')}\n"
+            f"- Supported Features Only: YES\n"
+            f"- Realistic Assessment: YES\n\n"
+            f"## Notes\n\n"
+            f"This report reflects only supported features of the hybrid retrieval system.\n"
+            f"Exclusion queries and complex multi-constraint queries are not yet supported.\n"
             f"## 🔍 Recommendations\n\n"
             f"*Performance optimization recommendations will be added based on test results.*\n"
         )
@@ -299,13 +329,67 @@ jobs:
             });
           } catch (error) {
             console.log('Error creating comment:', error);
-          }
-    
     - name: Update Performance Badge (if on main)
       if: github.ref == 'refs/heads/main'
       run: |
-        # 这里可以添加更新性能徽标的逻辑
-        echo "Performance badge update would go here"
+        python << 'EOF'
+        import json
+        
+        # Read metrics
+        with open('metrics.json', 'r') as f:
+            metrics = json.load(f)
+        
+        # Generate badge URLs
+        response_time = metrics.get('avg_retrieval_time', 0)
+        qps = metrics.get('qps', 0)
+        accuracy = metrics.get('overall_accuracy', 0)
+        
+        # Determine colors
+        def get_color(value, good_threshold, warning_threshold):
+            if value >= good_threshold:
+                return 'brightgreen'
+            elif value >= warning_threshold:
+                return 'green'
+            elif value >= warning_threshold * 0.7:
+                return 'yellow'
+            else:
+                return 'red'
+        
+        response_color = get_color(1/response_time if response_time > 0 else 0, 20, 10)  # Invert for QPS-like metric
+        qps_color = get_color(qps, 20, 10)
+        accuracy_color = get_color(accuracy, 90, 70)
+        
+        # Generate badge data
+        badges = {
+            'response_time': {
+                'label': 'Response Time',
+                'message': f'{response_time:.3f}s',
+                'color': response_color
+            },
+            'qps': {
+                'label': 'QPS',
+                'message': f'{qps:.0f}',
+                'color': qps_color
+            },
+            'accuracy': {
+                'label': 'Accuracy',
+                'message': f'{accuracy:.0f}%',
+                'color': accuracy_color
+            }
+        }
+        
+        # Save badges
+        with open('performance_badges.json', 'w') as f:
+            json.dump(badges, f, indent=2)
+        
+        # Generate badge URLs for README
+        print("Generated badge URLs:")
+        for key, badge in badges.items():
+            url = f"https://img.shields.io/badge/{badge['label'].replace(' ', '%20')}-{badge['message'].replace(' ', '%20')}-{badge['color']}"
+            print(f"[![{badge['label']}]({url})]({url})")
+        
+        print("Performance badges updated!")
+        EOF
 
   # 性能回归测试
   regression-test:

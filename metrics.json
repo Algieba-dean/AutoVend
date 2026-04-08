@@ -1,0 +1,21 @@
+{
+  "single_embedding_time": 32.929,
+  "batch_embedding_time": 0.006,
+  "avg_retrieval_time": 0.042,
+  "success_rate": "257/258",
+  "avg_similarity": 0.54,
+  "qps": 16.5,
+  "concurrent_response_time": 0.298,
+  "category_accuracy": 3.6,
+  "brand_accuracy": 6.6,
+  "price_accuracy": 2.4,
+  "powertrain_accuracy": 0.0,
+  "usage_accuracy": 0.6,
+  "size_accuracy": 0.0,
+  "model_accuracy": 4.2,
+  "seats_accuracy": 0.0,
+  "drive_accuracy": 0.0,
+  "transmission_accuracy": 0.0,
+  "feature_accuracy": 1.2,
+  "comprehensive_accuracy": 1.7
+}
