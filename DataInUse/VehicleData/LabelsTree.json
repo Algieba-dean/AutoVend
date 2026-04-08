@@ -1,0 +1,110 @@
+{
+    "precise_needs":{
+        "prize":["below 10,000","10,000 ~ 20,000","20,000 ~ 30,000","30,000 ~ 40,000","40,000 ~ 60,000","60,000 ~ 100,000","above 100,000"],
+        "prize_alias":["cheap","economy","mid-range low-end","mid-range","mid-range high-end","high-end","luxury"],
+        "vehicle_category":{
+            "sedan":{
+                "small sedan":["micro sedan","compact sedan"],
+                "mid-size sedan":["b-segment sedan"],
+                "mid-large sedan":["c-segment sedan","d-segment sedan"]
+            },
+            "suv":{
+                "crossover suv":["compact suv","mid-size suv","mid-to-large suv"],
+                "body-on-frame suv":["off-road suv","all-terrain suv"]
+            },
+            "mpv":{
+                "family mpv":["compact mpv","mid-size mpv","large mpv"],
+                "business mpv":["mid-size business mpv","large-size business mpv"]
+            },
+            "sports car":{
+                "convertible sports car":["two-door convertible sports car", "four-door convertible sports car"],
+                "hardtop sports car":["two-door hardtop sports car","four-door hardtop sports car"]
+            }
+        },
+        "brand":{
+            "european":{
+                "germany":["volkswagen","audi","porsche","bentley","bugatti","lamborghini","bmw","mercedes-benz"],
+                "france":["peugeot", "renault"],
+                "united kingdom":["jaguar","land rover","rolls-royce"],
+                "sweden":["volvo"]
+            },
+            "american":{
+                "usa":["chevrolet","buick","cadillac","ford","tesla"]
+            },
+            "asian":{
+                "japan":["toyota","honda","nissan","suzuki","mazda"],
+                "korea":["hyundai"],
+                "china":["byd","geely","changan","great wall motor","nio","xiaomi","xpeng"]
+            }
+        },
+        "powertrain_type":["gasoline engine","diesel engine","hybrid electric vehicle","plug-in hybrid electric vehicle","range-extended electric vehicle","battery electric vehicle"],
+        "passenger_space_volume":["2.5-3.5 m³","3.5-4.5 m³","4.5-5.5 m³","above 5.5 m³"],
+        "passenger_space_volume_alias":["small","medium","large","luxury"],
+        "trunk_volume":["200 - 300l","300-400l","400-500l","above 500l"],
+        "trunk_volume_alias":["small","medium","large","luxury"],
+        "wheelbase":["2300-2650mm","2650-2800mm","2800-2950mm","2950-3100mm","above 3100mm"],
+        "wheelbase_alias":["small","moderate","spacious","very spacious","luxury spacious"],
+        "chassis_height":["100-130mm","130-150mm","150-200mm","above 200mm"],
+        "chassis_height_alias":["low ride height","medium ride height","high ride height","off-road chassis"],
+        "design_style":["sporty","business"],
+        "body_line_smoothness":["high","medium","low"],
+        "color":["bright colors","neutral colors","dark colors"],
+        "interior_material_texture":["wood trim","metal trim"],
+        "abs":["yes","no"],
+        "esp":["yes","no"],
+        "airbag_count":["2","4","6","8","10","above 10"],
+        "seat_material":["leather","fabric"],
+        "noise_insulation":["high","medium","low"],
+        "voice_interaction":["yes","no"],
+        "ota_updates":["yes","no"],
+        "autonomous_driving_level":["l2","l3"],
+        "adaptive_cruise_control":["yes","no"],
+        "traffic_jam_assist":["yes","no"],
+        "automatic_emergency_braking":["yes","no"],
+        "lane_keep_assist":["yes","no"],
+        "remote_parking":["yes","no"],
+        "auto_parking":["yes","no"],
+        "blind_spot_detection":["yes","no"],
+        "fatigue_driving_detection":["yes","no"],
+        "engine_displacement":["below 1.0l","1.0-1.6l","1.6-2.0l","2.0-2.5l","2.5-3.5l","3.5-6.0l","above 6.0l","none"],
+        "motor_power":["below 70kw","70-120kw","120-180kw","180-250kw","250-400kw","above 400kw"],
+        "motor_power_alias":["low","lower-medium","medium","higher-medium","high","extra-high"],
+        "battery_capacity":["30-50kwh","50-80kwh","80-100kwh","above 100kwh","none"],
+        "battery_capacity_alias":["small","medium","large","extra-large"],
+        "fuel_tank_capacity":["30-50l","50-70l","above 70l","none"],
+        "fuel_tank_capacity_alias":["small","medium","large"],
+        "horsepower":["below 100 hp","100-200 hp","200-300 hp","300-400 hp","above 400 hp"],
+        "horsepower_alias":["low","lower-medium","medium","high","extra-high"],
+        "torque":["200n·m","200-300 n·m","300-400 n·m","400-500 n·m","above 500 n·m"],
+        "torque_alias":["low","lower-medium","medium","high","extra-high"],
+        "zero_to_one_hundred_km_h_acceleration_time":["above 10s","8-10s","6-8s","4-6s","below 4s"],
+        "zero_to_one_hundred_km_h_acceleration_time_alias":["slow","medium","fast","very fast","extreme"],
+        "top_speed":["below 160km/h","160-200km/h","200-240km/h","240-300km/h","above 300km/h"],
+        "top_speed_alias":["low","medium","high","very high","extreme"],
+        "fuel_consumption":["4-6l/100km","6-8l/100km","above 8l/100km","none"],
+        "fuel_consumption_alias":["low","medium","high"],
+        "electric_consumption":["10-12kwh/100km","12-14kwh/100km","above 14kwh/100km","none"],
+        "electric_consumption_alias":["low","medium","high"],
+        "driving_range":["300-400km","400-800km","above 800km"],
+        "driving_range_alias":["short","medium","long"],
+        "drive_type":["front-wheel drive","rear-wheel drive","all-wheel drive"],
+        "suspension":["suspension","non-independent"],
+        "passability":["low","medium","high"],
+        "seat_layout":["2-seat","4-seat","5-seat","6-seat","7-seat"],
+        "city_commuting":["yes","no"],
+        "highway_long_distance":["yes","no"],
+        "off_road_capability":["low","medium","high"],
+        "cargo_capability":["yes","no"],
+        "cold_resistance":["low","medium","high"],
+        "heat_resistance":["low","medium","high"]
+    },
+    "ambiguous_needs":{
+        "size":["small","medium","large"],
+        "vehicle_usability":["low","medium","high"],
+        "aesthetics":["low","medium","high"],
+        "energy_consumption_level":["low","medium","high"],
+        "comfort_level":["low","medium","high"],
+        "smartness":["low","medium","high"],
+        "family_friendliness":["low","medium","high"]
+    }
+}
