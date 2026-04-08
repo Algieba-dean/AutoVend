@@ -52,6 +52,7 @@ class Config(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = False
+        extra = "allow"  # Allow extra environment variables
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

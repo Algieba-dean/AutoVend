@@ -546,6 +546,7 @@ class VehicleRetriever:
             brand=metadata.get("brand"),
             prize=metadata.get("price"),
             vehicle_category_bottom=metadata.get("category"),
+            powertrain_type=metadata.get("powertrain_type"),
         )
 
         ambiguous_labels = AmbiguousLabels(
