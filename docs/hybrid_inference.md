@@ -113,20 +113,21 @@ llama.cpp 的 `llama-server`——它同样是 OpenAI 协议，路由层无需�
 
 ### 实测参考值
 
-RTX 4090 / Qwen3-8B bnb-4bit / eager 模式 / 30 次真实控制路径调用
-（`routing_bench --n 15 --routes local`，`evaluation/results/routing_bench_local.json`）：
+RTX 4090 / Qwen3-8B bnb-4bit（bitsandbytes NF4）/ eager 模式。每路 15 轮 ×
+2 次调用 = 30 次真实控制路径调用（`routing_bench --n 15`，结果见
+`evaluation/results/routing_bench.json`）：
 
-| 指标 | 本地 |
-|---|---|
-| TTFT p50 | **0.066 s** |
-| TTFT p95 | 0.172 s |
-| TTFT p99 | 0.216 s |
-| 端到端 p95 | 2.04 s |
-| 平均 completion token | 39 /次 |
+| 路由 | 模型 | TTFT p50 | p95 | p99 | 端到端 p95 | 失败 |
+|---|---|---|---|---|---|---|
+| **local** | Qwen3-8B bnb-4bit | **0.064 s** | 0.171 s | 0.204 s | 2.07 s | 0/30 |
+| cloud2 | deepseek-v4-flash | 1.738 s | 2.494 s | 2.781 s | 3.25 s | 0/30 |
+| cloud | groq llama-3.3-70b | — | — | — | — | 29/30 ⚠ |
 
-对照：同一批 prompt 走 Groq 的 TTFT p50 约 1.2 s（该次运行 30 调用中 21 次因
-免费额度耗尽失败，故基准脚本已将其标记为 `reliable: false`，此数字仅供量级参考，
-不可引用）。
+- **本地 TTFT p50 比云端快 27 倍**（0.064 s vs 1.738 s）。
+- 控制路径每 30 次调用避免约 20,240 个云端 token（按 Groq 费率 ≈ $0.012）。
+- 平均 39 completion token/次（关闭思维链后；开启时为 ~244）。
+- Groq 那一行因免费额度耗尽失败率 93%，已被标记 `reliable: false`，**不可引用**。
+  这正是基准脚本该有的行为，也正是云端链存在的理由。
 
 > 引用任何 TTFT / 成本数字前先跑基准。数字随硬件、量化方式与云端排队情况变化。
 > 基准脚本在单条路由失败率 > 10% 时会把结果标记为 `reliable: false` 并在 stderr

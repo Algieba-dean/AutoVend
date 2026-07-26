@@ -75,34 +75,46 @@ def _parser_prompts(n: int) -> List[List[Dict[str, str]]]:
     ]
 
 
-def _build_backend(route: str):
+def _resolve_backends(routes: Sequence[str]) -> List[tuple]:
     """
-    Build a backend exactly as production does.
+    Resolve the requested routes to (label, backend) pairs.
 
-    Routed through `build_default_router` rather than constructed here, so the
-    benchmark cannot drift from the deployed configuration — an earlier version
-    built the local client directly and silently left reasoning-model
-    chain-of-thought enabled, inflating completion tokens 4x and latency 5x
-    versus what the router actually sends.
+    Backends come from `build_default_router` rather than being constructed
+    here, so the benchmark cannot drift from the deployed configuration — an
+    earlier version built the local client directly and silently left
+    reasoning-model chain-of-thought enabled, inflating completion tokens 4x
+    and latency 5x versus what the router actually sends.
+
+    "cloud" expands to *every* provider in the chain, not just the preferred
+    one. When the primary is rate-limited the secondary is what actually serves
+    production traffic, so it is what a comparison needs to include.
     """
     from src.llm.router import build_default_router
 
     router = build_default_router()
+    resolved: List[tuple] = []
 
-    if route == "local":
-        if router.local is None:
-            raise SystemExit("LOCAL_LLM_BASE_URL is not set — start ./scripts/serve_local_llm.sh")
-        return router.local
-    if route == "cloud":
-        if router.cloud is None:
-            raise SystemExit("No cloud credentials configured.")
-        return router.cloud
-    raise ValueError(route)
+    for route in routes:
+        if route == "local":
+            if router.local is None:
+                raise SystemExit(
+                    "LOCAL_LLM_BASE_URL is not set — start ./scripts/serve_local_llm.sh"
+                )
+            resolved.append(("local", router.local))
+        elif route == "cloud":
+            if not router.cloud_chain:
+                raise SystemExit("No cloud credentials configured.")
+            for rank, backend in enumerate(router.cloud_chain):
+                label = "cloud" if rank == 0 else f"cloud{rank + 1}"
+                resolved.append((label, backend))
+        else:
+            raise ValueError(route)
+
+    return resolved
 
 
-def bench_route(route: str, n: int) -> Dict:
+def bench_route(route: str, backend, n: int) -> Dict:
     """Run the control-path workload against one backend."""
-    backend = _build_backend(route)
     if not backend.is_available():
         raise SystemExit(f"{route} backend ({backend.base_url}) is not reachable")
 
@@ -184,9 +196,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     results = []
-    for route in args.routes:
-        print(f"Benchmarking {route} ({args.n} turns, {2 * args.n} calls)...")
-        results.append(bench_route(route, args.n))
+    for label, backend in _resolve_backends(args.routes):
+        print(f"Benchmarking {label} / {backend.model} ({args.n} turns, {2 * args.n} calls)...")
+        results.append(bench_route(label, backend, args.n))
 
     report = {"n_turns": args.n, "routes": results}
     out = args.out or (RESULTS_DIR / "routing_bench.json")
@@ -216,14 +228,22 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             file=sys.stderr,
         )
 
-    if len(results) == 2:
-        local = next((r for r in results if r["route"] == "local"), None)
-        if local:
-            print(
-                f"\nCloud tokens avoided by the local route: "
-                f"{local['prompt_tokens'] + local['completion_tokens']} "
-                f"(≈ ${local['cost_at_cloud_rates_usd']} at cloud rates)"
-            )
+    local = next((r for r in results if r["route"] == "local"), None)
+    if local and len(results) > 1:
+        print(
+            f"\nCloud tokens avoided by the local route: "
+            f"{local['prompt_tokens'] + local['completion_tokens']} "
+            f"(≈ ${local['cost_at_cloud_rates_usd']} at cloud rates)"
+        )
+        quotable = [r for r in results if r["route"] != "local" and r["reliable"]]
+        if quotable and local["ttft_p50_s"]:
+            best = min(quotable, key=lambda r: r["ttft_p50_s"] or float("inf"))
+            if best["ttft_p50_s"]:
+                print(
+                    f"TTFT p50 speedup vs {best['model']}: "
+                    f"{best['ttft_p50_s'] / local['ttft_p50_s']:.1f}x "
+                    f"({local['ttft_p50_s']:.4f}s vs {best['ttft_p50_s']:.4f}s)"
+                )
     print(f"\nReport: {out}")
     return 0
 
