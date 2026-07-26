@@ -62,6 +62,12 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras
 
+      # Presidio needs a spaCy pipeline registered even though the Chinese
+      # recognizers are pure regex; without it the interceptor fails to build
+      # and every PII test skips silently.
+      - name: Install spaCy model for Presidio
+        run: uv run python -m spacy download en_core_web_lg
+
       # `slow` tests need the embedding model and the vector index; they run in
       # the eval-gate job below, which pays for the model cache once.
       - name: Run tests with coverage
@@ -159,6 +165,12 @@ jobs:
       # That also exercises the ingestion path on every run.
       - name: Build indices
         run: uv run python -m src.main build --batch-size 50
+
+      # Anchors are a generated artifact too. --probe fails loudly if a seed or
+      # threshold change breaks routing, which is otherwise invisible: an
+      # unbuilt router just makes every turn take the long path.
+      - name: Build semantic router anchors
+        run: uv run python -m src.semantic_router.build --probe
 
       # No LLM key is configured, and none is needed: this gate is purely
       # deterministic. LLM-judged metrics run in rag-eval.yml and never block.
