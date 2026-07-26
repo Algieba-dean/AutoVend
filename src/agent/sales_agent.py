@@ -9,6 +9,7 @@ Vehicle retrieval results are passed IN via AgentInput.retrieved_cars.
 """
 
 import logging
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from llama_index.core.llms import LLM
@@ -17,6 +18,7 @@ from src.agent.extractors.combined_needs_extractor import extract_combined_needs
 from src.agent.extractors.profile_extractor import extract_profile
 from src.agent.extractors.reservation_extractor import extract_reservation
 from src.agent.memory import ChatMemoryManager
+from src.agent.patches import StatePatch, diff, format_for_prompt, snapshot
 from src.agent.response_generator import generate_response
 from src.agent.schemas import (
     AgentInput,
@@ -25,36 +27,40 @@ from src.agent.schemas import (
     Stage,
 )
 from src.agent.stages import advance, propose_forward
+from src.agent.tool_planner import plan_tools
+from src.agent.tools import ToolResult, dispatch_all
 from src.agent.transition_proposer import propose_by_llm
 
 logger = logging.getLogger(__name__)
 
-
-def _structured_snapshot(state: SessionState) -> Dict[str, Any]:
-    """Flatten the structured state to {dotted_path: value} for diffing."""
-    snapshot: Dict[str, Any] = {}
-    for prefix, model in (
-        ("profile", state.profile),
-        ("needs.explicit", state.needs.explicit),
-        ("needs.implicit", state.needs.implicit),
-        ("reservation", state.reservation),
-    ):
-        for field, value in model.model_dump().items():
-            if value not in ("", None, [], {}):
-                snapshot[f"{prefix}.{field}"] = value
-    return snapshot
+#: How many recent patches ride along in the generation prompt. Enough to carry
+#: "what just changed" without re-serialising the whole state every turn.
+PROMPT_PATCH_WINDOW = 6
 
 
-def _diff_snapshots(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    What this turn added or changed.
+@dataclass
+class ToolOutcome:
+    """Result of running a batch of tool calls."""
 
-    Only additions and updates — extraction merges rather than deletes, so a
-    field disappearing means the extractor returned nothing for it, not that
-    the customer retracted it. Treating that as a deletion would erase facts
-    every time a turn happened not to mention them.
-    """
-    return {key: value for key, value in after.items() if before.get(key) != value}
+    state: SessionState
+    results: List[ToolResult]
+    #: Intents the agent cannot fulfil itself — retrieval, stage changes.
+    requests: List[Dict[str, Any]] = field(default_factory=list)
+
+    @property
+    def ok(self) -> bool:
+        return all(r.ok for r in self.results)
+
+
+def _record_patches(state: SessionState, before: Dict[str, Any], source: str) -> None:
+    """Diff against `before`, append to the patch log, and set `last_patch`."""
+    patches = diff(before, snapshot(state), source=source)
+    if not patches:
+        state.last_patch = {}
+        return
+    state.patch_log = [*state.patch_log, *(p.to_dict() for p in patches)]
+    state.last_patch = {p.path: p.value for p in patches}
+    logger.info(f"[{state.session_id}] {len(patches)} patch(es): {state.last_patch}")
 
 
 class SalesAgent:
@@ -103,7 +109,12 @@ class SalesAgent:
         self.memory.add_user_message(updated.session_id, user_message)
         return updated
 
-    def observe(self, state: SessionState, user_message: str) -> SessionState:
+    def observe(
+        self,
+        state: SessionState,
+        user_message: str,
+        use_tools: bool = False,
+    ) -> SessionState:
         """
         Record the user's message and extract what it reveals — no generation.
 
@@ -116,6 +127,10 @@ class SalesAgent:
         Args:
             state: Session state at the start of the turn.
             user_message: What the user just said.
+            use_tools: Also let the model plan tool calls for this stage. Costs
+                an extra LLM call; the extractors already cover writing fields,
+                so this earns its keep when the turn calls for an action —
+                selecting a vehicle, asking for one specific missing field.
 
         Returns:
             An updated copy of the state. The input is not mutated.
@@ -124,12 +139,43 @@ class SalesAgent:
         self.memory.add_user_message(updated.session_id, user_message)
         conversation_text = self.memory.get_history_as_text(updated.session_id)
 
-        before = _structured_snapshot(updated)
+        before = snapshot(updated)
         updated = self._extract_information(updated, conversation_text)
-        updated.last_patch = _diff_snapshots(before, _structured_snapshot(updated))
-        if updated.last_patch:
-            logger.info(f"[{updated.session_id}] state patch: {updated.last_patch}")
+        _record_patches(updated, before, source="extractor")
+
+        if use_tools:
+            calls = plan_tools(self.llm, updated, conversation_text)
+            if calls:
+                outcome = self.use_tools(updated, calls)
+                updated = outcome.state
+                updated.pending_requests = outcome.requests
+
         return updated
+
+    def use_tools(self, state: SessionState, calls: List[Dict[str, Any]]) -> ToolOutcome:
+        """
+        Run a batch of tool calls against the state.
+
+        The dispatcher refuses tools outside the current stage's candidate set,
+        so a booking cannot be recorded while the conversation is still learning
+        who the customer is. Returns the results plus any requests the caller
+        must act on — retrieval and stage changes are expressed as intents here
+        and carried out by whoever owns those (see `stages.arbitrate`).
+        """
+        updated = state.model_copy(deep=True)
+        before = snapshot(updated)
+        results = dispatch_all(updated, calls)
+        _record_patches(updated, before, source="tool")
+
+        for result in results:
+            if not result.ok:
+                logger.info(f"[{updated.session_id}] tool refused: {result.message}")
+
+        return ToolOutcome(
+            state=updated,
+            results=results,
+            requests=[r.request for r in results if r.ok and r.request],
+        )
 
     def respond(
         self,
@@ -195,6 +241,17 @@ class SalesAgent:
             elif verdict.rejection:
                 logger.info(f"[{session_id}] Stage held at {old_stage.value}: {verdict.rejection}")
 
+        # Recent patches ride at the top of the prompt alongside the
+        # arbitration notes. The transcript window is short; this is what keeps
+        # "the customer just changed their budget" visible even when the turn
+        # that said so has scrolled out.
+        notes = list(updated.system_notes)
+        patch_summary = format_for_prompt(
+            [StatePatch.from_dict(p) for p in updated.patch_log[-PROMPT_PATCH_WINDOW:]]
+        )
+        if patch_summary:
+            notes.append(patch_summary)
+
         response_text = generate_response(
             self.generation_llm,
             updated.stage,
@@ -203,7 +260,7 @@ class SalesAgent:
             updated.needs,
             updated.matched_cars,
             updated.reservation,
-            system_notes=updated.system_notes,
+            system_notes=notes,
         )
 
         # Notes are per-turn instructions. Carrying them forward would keep

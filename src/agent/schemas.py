@@ -144,11 +144,22 @@ class SessionState(BaseModel):
     #: prompt and cleared each turn, so a stale note cannot leak forward.
     system_notes: List[str] = Field(default_factory=list)
 
-    #: What this turn changed, as {field_path: new_value}. The structured state
-    #: is authoritative and survives the sliding memory window; the patch log
-    #: is how a turn's contribution stays visible after the transcript that
-    #: produced it has scrolled out.
+    #: What this turn changed, as {field_path: new_value}. Kept as a flat map
+    #: for callers that only need "did anything change"; `patch_log` carries the
+    #: same information with operations and provenance.
     last_patch: Dict[str, Any] = Field(default_factory=dict)
+
+    #: Every change ever made to the structured state, oldest first, as
+    #: serialised `StatePatch` dicts. The transcript scrolls out of the sliding
+    #: window; this does not, so a budget stated on turn 2 stays attributable on
+    #: turn 20. Also lets a rollback revert exactly what a stage introduced
+    #: instead of clearing whole sub-objects.
+    patch_log: List[Dict[str, Any]] = Field(default_factory=list)
+
+    #: Intents raised by tools that the agent cannot fulfil itself — retrieval,
+    #: stage changes. The orchestrator drains these; the agent only states them,
+    #: which is what keeps this package free of backend imports.
+    pending_requests: List[Dict[str, Any]] = Field(default_factory=list)
 
     #: Set by a rollback to suppress forward transitions for one turn.
     #:
