@@ -1,3 +1,27 @@
+> **⚠ SUPERSEDED — do not quote the numbers below.**
+>
+> This report is kept for provenance only. Its two headline claims do not
+> reproduce against the current codebase:
+>
+> | Claim here | Re-measured |
+> |---|---|
+> | Hybrid is **23x faster** than pure RAG (0.053 s vs 1.202 s) | **No speedup.** hybrid 0.132 s vs dense 0.129 s. At 1281 vehicles a full ChromaDB scan is already fast and latency is dominated by query embedding (~0.02 s), so pre-filtering buys nothing. The original 1.202 s most likely included model cold-start. |
+> | Hybrid accuracy **92.3% vs 84.6%** (+7.7%) over 13 queries | 13 hand-picked queries scored by top-1 label match is not an accuracy measurement. On a 116-query golden set with hand-written ground truth, hybrid (0.701) is **slightly worse** than plain dense (0.707) on capped_recall@3. Adding BM25 + RRF is what actually helps: **0.756**. |
+>
+> Current, reproducible evaluation:
+> - Methodology and ground truth: [src/eval/golden_set.py](src/eval/golden_set.py)
+> - Run it: `uv run python -m src.eval.runner --systems filter bm25 dense hybrid fusion`
+> - Results: [evaluation/comparison.md](evaluation/comparison.md)
+> - CI gate on the production path: [src/eval/gate.py](src/eval/gate.py)
+>
+> The methodological problem with what follows is that its "ground truth" was
+> whether the top result *looked* right to the author, over queries chosen by
+> the same author. The replacement derives relevance from SQL predicates over
+> the catalogue, written independently of the retrieval code, so the system
+> cannot grade its own homework.
+
+---
+
 # Pure RAG vs Hybrid Pipeline Comparison Report
 
 ## Executive Summary
