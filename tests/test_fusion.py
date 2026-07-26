@@ -64,3 +64,62 @@ class TestReciprocalRankFusion:
         flat = dict(reciprocal_rank_fusion([["a", "b", "c"], ["z"]], k=1000))
 
         assert sharp["a"] / sharp["c"] > flat["a"] / flat["c"]
+
+
+class TestFusionWeights:
+    """
+    Weighting policy. The shipped answer is "equal weights, routing off" — see
+    the module docstring for the measurement that produced it. These pin the
+    mechanism so the decision can be revisited from data rather than reverted
+    by accident.
+    """
+
+    def test_static_is_the_default(self):
+        from src.retrieval.fusion import STATIC_WEIGHTS, weights_for_query
+
+        assert weights_for_query(["BMW"]) is STATIC_WEIGHTS
+        assert weights_for_query(None) is STATIC_WEIGHTS
+
+    def test_dynamic_routes_on_parser_hits(self):
+        from src.retrieval.fusion import (
+            LEXICAL_WEIGHTS,
+            SEMANTIC_WEIGHTS,
+            weights_for_query,
+        )
+
+        assert weights_for_query(["BMW"], dynamic=True) is LEXICAL_WEIGHTS
+        assert weights_for_query([], dynamic=True) is SEMANTIC_WEIGHTS
+        assert weights_for_query(None, dynamic=True) is SEMANTIC_WEIGHTS
+
+    def test_weights_are_normalised_to_one(self):
+        """Not required by RRF, but keeps the numbers comparable across policies."""
+        from src.retrieval.fusion import (
+            LEXICAL_WEIGHTS,
+            SEMANTIC_WEIGHTS,
+            STATIC_WEIGHTS,
+        )
+
+        for weights in (STATIC_WEIGHTS, LEXICAL_WEIGHTS, SEMANTIC_WEIGHTS):
+            assert weights.dense + weights.sparse == pytest.approx(1.0)
+
+    def test_as_list_orders_dense_then_sparse(self):
+        from src.retrieval.fusion import FusionWeights
+
+        assert FusionWeights(0.3, 0.7).as_list() == [0.3, 0.7]
+
+    def test_sparse_weight_promotes_the_sparse_ranking(self):
+        """The mechanism the search relies on: weights actually change order."""
+        dense = ["a", "b"]
+        sparse = ["b", "a"]
+
+        dense_heavy = reciprocal_rank_fusion([dense, sparse], weights=[0.9, 0.1])
+        sparse_heavy = reciprocal_rank_fusion([dense, sparse], weights=[0.1, 0.9])
+
+        assert dense_heavy[0][0] == "a"
+        assert sparse_heavy[0][0] == "b"
+
+    def test_zero_weight_silences_a_channel(self):
+        fused = reciprocal_rank_fusion([["a"], ["z"]], weights=[1.0, 0.0])
+
+        assert fused[0][0] == "a"
+        assert dict(fused)["z"] == 0.0

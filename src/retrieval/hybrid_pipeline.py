@@ -22,7 +22,7 @@ from src.filter.query_parser import ParsedQuery, QueryParser
 from src.filter.vehicle_db import VehicleDB
 from src.models.query import Query, SearchResponse
 from src.retrieval.fusion import DEFAULT_K as DEFAULT_RRF_K
-from src.retrieval.fusion import reciprocal_rank_fusion
+from src.retrieval.fusion import reciprocal_rank_fusion, weights_for_query
 from src.utils.logger import get_logger
 
 #: 融合时每一路多取的倍数。见 `_semantic_rerank` 中的说明。
@@ -41,6 +41,7 @@ class HybridPipelineResult:
         self.candidate_count: int = 0
         self.rag_result_count: int = 0
         self.sparse_result_count: int = 0
+        self.fusion_weights = None
         self.total_time: float = 0.0
         self.search_response: Optional[SearchResponse] = None
 
@@ -53,6 +54,15 @@ class HybridPipelineResult:
             "candidate_count": self.candidate_count,
             "rag_result_count": self.rag_result_count,
             "sparse_result_count": self.sparse_result_count,
+            "fusion_weights": (
+                {
+                    "dense": self.fusion_weights.dense,
+                    "sparse": self.fusion_weights.sparse,
+                    "reason": self.fusion_weights.reason,
+                }
+                if self.fusion_weights
+                else None
+            ),
             "total_time": round(self.total_time, 3),
         }
 
@@ -77,6 +87,7 @@ class HybridPipeline:
         retriever: Optional[Any] = None,
         sparse_index: Optional[Any] = None,
         fusion_k: int = DEFAULT_RRF_K,
+        dynamic_fusion_weights: bool = False,
     ):
         self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
@@ -89,6 +100,7 @@ class HybridPipeline:
         self.retriever = retriever
         self.sparse_index = sparse_index
         self.fusion_k = fusion_k
+        self.dynamic_fusion_weights = dynamic_fusion_weights
 
     def ensure_db_loaded(self) -> None:
         """确保 SQLite 数据库已加载"""
@@ -265,8 +277,18 @@ class HybridPipeline:
 
         result.sparse_result_count = len(sparse_ranking)
 
+        # Route the weights on whether the rule parser found catalogue
+        # vocabulary. A query naming "BMW" or "Mid-Size SUV" is on the lexical
+        # channel's home ground; a paraphrase like "适合家用的车" gives BM25 no
+        # exact token to grip, and the signal is entirely semantic.
+        weights = weights_for_query(result.matched_keywords, dynamic=self.dynamic_fusion_weights)
+        result.fusion_weights = weights
+
         fused = reciprocal_rank_fusion(
-            [dense_ranking, sparse_ranking], k=self.fusion_k, top_k=top_k
+            [dense_ranking, sparse_ranking],
+            k=self.fusion_k,
+            weights=weights.as_list(),
+            top_k=top_k,
         )
         fused_order = {model: rank for rank, (model, _) in enumerate(fused)}
 
