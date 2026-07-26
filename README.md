@@ -163,6 +163,7 @@ WELCOME → PROFILE_ANALYSIS → NEEDS_ANALYSIS → CAR_SELECTION
 - [混合检索方案](docs/hybrid-retrieval-plan.md) —— 三层检索设计
 - [性能指标](docs/PERFORMANCE_METRICS.md) · [测试指南](docs/TESTING_GUIDE.md)
 - [部署指南](docs/deployment_guide.md)
+- [问题记录](docs/record.md) —— 本轮遇到的 30 个问题、根因、解法与实测效力
 
 ## License
 
