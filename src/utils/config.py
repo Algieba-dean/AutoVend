@@ -7,6 +7,7 @@
 import os
 from pathlib import Path
 from typing import Optional
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -17,27 +18,19 @@ class Config(BaseSettings):
     # LLM API configuration - generic for OpenAI-compatible providers
     llm_api_key: Optional[str] = Field(default=None, env="LLM_API_KEY")
     llm_model: str = Field(default="llama-3.1-70b-versatile", env="LLM_MODEL")
-    llm_base_url: str = Field(
-        default="https://api.groq.com/openai/v1", env="LLM_BASE_URL"
-    )
+    llm_base_url: str = Field(default="https://api.groq.com/openai/v1", env="LLM_BASE_URL")
     llm_provider: str = Field(default="mock", env="LLM_PROVIDER")
 
     # Vector Database Configuration
-    chroma_persist_dir: str = Field(
-        default="./data/chroma_db", env="CHROMA_PERSIST_DIR"
-    )
-    chroma_collection_name: str = Field(
-        default="vehicle_knowledge", env="CHROMA_COLLECTION_NAME"
-    )
+    chroma_persist_dir: str = Field(default="./data/chroma_db", env="CHROMA_PERSIST_DIR")
+    chroma_collection_name: str = Field(default="vehicle_knowledge", env="CHROMA_COLLECTION_NAME")
 
     # Embedding Model Configuration - BGE-M3
     embedding_model: str = Field(default="BAAI/bge-m3", env="EMBEDDING_MODEL")
     embedding_device: str = Field(default="auto", env="EMBEDDING_DEVICE")
 
     # Data Configuration
-    vehicle_data_dir: str = Field(
-        default="./DataInUse/VehicleData", env="VEHICLE_DATA_DIR"
-    )
+    vehicle_data_dir: str = Field(default="./DataInUse/VehicleData", env="VEHICLE_DATA_DIR")
 
     # Application Settings
     app_environment: str = Field(default="development", env="APP_ENVIRONMENT")

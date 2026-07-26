@@ -29,8 +29,7 @@ class FilterResult:
 
     def __repr__(self) -> str:
         return (
-            f"FilterResult(candidates={self.total_candidates}, "
-            f"degrade_level={self.degrade_level})"
+            f"FilterResult(candidates={self.total_candidates}, degrade_level={self.degrade_level})"
         )
 
 
@@ -77,9 +76,7 @@ class FilterEngine:
         min_candidates: int = 5,
         max_candidates: int = 200,
     ):
-        self.logger = get_logger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self.registry = registry or LabelRegistry()
         self.db = db or VehicleDB(registry=self.registry)
         self.min_candidates = min_candidates
@@ -264,16 +261,12 @@ class FilterEngine:
         placeholders = ", ".join("?" for _ in leaves)
         return f'"{field}" IN ({placeholders})', leaves
 
-    def _build_exact_clause(
-        self, label: LabelInfo, value: str
-    ) -> Tuple[str, List[Any]]:
+    def _build_exact_clause(self, label: LabelInfo, value: str) -> Tuple[str, List[Any]]:
         """精确/别名匹配"""
         resolved = label.resolve_alias(value.lower())
         return f'"{label.name}" = ?', [resolved]
 
-    def _build_in_clause(
-        self, label: LabelInfo, values: List[str]
-    ) -> Tuple[str, List[Any]]:
+    def _build_in_clause(self, label: LabelInfo, values: List[str]) -> Tuple[str, List[Any]]:
         """多值 OR 匹配"""
         resolved = [label.resolve_alias(v.lower()) for v in values]
         placeholders = ", ".join("?" for _ in resolved)

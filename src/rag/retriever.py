@@ -6,15 +6,13 @@
 
 import re
 import time
-from typing import List, Dict, Any, Optional, Tuple
-import numpy as np
+from typing import Any, Dict, List, Optional, Tuple
 
+from src.models.query import MatchScore, Query, SearchResponse, SearchResult
 from src.models.vehicle import Vehicle
-from src.models.query import Query, SearchResult, SearchResponse, MatchScore
-from src.utils.logger import get_logger, log_performance
-from src.utils.config import config
 from src.rag.embeddings import BGEEmbeddingModel
 from src.rag.vector_store import ChromaVectorStore
+from src.utils.logger import get_logger, log_performance
 
 
 class VehicleRetriever:
@@ -41,9 +39,7 @@ class VehicleRetriever:
         self.similarity_threshold = similarity_threshold
         self.price_tolerance = price_tolerance
 
-        self.logger = get_logger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
         # 检索统计
         self.stats = {
@@ -71,9 +67,7 @@ class VehicleRetriever:
             parsed_query = self._parse_query(query)
 
             # 生成查询嵌入
-            query_embedding = self.embedding_model._get_text_embedding(
-                parsed_query.text
-            )
+            query_embedding = self.embedding_model._get_text_embedding(parsed_query.text)
 
             # 执行向量检索
             vector_results = self._vector_search(
@@ -304,7 +298,7 @@ class VehicleRetriever:
             return results
 
         for i in range(len(vector_results["ids"][0])):
-            doc_id = vector_results["ids"][0][i]
+            _doc_id = vector_results["ids"][0][i]
             metadata = vector_results["metadatas"][0][i]
             document = vector_results["documents"][0][i]
             distance = vector_results["distances"][0][i]
@@ -347,9 +341,7 @@ class VehicleRetriever:
             # 注意：这里需要根据doc_id重建Vehicle对象，简化处理
             vehicle = self._reconstruct_vehicle(metadata, document)
 
-            result = SearchResult(
-                vehicle=vehicle, score=match_score, explanation=explanation
-            )
+            result = SearchResult(vehicle=vehicle, score=match_score, explanation=explanation)
 
             results.append(result)
 
@@ -381,9 +373,7 @@ class VehicleRetriever:
             # 没有重叠
             return 0.0
 
-    def _calculate_category_match(
-        self, query: Query, metadata: Dict[str, Any]
-    ) -> float:
+    def _calculate_category_match(self, query: Query, metadata: Dict[str, Any]) -> float:
         """计算类别匹配度"""
         score = 1.0
 
@@ -401,10 +391,7 @@ class VehicleRetriever:
         # 品牌匹配
         if query.brand:
             brand = metadata.get("brand", "")
-            if (
-                query.brand.lower() in brand.lower()
-                or brand.lower() in query.brand.lower()
-            ):
+            if query.brand.lower() in brand.lower() or brand.lower() in query.brand.lower():
                 score *= 1.0
             else:
                 score *= 0.3
@@ -421,9 +408,7 @@ class VehicleRetriever:
                 score += 0.3
             elif query.usage == "商务" and metadata.get("design_style") == "Business":
                 score += 0.3
-            elif (
-                query.usage == "越野" and metadata.get("off_road_capability") == "High"
-            ):
+            elif query.usage == "越野" and metadata.get("off_road_capability") == "High":
                 score += 0.3
             elif query.usage == "城市" and metadata.get("city_commuting") == "Yes":
                 score += 0.3
@@ -501,9 +486,7 @@ class VehicleRetriever:
 
         return "；".join(explanations) if explanations else "基本匹配"
 
-    def _get_matched_features(
-        self, query: Query, metadata: Dict[str, Any]
-    ) -> List[str]:
+    def _get_matched_features(self, query: Query, metadata: Dict[str, Any]) -> List[str]:
         """获取匹配的特征"""
         matched = []
 
@@ -518,9 +501,7 @@ class VehicleRetriever:
 
         return matched
 
-    def _get_missing_features(
-        self, query: Query, metadata: Dict[str, Any]
-    ) -> List[str]:
+    def _get_missing_features(self, query: Query, metadata: Dict[str, Any]) -> List[str]:
         """获取缺失的特征"""
         missing = []
 
@@ -540,7 +521,7 @@ class VehicleRetriever:
         # 简化处理，创建一个基本的Vehicle对象
         # 在实际应用中，可能需要从原始数据中重建完整的对象
 
-        from ..models.vehicle import PreciseLabels, AmbiguousLabels, KeyDetails
+        from ..models.vehicle import AmbiguousLabels, KeyDetails, PreciseLabels
 
         precise_labels = PreciseLabels(
             brand=metadata.get("brand"),
@@ -566,15 +547,11 @@ class VehicleRetriever:
 
         return vehicle
 
-    def _filter_and_sort_results(
-        self, results: List[SearchResult]
-    ) -> List[SearchResult]:
+    def _filter_and_sort_results(self, results: List[SearchResult]) -> List[SearchResult]:
         """过滤和排序结果"""
         # 过滤低分结果
         filtered = [
-            result
-            for result in results
-            if result.score.overall_score >= self.similarity_threshold
+            result for result in results if result.score.overall_score >= self.similarity_threshold
         ]
 
         # 按总分排序
@@ -594,8 +571,7 @@ class VehicleRetriever:
                 response.results
             )
             self.stats["avg_similarity_score"] = (
-                self.stats["avg_similarity_score"] * (self.stats["total_queries"] - 1)
-                + avg_score
+                self.stats["avg_similarity_score"] * (self.stats["total_queries"] - 1) + avg_score
             ) / self.stats["total_queries"]
 
         # 更新平均响应时间
@@ -608,8 +584,7 @@ class VehicleRetriever:
         """获取统计信息"""
         return {
             **self.stats,
-            "success_rate": self.stats["successful_queries"]
-            / max(self.stats["total_queries"], 1),
+            "success_rate": self.stats["successful_queries"] / max(self.stats["total_queries"], 1),
             "similarity_threshold": self.similarity_threshold,
             "price_tolerance": self.price_tolerance,
         }

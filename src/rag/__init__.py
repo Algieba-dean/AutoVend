@@ -6,13 +6,13 @@ RAG检索系统模块
 
 from .data_loader import VehicleDataLoader
 from .embeddings import BGEEmbeddingModel
-from .vector_store import ChromaVectorStore
-from .retriever import VehicleRetriever
 from .index_builder import IndexBuilder
+from .retriever import VehicleRetriever
+from .vector_store import ChromaVectorStore
 
 __all__ = [
     "VehicleDataLoader",
-    "BGEEmbeddingModel", 
+    "BGEEmbeddingModel",
     "ChromaVectorStore",
     "VehicleRetriever",
     "IndexBuilder",

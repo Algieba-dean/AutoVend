@@ -21,7 +21,6 @@ from src.filter.query_parser import QueryParser
 from src.filter.vehicle_db import VehicleDB
 from src.retrieval.hybrid_pipeline import HybridPipeline
 
-
 # ======================================================================
 # Fixtures
 # ======================================================================
@@ -55,9 +54,7 @@ def parser(registry):
 
 @pytest.fixture(scope="module")
 def pipeline(registry, db, engine, parser):
-    return HybridPipeline(
-        registry=registry, db=db, filter_engine=engine, query_parser=parser
-    )
+    return HybridPipeline(registry=registry, db=db, filter_engine=engine, query_parser=parser)
 
 
 # ======================================================================
@@ -480,9 +477,7 @@ class TestParserPerformanceAlias:
                 "高速度",
                 "top_speed",
                 "gte",
-                marks=pytest.mark.xfail(
-                    reason="'高速' 被优先匹配为 highway_long_distance"
-                ),
+                marks=pytest.mark.xfail(reason="'高速' 被优先匹配为 highway_long_distance"),
             ),
             ("长续航", "driving_range", "gte"),
             ("续航长", "driving_range", "gte"),
@@ -1109,10 +1104,7 @@ class TestExclusionQueries:
     def test_exclude_suv_chinese(self, parser):
         """'不要SUV' → 应排除 SUV"""
         r = parser.parse("不要SUV，20万以内的车")
-        assert (
-            "exclude" in r.conditions
-            or r.conditions.get("vehicle_category_top") != "suv"
-        )
+        assert "exclude" in r.conditions or r.conditions.get("vehicle_category_top") != "suv"
 
     @pytest.mark.xfail(reason="排除语义尚未实现")
     def test_exclude_brand_chinese(self, parser):
@@ -1195,9 +1187,9 @@ class TestPipelineE2E:
     def test_e2e_min_candidates(self, pipeline, query, min_candidates):
         """端到端: 查询应返回至少 min_candidates 个候选"""
         r = pipeline.filter_only(query)
-        assert (
-            len(r.car_models) >= min_candidates
-        ), f"Query '{query}': got {len(r.car_models)}, expected >= {min_candidates}"
+        assert len(r.car_models) >= min_candidates, (
+            f"Query '{query}': got {len(r.car_models)}, expected >= {min_candidates}"
+        )
 
     def test_e2e_consistency(self, pipeline):
         """同一查询多次执行应返回相同结果"""
@@ -1329,9 +1321,7 @@ class TestRetrievalQuality:
         r = parser.parse(case["query"])
         parsed_keys = set(r.conditions.keys())
         missing = case["expected_keys"] - parsed_keys
-        assert not missing, (
-            f"Query '{case['query']}': " f"missing keys {missing}, got {parsed_keys}"
-        )
+        assert not missing, f"Query '{case['query']}': missing keys {missing}, got {parsed_keys}"
 
     @pytest.mark.parametrize("case", EVAL_CASES, ids=lambda c: c["query"][:20])
     def test_candidate_quality(self, pipeline, case):

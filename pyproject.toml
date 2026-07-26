@@ -1,21 +1,34 @@
 [project]
-name = "autovend-rag-agent"
-version = "1.0.0"
-description = "Intelligent automotive sales assistant powered by LlamaIndex and Groq"
+name = "autovend"
+version = "2.0.0"
+description = "Intelligent automotive sales assistant — hybrid retrieval (structured filter + dense + sparse) with a stateful sales agent"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     # LlamaIndex core
-    "llama-index-core>=0.10.0",
-    "llama-index-llms-openai-like>=0.1.0",
+    "llama-index-core>=0.11.0",
+    "llama-index-llms-openai-like>=0.2.0",
+    "llama-index-embeddings-huggingface>=0.3.0",
+    "llama-index-vector-stores-chroma>=0.2.0",
     # Vector database
     "chromadb>=0.5.0",
     # Embeddings - BGE-M3 support
-    "llama-index-embeddings-huggingface>=0.1.0",
     "sentence-transformers>=2.2.0",
     "transformers>=4.30.0",
     "torch>=2.0.0",
     "numpy>=1.24.0",
+    # Sparse retrieval (BM25 + Chinese tokenization)
+    "rank-bm25>=0.2.2",
+    "jieba>=0.42.1",
+    # Web framework
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "python-multipart>=0.0.18",
+    # Voice
+    "faster-whisper>=1.0.0",
+    "edge-tts>=6.1.0",
+    "websockets>=12.0",
+    "soundfile>=0.12.0",
     # Data processing
     "toml>=0.10.2",
     "pydantic>=2.10.0",
@@ -36,11 +49,18 @@ dev = [
     "pytest>=8.3.0",
     "pytest-asyncio>=0.24.0",
     "pytest-cov>=6.0.0",
+    "httpx>=0.28.0",
     "psutil>=5.9.0",
     "ruff>=0.8.0",
     "black>=23.0.0",
     "isort>=5.12.0",
     "mypy>=1.0.0",
+]
+# LLM-judged RAG evaluation — only needed for the scheduled/manual eval workflow,
+# never for CI's deterministic gate.
+eval = [
+    "ragas>=0.2.0",
+    "datasets>=2.19.0",
 ]
 
 [tool.pytest.ini_options]
@@ -54,8 +74,24 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 
+[tool.ruff.lint.per-file-ignores]
+# Long prompt strings must stay on one line to keep the prompt text readable.
+"src/agent/extractors/*.py" = ["E501"]
+"src/agent/response_generator.py" = ["E501"]
+"src/llm/mock_llm.py" = ["E501"]
+"src/models/query.py" = ["E501"]
+"src/filter/label_registry.py" = ["E501"]
+"tests/kpi_report.py" = ["E501"]
+"tests/performance/*.py" = ["E501"]
+# CLI entry points bootstrap sys.path before importing src.*, so imports
+# legitimately follow that call.
+"src/main.py" = ["E402"]
+"src/test_llm.py" = ["E402"]
+# Benchmarks assign results to force evaluation before timing the call.
+"tests/test_performance_metrics.py" = ["E402", "F841"]
+
 [tool.coverage.run]
-source = ["src"]
+source = ["src", "backend"]
 omit = ["tests/*"]
 
 [tool.coverage.report]

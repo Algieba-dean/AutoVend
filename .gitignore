@@ -2,6 +2,10 @@
 **/venv/**
 **/.venv/**
 
+# Frontend
+frontend/node_modules/**
+frontend/package-lock.json
+
 # Python bytecode
 **/*.pyc
 **/*.pyo
@@ -23,6 +27,12 @@
 **/data/**
 **/chroma_db/**
 
+# Storage (runtime data)
+**/storage/messages/**
+**/storage/profiles/**
+**/storage/sessions/**
+**/storage/test_drives/**
+
 # IDE
 **/.idea/**
 **/.vscode/**
@@ -36,6 +46,14 @@
 **/htmlcov/
 **/coverage.xml
 **/test-results.xml
+
+# Generated performance / evaluation artifacts
+*_performance_results.txt
+performance_results.txt
+performance_badges.json
+metrics.json
+evaluation/results/**
+backend/eval_results/
 
 # uv lock (large, machine-generated)
 uv.lock

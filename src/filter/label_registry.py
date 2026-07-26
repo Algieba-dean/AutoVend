@@ -69,11 +69,7 @@ class LabelInfo:
         """获取指定索引范围内的所有候选值"""
         lo = min_index if min_index is not None else 0
         hi = max_index if max_index is not None else len(self.candidates) - 1
-        return [
-            v
-            for i, v in enumerate(self.candidates)
-            if lo <= i <= hi and v.lower() != "none"
-        ]
+        return [v for i, v in enumerate(self.candidates) if lo <= i <= hi and v.lower() != "none"]
 
     def get_values_gte(self, value: str) -> List[str]:
         """获取 >= 某值的所有候选值"""
@@ -148,9 +144,7 @@ class LabelRegistry:
     }
 
     def __init__(self, labels_tree_path: Optional[str] = None):
-        self.logger = get_logger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
         # 标签存储
         self.labels: Dict[str, LabelInfo] = {}
@@ -242,8 +236,7 @@ class LabelRegistry:
                 )
 
         self.logger.info(
-            f"标签注册表加载完成: {len(self.labels)} 个标签, "
-            f"树形: vehicle_category + brand"
+            f"标签注册表加载完成: {len(self.labels)} 个标签, 树形: vehicle_category + brand"
         )
 
     # ------------------------------------------------------------------

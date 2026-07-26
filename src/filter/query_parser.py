@@ -241,9 +241,7 @@ class QueryParser:
     """
 
     def __init__(self, registry: Optional[LabelRegistry] = None):
-        self.logger = get_logger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self.registry = registry or LabelRegistry()
 
     def parse(self, text: str) -> ParsedQuery:
@@ -426,9 +424,7 @@ class QueryParser:
         text_lower = text.lower()
 
         # 按别名长度降序匹配（长的优先，避免部分匹配）
-        sorted_aliases = sorted(
-            BRAND_ALIASES.items(), key=lambda x: len(x[0]), reverse=True
-        )
+        sorted_aliases = sorted(BRAND_ALIASES.items(), key=lambda x: len(x[0]), reverse=True)
         for alias, brand in sorted_aliases:
             if alias in text_lower:
                 result.add("brand", brand)
@@ -461,9 +457,7 @@ class QueryParser:
         text_lower = text.lower()
 
         # 按关键词长度降序匹配
-        sorted_kw = sorted(
-            CATEGORY_ALIASES.items(), key=lambda x: len(x[0]), reverse=True
-        )
+        sorted_kw = sorted(CATEGORY_ALIASES.items(), key=lambda x: len(x[0]), reverse=True)
         for keyword, (level_key, value) in sorted_kw:
             if keyword in text_lower:
                 result.add(level_key, value)
@@ -480,9 +474,7 @@ class QueryParser:
         """提取功能/特性关键词"""
         text_lower = text.lower()
 
-        sorted_kw = sorted(
-            FEATURE_KEYWORDS.items(), key=lambda x: len(x[0]), reverse=True
-        )
+        sorted_kw = sorted(FEATURE_KEYWORDS.items(), key=lambda x: len(x[0]), reverse=True)
         for keyword, (label_name, value) in sorted_kw:
             if keyword in text_lower:
                 result.add(label_name, value)

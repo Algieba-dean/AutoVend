@@ -1,0 +1,97 @@
+"""
+Import isolation test — verifies that src/agent/ has ZERO imports from backend/.
+
+This is a critical architectural invariant:
+- src/agent/ depends only on: pydantic, llama_index.core, src.agent.schemas
+- src/agent/ must NEVER import from backend.app.routes, backend.app.models,
+  backend.app.rag, backend.app.config, etc.
+"""
+
+import ast
+from pathlib import Path
+
+AGENT_DIR = Path(__file__).resolve().parent.parent / "src" / "agent"
+FORBIDDEN_PREFIXES = ("backend", "fastapi", "chromadb")
+
+
+def _get_all_python_files(directory: Path):
+    """Recursively find all .py files in a directory."""
+    return list(directory.rglob("*.py"))
+
+
+def _extract_imports(filepath: Path):
+    """Extract all import module names from a Python file using AST."""
+    source = filepath.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(filepath))
+
+    imports = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                imports.append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                imports.append(node.module)
+    return imports
+
+
+class TestAgentImportIsolation:
+    """Verify agent package has no backend imports."""
+
+    def test_agent_dir_exists(self):
+        assert AGENT_DIR.exists(), f"Agent directory not found: {AGENT_DIR}"
+
+    def test_no_app_imports_in_agent(self):
+        """Every .py file in src/agent/ must not import from backend.* or any web/vector dep."""
+        violations = []
+        for py_file in _get_all_python_files(AGENT_DIR):
+            rel_path = py_file.relative_to(AGENT_DIR)
+            imports = _extract_imports(py_file)
+            for imp in imports:
+                if any(imp == p or imp.startswith(p + ".") for p in FORBIDDEN_PREFIXES):
+                    violations.append(f"  {rel_path}: imports '{imp}'")
+
+        assert not violations, (
+            f"Agent package has {len(violations)} forbidden backend imports:\n"
+            + "\n".join(violations)
+        )
+
+    def test_agent_imports_only_allowed_packages(self):
+        """Agent files should only import from: src.agent, pydantic, llama_index, stdlib, typing."""
+        allowed_prefixes = (
+            "src.agent",
+            "pydantic",
+            "llama_index",
+            "typing",
+            "enum",
+            "json",
+            "logging",
+            "datetime",
+            "collections",
+            "abc",
+            "os",
+            "pathlib",
+            "re",
+            # voice module dependencies
+            "asyncio",
+            "io",
+            "tempfile",
+            "time",
+            "dataclasses",
+            "numpy",
+            "soundfile",
+            "faster_whisper",
+            "edge_tts",
+        )
+        violations = []
+        for py_file in _get_all_python_files(AGENT_DIR):
+            rel_path = py_file.relative_to(AGENT_DIR)
+            imports = _extract_imports(py_file)
+            for imp in imports:
+                if not any(imp == p or imp.startswith(p + ".") for p in allowed_prefixes):
+                    violations.append(f"  {rel_path}: imports '{imp}'")
+
+        assert not violations, (
+            f"Agent package has {len(violations)} unexpected external imports:\n"
+            + "\n".join(violations)
+        )
