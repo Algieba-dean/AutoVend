@@ -143,7 +143,11 @@ class TestDetermineNextStage:
         assert result == Stage.NEEDS_ANALYSIS
 
     def test_needs_advances_with_enough_info(self):
-        needs = VehicleNeeds(explicit=ExplicitNeeds(brand="Tesla", powertrain_type="BEV"))
+        # A budget is mandatory: the guard on NEEDS_ANALYSIS -> CAR_SELECTION
+        # refuses to recommend vehicles when no price range is known.
+        needs = VehicleNeeds(
+            explicit=ExplicitNeeds(prize="30,000 ~ 40,000", brand="Tesla", powertrain_type="BEV")
+        )
         result = determine_next_stage(
             Stage.NEEDS_ANALYSIS, UserProfile(), needs, [], ReservationInfo()
         )

@@ -99,6 +99,24 @@ CONTROL_SEEDS: Dict[str, List[str]] = {
         "拜拜",
         "感谢",
     ],
+    # The interrupt intent. Distinct from a first-time statement of a
+    # requirement: these all contradict something already agreed, which is what
+    # makes them a rollback trigger rather than another slot to fill. The
+    # phrasings therefore lean on revision markers — 改成 / 还是 / 重新 / 其实.
+    "update_constraint": [
+        "我想改一下预算",
+        "预算改成50万吧",
+        "其实我还是想要油车",
+        "算了，还是看SUV吧",
+        "我改主意了，不要这个品牌",
+        "刚才说的不算，重新来",
+        "能不能换个价位看看",
+        "我重新说一下需求",
+        "之前说的预算作废",
+        "还是想看看别的类型",
+        "我想调整一下要求",
+        "把品牌限制去掉吧",
+    ],
 }
 
 # ── Needs flow ────────────────────────────────────────────────────────

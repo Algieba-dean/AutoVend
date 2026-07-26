@@ -24,9 +24,37 @@ from src.agent.schemas import (
     SessionState,
     Stage,
 )
-from src.agent.stages import determine_next_stage
+from src.agent.stages import advance, propose_forward
+from src.agent.transition_proposer import propose_by_llm
 
 logger = logging.getLogger(__name__)
+
+
+def _structured_snapshot(state: SessionState) -> Dict[str, Any]:
+    """Flatten the structured state to {dotted_path: value} for diffing."""
+    snapshot: Dict[str, Any] = {}
+    for prefix, model in (
+        ("profile", state.profile),
+        ("needs.explicit", state.needs.explicit),
+        ("needs.implicit", state.needs.implicit),
+        ("reservation", state.reservation),
+    ):
+        for field, value in model.model_dump().items():
+            if value not in ("", None, [], {}):
+                snapshot[f"{prefix}.{field}"] = value
+    return snapshot
+
+
+def _diff_snapshots(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    What this turn added or changed.
+
+    Only additions and updates — extraction merges rather than deletes, so a
+    field disappearing means the extractor returned nothing for it, not that
+    the customer retracted it. Treating that as a deletion would erase facts
+    every time a turn happened not to mention them.
+    """
+    return {key: value for key, value in after.items() if before.get(key) != value}
 
 
 class SalesAgent:
@@ -95,18 +123,32 @@ class SalesAgent:
         updated = state.model_copy(deep=True)
         self.memory.add_user_message(updated.session_id, user_message)
         conversation_text = self.memory.get_history_as_text(updated.session_id)
-        return self._extract_information(updated, conversation_text)
+
+        before = _structured_snapshot(updated)
+        updated = self._extract_information(updated, conversation_text)
+        updated.last_patch = _diff_snapshots(before, _structured_snapshot(updated))
+        if updated.last_patch:
+            logger.info(f"[{updated.session_id}] state patch: {updated.last_patch}")
+        return updated
 
     def respond(
         self,
         state: SessionState,
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        propose_with_llm: bool = False,
     ) -> AgentResult:
         """
-        Advance the stage machine and generate the reply for an observed turn.
+        Arbitrate the stage machine and generate the reply for an observed turn.
 
         Expects `state` to already carry this turn's extractions — i.e. the
         output of `observe`.
+
+        Args:
+            retrieved_cars: Candidates from the backend, if any.
+            propose_with_llm: Also ask the model whether the stage is complete.
+                Its answer is a *proposal*; `stages.arbitrate` still decides.
+                Off by default because it costs an extra call per turn and the
+                rule-based proposer covers the linear path.
         """
         updated = state.model_copy(deep=True)
         session_id = updated.session_id
@@ -117,19 +159,41 @@ class SalesAgent:
 
         old_stage = updated.stage
         updated.previous_stage = old_stage.value
-        updated.stage = determine_next_stage(
-            updated.stage,
-            updated.profile,
-            updated.needs,
-            updated.matched_cars,
-            updated.reservation,
-        )
 
-        stage_changed = updated.stage != old_stage
-        if stage_changed:
-            logger.info(
-                f"[{session_id}] Stage transition: {old_stage.value} → {updated.stage.value}"
-            )
+        if updated.stage_hold:
+            # A rollback happened this turn. Advancing now would undo it
+            # immediately: the constraint the customer disowned is still in
+            # state, so the forward guard still passes. Hold for one turn and
+            # let them state the revised value first.
+            logger.info(f"[{session_id}] Stage held at {old_stage.value}: rollback in progress")
+            updated.stage_hold = False
+            stage_changed = False
+        else:
+            proposals = []
+            if propose_with_llm:
+                llm_proposal = propose_by_llm(self.llm, updated, conversation_text)
+                if llm_proposal is not None:
+                    proposals.append(llm_proposal)
+            forward = propose_forward(updated)
+            if forward is not None:
+                proposals.append(forward)
+
+            verdict = advance(updated, proposals)
+            updated.stage = verdict.stage
+
+            # A refused transition must not stall silently: the guard's reason
+            # is handed to the generator so the reply asks for what is missing.
+            if verdict.system_note:
+                updated.system_notes = [*updated.system_notes, verdict.system_note]
+
+            stage_changed = updated.stage != old_stage
+            if stage_changed:
+                logger.info(
+                    f"[{session_id}] Stage transition: {old_stage.value} → {updated.stage.value} "
+                    f"(proposed by {verdict.proposal.source.value})"
+                )
+            elif verdict.rejection:
+                logger.info(f"[{session_id}] Stage held at {old_stage.value}: {verdict.rejection}")
 
         response_text = generate_response(
             self.generation_llm,
@@ -139,7 +203,13 @@ class SalesAgent:
             updated.needs,
             updated.matched_cars,
             updated.reservation,
+            system_notes=updated.system_notes,
         )
+
+        # Notes are per-turn instructions. Carrying them forward would keep
+        # telling the model about a constraint change several turns after the
+        # customer moved on.
+        updated.system_notes = []
 
         self.memory.add_assistant_message(session_id, response_text)
 

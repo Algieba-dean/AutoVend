@@ -53,6 +53,12 @@ RETRIEVAL_TOP_K = 5
 #: revises the budget slot, the second may name a model.
 EXTRACTION_SKIP_INTENTS = frozenset({"affirm", "reject", "defer", "smalltalk"})
 
+#: The interrupt intent. A turn that contradicts an agreed constraint rolls the
+#: FSM back along a legal backward edge and clears what the abandoned stage
+#: produced — otherwise the conversation claims to be re-examining requirements
+#: while still holding the recommendations those requirements produced.
+INTERRUPT_INTENT = "update_constraint"
+
 # Injected at startup
 _agent: Optional[SalesAgent] = None
 _pipeline = None
@@ -165,6 +171,43 @@ def _classify(text: str, session_id: str):
     return decision
 
 
+def _rollback_on_constraint_change(state: SessionState, decision) -> SessionState:
+    """
+    Walk the FSM back after a constraint change, and say so in the next reply.
+
+    Returns the state unchanged when the current stage has no rollback target —
+    revising requirements while still gathering them needs no stage change, only
+    the extraction that already happened.
+    """
+    from src.agent.stages import handle_constraint_change
+
+    updated = state.model_copy(deep=True)
+    outcome = handle_constraint_change(
+        updated, reason=f"semantic intent {decision.intent} (score={decision.score:.3f})"
+    )
+    if outcome is None:
+        logger.info(
+            f"[{state.session_id}] constraint change at {state.stage.value}: no rollback needed"
+        )
+        return state
+    if not outcome.rolled_back:
+        logger.warning(f"[{state.session_id}] rollback refused: {outcome.verdict.rejection}")
+        return state
+
+    if outcome.verdict.system_note:
+        updated.system_notes = [*updated.system_notes, outcome.verdict.system_note]
+    # The needs cache is keyed on explicit needs; a rollback that clears
+    # matched_cars must also drop the cache, or the next turn sees unchanged
+    # needs and skips retrieval, leaving the customer with no recommendations.
+    _prev_explicit.pop(state.session_id, None)
+
+    logger.info(
+        f"[{state.session_id}] constraint change → rolled back to "
+        f"{updated.stage.value}, cleared {outcome.cleared_fields or 'nothing'}"
+    )
+    return updated
+
+
 def _retrieve_cars(state: SessionState) -> list:
     """
     Retrieve candidate vehicles via the hybrid pipeline.
@@ -270,6 +313,12 @@ async def send_message(request: ChatRequest):
         )
     else:
         state = agent.observe(state, safe_message)
+
+    # Interrupt: the customer contradicted a constraint they had already given.
+    # Roll back along a legal backward edge before retrieval runs, so the query
+    # is built from the revised needs rather than the superseded ones.
+    if decision is not None and decision.intent == INTERRUPT_INTENT:
+        state = _rollback_on_constraint_change(state, decision)
 
     # Vehicle retrieval (backend concern — results passed back to the agent)
     retrieved_cars = _retrieve_cars(state)
