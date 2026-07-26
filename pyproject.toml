@@ -59,8 +59,12 @@ dev = [
 # LLM-judged RAG evaluation — only needed for the scheduled/manual eval workflow,
 # never for CI's deterministic gate.
 eval = [
-    "ragas>=0.2.0",
-    "datasets>=2.19.0",
+    "ragas>=0.4.3",
+    "datasets>=4.0.0",
+    "langchain-openai>=0.2.0",
+    # ragas 0.4.3 declares langchain-community unpinned but imports
+    # `langchain_community.chat_models.vertexai`, which 0.4.x removed.
+    "langchain-community<0.4",
 ]
 
 [tool.pytest.ini_options]

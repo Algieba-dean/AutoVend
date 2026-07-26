@@ -366,11 +366,15 @@ class ChromaVectorStore:
             self.logger.error(f"备份集合失败: {e}")
             raise
 
-    def __del__(self):
-        """析构函数"""
-        try:
-            # 确保连接关闭
-            if hasattr(self.client, "close"):
-                self.client.close()
-        except Exception:
-            pass
+    # 这里刻意没有 __del__。
+    #
+    # 曾经有一个 __del__ 调用 self.client.close()，但 ChromaDB 按持久化路径缓存
+    # 并共享 PersistentClient：任意一个 ChromaVectorStore 被 GC，都会关掉所有实例
+    # 共用的那个 Rust 客户端，其余实例随后全部报
+    # `'RustBindingsAPI' object has no attribute 'bindings'`。
+    #
+    # 触发方式可以非常隐蔽 —— `ChromaVectorStore().collection.count()` 里，临时
+    # 对象在取到 .collection 之后就没有引用了，可能在 count() 执行前被回收，于是
+    # 一行表达式内部自己把自己弄坏。
+    #
+    # PersistentClient 的生命周期由进程管理，不需要显式关闭。

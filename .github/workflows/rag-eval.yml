@@ -1,0 +1,116 @@
+name: RAG Evaluation (LLM-judged)
+
+# Deliberately separate from CI, and deliberately non-blocking.
+#
+# An LLM judge is stochastic and costs API calls, so gating a merge on it would
+# make the build flaky for reasons unrelated to the change under review. The
+# blocking gate is `eval-gate` in ci.yml, which is fully deterministic.
+#
+# Requires an LLM_API_KEY repository secret. Without one the workflow reports
+# that it was skipped rather than failing — a missing key is a configuration
+# state, not a regression.
+
+on:
+  schedule:
+    # Mondays 02:00 UTC (10:00 Beijing) — weekly trend, low token burn.
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+    inputs:
+      sample:
+        description: "Number of golden queries to judge"
+        required: false
+        default: "30"
+        type: string
+      system:
+        description: "Retrieval system under judgement"
+        required: false
+        default: "fusion"
+        type: choice
+        options: [fusion, hybrid, dense, bm25]
+
+env:
+  PYTHON_VERSION: "3.12"
+  EMBEDDING_DEVICE: cpu
+
+jobs:
+  ragas:
+    name: "RAGAS metrics"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for LLM credentials
+        id: creds
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: |
+          if [ -z "$LLM_API_KEY" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::LLM_API_KEY secret is not set — skipping LLM-judged evaluation. Add it under Settings > Secrets and variables > Actions."
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install uv
+        if: steps.creds.outputs.available == 'true'
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python
+        if: steps.creds.outputs.available == 'true'
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        if: steps.creds.outputs.available == 'true'
+        run: uv sync --all-extras
+
+      - name: Cache embedding model
+        if: steps.creds.outputs.available == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-bge-m3-${{ hashFiles('pyproject.toml') }}
+          restore-keys: ${{ runner.os }}-hf-bge-m3-
+
+      - name: Build indices
+        if: steps.creds.outputs.available == 'true'
+        run: uv run python -m src.main build --batch-size 50
+
+      # Sample size stays modest on purpose: RAGAS issues several judge calls
+      # per question, and free-tier providers cap daily tokens. An over-large
+      # run rate-limits partway through and reports scores over whatever subset
+      # happened to succeed.
+      - name: Run RAGAS evaluation
+        if: steps.creds.outputs.available == 'true'
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'llama-3.3-70b-versatile' }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL || 'https://api.groq.com/openai/v1' }}
+        run: |
+          uv run python -m src.eval.ragas_eval \
+            --sample "${{ inputs.sample || '30' }}" \
+            --system "${{ inputs.system || 'fusion' }}" \
+            | tee ragas-report.txt
+
+      - name: Publish to the job summary
+        if: always() && steps.creds.outputs.available == 'true'
+        run: |
+          {
+            echo "## RAGAS — LLM-judged RAG metrics"
+            echo ""
+            echo '```'
+            cat ragas-report.txt 2>/dev/null || echo "(no report produced)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload results
+        if: always() && steps.creds.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ragas-evaluation
+          path: |
+            ragas-report.txt
+            evaluation/results/ragas_*.json
+          retention-days: 90

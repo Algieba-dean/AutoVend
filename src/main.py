@@ -29,10 +29,25 @@ def setup_cli_logging():
 
 
 def build_index_command(args) -> None:
-    """构建索引命令"""
+    """
+    构建全部三层索引：SQLite 结构化目录、ChromaDB 向量索引、BM25 稀疏索引。
+
+    三者都显式构建，而不是留给首次查询懒加载 —— 否则 CI 里的构建步骤会通过，
+    真正的失败要等到评估门禁才暴露，排查时得倒推一层。
+    """
     logger = get_logger()
 
     try:
+        # 1. SQLite 结构化目录（元数据预过滤的数据源，也是 BM25 的语料源）
+        logger.info("开始构建 SQLite 结构化目录...")
+        from src.filter.vehicle_db import VehicleDB
+
+        db = VehicleDB()
+        if args.force or db.count() == 0:
+            db.import_from_toml_dir()
+        logger.info(f"✅ SQLite 目录就绪: {db.count()} 辆车")
+
+        # 2. ChromaDB 向量索引
         logger.info("开始构建车辆向量索引...")
 
         builder = IndexBuilder(
@@ -56,6 +71,14 @@ def build_index_command(args) -> None:
         else:
             logger.error(f"❌ 索引构建失败: {result['status']}")
             sys.exit(1)
+
+        # 3. BM25 稀疏索引
+        logger.info("开始构建 BM25 稀疏索引...")
+        from src.retrieval.bm25_index import BM25Index
+
+        bm25 = BM25Index.build(db=db)
+        bm25.save()
+        logger.info(f"✅ BM25 索引就绪: {len(bm25)} 条")
 
     except Exception as e:
         logger.error(f"❌ 构建索引时发生错误: {e}")
