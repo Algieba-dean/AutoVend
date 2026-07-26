@@ -2,16 +2,13 @@
 LLM Factory for AutoVend
 """
 
-import os
 from typing import Optional
 
-from dotenv import load_dotenv
+from src.utils.config import config
 
 from .base_llm import BaseLLM
 from .mock_llm import MockLLM
 from .openai_llm import OpenAILLM
-
-load_dotenv()
 
 
 class LLMFactory:
@@ -30,11 +27,12 @@ class LLMFactory:
         if use_mock:
             return MockLLM()
 
-        # Get configuration from environment if not provided
-        provider = provider or os.getenv("LLM_PROVIDER", "mock")
-        api_key = api_key or os.getenv("LLM_API_KEY")
-        model = model or os.getenv("LLM_MODEL", "llama-3.1-70b-versatile")
-        base_url = base_url or os.getenv("LLM_BASE_URL")
+        # Fall back to the single source of truth (src.utils.config), which already
+        # resolves LLM_* / GROQ_* aliases and auto-selects mock when no key is present.
+        provider = provider or config.llm_provider
+        api_key = api_key or config.llm_api_key
+        model = model or config.llm_model
+        base_url = base_url or config.llm_base_url
 
         # Create LLM based on provider
         if provider == "mock":
