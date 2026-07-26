@@ -23,7 +23,13 @@ if [ -d "$ROOT/models/Meta-Llama-3.1-8B-Instruct-AWQ-INT4" ]; then
   DEFAULT_MODEL="$ROOT/models/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
 fi
 MODEL="${LOCAL_LLM_MODEL:-$DEFAULT_MODEL}"
-PORT="${LOCAL_LLM_PORT:-8100}"
+PORT="${LOCAL_LLM_PORT:-8101}"
+# Quantization method. awq_marlin is the Ada-optimised AWQ kernel; use
+# `bitsandbytes` for NF4 checkpoints (needs `uv pip install bitsandbytes>=0.48.1`
+# in the vLLM venv). GGUF is NOT an option — vLLM 0.26 dropped it from
+# QUANTIZATION_METHODS; serve those with llama.cpp's llama-server instead, which
+# speaks the same OpenAI protocol.
+QUANT="${LOCAL_LLM_QUANT:-awq_marlin}"
 # 4-bit weights are ~5.7GB; 0.55 of a 24GB card leaves room for the KV cache
 # and for BGE-M3, which shares the GPU with the retrieval stack.
 GPU_FRACTION="${LOCAL_LLM_GPU_FRACTION:-0.55}"
@@ -67,14 +73,19 @@ if [ ! -x "$VENV/bin/vllm" ]; then
   exit 1
 fi
 
-echo "Serving $MODEL on port $PORT (gpu fraction $GPU_FRACTION)"
-# --dtype float16: recommended for AWQ, per vLLM's own guidance.
-# awq_marlin is the Ada-optimised AWQ kernel; vLLM selects it automatically for
-# AWQ checkpoints on SM 8.0+, and naming it makes the requirement explicit.
+echo "Serving $MODEL on port $PORT (quant=$QUANT, gpu fraction $GPU_FRACTION)"
+
+# AWQ wants float16 explicitly (vLLM's own guidance); bitsandbytes checkpoints
+# carry their own compute dtype, so leave that to `auto`.
+DTYPE_FLAG=()
+if [ "$QUANT" = "awq_marlin" ] || [ "$QUANT" = "awq" ]; then
+  DTYPE_FLAG=(--dtype float16)
+fi
+
 exec "$VENV/bin/vllm" serve "$MODEL" \
   --port "$PORT" \
-  --quantization awq_marlin \
-  --dtype float16 \
+  --quantization "$QUANT" \
+  "${DTYPE_FLAG[@]}" \
   --gpu-memory-utilization "$GPU_FRACTION" \
   --max-model-len "$MAX_LEN" \
   --served-model-name local-llama \

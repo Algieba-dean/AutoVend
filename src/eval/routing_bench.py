@@ -26,10 +26,14 @@ from typing import Dict, List, Optional, Sequence
 from src.eval.golden_set import load_golden_set
 from src.eval.runner import RESULTS_DIR
 from src.llm.telemetry import PRICING_USD_PER_MTOK
-from src.utils.config import config
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+#: Above this share of failed calls a route's percentiles are flagged
+#: unreliable. Free-tier providers exhaust daily token budgets mid-run, and a
+#: number computed from the surviving third is worse than no number.
+MAX_FAILURE_RATE = 0.1
 
 #: Conversation snippets that drive the extraction prompt, paired with golden
 #: queries for the parser prompt. Small but realistic: Chinese and English,
@@ -72,19 +76,27 @@ def _parser_prompts(n: int) -> List[List[Dict[str, str]]]:
 
 
 def _build_backend(route: str):
-    from src.llm.factory import LLMFactory
+    """
+    Build a backend exactly as production does.
+
+    Routed through `build_default_router` rather than constructed here, so the
+    benchmark cannot drift from the deployed configuration — an earlier version
+    built the local client directly and silently left reasoning-model
+    chain-of-thought enabled, inflating completion tokens 4x and latency 5x
+    versus what the router actually sends.
+    """
+    from src.llm.router import build_default_router
+
+    router = build_default_router()
 
     if route == "local":
-        if not config.local_llm_base_url:
+        if router.local is None:
             raise SystemExit("LOCAL_LLM_BASE_URL is not set — start ./scripts/serve_local_llm.sh")
-        return LLMFactory.create_llm(
-            provider="openai",
-            api_key=config.local_llm_api_key,
-            model=config.local_llm_model,
-            base_url=config.local_llm_base_url,
-        )
+        return router.local
     if route == "cloud":
-        return LLMFactory.create_llm()
+        if router.cloud is None:
+            raise SystemExit("No cloud credentials configured.")
+        return router.cloud
     raise ValueError(route)
 
 
@@ -133,11 +145,23 @@ def bench_route(route: str, n: int) -> Dict:
         prompt_tokens * cloud_price["input"] + completion_tokens * cloud_price["output"]
     ) / 1_000_000
 
+    # Percentiles over a heavily-truncated sample look like measurements but
+    # are not. A rate-limited cloud run that loses two thirds of its calls
+    # would otherwise report a confident-looking TTFT drawn from whichever
+    # requests happened to slip through.
+    failure_rate = failures / (2 * n) if n else 0.0
+    if failure_rate > MAX_FAILURE_RATE:
+        logger.error(
+            f"[{route}] {failures}/{2 * n} calls failed ({failure_rate:.0%}) — "
+            "percentiles suppressed; results are not quotable"
+        )
+
     return {
         "route": route,
         "model": backend.model,
         "n_calls": 2 * n,
         "n_failed": failures,
+        "reliable": failure_rate <= MAX_FAILURE_RATE,
         "ttft_mean_s": round(statistics.mean(ttfts), 4) if ttfts else None,
         "ttft_p50_s": round(pct(ttfts, 50), 4) if ttfts else None,
         "ttft_p95_s": round(pct(ttfts, 95), 4) if ttfts else None,
@@ -175,13 +199,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
     print(f"\n{header}")
     for r in results:
+        flag = "" if r["reliable"] else f"  ⚠ {r['n_failed']}/{r['n_calls']} calls failed"
         print(
             f"{r['route']:<8} {r['model'][:27]:<28} "
             f"{r['ttft_p50_s'] if r['ttft_p50_s'] is not None else '—':>9} "
             f"{r['ttft_p95_s'] if r['ttft_p95_s'] is not None else '—':>8} "
             f"{r['ttft_p99_s'] if r['ttft_p99_s'] is not None else '—':>8} "
             f"{r['latency_p95_s'] if r['latency_p95_s'] is not None else '—':>8} "
-            f"{r['cost_at_cloud_rates_usd']:>9}"
+            f"{r['cost_at_cloud_rates_usd']:>9}{flag}"
+        )
+
+    if any(not r["reliable"] for r in results):
+        print(
+            "\n⚠ At least one route lost too many calls to be quotable. "
+            "Re-run when the provider quota resets.",
+            file=sys.stderr,
         )
 
     if len(results) == 2:

@@ -28,6 +28,23 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 DEFAULT_TIMEOUT_S = 60
 
 
+def extra_body_for_local() -> Dict[str, Any]:
+    """
+    Request fields the local vLLM server needs but the cloud API rejects.
+
+    Reasoning models (Qwen3 and friends) emit a `<think>...</think>` block
+    before the answer unless told otherwise. On the control path that is pure
+    waste and actively harmful: the JSON parser has to strip it, TTFT measures
+    the first *reasoning* token rather than the first useful one, and a single
+    extraction call balloons from ~40 completion tokens to ~185 (measured on
+    Qwen3-8B: 1.4s -> 5.5s for the same extraction).
+
+    vLLM forwards unknown keys to the chat template, so this is a no-op for
+    models that do not implement `enable_thinking`.
+    """
+    return {"chat_template_kwargs": {"enable_thinking": False}}
+
+
 class OpenAILLM(BaseLLM):
     """OpenAI-compatible LLM implementation"""
 
@@ -35,6 +52,10 @@ class OpenAILLM(BaseLLM):
         super().__init__(model, api_key, base_url, **kwargs)
         self.base_url = base_url or "https://api.openai.com/v1"
         self.timeout = kwargs.get("timeout", DEFAULT_TIMEOUT_S)
+        # Vendor-specific request fields merged into every payload. Used to turn
+        # off reasoning-model chain-of-thought on the local server; see
+        # `extra_body_for_local()`.
+        self.extra_body: Dict[str, Any] = dict(kwargs.get("extra_body") or {})
         self.session = self._create_session()
 
         # Populated after every call, read by the telemetry layer.
@@ -88,12 +109,14 @@ class OpenAILLM(BaseLLM):
         }
 
     def _payload(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
-        return {
+        payload = {
             "messages": messages,
             "model": self.model,
             "max_tokens": kwargs.get("max_tokens", 1000),
             "temperature": kwargs.get("temperature", 0.7),
         }
+        payload.update(self.extra_body)
+        return payload
 
     def _chat_blocking(self, messages: List[Dict[str, str]], **kwargs) -> str:
         try:
