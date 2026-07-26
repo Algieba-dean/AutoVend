@@ -2,9 +2,9 @@ name: Performance Tests
 
 on:
   push:
-    branches: [ main, develop, feature/from_zero ]  # 添加您的分支
+    branches: [ master, main, develop, 'feature/**' ]
   pull_request:
-    branches: [ main, develop ]             # PR到main和develop时触发
+    branches: [ master, main, develop ]     # PR到主干分支时触发
   schedule:
     # 每天UTC 02:00运行性能测试 (北京时间10:00)
     - cron: '0 2 * * *'
@@ -46,7 +46,7 @@ jobs:
         
     - name: Install dependencies
       run: |
-        uv sync --dev
+        uv sync --all-extras
         
     - name: Cache model files
       uses: actions/cache@v3
@@ -412,7 +412,7 @@ jobs:
       uses: astral-sh/setup-uv@v2
       
     - name: Install dependencies
-      run: uv sync --dev
+      run: uv sync --all-extras
       
     - name: Compare with baseline
       run: |
@@ -437,7 +437,7 @@ jobs:
       uses: astral-sh/setup-uv@v2
       
     - name: Install dependencies
-      run: uv sync --dev
+      run: uv sync --all-extras
       
     - name: Run stress tests
       run: |

@@ -496,6 +496,7 @@ _NATURAL = [
         "a cheap small car for a first-time driver",
         "size = 'small' AND prize IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
         ["natural", "price", "ambiguous", "known-gap"],
+        "'cheap' has no label value; the parser must map it onto a price band.",
     ),
     QuerySpec(
         "nat04",
@@ -530,6 +531,7 @@ _NATURAL = [
         "vehicle_category_bottom = 'compact suv' "
         "AND prize IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
         ["natural", "zh", "price", "known-gap"],
+        "'经济实惠' is a subjective budget cue with no corresponding label value.",
     ),
     QuerySpec(
         "nat09",
@@ -544,6 +546,7 @@ _NATURAL = [
         "vehicle_category_bottom LIKE '%sedan%' AND prize = 'above 100,000' "
         "AND comfort_level = 'high'",
         ["natural", "zh", "price", "known-gap"],
+        "'高端豪华' must resolve to both a price band and a comfort grade.",
     ),
     QuerySpec(
         "nat11",
