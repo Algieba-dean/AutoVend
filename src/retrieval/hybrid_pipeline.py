@@ -66,19 +66,13 @@ class HybridPipeline:
         llm_parser: Optional[LLMParser] = None,
         retriever: Optional[Any] = None,
     ):
-        self.logger = get_logger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
         # 共享 registry
         self.registry = registry or LabelRegistry()
         self.db = db or VehicleDB(registry=self.registry)
-        self.filter_engine = filter_engine or FilterEngine(
-            db=self.db, registry=self.registry
-        )
-        self.query_parser = query_parser or QueryParser(
-            registry=self.registry
-        )
+        self.filter_engine = filter_engine or FilterEngine(db=self.db, registry=self.registry)
+        self.query_parser = query_parser or QueryParser(registry=self.registry)
         self.llm_parser = llm_parser
         self.retriever = retriever
 
@@ -114,17 +108,13 @@ class HybridPipeline:
         self.ensure_db_loaded()
 
         # ---- Phase 1: 意图解析 ----
-        parsed = self._parse_intent(
-            query_text, use_llm_fallback, result
-        )
+        parsed = self._parse_intent(query_text, use_llm_fallback, result)
 
         # ---- Phase 2: SQLite 粗筛 ----
         filter_result = self._coarse_filter(parsed, result)
 
         # ---- Phase 3: RAG 精排 ----
-        self._semantic_rerank(
-            query_text, filter_result, top_k, result
-        )
+        self._semantic_rerank(query_text, filter_result, top_k, result)
 
         result.total_time = time.time() - start
         self.logger.info(
@@ -224,17 +214,13 @@ class HybridPipeline:
     # 便捷接口
     # ------------------------------------------------------------------
 
-    def filter_only(
-        self, query_text: str
-    ) -> FilterResult:
+    def filter_only(self, query_text: str) -> FilterResult:
         """仅执行粗筛（不走 RAG）"""
         self.ensure_db_loaded()
         parsed = self.query_parser.parse(query_text)
         return self.filter_engine.filter(parsed.conditions)
 
-    def get_candidates(
-        self, query_text: str
-    ) -> List[str]:
+    def get_candidates(self, query_text: str) -> List[str]:
         """获取粗筛候选 car_model 列表"""
         result = self.filter_only(query_text)
         return result.car_models

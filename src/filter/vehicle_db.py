@@ -15,7 +15,6 @@ from typing import Any, Dict, List, Optional
 from src.filter.label_registry import LabelRegistry
 from src.utils.logger import get_logger
 
-
 # TOML 字段名 → SQLite 规范字段名的映射（处理拼写不一致）
 TOML_FIELD_NORMALIZE: Dict[str, str] = {
     "passenger_sapce_volume": "passenger_space_volume",
@@ -37,9 +36,7 @@ class VehicleDB:
         db_path: Optional[str] = None,
         registry: Optional[LabelRegistry] = None,
     ):
-        self.logger = get_logger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
         if db_path is None:
             db_path = str(Path(__file__).parent.parent.parent / "data" / "vehicles.db")
@@ -78,8 +75,7 @@ class VehicleDB:
         """创建车辆表（如果不存在）"""
         col_defs = ", ".join(f'"{col}" TEXT' for col in self.columns)
         create_sql = (
-            f"CREATE TABLE IF NOT EXISTS vehicles ("
-            f'"car_model" TEXT PRIMARY KEY, {col_defs})'
+            f'CREATE TABLE IF NOT EXISTS vehicles ("car_model" TEXT PRIMARY KEY, {col_defs})'
         )
         self.conn.execute(create_sql)
 
@@ -96,8 +92,7 @@ class VehicleDB:
             if field in self.columns:
                 idx_name = f"idx_vehicles_{field}"
                 self.conn.execute(
-                    f'CREATE INDEX IF NOT EXISTS "{idx_name}" '
-                    f'ON vehicles ("{field}")'
+                    f'CREATE INDEX IF NOT EXISTS "{idx_name}" ON vehicles ("{field}")'
                 )
 
         self.conn.commit()
@@ -122,9 +117,7 @@ class VehicleDB:
             导入统计 {"total", "imported", "failed"}
         """
         if data_dir is None:
-            data_dir = str(
-                Path(__file__).parent.parent.parent / "DataInUse" / "VehicleData"
-            )
+            data_dir = str(Path(__file__).parent.parent.parent / "DataInUse" / "VehicleData")
 
         start = time.time()
         stats = {"total": 0, "imported": 0, "failed": 0}
@@ -235,8 +228,7 @@ class VehicleDB:
         values = [row.get(c, "") for c in all_cols]
 
         self.conn.execute(
-            f"INSERT OR REPLACE INTO vehicles ({col_names}) "
-            f"VALUES ({placeholders})",
+            f"INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})",
             values,
         )
 
@@ -285,8 +277,7 @@ class VehicleDB:
         if column not in self.columns and column != "car_model":
             return []
         cursor = self.conn.execute(
-            f'SELECT DISTINCT "{column}" FROM vehicles '
-            f'WHERE "{column}" != "" ORDER BY "{column}"'
+            f'SELECT DISTINCT "{column}" FROM vehicles WHERE "{column}" != "" ORDER BY "{column}"'
         )
         return [r[0] for r in cursor.fetchall()]
 

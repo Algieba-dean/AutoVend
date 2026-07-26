@@ -11,7 +11,6 @@ from typing import Any, Dict, Optional
 from src.filter.label_registry import LabelRegistry
 from src.utils.logger import get_logger
 
-
 SYSTEM_PROMPT = """\
 You are a vehicle query intent parser. Given a user's natural language query \
 about cars, extract structured filter conditions as a JSON object.
@@ -93,9 +92,7 @@ class LLMParser:
         llm: Optional[Any] = None,
         registry: Optional[LabelRegistry] = None,
     ):
-        self.logger = get_logger(
-            f"{self.__class__.__module__}.{self.__class__.__name__}"
-        )
+        self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self.registry = registry or LabelRegistry()
         self.llm = llm
 

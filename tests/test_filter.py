@@ -15,7 +15,6 @@ from src.filter.query_parser import QueryParser
 from src.filter.vehicle_db import VehicleDB
 from src.retrieval.hybrid_pipeline import HybridPipeline
 
-
 # ======================================================================
 # Fixtures
 # ======================================================================
@@ -64,7 +63,6 @@ def pipeline(registry, db, engine, parser):
 
 
 class TestLabelRegistry:
-
     def test_load_labels(self, registry):
         assert len(registry.labels) > 40
 
@@ -137,7 +135,6 @@ class TestLabelRegistry:
 
 
 class TestVehicleDB:
-
     def test_import_count(self, db):
         assert db.count() > 1000
 
@@ -177,7 +174,6 @@ class TestVehicleDB:
 
 
 class TestFilterEngine:
-
     def test_tree_query_suv(self, engine):
         r = engine.filter({"vehicle_category_top": "suv"})
         assert r.total_candidates > 50
@@ -248,7 +244,6 @@ class TestFilterEngine:
 
 
 class TestQueryParser:
-
     def test_chinese_price_range(self, parser):
         r = parser.parse("30到40万的SUV")
         assert "prize" in r.conditions
@@ -315,7 +310,6 @@ class TestQueryParser:
 
 
 class TestHybridPipeline:
-
     def test_filter_only(self, pipeline):
         r = pipeline.filter_only("30到40万的纯电SUV")
         assert len(r.car_models) > 5
@@ -351,7 +345,6 @@ class TestHybridPipeline:
 
 
 class TestIntegration:
-
     def test_parser_to_engine(self, parser, engine):
         """规则引擎解析后直接传入过滤引擎"""
         parsed = parser.parse("20万以内的国产七座MPV")
