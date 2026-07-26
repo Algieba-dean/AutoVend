@@ -1,46 +1,46 @@
 """
-Unified configuration for AutoVend Backend.
-Loads settings from environment variables (via .env file).
+Configuration for the AutoVend FastAPI layer.
+
+Data-plane settings (Chroma dir, vehicle data dir, embedding model, LLM
+credentials) are NOT redefined here — they are re-exported from
+`src.utils.config`, which is the single source of truth. Previously the two
+config modules disagreed: this one pointed at `backend/data/chroma_db` while
+the core library used `./data/chroma_db`, so the index built by one was
+invisible to the other.
+
+Only genuinely backend-specific settings (HTTP host/port, JSON storage dirs)
+are defined locally.
 """
 
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-# Load .env from project root (AutoVend/.env)
-_project_root = Path(__file__).resolve().parent.parent.parent
-load_dotenv(_project_root / ".env")
+from src.utils.config import PROJECT_ROOT, config
 
 # Base directories
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = Path(config.chroma_persist_dir).parent
 
-# LLM Configuration (DeepSeek, OpenAI-compatible)
-OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "deepseek-chat")
-OPENAI_URL: str = os.getenv("OPENAI_URL", "https://api.deepseek.com/v1")
+# ── Re-exported from the core config (single source of truth) ──────────
+OPENAI_API_KEY: str = config.llm_api_key or ""
+OPENAI_MODEL: str = config.llm_model
+OPENAI_URL: str = config.llm_base_url
 
-# Embedding Model
-EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+EMBEDDING_MODEL: str = config.embedding_model
+CHROMA_PERSIST_DIR: str = config.chroma_persist_dir
+CHROMA_COLLECTION_NAME: str = config.chroma_collection_name
+VEHICLE_DATA_DIR: str = config.vehicle_data_dir
 
-# ChromaDB
-CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", str(DATA_DIR / "chroma_db"))
-CHROMA_COLLECTION_NAME: str = os.getenv("CHROMA_COLLECTION_NAME", "vehicle_knowledge")
+APP_ENVIRONMENT: str = config.app_environment
+DEBUG: bool = config.debug
 
-# Vehicle Data Source
-VEHICLE_DATA_DIR: str = os.getenv(
-    "VEHICLE_DATA_DIR", str(_project_root / "DataInUse" / "VehicleData")
-)
-
-# Application Settings
-APP_ENVIRONMENT: str = os.getenv("APP_ENVIRONMENT", "development")
-DEBUG: bool = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
+# ── Backend-only settings ──────────────────────────────────────────────
 HOST: str = os.getenv("HOST", "0.0.0.0")
 PORT: int = int(os.getenv("PORT", "8000"))
 
-# Storage directories
-STORAGE_DIR = BASE_DIR / "storage"
+# Storage directories (runtime JSON state) live at the project root so that
+# `uvicorn` and CLI runs share one store.
+STORAGE_DIR = PROJECT_ROOT / "storage"
 SESSIONS_DIR = STORAGE_DIR / "sessions"
 PROFILES_DIR = STORAGE_DIR / "profiles"
 TEST_DRIVES_DIR = STORAGE_DIR / "test_drives"

@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from src.filter.label_registry import LabelRegistry
+from src.utils.config import config
 from src.utils.logger import get_logger
 
 # TOML 字段名 → SQLite 规范字段名的映射（处理拼写不一致）
@@ -38,9 +39,7 @@ class VehicleDB:
     ):
         self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
-        if db_path is None:
-            db_path = str(Path(__file__).parent.parent.parent / "data" / "vehicles.db")
-        self.db_path = db_path
+        self.db_path = db_path or config.vehicle_db_path
 
         # 确保目录存在
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
