@@ -57,6 +57,24 @@ class SalesAgent:
         self.generation_llm = generation_llm or llm
         self.memory = ChatMemoryManager()
 
+    def remember(self, state: SessionState, user_message: str) -> SessionState:
+        """
+        Record the user's message without running any extractor.
+
+        For turns a caller has already determined carry no extractable content —
+        an acknowledgement, a deferral, small talk. The message still belongs in
+        the transcript the response generator reads; it just has nothing for the
+        extractors to find, and running them anyway costs a model round trip to
+        confirm that.
+
+        The agent does not decide which turns qualify. That judgement lives with
+        the caller (see the semantic router), keeping this package free of any
+        classification machinery.
+        """
+        updated = state.model_copy(deep=True)
+        self.memory.add_user_message(updated.session_id, user_message)
+        return updated
+
     def observe(self, state: SessionState, user_message: str) -> SessionState:
         """
         Record the user's message and extract what it reveals — no generation.

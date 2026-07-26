@@ -2,7 +2,22 @@
 Chat API routes — thin orchestration layer.
 
 Owns session lifecycle and API response formatting.
-Delegates all AI logic to agent.SalesAgent via AgentInput/AgentResult protocol.
+Delegates all AI logic to SalesAgent via the observe/respond protocol.
+
+A turn passes through three gates before any model is consulted:
+
+    1. Semantic router  — anchor-vector classification (microseconds, no model)
+       tags the turn. Control-flow turns like "行，听你的" carry no vehicle
+       attribute and skip extraction entirely. Runs on raw text: placeholders
+       would destroy the meaning it classifies on, and the embedder is local.
+    2. PII interceptor  — real identifiers become per-session placeholders, so
+       nothing sensitive reaches memory, prompts, or a cloud API. Values
+       extracted back out are restored before storage.
+    3. Hybrid inference — whatever survives goes to the local 8B model or the
+       cloud, per src/llm/router.py.
+
+Each gate is optional and fails open: no anchors built, or Presidio absent,
+and the turn simply takes the long path it took before these layers existed.
 """
 
 import logging
@@ -31,9 +46,18 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 # Number of candidate vehicles handed to the agent per turn.
 RETRIEVAL_TOP_K = 5
 
+#: Control-flow intents that carry no information the extractor could use.
+#: A hit here skips extraction: "行，听你的" states no vehicle attribute, and
+#: an LLM call to establish that is a round trip spent to learn nothing.
+#: `budget_objection` and `request_detail` are deliberately absent — the first
+#: revises the budget slot, the second may name a model.
+EXTRACTION_SKIP_INTENTS = frozenset({"affirm", "reject", "defer", "smalltalk"})
+
 # Injected at startup
 _agent: Optional[SalesAgent] = None
 _pipeline = None
+_semantic_router = None
+_pii = None
 
 # In-memory session state store (session_id → SessionState)
 _sessions: Dict[str, SessionState] = {}
@@ -54,10 +78,91 @@ def set_pipeline(pipeline) -> None:
     _pipeline = pipeline
 
 
+def set_semantic_router(semantic_router) -> None:
+    """Inject the anchor-vector router. None disables the fast path."""
+    global _semantic_router
+    _semantic_router = semantic_router
+
+
+def set_pii_interceptor(interceptor) -> None:
+    """Inject the PII interceptor. None disables masking."""
+    global _pii
+    _pii = interceptor
+
+
 def _get_agent() -> SalesAgent:
     if _agent is None:
         raise HTTPException(status_code=503, detail="Agent not initialized.")
     return _agent
+
+
+# ── privacy and semantic gates ────────────────────────────────────────
+
+
+def _mask(text: str, session_id: str) -> tuple:
+    """
+    Replace PII with per-session placeholders.
+
+    Returns (masked_text, found_any). The flag feeds the fast-path guard: a
+    turn containing PII must never skip extraction.
+
+    Fails open — a recognizer bug should not take the conversation down — but
+    logs at error level, because an unmasked turn is a real privacy event.
+    """
+    if _pii is None:
+        return text, False
+    try:
+        masked, matches = _pii.mask(text, session_id)
+        return masked, bool(matches)
+    except Exception as exc:
+        logger.error(f"[{session_id}] PII masking failed, message sent unmasked: {exc}")
+        return text, False
+
+
+def _unmask(text: str, session_id: str) -> str:
+    if _pii is None or not text:
+        return text
+    try:
+        return _pii.unmask(text, session_id)
+    except Exception as exc:
+        logger.error(f"[{session_id}] PII unmasking failed: {exc}")
+        return text
+
+
+def _unmask_state(state: SessionState, session_id: str) -> None:
+    """
+    Restore placeholders inside the extracted profile and reservation, in place.
+
+    Without this the session would store `<CN_PERSON_1>` as the customer's name
+    and put it on the test-drive booking.
+    """
+    if _pii is None:
+        return
+    try:
+        for model in (state.profile, state.reservation):
+            for field, value in model.model_dump().items():
+                if isinstance(value, str) and "<" in value:
+                    setattr(model, field, _pii.unmask(value, session_id))
+    except Exception as exc:
+        logger.error(f"[{session_id}] PII unmasking of session state failed: {exc}")
+
+
+def _classify(text: str, session_id: str):
+    """Route the turn against anchor vectors, or None when unavailable."""
+    if _semantic_router is None:
+        return None
+    try:
+        decision = _semantic_router.classify(text)
+    except Exception as exc:
+        logger.error(f"[{session_id}] semantic routing failed: {exc}")
+        return None
+    if not decision.matched:
+        logger.debug(
+            f"[{session_id}] no semantic match "
+            f"(best={decision.score:.3f}, margin={decision.margin:.3f})"
+        )
+        return None
+    return decision
 
 
 def _retrieve_cars(state: SessionState) -> list:
@@ -129,15 +234,54 @@ async def send_message(request: ChatRequest):
         state = SessionState(session_id=request.session_id, profile=profile)
         _sessions[request.session_id] = state
 
+    # Gate 1 — classify with anchor vectors. Microseconds, no model.
+    #
+    # Runs on the *raw* text, before masking. Masking first would hand the
+    # embedder "我叫<CN_PERSON_1>，手机<CN_PHONE_NUMBER_1>" — placeholders carry
+    # no meaning, and an introduction reliably mis-classified as small talk,
+    # which then skipped the very extraction that should have captured the name.
+    # The embedding model is local and in-process; the threat this layer defends
+    # against is PII reaching a third-party API, which happens further down.
+    decision = _classify(request.message, request.session_id)
+
+    # Gate 2 — mask PII before the text reaches memory, prompts or a cloud API.
+    safe_message, pii_found = _mask(request.message, request.session_id)
+
     # Observe first, retrieve second: retrieval must see the needs stated in
     # *this* message. Querying before extraction lags a turn behind the user —
     # ask for a mid-size electric SUV and you get last turn's recommendations.
-    state = agent.observe(state, request.message)
+    #
+    # A control-flow turn skips extraction but still enters memory: "我再想想吧"
+    # is part of the conversation the generator has to read, it just has nothing
+    # for the extractor to pull out.
+    # A turn carrying PII always goes through extraction, whatever the router
+    # thinks. Someone giving their name or number has stated something the
+    # profile needs; a classifier confident enough to skip that would be wrong
+    # in the one direction the product cannot absorb.
+    skip_extraction = (
+        decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
+    )
+
+    if skip_extraction:
+        state = agent.remember(state, safe_message)
+        logger.info(
+            f"[{request.session_id}] semantic fast-path: {decision.intent} "
+            f"(score={decision.score:.3f}) — extraction skipped"
+        )
+    else:
+        state = agent.observe(state, safe_message)
 
     # Vehicle retrieval (backend concern — results passed back to the agent)
     retrieved_cars = _retrieve_cars(state)
 
     result = agent.respond(state, retrieved_cars)
+
+    # Restore real values before anything is stored or shown. The models only
+    # ever saw placeholders; the session state holds the truth.
+    _unmask_state(result.session_state, request.session_id)
+    result = result.model_copy(
+        update={"response_text": _unmask(result.response_text, request.session_id)}
+    )
 
     # Update stored session state
     _sessions[request.session_id] = result.session_state

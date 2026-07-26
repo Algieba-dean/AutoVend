@@ -21,6 +21,9 @@ AutoVend 通过多阶段对话引导客户 —— 从问候和画像收集，到
 ┌───────────────────────────┴──────────────────────────────────┐
 │  src/  (核心库，零 web 依赖)                                   │
 │                                                              │
+│  privacy/     Presidio 中文 PII 识别 · 可逆脱敏                │
+│  semantic_router/  锚点向量分类（µs 级，控制流短路）            │
+│                                                              │
 │  agent/       SalesAgent · 阶段 FSM · 抽取器 · 记忆 · 语音     │
 │               observe() → 检索 → respond()                    │
 │               ⚠ 禁止 import backend/fastapi/chromadb（CI 守卫）│
@@ -50,6 +53,8 @@ AutoVend 通过多阶段对话引导客户 —— 从问候和画像收集，到
 | 检索 | ChromaDB (HNSW) + rank-bm25 + SQLite 元数据预过滤, RRF 融合 |
 | 嵌入 | BGE-M3 (中英双语, 1024 维) |
 | 推理 | 本地 vLLM (8B 4-bit) + 云端链 (Groq → DeepSeek) |
+| 隐私 | Presidio + 自建中文识别器，会话内可逆脱敏 |
+| 意图 | 锚点向量（K-means 离线聚类，156 KB 常驻 FP32） |
 | 评估 | 116 题黄金集 · recall/precision/MRR/NDCG · RAGAS |
 | CI | GitHub Actions：lint · test · 架构隔离 · **检索质量门禁** |
 
@@ -71,13 +76,16 @@ cp .env.example .env      # 填入 LLM_API_KEY（或 GROQ_API_KEY）
 没有任何 API key 也能启动：系统自动降级为 MockLLM，检索、阶段流转、存储等
 非生成路径全部可用。
 
-### 2. 构建索引
+### 2. 构建索引与锚点
 
 ```bash
-uv run python -m src.main build
+uv run python -m src.main build                       # 三层检索索引
+uv run python -m spacy download en_core_web_lg        # Presidio 需要
+uv run python -m src.semantic_router.build --probe    # 语义路由锚点
 ```
 
-一次性构建三层索引：SQLite 结构化目录、ChromaDB 向量索引、BM25 稀疏索引。
+索引一次性构建 SQLite 结构化目录、ChromaDB 向量索引、BM25 稀疏索引；锚点由种子语料
+经 K-means 聚类而成，服务启动时载入为常驻 FP32 张量。
 
 ### 3. 启动
 
@@ -151,6 +159,7 @@ WELCOME → PROFILE_ANALYSIS → NEEDS_ANALYSIS → CAR_SELECTION
 ## 文档
 
 - [混合推理架构](docs/hybrid_inference.md) —— 本地/云端分流依据、WSL2 部署坑、实测数字
+- [脱敏与语义路由](docs/privacy_and_routing.md) —— PII 拦截、锚点向量、双重阈值
 - [混合检索方案](docs/hybrid-retrieval-plan.md) —— 三层检索设计
 - [性能指标](docs/PERFORMANCE_METRICS.md) · [测试指南](docs/TESTING_GUIDE.md)
 - [部署指南](docs/deployment_guide.md)

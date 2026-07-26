@@ -41,6 +41,10 @@ _startup_status = {
     "rag_index_error": "",
     "voice_ready": False,
     "voice_error": "",
+    "pii_ready": False,
+    "pii_error": "",
+    "semantic_router_ready": False,
+    "semantic_router_error": "",
 }
 
 
@@ -96,6 +100,41 @@ async def lifespan(app: FastAPI):
         _startup_status["voice_ready"] = False
         _startup_status["voice_error"] = str(e)
         logger.warning(f"Voice services not available: {e}")
+
+    # PII interceptor. Built eagerly so the spaCy load happens at startup
+    # rather than on some unlucky user's first message.
+    try:
+        from src.privacy import get_interceptor
+
+        interceptor = get_interceptor()
+        interceptor.detect("warmup")  # forces the analyzer to build
+        chat.set_pii_interceptor(interceptor)
+        _startup_status["pii_ready"] = True
+        logger.info("PII interceptor ready.")
+    except Exception as e:
+        _startup_status["pii_error"] = str(e)
+        logger.warning(
+            f"PII interceptor unavailable: {e}. Messages will NOT be masked "
+            "before reaching the LLM."
+        )
+
+    # Semantic router. Optional: without the anchor artifact every turn simply
+    # takes the full path, which is what happened before this layer existed.
+    try:
+        from src.semantic_router import get_router as get_semantic_router
+
+        semantic_router = get_semantic_router()
+        if semantic_router is not None:
+            chat.set_semantic_router(semantic_router)
+            _startup_status["semantic_router_ready"] = True
+            logger.info(f"Semantic router ready: {semantic_router.summary()}")
+        else:
+            _startup_status["semantic_router_error"] = (
+                "anchors not built — run: python -m src.semantic_router.build"
+            )
+    except Exception as e:
+        _startup_status["semantic_router_error"] = str(e)
+        logger.warning(f"Semantic router unavailable: {e}")
 
     # Try to build the hybrid retrieval pipeline (indices may not exist yet).
     # Constructing it eagerly means the embedding model and SQLite catalogue are
@@ -228,10 +267,17 @@ async def health():
             "agent": "ok" if agent_ok else "unavailable",
             "rag_index": "ok" if rag_ok else "unavailable",
             "voice": "ok" if voice_ok else "unavailable",
+            # Both fail open: absent means the turn takes the long path, not
+            # that the service is broken. PII being off is still worth seeing
+            # at a glance, since it means messages reach the LLM unmasked.
+            "pii_interceptor": "ok" if _startup_status["pii_ready"] else "disabled",
+            "semantic_router": ("ok" if _startup_status["semantic_router_ready"] else "disabled"),
         },
         "llm_routing": router.describe() if router else {"mode": "mock"},
         "rag_index_error": _startup_status["rag_index_error"] or None,
         "voice_error": _startup_status["voice_error"] or None,
+        "pii_error": _startup_status["pii_error"] or None,
+        "semantic_router_error": _startup_status["semantic_router_error"] or None,
     }
 
 
