@@ -11,12 +11,19 @@ silently degrade routing rather than fail.
 """
 
 import argparse
+import os
 import sys
 from pathlib import Path
 from typing import Optional, Sequence
 
-from src.semantic_router.anchors import DEFAULT_K, build_anchor_set
-from src.semantic_router.seeds import seed_count
+# Default to offline. BGE-M3 is already cached locally, but
+# sentence-transformers still contacts the Hub to check for a newer revision on
+# load — so a Hub outage or a slow network fails a build that needs nothing
+# from the network. Set HF_HUB_OFFLINE=0 explicitly to allow the check.
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+
+from src.semantic_router.anchors import DEFAULT_K, build_anchor_set  # noqa: E402
+from src.semantic_router.seeds import seed_count  # noqa: E402
 
 #: Paraphrases the seeds do not contain verbatim, plus deliberately off-domain
 #: sentences. The latter matter most: they check the router says "no match"
