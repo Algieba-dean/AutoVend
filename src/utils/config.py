@@ -54,6 +54,14 @@ class Config(BaseSettings):
     )
     llm_provider: Optional[str] = Field(default=None, validation_alias=AliasChoices("LLM_PROVIDER"))
 
+    # Local inference server (vLLM, OpenAI-compatible).
+    # Leave local_llm_base_url unset to route every task to the cloud.
+    local_llm_base_url: Optional[str] = None
+    local_llm_model: str = "local-llama"
+    # vLLM does not authenticate by default; the OpenAI client still requires a
+    # non-empty bearer token, so this is a placeholder rather than a secret.
+    local_llm_api_key: str = "local"
+
     # Vector Database Configuration
     chroma_persist_dir: str = "./data/chroma_db"
     chroma_collection_name: str = "vehicle_knowledge"

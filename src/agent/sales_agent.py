@@ -37,12 +37,24 @@ class SalesAgent:
     Memory buffers are managed internally per session_id for token-limited history.
     """
 
-    def __init__(self, llm: LLM):
+    def __init__(self, llm: LLM, generation_llm: Optional[LLM] = None):
         """
         Args:
-            llm: LLM instance for extraction and generation.
+            llm: LLM used for extraction — filling Pydantic schemas from the
+                transcript. Called on every turn with short, constrained
+                prompts.
+            generation_llm: LLM used to write the customer-facing reply. Defaults
+                to `llm`.
+
+        Two slots rather than one because the two jobs have different
+        requirements: extraction is high-frequency and schema-bounded, while
+        generation is open-ended and is what the customer actually reads.
+        Whoever constructs the agent decides whether they are the same model —
+        the agent itself holds no opinion, and deliberately knows nothing about
+        routing (see tests/test_agent_isolation.py).
         """
         self.llm = llm
+        self.generation_llm = generation_llm or llm
         self.memory = ChatMemoryManager()
 
     def observe(self, state: SessionState, user_message: str) -> SessionState:
@@ -102,7 +114,7 @@ class SalesAgent:
             )
 
         response_text = generate_response(
-            self.llm,
+            self.generation_llm,
             updated.stage,
             conversation_text,
             updated.profile,

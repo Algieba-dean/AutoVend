@@ -27,6 +27,11 @@ frontend/package-lock.json
 **/data/**
 **/chroma_db/**
 
+# Local model weights (downloaded via modelscope; ~GBs)
+models/**
+# vLLM's isolated virtualenv
+.venv-vllm/**
+
 # Storage (runtime data)
 **/storage/messages/**
 **/storage/profiles/**
