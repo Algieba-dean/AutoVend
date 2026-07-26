@@ -129,6 +129,11 @@ uv run python -m src.eval.runner --systems filter bm25 dense hybrid fusion
 两路互补：BM25 在中文查询上只有 0.178（语料为英文），稠密路在冷门品牌上只有
 0.333；融合后分别是 0.778 和 0.833。
 
+融合权重经网格搜索确定（`python -m src.eval.weight_search`）：两端明显更差
+（纯稀疏 0.707 / 纯稠密 0.681），中间 dense ∈ [0.20, 0.70] 是一片平台——差异全在
+单题噪声（1/116 = 0.0086）以内，所以取等权而非 arg-max。基于意图的动态权重实现了
+也测了，**分数低于静态权重**，默认关闭，详见 [src/retrieval/fusion.py](src/retrieval/fusion.py)。
+
 `fusion` 是生产路径，CI 每次 push 用 [src/eval/gate.py](src/eval/gate.py) 对着
 实测基线校验，低于容差直接阻断合并。
 
