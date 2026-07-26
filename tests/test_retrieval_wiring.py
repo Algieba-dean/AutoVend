@@ -244,3 +244,61 @@ class TestRetrieveCars:
         chat_route.set_pipeline(None)
 
         assert chat_route._retrieve_cars(_state()) == []
+
+
+class TestRetrievalOrdering:
+    """
+    Regression guard for the observe -> retrieve -> respond ordering.
+
+    Retrieving before extraction queries the index with the *previous* turn's
+    needs: a user who asks for a mid-size electric SUV gets recommendations for
+    whatever they asked for one turn earlier. This drives the real route so the
+    ordering is asserted where it actually lives.
+    """
+
+    async def test_route_retrieves_with_this_turns_needs(self):
+        from httpx import ASGITransport, AsyncClient
+
+        from backend.app.main import _startup_status, app
+        from src.agent.schemas import AgentResult, Stage
+
+        class _ExtractingAgent:
+            """Fills in this turn's needs during observe(), like the real extractors."""
+
+            def observe(self, state, user_message):
+                updated = state.model_copy(deep=True)
+                updated.stage = Stage.NEEDS_ANALYSIS
+                updated.needs.explicit.vehicle_category_bottom = "Mid-Size SUV"
+                updated.needs.explicit.powertrain_type = "Battery Electric Vehicle"
+                return updated
+
+            def respond(self, state, retrieved_cars=None):
+                updated = state.model_copy(deep=True)
+                updated.matched_cars = retrieved_cars or []
+                return AgentResult(session_state=updated, response_text="ok", stage_changed=False)
+
+        stub = _StubPipeline(cars=("BMW-iX",))
+        chat_route.set_agent(_ExtractingAgent())
+        chat_route.set_pipeline(stub)
+        chat_route._sessions.clear()
+        chat_route._prev_explicit.clear()
+        _startup_status["agent_ready"] = True
+
+        try:
+            transport = ASGITransport(app=app)
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                response = await client.post(
+                    "/api/chat/message",
+                    json={"session_id": "ordering", "message": "我想要中型纯电SUV"},
+                )
+
+            assert response.status_code == 200
+            assert stub.calls, "the route never queried the index"
+            assert stub.calls[0][0] == "Mid-Size SUV Battery Electric Vehicle", (
+                "retrieval ran against stale needs — observe() must precede _retrieve_cars()"
+            )
+            assert [c["car_model"] for c in response.json()["matched_car_models"]] == ["BMW-iX"]
+        finally:
+            chat_route.set_pipeline(None)
+            chat_route._sessions.clear()
+            chat_route._prev_explicit.clear()

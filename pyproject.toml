@@ -86,6 +86,9 @@ select = ["E", "F", "W", "I"]
 "src/filter/label_registry.py" = ["E501"]
 "tests/kpi_report.py" = ["E501"]
 "tests/performance/*.py" = ["E501"]
+# Golden-set specs read best with each query's ground-truth predicate on one
+# line next to the query it belongs to.
+"src/eval/golden_set.py" = ["E501"]
 # CLI entry points bootstrap sys.path before importing src.*, so imports
 # legitimately follow that call.
 "src/main.py" = ["E402"]
