@@ -13,10 +13,9 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from llama_index.llms.openai_like import OpenAILike
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from backend.app.config import APP_ENVIRONMENT, DEBUG, OPENAI_API_KEY, OPENAI_MODEL, OPENAI_URL
+from backend.app.config import APP_ENVIRONMENT, DEBUG, OPENAI_API_KEY
 from backend.app.routes import chat, profile, test_drive, voice
 from src.agent.sales_agent import SalesAgent
 
@@ -26,6 +25,13 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
+
+
+def _local_llm_configured() -> bool:
+    """True when a local vLLM endpoint is configured (see .env LOCAL_LLM_BASE_URL)."""
+    from src.utils.config import config as core_config
+
+    return bool(core_config.local_llm_base_url)
 
 
 # ── Startup state (used by /health) ────────────────────────────
@@ -41,32 +47,34 @@ _startup_status = {
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """App lifespan: initialize LLM, SalesAgent, and vehicle index on startup."""
-    logger.info("Initializing LLM and SalesAgent...")
+    logger.info("Initializing hybrid LLM router and SalesAgent...")
 
-    # The agent speaks the LlamaIndex LLM interface (llm.complete), so it takes an
-    # OpenAILike rather than the src.llm BaseLLM used by the retrieval-side parser.
-    # Credentials for both come from the same config, see backend/app/config.py.
+    # The agent takes two LlamaIndex-protocol LLMs: one for schema-constrained
+    # extraction (routed to the local vLLM server when configured — every turn
+    # pays this cost), one for the customer-facing reply (routed to the cloud
+    # API). RoutedLLM wraps the HybridRouter so the agent stays unaware that
+    # routing exists; see src/llm/router.py for the policy and fallbacks.
     #
-    # Without a key, fall back to LlamaIndex's MockLLM so the API still boots and
-    # every non-generative path (retrieval, stage transitions, storage) stays
-    # exercisable. Failing at first-token time instead would make a missing key
-    # look like a runtime bug.
-    if OPENAI_API_KEY:
-        llm = OpenAILike(
-            api_key=OPENAI_API_KEY,
-            api_base=OPENAI_URL,
-            model=OPENAI_MODEL,
-            is_chat_model=True,
-            temperature=0.7,
-            max_tokens=500,
-        )
+    # Without any credentials, fall back to LlamaIndex's MockLLM so the API
+    # still boots and every non-generative path (retrieval, stage transitions,
+    # storage) stays exercisable. Failing at first-token time instead would
+    # make a missing key look like a runtime bug.
+    if OPENAI_API_KEY or _local_llm_configured():
+        from src.llm.llamaindex_adapter import build_agent_llms
+        from src.llm.router import build_default_router
+
+        router = build_default_router()
+        app.state.llm_router = router
+        extraction_llm, generation_llm = build_agent_llms(router)
+        logger.info(f"LLM routing: {router.describe()}")
+        agent = SalesAgent(llm=extraction_llm, generation_llm=generation_llm)
     else:
         from llama_index.core.llms import MockLLM
 
+        app.state.llm_router = None
         llm = MockLLM(max_tokens=500)
         logger.warning("No LLM credentials configured — running with MockLLM.")
-
-    agent = SalesAgent(llm=llm)
+        agent = SalesAgent(llm=llm)
     chat.set_agent(agent)
     _startup_status["agent_ready"] = True
 
@@ -95,7 +103,7 @@ async def lifespan(app: FastAPI):
     try:
         from src.retrieval.hybrid_pipeline import build_default_pipeline
 
-        pipeline = build_default_pipeline()
+        pipeline = build_default_pipeline(llm_router=getattr(app.state, "llm_router", None))
         chat.set_pipeline(pipeline)
         _startup_status["rag_index_ready"] = True
         logger.info("Hybrid retrieval pipeline ready.")
@@ -212,6 +220,8 @@ async def health():
 
     voice_ok = _startup_status["voice_ready"]
 
+    router = getattr(app.state, "llm_router", None)
+
     return {
         "status": overall,
         "components": {
@@ -219,6 +229,21 @@ async def health():
             "rag_index": "ok" if rag_ok else "unavailable",
             "voice": "ok" if voice_ok else "unavailable",
         },
+        "llm_routing": router.describe() if router else {"mode": "mock"},
         "rag_index_error": _startup_status["rag_index_error"] or None,
         "voice_error": _startup_status["voice_error"] or None,
     }
+
+
+@app.get("/telemetry/llm")
+async def llm_telemetry():
+    """
+    Per-route LLM telemetry: call counts, latency and TTFT percentiles, token
+    totals, and actual spend versus the all-cloud counterfactual.
+
+    In-memory and process-local — resets on restart. This is the evidence for
+    the local/cloud routing split, not a monitoring system.
+    """
+    from src.llm.telemetry import telemetry
+
+    return telemetry.summary()

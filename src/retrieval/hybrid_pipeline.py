@@ -305,6 +305,7 @@ def build_default_pipeline(
     price_tolerance: float = 0.2,
     enable_llm_parser: bool = True,
     enable_sparse: bool = True,
+    llm_router=None,
 ) -> HybridPipeline:
     """
     装配一条开箱可用的混合检索管线。
@@ -319,10 +320,11 @@ def build_default_pipeline(
         enable_llm_parser: 规则引擎命中不足时是否允许 LLM 补充解析。
             无 LLM 凭据时 LLMParser.is_available() 返回 False，自动跳过。
         enable_sparse: 是否启用 BM25 稀疏路并做 RRF 融合。
+        llm_parser 走 QUERY_PARSE 任务路由（本地优先）；传入共享的
+            llm_router 可避免与 FastAPI 各建一个路由器。
     """
     # 局部导入：让 filter-only 的调用方（如 CI 的确定性门禁）无需加载嵌入模型
     from src.filter.llm_parser import LLMParser
-    from src.llm.factory import LLMFactory
     from src.rag.embeddings import BGEEmbeddingModel
     from src.rag.retriever import VehicleRetriever
     from src.rag.vector_store import ChromaVectorStore
@@ -340,7 +342,11 @@ def build_default_pipeline(
     llm_parser = None
     if enable_llm_parser:
         try:
-            llm_parser = LLMParser(llm=LLMFactory.create_llm(), registry=registry)
+            from src.llm.router import Task, build_default_router
+
+            router = llm_router or build_default_router()
+            # 查询解析是控制路径：schema 约束、每次检索必调，路由到本地模型
+            llm_parser = LLMParser(llm=router.bind(Task.QUERY_PARSE), registry=registry)
         except Exception:
             # 凭据缺失或 provider 不支持时静默降级为纯规则解析
             llm_parser = None

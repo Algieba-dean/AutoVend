@@ -1,8 +1,19 @@
 """
-OpenAI-compatible LLM implementation for AutoVend
+OpenAI-compatible LLM implementation for AutoVend.
+
+Serves both backends the router uses — Groq in the cloud and vLLM locally —
+since both expose the OpenAI chat-completions protocol. Only the base URL and
+model name differ.
+
+Calls stream by default so that time-to-first-token is *measured* rather than
+inferred. TTFT is the metric that justifies routing the control path to a local
+model, and total latency is not a substitute for it: a short reply and a long
+one can share a TTFT while differing tenfold end to end.
 """
 
-from typing import Dict, List, Optional
+import json
+import time
+from typing import Any, Dict, List, Optional
 
 import requests
 import urllib3
@@ -14,6 +25,8 @@ from .base_llm import BaseLLM
 # Disable SSL warnings for corporate networks
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+DEFAULT_TIMEOUT_S = 60
+
 
 class OpenAILLM(BaseLLM):
     """OpenAI-compatible LLM implementation"""
@@ -21,7 +34,12 @@ class OpenAILLM(BaseLLM):
     def __init__(self, model: str, api_key: str, base_url: Optional[str] = None, **kwargs):
         super().__init__(model, api_key, base_url, **kwargs)
         self.base_url = base_url or "https://api.openai.com/v1"
+        self.timeout = kwargs.get("timeout", DEFAULT_TIMEOUT_S)
         self.session = self._create_session()
+
+        # Populated after every call, read by the telemetry layer.
+        self.last_usage: Optional[Dict[str, int]] = None
+        self.last_ttft_s: Optional[float] = None
 
     def _create_session(self) -> requests.Session:
         """Create a requests session with retry strategy"""
@@ -46,44 +64,104 @@ class OpenAILLM(BaseLLM):
         return self.chat(messages, **kwargs)
 
     def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
-        """Chat with a list of messages"""
-        headers = {
+        """
+        Chat with a list of messages.
+
+        Streams unless `stream=False` is passed. Streaming costs nothing here —
+        the whole reply is still accumulated before returning — and it is the
+        only way to observe TTFT.
+        """
+        self.last_usage = None
+        self.last_ttft_s = None
+
+        if kwargs.pop("stream", True):
+            return self._chat_streaming(messages, **kwargs)
+        return self._chat_blocking(messages, **kwargs)
+
+    # ── request plumbing ──────────────────────────────────────────────
+
+    def _headers(self) -> Dict[str, str]:
+        return {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
             "User-Agent": "AutoVend/1.0",
         }
 
-        data = {
+    def _payload(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
+        return {
             "messages": messages,
             "model": self.model,
             "max_tokens": kwargs.get("max_tokens", 1000),
             "temperature": kwargs.get("temperature", 0.7),
         }
 
+    def _chat_blocking(self, messages: List[Dict[str, str]], **kwargs) -> str:
         try:
             response = self.session.post(
-                f"{self.base_url}/chat/completions", headers=headers, json=data, timeout=30
+                f"{self.base_url}/chat/completions",
+                headers=self._headers(),
+                json=self._payload(messages, **kwargs),
+                timeout=self.timeout,
             )
-
-            if response.status_code == 200:
-                result = response.json()
-                return result["choices"][0]["message"]["content"]
-            else:
+            if response.status_code != 200:
                 raise Exception(f"API Error: {response.status_code} - {response.text}")
 
+            result = response.json()
+            self.last_usage = result.get("usage")
+            return result["choices"][0]["message"]["content"]
+        except Exception as e:
+            raise Exception(f"LLM request failed: {e}")
+
+    def _chat_streaming(self, messages: List[Dict[str, str]], **kwargs) -> str:
+        payload = self._payload(messages, **kwargs)
+        payload["stream"] = True
+        # Both Groq and vLLM emit a final usage-only chunk when asked; without
+        # it a streamed call would report no token counts and drop out of the
+        # cost accounting entirely.
+        payload["stream_options"] = {"include_usage": True}
+
+        started = time.perf_counter()
+        chunks: List[str] = []
+
+        try:
+            with self.session.post(
+                f"{self.base_url}/chat/completions",
+                headers=self._headers(),
+                json=payload,
+                timeout=self.timeout,
+                stream=True,
+            ) as response:
+                if response.status_code != 200:
+                    raise Exception(f"API Error: {response.status_code} - {response.text}")
+
+                for line in response.iter_lines(decode_unicode=True):
+                    if not line or not line.startswith("data: "):
+                        continue
+                    data = line[len("data: ") :]
+                    if data == "[DONE]":
+                        break
+
+                    event = json.loads(data)
+                    if event.get("usage"):
+                        self.last_usage = event["usage"]
+
+                    for choice in event.get("choices", []):
+                        piece = (choice.get("delta") or {}).get("content")
+                        if piece:
+                            if self.last_ttft_s is None:
+                                self.last_ttft_s = time.perf_counter() - started
+                            chunks.append(piece)
+
+            return "".join(chunks)
         except Exception as e:
             raise Exception(f"LLM request failed: {e}")
 
     def is_available(self) -> bool:
         """Check if the LLM service is available"""
         try:
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            }
-
-            response = self.session.get(f"{self.base_url}/models", headers=headers, timeout=10)
-
+            response = self.session.get(
+                f"{self.base_url}/models", headers=self._headers(), timeout=10
+            )
             return response.status_code == 200
         except Exception:
             return False
