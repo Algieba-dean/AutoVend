@@ -43,13 +43,52 @@ def _require_credentials() -> None:
     if not config.has_llm_credentials:
         raise SystemExit(
             "RAGAS evaluation needs LLM credentials. Set LLM_API_KEY (or "
-            "GROQ_API_KEY) in .env, or add it as a repository secret for the "
-            "scheduled workflow. The deterministic gate (src.eval.gate) runs "
-            "without any key."
+            "GROQ_API_KEY / DEEPSEEK_API_KEY) in .env, or add one as a "
+            "repository secret for the scheduled workflow. The deterministic "
+            "gate (src.eval.gate) runs without any key."
         )
 
 
+def resolve_judge(preferred: Optional[str] = None) -> Dict[str, str]:
+    """
+    Pick which cloud provider judges, probing each for a live quota.
+
+    RAGAS issues several calls per sample, so a provider that is already near
+    its daily cap will fail most of the run and leave metrics scored over a
+    handful of survivors. Probing once up front costs one request and avoids
+    discovering the exhaustion twenty minutes in — which is exactly how the
+    first attempt at this was lost.
+    """
+    from src.llm.router import build_default_router
+
+    router = build_default_router()
+    candidates = [
+        backend
+        for backend in router.cloud_chain
+        if preferred is None or preferred in (getattr(backend, "model", "") or "")
+    ]
+    if not candidates:
+        raise SystemExit(f"No cloud provider matches {preferred!r}.")
+
+    for backend in candidates:
+        try:
+            backend.complete("ping", max_tokens=4, temperature=0.0)
+        except Exception as exc:
+            logger.warning(f"[ragas] judge candidate {backend.model} unusable: {str(exc)[:160]}")
+            continue
+        return {
+            "model": backend.model,
+            "api_key": backend.api_key,
+            "base_url": backend.base_url,
+        }
+
+    raise SystemExit(
+        "Every cloud provider failed a probe call — check quotas before running RAGAS."
+    )
+
+
 def build_samples(
+    generator: Dict[str, str],
     system_name: str = "fusion",
     limit: Optional[int] = None,
 ) -> List[Dict]:
@@ -64,27 +103,31 @@ def build_samples(
 
     from src.agent.response_generator import generate_response
     from src.agent.schemas import ReservationInfo, Stage, UserProfile, VehicleNeeds
-    from src.eval.systems import build_system
     from src.retrieval.adapters import search_response_to_cars
+    from src.retrieval.hybrid_pipeline import build_default_pipeline
 
     queries = load_golden_set()
     if limit:
         # Deterministic slice: same subset every run, so the trend is comparable.
         queries = queries[:: max(1, len(queries) // limit)][:limit]
 
-    system = build_system(system_name)
+    # The answers under judgement come from the same provider that judges them.
+    # Not ideal — a model grading its own prose is a known bias — but it beats
+    # the alternative here, which is half the run failing on an exhausted quota.
+    # The bias is noted in the report so the number is read with it in mind.
     llm = OpenAILike(
-        api_key=config.llm_api_key,
-        api_base=config.llm_base_url,
-        model=config.llm_model,
+        api_key=generator["api_key"],
+        api_base=generator["base_url"],
+        model=generator["model"],
         is_chat_model=True,
         temperature=0.0,  # judge the median behaviour, not a lucky sample
         max_tokens=500,
     )
 
-    from src.retrieval.hybrid_pipeline import build_default_pipeline
-
-    pipeline = build_default_pipeline(enable_llm_parser=False)
+    pipeline = build_default_pipeline(
+        enable_llm_parser=False,
+        enable_sparse=system_name == "fusion",
+    )
 
     samples: List[Dict] = []
     for query in queries:
@@ -119,9 +162,6 @@ def build_samples(
         )
         logger.info(f"[ragas] {query.id}: {len(contexts)} contexts, {len(answer)} chars")
 
-    # `system` is built to keep the retrieval-system choice explicit in the CLI
-    # even though the pipeline above performs the retrieval.
-    del system
     return samples
 
 
@@ -141,8 +181,8 @@ JUDGE_MAX_WORKERS = 3
 JUDGE_TIMEOUT_S = 300
 
 
-def run_ragas(samples: Sequence[Dict]):
-    """Score the samples with RAGAS, using the project's LLM as judge."""
+def run_ragas(samples: Sequence[Dict], judge_config: Dict[str, str]):
+    """Score the samples with RAGAS, using the resolved cloud provider as judge."""
     from langchain_openai import ChatOpenAI
     from ragas import EvaluationDataset, evaluate
     from ragas.embeddings import LangchainEmbeddingsWrapper
@@ -157,9 +197,9 @@ def run_ragas(samples: Sequence[Dict]):
 
     judge = LangchainLLMWrapper(
         ChatOpenAI(
-            model=config.llm_model,
-            api_key=config.llm_api_key,
-            base_url=config.llm_base_url,
+            model=judge_config["model"],
+            api_key=judge_config["api_key"],
+            base_url=judge_config["base_url"],
             temperature=0.0,
             timeout=JUDGE_TIMEOUT_S,
             max_retries=5,
@@ -246,32 +286,45 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--sample", type=int, default=30, help="Number of golden queries to judge")
     parser.add_argument("--system", default="fusion", help="Retrieval system under judgement")
     parser.add_argument("--out", type=Path, default=None, help="Where to write the JSON report")
+    parser.add_argument(
+        "--judge",
+        default=None,
+        help="Substring of the judge model id; defaults to the first cloud provider with quota.",
+    )
     args = parser.parse_args(argv)
 
     _require_credentials()
 
-    samples = build_samples(args.system, args.sample)
+    judge_config = resolve_judge(args.judge)
+    print(f"Judge: {judge_config['model']} ({judge_config['base_url']})")
+
+    samples = build_samples(judge_config, args.system, args.sample)
     if not samples:
         print("No samples could be built — is the index built?", file=sys.stderr)
         return 1
 
-    print(f"Judging {len(samples)} samples with {config.llm_model}...")
-    result = run_ragas(samples)
+    print(f"Judging {len(samples)} samples with {judge_config['model']}...")
+    result = run_ragas(samples, judge_config)
     scores = summarize(result)
 
     report = {
         "system": args.system,
-        "judge_model": config.llm_model,
+        "judge_model": judge_config["model"],
+        "generator_model": judge_config["model"],
         "n_samples": len(samples),
         "scores": scores,
         "query_ids": [s["_id"] for s in samples],
+        "caveat": (
+            "Answers were generated and judged by the same model; treat "
+            "answer_relevancy in particular as an upper bound."
+        ),
     }
 
     out = args.out or (RESULTS_DIR / f"ragas_{args.system}.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    print(f"\nRAGAS — {args.system} ({len(samples)} samples, judge {config.llm_model})")
+    print(f"\nRAGAS — {args.system} ({len(samples)} samples, judge {judge_config['model']})")
     degraded = False
     for metric, row in scores.items():
         if row["n_scored"] == 0:
