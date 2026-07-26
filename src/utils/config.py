@@ -54,6 +54,20 @@ class Config(BaseSettings):
     )
     llm_provider: Optional[str] = Field(default=None, validation_alias=AliasChoices("LLM_PROVIDER"))
 
+    # Secondary cloud provider, tried when the primary fails or runs out of
+    # quota. Free tiers exhaust daily token budgets mid-session, and losing the
+    # synthesis path mid-conversation is worse than a change of model.
+    deepseek_api_key: Optional[str] = Field(
+        default=None, validation_alias=AliasChoices("DEEPSEEK_API_KEY")
+    )
+    deepseek_model: str = Field(
+        default="deepseek-chat", validation_alias=AliasChoices("DEEPSEEK_MODEL")
+    )
+    deepseek_base_url: str = Field(
+        default="https://api.deepseek.com",
+        validation_alias=AliasChoices("DEEPSEEK_URL", "DEEPSEEK_BASE_URL"),
+    )
+
     # Local inference server (vLLM, OpenAI-compatible).
     # Leave local_llm_base_url unset to route every task to the cloud.
     local_llm_base_url: Optional[str] = None
@@ -130,7 +144,12 @@ class Config(BaseSettings):
     @property
     def has_llm_credentials(self) -> bool:
         """是否配置了可用的 LLM 凭据（决定走真实模型还是 mock）"""
-        return bool(self.llm_api_key)
+        return bool(self.llm_api_key or self.deepseek_api_key)
+
+    @property
+    def has_secondary_cloud(self) -> bool:
+        """是否配置了备用云端 provider"""
+        return bool(self.deepseek_api_key)
 
     @property
     def is_development(self) -> bool:

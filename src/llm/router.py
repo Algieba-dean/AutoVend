@@ -22,8 +22,13 @@ router only decides *which endpoint*, never *how to call it*.
 
 Failure handling is asymmetric on purpose:
 - local unavailable -> fall back to cloud (correctness preserved, cost rises)
-- cloud unavailable -> fall back to local (quality degrades, service continues)
+- cloud unavailable -> try the next cloud provider, then local (quality
+  degrades, service continues)
 Neither direction fails the request while any model can answer it.
+
+The cloud side is an ordered chain rather than a single endpoint because free
+tiers exhaust their daily token budget mid-session; losing the synthesis path
+halfway through a conversation is worse than switching model vendors.
 """
 
 from enum import Enum
@@ -73,33 +78,72 @@ class HybridRouter:
     def __init__(
         self,
         local: Optional[BaseLLM] = None,
-        cloud: Optional[BaseLLM] = None,
+        cloud: Optional[Any] = None,
         local_tasks: Optional[frozenset] = None,
     ):
+        """
+        Args:
+            local: Local inference backend, or None.
+            cloud: A single cloud backend or an ordered list of them; earlier
+                entries are preferred and later ones act as quota/outage
+                fallbacks.
+            local_tasks: Override which tasks route local.
+        """
         self.local = local
-        self.cloud = cloud
+        if cloud is None:
+            self.cloud_chain: List[BaseLLM] = []
+        elif isinstance(cloud, (list, tuple)):
+            self.cloud_chain = [c for c in cloud if c is not None]
+        else:
+            self.cloud_chain = [cloud]
         self.local_tasks = local_tasks if local_tasks is not None else LOCAL_TASKS
         self._local_healthy: Optional[bool] = None
 
+    @property
+    def cloud(self) -> Optional[BaseLLM]:
+        """The preferred cloud backend, or None when no cloud is configured."""
+        return self.cloud_chain[0] if self.cloud_chain else None
+
     # ── routing ───────────────────────────────────────────────────────
+
+    def plan_for(self, task: Task) -> List[tuple]:
+        """
+        Ordered (backend, route) attempts for a task, best first.
+
+        Returning the whole plan rather than a single choice plus one fallback
+        is what lets a request survive both a dead local server and an
+        exhausted cloud quota in the same turn.
+        """
+        wants_local = task in self.local_tasks
+        local_available = self._local_available()
+
+        plan: List[tuple] = []
+        if wants_local and local_available:
+            plan.append((self.local, Route.LOCAL))
+        plan.extend((backend, Route.CLOUD) for backend in self.cloud_chain)
+        if not wants_local and local_available:
+            # Last resort for synthesis: a weaker local answer beats no answer.
+            plan.append((self.local, Route.LOCAL))
+
+        if not plan:
+            if self.local is not None:
+                # Local configured but unhealthy, and no cloud at all — try it
+                # anyway rather than refuse outright.
+                return [(self.local, Route.LOCAL)]
+            raise RuntimeError("HybridRouter has no backend configured.")
+        return plan
 
     def backend_for(self, task: Task) -> tuple:
         """
         Resolve (backend, route, fallback) for a task.
 
-        Returns the chosen backend, its Route label for telemetry, and the
-        backend to retry with if the first one fails.
+        Kept for callers that only need the preferred backend (health display,
+        model-name lookup). `plan_for` is what invocation uses.
         """
-        wants_local = task in self.local_tasks
-
-        if wants_local and self._local_available():
-            return self.local, Route.LOCAL, self.cloud
-        if self.cloud is not None:
-            return self.cloud, Route.CLOUD, self.local if self._local_available() else None
-        if self.local is not None:
-            # No cloud configured: serve everything locally rather than refuse.
-            return self.local, Route.LOCAL, None
-        raise RuntimeError("HybridRouter has no backend configured.")
+        plan = self.plan_for(task)
+        backend, route = plan[0]
+        fallback = plan[1][0] if len(plan) > 1 else None
+        return backend, route, fallback
 
     def _local_available(self) -> bool:
         """
@@ -138,21 +182,25 @@ class HybridRouter:
         return self._invoke(task, "chat", messages, **kwargs)
 
     def _invoke(self, task: Task, method: str, payload: Any, **kwargs) -> str:
-        backend, route, fallback = self.backend_for(task)
+        plan = self.plan_for(task)
+        last_error: Optional[Exception] = None
 
-        try:
-            return self._call(backend, route, task, method, payload, **kwargs)
-        except Exception as exc:
-            if fallback is None:
-                raise
-            other = Route.CLOUD if route is Route.LOCAL else Route.LOCAL
-            logger.warning(
-                f"{route.value} backend failed for {task.value} ({exc}); trying {other.value}"
-            )
-            if route is Route.LOCAL:
-                # Do not keep paying the timeout on a server that is down.
-                self._local_healthy = False
-            return self._call(fallback, other, task, method, payload, **kwargs)
+        for index, (backend, route) in enumerate(plan):
+            try:
+                return self._call(backend, route, task, method, payload, **kwargs)
+            except Exception as exc:
+                last_error = exc
+                model = getattr(backend, "model", "?")
+                remaining = len(plan) - index - 1
+                logger.warning(
+                    f"{route.value} backend '{model}' failed for {task.value} ({exc}); "
+                    + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
+                )
+                if route is Route.LOCAL:
+                    # Do not keep paying the timeout on a server that is down.
+                    self._local_healthy = False
+
+        raise last_error if last_error else RuntimeError("No backend produced a result.")
 
     def _call(self, backend: BaseLLM, route: Route, task: Task, method: str, payload, **kwargs):
         model = getattr(backend, "model", "unknown")
@@ -185,12 +233,15 @@ class HybridRouter:
             }
             if self.local
             else None,
-            "cloud": {
-                "model": getattr(self.cloud, "model", None),
-                "base_url": getattr(self.cloud, "base_url", None),
-            }
-            if self.cloud
-            else None,
+            # Ordered: the first entry is preferred, the rest are quota/outage
+            # fallbacks.
+            "cloud_chain": [
+                {
+                    "model": getattr(backend, "model", None),
+                    "base_url": getattr(backend, "base_url", None),
+                }
+                for backend in self.cloud_chain
+            ],
             "local_tasks": sorted(t.value for t in self.local_tasks),
         }
 
@@ -243,12 +294,31 @@ def build_default_router() -> HybridRouter:
 
     local = None
     if config.local_llm_base_url:
+        from src.llm.openai_llm import extra_body_for_local
+
         local = LLMFactory.create_llm(
             provider="openai",
             api_key=config.local_llm_api_key,
             model=config.local_llm_model,
             base_url=config.local_llm_base_url,
+            # Suppress reasoning-model chain-of-thought on the control path.
+            extra_body=extra_body_for_local(),
         )
 
-    cloud = LLMFactory.create_llm()
-    return HybridRouter(local=local, cloud=cloud)
+    cloud_chain = []
+    if config.llm_api_key:
+        cloud_chain.append(LLMFactory.create_llm())
+    if config.deepseek_api_key:
+        cloud_chain.append(
+            LLMFactory.create_llm(
+                provider="openai",
+                api_key=config.deepseek_api_key,
+                model=config.deepseek_model,
+                base_url=config.deepseek_base_url,
+            )
+        )
+    if not cloud_chain:
+        # Keeps the mock backend reachable so the app still boots keyless.
+        cloud_chain.append(LLMFactory.create_llm())
+
+    return HybridRouter(local=local, cloud=cloud_chain)

@@ -21,8 +21,15 @@ class LLMFactory:
         model: Optional[str] = None,
         base_url: Optional[str] = None,
         use_mock: bool = False,
+        **kwargs,
     ) -> BaseLLM:
-        """Create an LLM instance based on configuration"""
+        """
+        Create an LLM instance based on configuration.
+
+        Extra kwargs (e.g. `extra_body`, `timeout`) are forwarded to the backend,
+        which is how the local vLLM endpoint gets its vendor-specific fields
+        without the factory knowing what they mean.
+        """
 
         if use_mock:
             return MockLLM()
@@ -52,7 +59,7 @@ class LLMFactory:
 
             base_url = base_url or provider_urls.get(provider)
 
-            return OpenAILLM(model=model, api_key=api_key, base_url=base_url)
+            return OpenAILLM(model=model, api_key=api_key, base_url=base_url, **kwargs)
         else:
             raise ValueError(f"Unsupported LLM provider: {provider}")
 

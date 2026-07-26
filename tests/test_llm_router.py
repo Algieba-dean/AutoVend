@@ -158,6 +158,63 @@ class TestFallback:
             router.complete(Task.RESPONSE_GENERATION, "x")
 
 
+class TestCloudChain:
+    """
+    A second cloud provider covers the case that actually bit in practice: a
+    free tier exhausting its daily token budget mid-conversation.
+    """
+
+    def test_prefers_the_first_provider(self):
+        primary, secondary = _StubLLM("groq"), _StubLLM("deepseek")
+        router = HybridRouter(cloud=[primary, secondary])
+
+        assert router.complete(Task.RESPONSE_GENERATION, "x") == "groq:x"
+        assert not secondary.calls
+
+    def test_falls_through_to_the_second_provider(self):
+        primary, secondary = _StubLLM("groq", fail=True), _StubLLM("deepseek")
+        router = HybridRouter(cloud=[primary, secondary])
+
+        assert router.complete(Task.RESPONSE_GENERATION, "x") == "deepseek:x"
+        assert primary.calls, "the primary must be attempted first"
+
+    def test_falls_through_to_local_after_every_cloud_fails(self, local):
+        router = HybridRouter(
+            local=local, cloud=[_StubLLM("groq", fail=True), _StubLLM("deepseek", fail=True)]
+        )
+
+        assert router.complete(Task.RESPONSE_GENERATION, "x") == "local-llama:x"
+
+    def test_control_path_still_prefers_local_over_the_chain(self, local):
+        primary = _StubLLM("groq")
+        router = HybridRouter(local=local, cloud=[primary, _StubLLM("deepseek")])
+
+        router.complete(Task.EXTRACTION, "x")
+
+        assert local.calls
+        assert not primary.calls
+
+    def test_raises_the_last_error_when_everything_fails(self):
+        router = HybridRouter(cloud=[_StubLLM("groq", fail=True), _StubLLM("deepseek", fail=True)])
+
+        with pytest.raises(RuntimeError, match="deepseek is down"):
+            router.complete(Task.RESPONSE_GENERATION, "x")
+
+    def test_single_backend_is_accepted_as_a_bare_value(self, cloud):
+        """Callers that pass one backend must not have to wrap it in a list."""
+        router = HybridRouter(cloud=cloud)
+
+        assert router.cloud is cloud
+        assert router.cloud_chain == [cloud]
+
+    def test_describe_lists_the_chain_in_order(self):
+        primary, secondary = _StubLLM("groq"), _StubLLM("deepseek")
+
+        described = HybridRouter(cloud=[primary, secondary]).describe()
+
+        assert [c["model"] for c in described["cloud_chain"]] == ["groq", "deepseek"]
+
+
 class TestTaskBoundLLM:
     def test_quacks_like_a_base_llm(self, local, cloud):
         bound = HybridRouter(local=local, cloud=cloud).bind(Task.QUERY_PARSE)
