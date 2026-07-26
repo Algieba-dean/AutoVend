@@ -21,7 +21,7 @@ from backend.app.models.schemas import (
     StageInfo,
 )
 from src.agent.sales_agent import SalesAgent
-from src.agent.schemas import AgentInput, SessionState, Stage, UserProfile
+from src.agent.schemas import SessionState, Stage, UserProfile
 from src.retrieval.adapters import hybrid_result_to_cars, needs_to_query_text
 
 logger = logging.getLogger(__name__)
@@ -129,16 +129,15 @@ async def send_message(request: ChatRequest):
         state = SessionState(session_id=request.session_id, profile=profile)
         _sessions[request.session_id] = state
 
-    # RAG retrieval (backend concern — results passed to agent)
+    # Observe first, retrieve second: retrieval must see the needs stated in
+    # *this* message. Querying before extraction lags a turn behind the user —
+    # ask for a mid-size electric SUV and you get last turn's recommendations.
+    state = agent.observe(state, request.message)
+
+    # Vehicle retrieval (backend concern — results passed back to the agent)
     retrieved_cars = _retrieve_cars(state)
 
-    # Delegate to agent
-    agent_input = AgentInput(
-        session_state=state,
-        user_message=request.message,
-        retrieved_cars=retrieved_cars,
-    )
-    result = agent.process(agent_input)
+    result = agent.respond(state, retrieved_cars)
 
     # Update stored session state
     _sessions[request.session_id] = result.session_state

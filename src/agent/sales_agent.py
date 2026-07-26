@@ -9,6 +9,7 @@ Vehicle retrieval results are passed IN via AgentInput.retrieved_cars.
 """
 
 import logging
+from typing import Any, Dict, List, Optional
 
 from llama_index.core.llms import LLM
 
@@ -44,18 +45,87 @@ class SalesAgent:
         self.llm = llm
         self.memory = ChatMemoryManager()
 
+    def observe(self, state: SessionState, user_message: str) -> SessionState:
+        """
+        Record the user's message and extract what it reveals — no generation.
+
+        Split out of `process` so a caller can retrieve vehicles using the needs
+        stated in *this* turn. Retrieving before observing means the index is
+        queried with the previous turn's needs, so a user who says "mid-size
+        electric SUV" gets recommendations for whatever they asked for one turn
+        earlier.
+
+        Args:
+            state: Session state at the start of the turn.
+            user_message: What the user just said.
+
+        Returns:
+            An updated copy of the state. The input is not mutated.
+        """
+        updated = state.model_copy(deep=True)
+        self.memory.add_user_message(updated.session_id, user_message)
+        conversation_text = self.memory.get_history_as_text(updated.session_id)
+        return self._extract_information(updated, conversation_text)
+
+    def respond(
+        self,
+        state: SessionState,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+    ) -> AgentResult:
+        """
+        Advance the stage machine and generate the reply for an observed turn.
+
+        Expects `state` to already carry this turn's extractions — i.e. the
+        output of `observe`.
+        """
+        updated = state.model_copy(deep=True)
+        session_id = updated.session_id
+        conversation_text = self.memory.get_history_as_text(session_id)
+
+        if retrieved_cars:
+            updated.matched_cars = retrieved_cars
+
+        old_stage = updated.stage
+        updated.previous_stage = old_stage.value
+        updated.stage = determine_next_stage(
+            updated.stage,
+            updated.profile,
+            updated.needs,
+            updated.matched_cars,
+            updated.reservation,
+        )
+
+        stage_changed = updated.stage != old_stage
+        if stage_changed:
+            logger.info(
+                f"[{session_id}] Stage transition: {old_stage.value} → {updated.stage.value}"
+            )
+
+        response_text = generate_response(
+            self.llm,
+            updated.stage,
+            conversation_text,
+            updated.profile,
+            updated.needs,
+            updated.matched_cars,
+            updated.reservation,
+        )
+
+        self.memory.add_assistant_message(session_id, response_text)
+
+        return AgentResult(
+            session_state=updated,
+            response_text=response_text,
+            stage_changed=stage_changed,
+        )
+
     def process(self, agent_input: AgentInput) -> AgentResult:
         """
-        Process one conversation turn.
+        Process one conversation turn: observe, then respond.
 
-        Pipeline:
-        1. Add user message to memory
-        2. Extract information based on current stage
-        3. Inject retrieved cars into state
-        4. Determine stage transition
-        5. Generate response
-        6. Add response to memory
-        7. Return AgentResult
+        Convenience wrapper for callers that retrieve up front (or not at all).
+        Callers that want retrieval to see this turn's needs should drive
+        `observe` -> retrieve -> `respond` themselves.
 
         Args:
             agent_input: Contains session_state, user_message, retrieved_cars.
@@ -63,56 +133,8 @@ class SalesAgent:
         Returns:
             AgentResult with updated session_state, response_text, stage_changed.
         """
-        state = agent_input.session_state.model_copy(deep=True)
-        session_id = state.session_id
-        user_message = agent_input.user_message
-
-        # 1. Add user message to memory
-        self.memory.add_user_message(session_id, user_message)
-        conversation_text = self.memory.get_history_as_text(session_id)
-
-        # 2. Extract information based on current stage
-        state = self._extract_information(state, conversation_text)
-
-        # 3. Inject retrieved cars from backend
-        if agent_input.retrieved_cars:
-            state.matched_cars = agent_input.retrieved_cars
-
-        # 4. Determine stage transition
-        old_stage = state.stage
-        state.previous_stage = old_stage.value
-        state.stage = determine_next_stage(
-            state.stage,
-            state.profile,
-            state.needs,
-            state.matched_cars,
-            state.reservation,
-        )
-
-        stage_changed = state.stage != old_stage
-        if stage_changed:
-            logger.info(f"[{session_id}] Stage transition: {old_stage.value} → {state.stage.value}")
-
-        # 5. Generate response
-        response_text = generate_response(
-            self.llm,
-            state.stage,
-            conversation_text,
-            state.profile,
-            state.needs,
-            state.matched_cars,
-            state.reservation,
-        )
-
-        # 6. Add response to memory
-        self.memory.add_assistant_message(session_id, response_text)
-
-        # 7. Return result
-        return AgentResult(
-            session_state=state,
-            response_text=response_text,
-            stage_changed=stage_changed,
-        )
+        state = self.observe(agent_input.session_state, agent_input.user_message)
+        return self.respond(state, agent_input.retrieved_cars)
 
     def clear_session(self, session_id: str) -> None:
         """Clear memory for a session."""

@@ -1,12 +1,15 @@
 """
 混合检索管道
 
-Pipeline: 用户查询 → 意图解析 → SQLite粗筛 → RAG语义精排 → 结果输出
+Pipeline: 用户查询 → 意图解析 → SQLite粗筛 → 稠密+稀疏双路召回 → RRF融合 → 输出
 
 1. 规则引擎解析 + LLM fallback
-2. FilterEngine 执行结构化过滤获取候选 car_model 列表
-3. 将候选列表传入 VehicleRetriever，限制 ChromaDB 搜索范围
-4. 返回精排后的 SearchResponse
+2. FilterEngine 执行结构化过滤获取候选 car_model 列表（元数据预过滤）
+3. 候选列表同时约束向量检索与 BM25 检索，两路独立召回
+4. RRF 融合两路排名，返回 SearchResponse
+
+第 2 步是延迟不随目录规模增长的原因：只有通过结构化过滤的候选才会被打分。
+第 3 步覆盖两类互补的失败：向量检索泛化但模糊精确 token，BM25 精确但不泛化。
 """
 
 import time
@@ -18,7 +21,12 @@ from src.filter.llm_parser import LLMParser
 from src.filter.query_parser import ParsedQuery, QueryParser
 from src.filter.vehicle_db import VehicleDB
 from src.models.query import Query, SearchResponse
+from src.retrieval.fusion import DEFAULT_K as DEFAULT_RRF_K
+from src.retrieval.fusion import reciprocal_rank_fusion
 from src.utils.logger import get_logger
+
+#: 融合时每一路多取的倍数。见 `_semantic_rerank` 中的说明。
+FUSION_DEPTH_MULTIPLIER = 4
 
 
 class HybridPipelineResult:
@@ -32,6 +40,7 @@ class HybridPipelineResult:
         self.degrade_level: int = -1
         self.candidate_count: int = 0
         self.rag_result_count: int = 0
+        self.sparse_result_count: int = 0
         self.total_time: float = 0.0
         self.search_response: Optional[SearchResponse] = None
 
@@ -43,6 +52,7 @@ class HybridPipelineResult:
             "degrade_level": self.degrade_level,
             "candidate_count": self.candidate_count,
             "rag_result_count": self.rag_result_count,
+            "sparse_result_count": self.sparse_result_count,
             "total_time": round(self.total_time, 3),
         }
 
@@ -65,6 +75,8 @@ class HybridPipeline:
         query_parser: Optional[QueryParser] = None,
         llm_parser: Optional[LLMParser] = None,
         retriever: Optional[Any] = None,
+        sparse_index: Optional[Any] = None,
+        fusion_k: int = DEFAULT_RRF_K,
     ):
         self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
@@ -75,6 +87,8 @@ class HybridPipeline:
         self.query_parser = query_parser or QueryParser(registry=self.registry)
         self.llm_parser = llm_parser
         self.retriever = retriever
+        self.sparse_index = sparse_index
+        self.fusion_k = fusion_k
 
     def ensure_db_loaded(self) -> None:
         """确保 SQLite 数据库已加载"""
@@ -187,28 +201,84 @@ class HybridPipeline:
         top_k: int,
         result: HybridPipelineResult,
     ) -> None:
-        """用 RAG 对粗筛候选进行语义精排"""
+        """对粗筛候选做稠密召回，可选与 BM25 稀疏召回做 RRF 融合"""
         if self.retriever is None:
             self.logger.warning("未配置 retriever，跳过 RAG 精排")
             result.rag_result_count = 0
             return
 
-        # 构建 Query 对象
-        query = Query(text=query_text, top_k=top_k)
+        # 融合需要更深的稠密候选池：只取 top_k 的话，稀疏路推上来的车会因为
+        # 不在稠密结果里而拿不到 rank，融合退化成"稠密结果重新排个序"。
+        dense_depth = top_k * FUSION_DEPTH_MULTIPLIER if self.sparse_index else top_k
 
-        # 如果有候选列表，注入到 query.filters 中
+        query = Query(text=query_text, top_k=dense_depth)
+
+        # 如果有候选列表，注入到 query.filters 中（元数据预过滤）
         if filter_result.car_models:
-            # 使用 car_model_candidates 传递候选列表
             query.filters = query.filters or {}
             query.filters["car_model_candidates"] = filter_result.car_models
 
         try:
             response = self.retriever.search(query)
-            result.search_response = response
-            result.rag_result_count = response.total_count
         except Exception as e:
             self.logger.error(f"RAG 精排失败: {e}")
             result.rag_result_count = 0
+            return
+
+        if self.sparse_index is not None:
+            response = self._fuse_with_sparse(query_text, filter_result, top_k, response, result)
+        else:
+            response.results = response.results[:top_k]
+            response.total_count = len(response.results)
+
+        result.search_response = response
+        result.rag_result_count = response.total_count
+
+    def _fuse_with_sparse(
+        self,
+        query_text: str,
+        filter_result: FilterResult,
+        top_k: int,
+        response: SearchResponse,
+        result: HybridPipelineResult,
+    ) -> SearchResponse:
+        """用 RRF 融合稠密与 BM25 两路排名，按融合序重排 SearchResponse。"""
+        dense_ranking = [r.vehicle.car_model for r in response.results]
+
+        try:
+            sparse_hits = self.sparse_index.search(
+                query_text, top_k=top_k * FUSION_DEPTH_MULTIPLIER
+            )
+        except Exception as e:
+            self.logger.warning(f"BM25 召回失败，退化为纯稠密: {e}")
+            response.results = response.results[:top_k]
+            response.total_count = len(response.results)
+            return response
+
+        sparse_ranking = [model for model, _ in sparse_hits]
+
+        # 稀疏路不知道结构化过滤的存在，必须在这里施加同一个候选约束，
+        # 否则被粗筛排除的车会通过融合重新回到结果里。
+        if filter_result.car_models:
+            allowed = set(filter_result.car_models)
+            sparse_ranking = [m for m in sparse_ranking if m in allowed]
+
+        result.sparse_result_count = len(sparse_ranking)
+
+        fused = reciprocal_rank_fusion(
+            [dense_ranking, sparse_ranking], k=self.fusion_k, top_k=top_k
+        )
+        fused_order = {model: rank for rank, (model, _) in enumerate(fused)}
+
+        # 只有稠密路检索到的车才有 SearchResult 对象可用；稀疏路独有的车没有
+        # 向量分数与匹配解释，无法凭空构造，因此融合在这里只重排而不引入新车。
+        # （引入新车需要稀疏路也走一遍打分，属于下一步的优化。）
+        reranked = [r for r in response.results if r.vehicle.car_model in fused_order]
+        reranked.sort(key=lambda r: fused_order[r.vehicle.car_model])
+
+        response.results = reranked[:top_k]
+        response.total_count = len(response.results)
+        return response
 
     # ------------------------------------------------------------------
     # 便捷接口
@@ -234,12 +304,13 @@ def build_default_pipeline(
     similarity_threshold: float = 0.3,
     price_tolerance: float = 0.2,
     enable_llm_parser: bool = True,
+    enable_sparse: bool = True,
 ) -> HybridPipeline:
     """
     装配一条开箱可用的混合检索管线。
 
-    把嵌入模型、向量库、SQLite 目录、规则/LLM 解析器一次性接好，供 FastAPI 启动
-    和评估脚本共用 —— 避免两处各自拼装导致参数漂移。
+    把嵌入模型、向量库、BM25 索引、SQLite 目录、规则/LLM 解析器一次性接好，供
+    FastAPI 启动和评估脚本共用 —— 避免两处各自拼装导致参数漂移。
 
     Args:
         similarity_threshold: 语义相似度阈值。默认 0.3 而非 retriever 自身的 0.7：
@@ -247,6 +318,7 @@ def build_default_pipeline(
         price_tolerance: 价格匹配容忍度
         enable_llm_parser: 规则引擎命中不足时是否允许 LLM 补充解析。
             无 LLM 凭据时 LLMParser.is_available() 返回 False，自动跳过。
+        enable_sparse: 是否启用 BM25 稀疏路并做 RRF 融合。
     """
     # 局部导入：让 filter-only 的调用方（如 CI 的确定性门禁）无需加载嵌入模型
     from src.filter.llm_parser import LLMParser
@@ -273,6 +345,16 @@ def build_default_pipeline(
             # 凭据缺失或 provider 不支持时静默降级为纯规则解析
             llm_parser = None
 
+    sparse_index = None
+    if enable_sparse:
+        try:
+            from src.retrieval.bm25_index import BM25Index
+
+            sparse_index = BM25Index.load_or_build()
+        except Exception as exc:
+            # 稀疏索引缺失不该拖垮整条管线，降级为纯稠密
+            get_logger(__name__).warning(f"BM25 索引不可用，降级为纯稠密检索: {exc}")
+
     return HybridPipeline(
         registry=registry,
         db=db,
@@ -280,4 +362,5 @@ def build_default_pipeline(
         query_parser=QueryParser(registry=registry),
         llm_parser=llm_parser,
         retriever=retriever,
+        sparse_index=sparse_index,
     )
