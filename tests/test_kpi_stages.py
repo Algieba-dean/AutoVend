@@ -49,7 +49,9 @@ HAPPY_PATH_STEPS = [
         "description": "Needs Analysis → Car Selection (2+ fields filled)",
         "current": Stage.NEEDS_ANALYSIS,
         "profile": UserProfile(name="Alice"),
-        "needs": VehicleNeeds(explicit=ExplicitNeeds(brand="Tesla", powertrain_type="EV")),
+        "needs": VehicleNeeds(
+            explicit=ExplicitNeeds(prize="30,000 ~ 40,000", brand="Tesla", powertrain_type="EV")
+        ),
         "cars": [],
         "reservation": ReservationInfo(),
         "expected": Stage.CAR_SELECTION,

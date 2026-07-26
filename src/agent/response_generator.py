@@ -6,7 +6,7 @@ Each stage has a tailored prompt template that combines context
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from llama_index.core.llms import LLM
 
@@ -187,6 +187,7 @@ def generate_response(
     needs: VehicleNeeds,
     matched_cars: List[Dict[str, Any]],
     reservation: ReservationInfo,
+    system_notes: Optional[List[str]] = None,
 ) -> str:
     """
     Generate a response for the current conversation stage.
@@ -199,6 +200,10 @@ def generate_response(
         needs: Current vehicle needs.
         matched_cars: List of matched vehicle dicts.
         reservation: Current reservation info.
+        system_notes: Instructions from this turn's stage arbitration — a
+            blocked transition explaining what is missing, or a rollback
+            explaining that the customer changed their mind. Prepended to the
+            prompt so they outrank the stage template.
 
     Returns:
         Generated response text.
@@ -224,6 +229,13 @@ def generate_response(
     }
 
     prompt = prompt_template.format(**format_kwargs)
+
+    # Arbitration notes go at the very top. They are the only part of the
+    # prompt that reflects what happened *this* turn — that the transition was
+    # refused, or that the conversation just rolled back — and burying them
+    # after several hundred lines of stage template gets them ignored.
+    if system_notes:
+        prompt = "\n".join(system_notes) + "\n\n" + prompt
 
     try:
         response = llm.complete(prompt)

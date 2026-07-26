@@ -138,6 +138,27 @@ class SessionState(BaseModel):
     matched_cars: List[Dict[str, Any]] = Field(default_factory=list)
     reservation: ReservationInfo = Field(default_factory=ReservationInfo)
 
+    #: Instructions for the generator produced by this turn's arbitration —
+    #: a blocked transition explains what is missing, a rollback explains that
+    #: the customer changed their mind. Injected at the top of the generation
+    #: prompt and cleared each turn, so a stale note cannot leak forward.
+    system_notes: List[str] = Field(default_factory=list)
+
+    #: What this turn changed, as {field_path: new_value}. The structured state
+    #: is authoritative and survives the sliding memory window; the patch log
+    #: is how a turn's contribution stays visible after the transcript that
+    #: produced it has scrolled out.
+    last_patch: Dict[str, Any] = Field(default_factory=dict)
+
+    #: Set by a rollback to suppress forward transitions for one turn.
+    #:
+    #: "我想改一下预算" announces a change without stating the new value, so the
+    #: old budget is still in state and the forward guard still passes. Without
+    #: this flag the rollback is undone in the same turn — the FSM steps back to
+    #: needs analysis and immediately returns to recommendations, re-running
+    #: retrieval against the constraints the customer just disowned.
+    stage_hold: bool = False
+
 
 class AgentInput(BaseModel):
     """
