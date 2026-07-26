@@ -38,10 +38,11 @@ models/**
 **/storage/sessions/**
 **/storage/test_drives/**
 
-# IDE
+# IDE / local tooling
 **/.idea/**
 **/.vscode/**
 **/.DS_Store
+.claude/
 
 # Test & coverage artifacts
 **/.coverage
