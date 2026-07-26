@@ -8,7 +8,7 @@ Delegates all AI logic to agent.SalesAgent via AgentInput/AgentResult protocol.
 import logging
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 from fastapi import APIRouter, HTTPException
 
@@ -22,14 +22,18 @@ from backend.app.models.schemas import (
 )
 from src.agent.sales_agent import SalesAgent
 from src.agent.schemas import AgentInput, SessionState, Stage, UserProfile
+from src.retrieval.adapters import hybrid_result_to_cars, needs_to_query_text
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
+# Number of candidate vehicles handed to the agent per turn.
+RETRIEVAL_TOP_K = 5
+
 # Injected at startup
 _agent: Optional[SalesAgent] = None
-_vehicle_index = None
+_pipeline = None
 
 # In-memory session state store (session_id → SessionState)
 _sessions: Dict[str, SessionState] = {}
@@ -44,10 +48,10 @@ def set_agent(agent: SalesAgent) -> None:
     _agent = agent
 
 
-def set_vehicle_index(index) -> None:
-    """Inject vehicle index for RAG retrieval (called from main.py on startup)."""
-    global _vehicle_index
-    _vehicle_index = index
+def set_pipeline(pipeline) -> None:
+    """Inject the hybrid retrieval pipeline (called from main.py on startup)."""
+    global _pipeline
+    _pipeline = pipeline
 
 
 def _get_agent() -> SalesAgent:
@@ -57,8 +61,15 @@ def _get_agent() -> SalesAgent:
 
 
 def _retrieve_cars(state: SessionState) -> list:
-    """Run RAG retrieval if vehicle index is available and stage is appropriate."""
-    if _vehicle_index is None:
+    """
+    Retrieve candidate vehicles via the hybrid pipeline.
+
+    Pipeline: rule/LLM intent parsing → SQLite structured pre-filter →
+    dense + sparse recall over the reduced candidate set → RRF fusion.
+    Pre-filtering before the vector search is what keeps latency flat as the
+    catalogue grows, since only the surviving candidates get scored.
+    """
+    if _pipeline is None:
         return []
     if state.stage not in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
         return state.matched_cars
@@ -68,43 +79,22 @@ def _retrieve_cars(state: SessionState) -> list:
     current_explicit = state.needs.explicit.model_dump()
     if sid in _prev_explicit and _prev_explicit[sid] == current_explicit:
         if state.matched_cars:
-            logger.debug(f"[{sid}] Skipping RAG: explicit needs unchanged.")
+            logger.debug(f"[{sid}] Skipping retrieval: explicit needs unchanged.")
             return state.matched_cars
     _prev_explicit[sid] = current_explicit
 
-    from backend.app.rag.query_engine import format_retrieval_results, retrieve_vehicles
-
-    explicit = state.needs.explicit
-    query_parts = []
-    if explicit.vehicle_category_bottom:
-        query_parts.append(explicit.vehicle_category_bottom)
-    if explicit.powertrain_type:
-        query_parts.append(explicit.powertrain_type)
-    if explicit.design_style:
-        query_parts.append(explicit.design_style)
-    if explicit.brand:
-        query_parts.append(f"{explicit.brand} brand")
-    if explicit.prize:
-        query_parts.append(f"price range {explicit.prize}")
-    if explicit.seat_layout:
-        query_parts.append(explicit.seat_layout)
-    if not query_parts:
-        query_parts.append("recommend a good vehicle")
-
-    filters: Dict[str, Any] = {}
-    if explicit.brand:
-        filters["brand"] = explicit.brand
-    if explicit.powertrain_type:
-        filters["powertrain_type"] = explicit.powertrain_type
+    query_text = needs_to_query_text(state.needs.explicit)
 
     try:
-        results = retrieve_vehicles(
-            _vehicle_index,
-            " ".join(query_parts),
-            metadata_filters=filters if filters else None,
-            top_k=5,
+        result = _pipeline.search(query_text, top_k=RETRIEVAL_TOP_K)
+        cars = hybrid_result_to_cars(result, limit=RETRIEVAL_TOP_K)
+        logger.info(
+            f"[{sid}] Retrieval '{query_text}': {result.candidate_count} candidates "
+            f"(degrade={result.degrade_level}) → {len(cars)} cars in {result.total_time:.3f}s"
         )
-        return format_retrieval_results(results)
+        # An empty result is worse than a stale one: keep the previous cars so the
+        # agent still has something concrete to talk about.
+        return cars or state.matched_cars
     except Exception as e:
         logger.error(f"Vehicle retrieval failed: {e}")
         return state.matched_cars

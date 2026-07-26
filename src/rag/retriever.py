@@ -79,8 +79,8 @@ class VehicleRetriever:
                 vector_results, query_embedding, parsed_query
             )
 
-            # 过滤和排序
-            filtered_results = self._filter_and_sort_results(search_results)
+            # 过滤、排序并截断到 top_k
+            filtered_results = self._filter_and_sort_results(search_results, parsed_query.top_k)
 
             # 构建响应
             search_time = time.time() - start_time
@@ -547,8 +547,15 @@ class VehicleRetriever:
 
         return vehicle
 
-    def _filter_and_sort_results(self, results: List[SearchResult]) -> List[SearchResult]:
-        """过滤和排序结果"""
+    def _filter_and_sort_results(
+        self, results: List[SearchResult], top_k: Optional[int] = None
+    ) -> List[SearchResult]:
+        """
+        过滤、排序并截断结果。
+
+        `_vector_search` 会多取 `top_k * 2` 条给后置过滤用，这里必须截回 `top_k`，
+        否则调用方拿到的是 2k 条 —— recall@k / precision@k 这类指标会被静默算错。
+        """
         # 过滤低分结果
         filtered = [
             result for result in results if result.score.overall_score >= self.similarity_threshold
@@ -557,7 +564,7 @@ class VehicleRetriever:
         # 按总分排序
         filtered.sort(key=lambda x: x.score.overall_score, reverse=True)
 
-        return filtered
+        return filtered[:top_k] if top_k else filtered
 
     def _update_stats(self, response: SearchResponse) -> None:
         """更新统计信息"""

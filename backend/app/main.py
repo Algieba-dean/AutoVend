@@ -43,14 +43,28 @@ async def lifespan(app: FastAPI):
     """App lifespan: initialize LLM, SalesAgent, and vehicle index on startup."""
     logger.info("Initializing LLM and SalesAgent...")
 
-    llm = OpenAILike(
-        api_key=OPENAI_API_KEY,
-        api_base=OPENAI_URL,
-        model=OPENAI_MODEL,
-        is_chat_model=True,
-        temperature=0.7,
-        max_tokens=500,
-    )
+    # The agent speaks the LlamaIndex LLM interface (llm.complete), so it takes an
+    # OpenAILike rather than the src.llm BaseLLM used by the retrieval-side parser.
+    # Credentials for both come from the same config, see backend/app/config.py.
+    #
+    # Without a key, fall back to LlamaIndex's MockLLM so the API still boots and
+    # every non-generative path (retrieval, stage transitions, storage) stays
+    # exercisable. Failing at first-token time instead would make a missing key
+    # look like a runtime bug.
+    if OPENAI_API_KEY:
+        llm = OpenAILike(
+            api_key=OPENAI_API_KEY,
+            api_base=OPENAI_URL,
+            model=OPENAI_MODEL,
+            is_chat_model=True,
+            temperature=0.7,
+            max_tokens=500,
+        )
+    else:
+        from llama_index.core.llms import MockLLM
+
+        llm = MockLLM(max_tokens=500)
+        logger.warning("No LLM credentials configured — running with MockLLM.")
 
     agent = SalesAgent(llm=llm)
     chat.set_agent(agent)
@@ -75,20 +89,22 @@ async def lifespan(app: FastAPI):
         _startup_status["voice_error"] = str(e)
         logger.warning(f"Voice services not available: {e}")
 
-    # Try to load vehicle index (may not exist yet)
+    # Try to build the hybrid retrieval pipeline (indices may not exist yet).
+    # Constructing it eagerly means the embedding model and SQLite catalogue are
+    # warm before the first request instead of on a user's first turn.
     try:
-        from backend.app.rag.vehicle_index import get_vehicle_index
+        from src.retrieval.hybrid_pipeline import build_default_pipeline
 
-        vehicle_index = get_vehicle_index()
-        chat.set_vehicle_index(vehicle_index)
+        pipeline = build_default_pipeline()
+        chat.set_pipeline(pipeline)
         _startup_status["rag_index_ready"] = True
-        logger.info("Vehicle index loaded successfully.")
+        logger.info("Hybrid retrieval pipeline ready.")
     except Exception as e:
         _startup_status["rag_index_error"] = str(e)
         logger.warning(
-            f"Vehicle index not available: {e}. "
-            "RAG retrieval will be disabled. "
-            "Run 'python -m scripts.build_index' to build the index."
+            f"Hybrid retrieval pipeline not available: {e}. "
+            "Vehicle retrieval will be disabled. "
+            "Run 'python -m src.main build-index' to build the indices."
         )
 
     logger.info("SalesAgent initialized.")
