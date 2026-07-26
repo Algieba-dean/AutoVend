@@ -228,3 +228,56 @@ class HybridPipeline:
     def close(self) -> None:
         """释放资源"""
         self.db.close()
+
+
+def build_default_pipeline(
+    similarity_threshold: float = 0.3,
+    price_tolerance: float = 0.2,
+    enable_llm_parser: bool = True,
+) -> HybridPipeline:
+    """
+    装配一条开箱可用的混合检索管线。
+
+    把嵌入模型、向量库、SQLite 目录、规则/LLM 解析器一次性接好，供 FastAPI 启动
+    和评估脚本共用 —— 避免两处各自拼装导致参数漂移。
+
+    Args:
+        similarity_threshold: 语义相似度阈值。默认 0.3 而非 retriever 自身的 0.7：
+            粗筛已经保证了结构化相关性，阈值过高会把召回打空。
+        price_tolerance: 价格匹配容忍度
+        enable_llm_parser: 规则引擎命中不足时是否允许 LLM 补充解析。
+            无 LLM 凭据时 LLMParser.is_available() 返回 False，自动跳过。
+    """
+    # 局部导入：让 filter-only 的调用方（如 CI 的确定性门禁）无需加载嵌入模型
+    from src.filter.llm_parser import LLMParser
+    from src.llm.factory import LLMFactory
+    from src.rag.embeddings import BGEEmbeddingModel
+    from src.rag.retriever import VehicleRetriever
+    from src.rag.vector_store import ChromaVectorStore
+
+    registry = LabelRegistry()
+    db = VehicleDB(registry=registry)
+
+    retriever = VehicleRetriever(
+        BGEEmbeddingModel(),
+        ChromaVectorStore(),
+        similarity_threshold=similarity_threshold,
+        price_tolerance=price_tolerance,
+    )
+
+    llm_parser = None
+    if enable_llm_parser:
+        try:
+            llm_parser = LLMParser(llm=LLMFactory.create_llm(), registry=registry)
+        except Exception:
+            # 凭据缺失或 provider 不支持时静默降级为纯规则解析
+            llm_parser = None
+
+    return HybridPipeline(
+        registry=registry,
+        db=db,
+        filter_engine=FilterEngine(db=db, registry=registry),
+        query_parser=QueryParser(registry=registry),
+        llm_parser=llm_parser,
+        retriever=retriever,
+    )
