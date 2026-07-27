@@ -71,14 +71,18 @@ async def lifespan(app: FastAPI):
         app.state.llm_router = router
         extraction_llm, generation_llm = build_agent_llms(router)
         logger.info(f"LLM routing: {router.describe()}")
-        agent = SalesAgent(llm=extraction_llm, generation_llm=generation_llm)
+        agent = SalesAgent(
+            llm=extraction_llm,
+            generation_llm=generation_llm,
+            enable_tool_planning=True,
+        )
     else:
         from llama_index.core.llms import MockLLM
 
         app.state.llm_router = None
         llm = MockLLM(max_tokens=500)
         logger.warning("No LLM credentials configured — running with MockLLM.")
-        agent = SalesAgent(llm=llm)
+        agent = SalesAgent(llm=llm, enable_tool_planning=True)
     chat.set_agent(agent)
     _startup_status["agent_ready"] = True
 

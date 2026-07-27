@@ -106,6 +106,16 @@ class TestSessionStorage:
         monkeypatch.setattr("backend.app.models.storage.SESSIONS_DIR", tmp_path)
         assert FileStorage.load_session("nonexistent") is None
 
+    def test_session_id_cannot_escape_storage_directory(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("backend.app.models.storage.SESSIONS_DIR", tmp_path)
+
+        FileStorage.save_session("../../outside", {"stage": "welcome"})
+
+        files = list(tmp_path.glob("*.json"))
+        assert len(files) == 1
+        assert files[0].parent == tmp_path
+        assert ".." not in files[0].name
+
     def test_delete_session(self, tmp_path, monkeypatch):
         monkeypatch.setattr("backend.app.models.storage.SESSIONS_DIR", tmp_path)
 

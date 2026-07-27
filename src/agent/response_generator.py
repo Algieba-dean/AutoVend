@@ -230,12 +230,11 @@ def generate_response(
 
     prompt = prompt_template.format(**format_kwargs)
 
-    # Arbitration notes go at the very top. They are the only part of the
-    # prompt that reflects what happened *this* turn — that the transition was
-    # refused, or that the conversation just rolled back — and burying them
-    # after several hundred lines of stage template gets them ignored.
+    # Keep the stage prompt as the stable prefix for provider prompt caching.
+    # Arbitration notes and recent patches change every turn, so appending them
+    # avoids invalidating the entire cached prefix.
     if system_notes:
-        prompt = "\n".join(system_notes) + "\n\n" + prompt
+        prompt = prompt + "\n\n本轮系统指令与近期状态变化：\n" + "\n".join(system_notes)
 
     try:
         response = llm.complete(prompt)

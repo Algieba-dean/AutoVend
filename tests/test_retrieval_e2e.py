@@ -81,12 +81,15 @@ def pipeline():
 
 
 @pytest.fixture
-async def client(pipeline):
+async def client(pipeline, tmp_path, monkeypatch):
     from backend.app.main import _startup_status, app
     from backend.app.routes.chat import _prev_explicit, _sessions, set_agent, set_pipeline
     from src.agent.sales_agent import SalesAgent
 
     set_agent(SalesAgent(llm=_needs_driven_llm()))
+    sessions_dir = tmp_path / "sessions"
+    sessions_dir.mkdir()
+    monkeypatch.setattr("backend.app.models.storage.SESSIONS_DIR", sessions_dir)
     set_pipeline(pipeline)
     _startup_status["agent_ready"] = True
     _sessions.clear()

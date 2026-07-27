@@ -405,6 +405,51 @@ class TestAgentIntegration:
         assert state.last_patch == {}
         assert len(state.patch_log) == 1, "history must survive a no-op turn"
 
+    def test_tool_transition_request_is_arbitrated(self):
+        from unittest.mock import MagicMock
+
+        from src.agent.sales_agent import SalesAgent
+
+        llm = MagicMock()
+        llm.complete.return_value.text = "请告诉我您的预算。"
+        state = _state(Stage.NEEDS_ANALYSIS)
+        state.pending_requests = [
+            {
+                "type": "transition",
+                "stage": Stage.CAR_SELECTION.value,
+                "reason": "需求已经问完",
+            }
+        ]
+
+        result = SalesAgent(llm).respond(state)
+
+        assert result.session_state.stage == Stage.NEEDS_ANALYSIS
+        assert result.session_state.pending_requests == []
+        assert any("缺少预算" in note for note in llm.complete.call_args.args[0].splitlines())
+
+    def test_dynamic_notes_are_appended_after_stable_stage_prompt(self):
+        from unittest.mock import MagicMock
+
+        from src.agent.response_generator import generate_response
+
+        llm = MagicMock()
+        llm.complete.return_value.text = "ok"
+
+        generate_response(
+            llm,
+            Stage.NEEDS_ANALYSIS,
+            "User: hello",
+            _state().profile,
+            _state().needs,
+            [],
+            _state().reservation,
+            system_notes=["PATCH_SENTINEL"],
+        )
+
+        prompt = llm.complete.call_args.args[0]
+        assert prompt.startswith("You are AutoVend")
+        assert prompt.rfind("PATCH_SENTINEL") > prompt.rfind("Conversation so far")
+
 
 @pytest.mark.parametrize("stage", list(Stage))
 def test_render_catalog_never_raises(stage):

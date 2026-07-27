@@ -256,7 +256,7 @@ class TestRetrievalOrdering:
     ordering is asserted where it actually lives.
     """
 
-    async def test_route_retrieves_with_this_turns_needs(self):
+    async def test_route_retrieves_with_this_turns_needs(self, tmp_path, monkeypatch):
         from httpx import ASGITransport, AsyncClient
 
         from backend.app.main import _startup_status, app
@@ -278,6 +278,9 @@ class TestRetrievalOrdering:
                 return AgentResult(session_state=updated, response_text="ok", stage_changed=False)
 
         stub = _StubPipeline(cars=("BMW-iX",))
+        sessions_dir = tmp_path / "sessions"
+        sessions_dir.mkdir()
+        monkeypatch.setattr("backend.app.models.storage.SESSIONS_DIR", sessions_dir)
         chat_route.set_agent(_ExtractingAgent())
         chat_route.set_pipeline(stub)
         chat_route._sessions.clear()

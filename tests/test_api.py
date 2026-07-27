@@ -50,11 +50,13 @@ def agent():
 
 
 @pytest.fixture
-async def client(agent):
+async def client(agent, tmp_path, monkeypatch):
     """Create an async test client."""
     from backend.app.main import app
     from backend.app.routes.chat import _sessions
 
+    monkeypatch.setattr("backend.app.models.storage.SESSIONS_DIR", tmp_path / "sessions")
+    (tmp_path / "sessions").mkdir()
     _sessions.clear()  # ensure clean state between tests
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
@@ -158,6 +160,27 @@ class TestChatAPI:
             json={"session_id": "auto_session", "message": "Hi there"},
         )
         assert resp.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_session_restores_after_in_memory_cache_is_cleared(self, client, agent):
+        from backend.app.routes.chat import _sessions
+
+        created = await client.post("/api/chat/session", json={"phone_number": "13800000009"})
+        session_id = created.json()["session_id"]
+        await client.post(
+            "/api/chat/message",
+            json={"session_id": session_id, "message": "My name is TestUser"},
+        )
+
+        expected_stage = _sessions[session_id].stage
+        _sessions.clear()
+        agent.clear_session(session_id)
+
+        restored = await client.get(f"/api/chat/session/{session_id}/messages")
+
+        assert restored.status_code == 200
+        assert restored.json()["stage"]["current_stage"] == expected_stage.value
+        assert len(restored.json()["messages"]) >= 2
 
     @pytest.mark.asyncio
     async def test_get_messages(self, client):

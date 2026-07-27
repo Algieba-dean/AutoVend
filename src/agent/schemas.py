@@ -140,8 +140,8 @@ class SessionState(BaseModel):
 
     #: Instructions for the generator produced by this turn's arbitration —
     #: a blocked transition explains what is missing, a rollback explains that
-    #: the customer changed their mind. Injected at the top of the generation
-    #: prompt and cleared each turn, so a stale note cannot leak forward.
+    #: the customer changed their mind. Appended after the stable generation
+    #: prompt prefix and cleared each turn, so a stale note cannot leak forward.
     system_notes: List[str] = Field(default_factory=list)
 
     #: What this turn changed, as {field_path: new_value}. Kept as a flat map

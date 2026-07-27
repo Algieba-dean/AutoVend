@@ -5,8 +5,10 @@ Uses JSON files for persistence, compatible with the existing system's
 storage approach but with cleaner interfaces.
 """
 
+import hashlib
 import json
 import logging
+import uuid
 from typing import Dict, List, Optional
 
 from backend.app.config import PROFILES_DIR, SESSIONS_DIR, TEST_DRIVES_DIR
@@ -92,15 +94,23 @@ class FileStorage:
     # --- Sessions ---
 
     @staticmethod
+    def _session_path(session_id: str):
+        """Map an untrusted public session id to a safe, fixed-width filename."""
+        digest = hashlib.sha256(session_id.encode("utf-8")).hexdigest()
+        return SESSIONS_DIR / f"{digest}.json"
+
+    @staticmethod
     def save_session(session_id: str, data: Dict) -> None:
-        """Save session state."""
-        path = SESSIONS_DIR / f"{session_id}.json"
-        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        """Atomically save session state."""
+        path = FileStorage._session_path(session_id)
+        temporary = path.with_suffix(f".{uuid.uuid4().hex}.tmp")
+        temporary.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        temporary.replace(path)
 
     @staticmethod
     def load_session(session_id: str) -> Optional[Dict]:
         """Load session state."""
-        path = SESSIONS_DIR / f"{session_id}.json"
+        path = FileStorage._session_path(session_id)
         if not path.exists():
             return None
         try:
@@ -112,7 +122,7 @@ class FileStorage:
     @staticmethod
     def delete_session(session_id: str) -> bool:
         """Delete session state."""
-        path = SESSIONS_DIR / f"{session_id}.json"
+        path = FileStorage._session_path(session_id)
         if path.exists():
             path.unlink()
             return True

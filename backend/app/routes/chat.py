@@ -25,7 +25,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 from backend.app.models.schemas import (
     ChatMessage,
@@ -35,6 +35,7 @@ from backend.app.models.schemas import (
     SessionCreateResponse,
     StageInfo,
 )
+from backend.app.models.storage import FileStorage
 from src.agent.sales_agent import SalesAgent
 from src.agent.schemas import SessionState, Stage, UserProfile
 from src.retrieval.adapters import hybrid_result_to_cars, needs_to_query_text
@@ -70,6 +71,51 @@ _sessions: Dict[str, SessionState] = {}
 
 # Cache of previous explicit needs per session (for change detection)
 _prev_explicit: Dict[str, dict] = {}
+
+
+def _session_payload(state: SessionState, agent: SalesAgent) -> dict:
+    """Serialize structured state and the bounded conversation transcript."""
+    memory = getattr(agent, "memory", None)
+    history = memory.get_history(state.session_id) if memory is not None else []
+    messages = [
+        {"role": message.role.value, "content": message.content or ""} for message in history
+    ]
+    return {
+        "version": 1,
+        "state": state.model_dump(mode="json"),
+        "messages": messages,
+    }
+
+
+async def _persist_session(session_id: str, payload: dict) -> None:
+    """Background-task entry point for durable session persistence."""
+    try:
+        FileStorage.save_session(session_id, payload)
+    except Exception as exc:
+        logger.error(f"[{session_id}] session persistence failed: {exc}")
+
+
+def _restore_session(session_id: str, agent: SalesAgent) -> Optional[SessionState]:
+    """Restore state and memory after a worker restart, accepting legacy snapshots."""
+    data = FileStorage.load_session(session_id)
+    if not data:
+        return None
+    try:
+        state_data = data.get("state", data)
+        state = SessionState.model_validate(state_data)
+        agent.clear_session(session_id)
+        for message in data.get("messages", []):
+            role = str(message.get("role", ""))
+            content = str(message.get("content", ""))
+            if role == "user":
+                agent.memory.add_user_message(session_id, content)
+            elif role == "assistant":
+                agent.memory.add_assistant_message(session_id, content)
+        logger.info(f"[{session_id}] restored persisted session at {state.stage.value}")
+        return state
+    except Exception as exc:
+        logger.warning(f"[{session_id}] persisted session is invalid: {exc}")
+        return None
 
 
 def set_agent(agent: SalesAgent) -> None:
@@ -249,13 +295,14 @@ def _retrieve_cars(state: SessionState) -> list:
 
 
 @router.post("/session", response_model=SessionCreateResponse)
-async def create_session(request: SessionCreateRequest):
+async def create_session(request: SessionCreateRequest, background_tasks: BackgroundTasks):
     """Create a new chat session."""
     _get_agent()
     session_id = str(uuid.uuid4())
     profile = request.profile or UserProfile(phone_number=request.phone_number)
     state = SessionState(session_id=session_id, profile=profile)
     _sessions[session_id] = state
+    background_tasks.add_task(_persist_session, session_id, _session_payload(state, _get_agent()))
 
     return SessionCreateResponse(
         session_id=session_id,
@@ -266,12 +313,12 @@ async def create_session(request: SessionCreateRequest):
 
 
 @router.post("/message", response_model=ChatResponse)
-async def send_message(request: ChatRequest):
+async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
     """Send a message and receive AI response."""
     agent = _get_agent()
 
     # Get or auto-create session
-    state = _sessions.get(request.session_id)
+    state = _sessions.get(request.session_id) or _restore_session(request.session_id, agent)
     if state is None:
         profile = request.profile or UserProfile()
         state = SessionState(session_id=request.session_id, profile=profile)
@@ -334,6 +381,11 @@ async def send_message(request: ChatRequest):
 
     # Update stored session state
     _sessions[request.session_id] = result.session_state
+    background_tasks.add_task(
+        _persist_session,
+        request.session_id,
+        _session_payload(result.session_state, agent),
+    )
 
     # Build API response
     now = datetime.now(timezone.utc).isoformat()
@@ -373,9 +425,10 @@ async def get_messages(session_id: str):
     """Get message history for a session."""
     agent = _get_agent()
 
-    state = _sessions.get(session_id)
+    state = _sessions.get(session_id) or _restore_session(session_id, agent)
     if state is None:
         raise HTTPException(status_code=404, detail="Session not found.")
+    _sessions[session_id] = state
 
     history = agent.memory.get_history(session_id)
     messages = []
@@ -407,10 +460,11 @@ async def end_session(session_id: str):
     """End a chat session."""
     agent = _get_agent()
 
-    state = _sessions.pop(session_id, None)
+    state = _sessions.pop(session_id, None) or _restore_session(session_id, agent)
     if state is None:
         raise HTTPException(status_code=404, detail="Session not found.")
 
     _prev_explicit.pop(session_id, None)
     agent.clear_session(session_id)
+    FileStorage.delete_session(session_id)
     return {"message": "Session ended successfully.", "session_id": session_id}

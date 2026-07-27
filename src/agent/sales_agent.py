@@ -26,7 +26,7 @@ from src.agent.schemas import (
     SessionState,
     Stage,
 )
-from src.agent.stages import advance, propose_forward
+from src.agent.stages import ProposalSource, TransitionProposal, advance, propose_forward
 from src.agent.tool_planner import plan_tools
 from src.agent.tools import ToolResult, dispatch_all
 from src.agent.transition_proposer import propose_by_llm
@@ -71,7 +71,12 @@ class SalesAgent:
     Memory buffers are managed internally per session_id for token-limited history.
     """
 
-    def __init__(self, llm: LLM, generation_llm: Optional[LLM] = None):
+    def __init__(
+        self,
+        llm: LLM,
+        generation_llm: Optional[LLM] = None,
+        enable_tool_planning: bool = False,
+    ):
         """
         Args:
             llm: LLM used for extraction — filling Pydantic schemas from the
@@ -89,6 +94,7 @@ class SalesAgent:
         """
         self.llm = llm
         self.generation_llm = generation_llm or llm
+        self.enable_tool_planning = enable_tool_planning
         self.memory = ChatMemoryManager()
 
     def remember(self, state: SessionState, user_message: str) -> SessionState:
@@ -113,7 +119,7 @@ class SalesAgent:
         self,
         state: SessionState,
         user_message: str,
-        use_tools: bool = False,
+        use_tools: Optional[bool] = None,
     ) -> SessionState:
         """
         Record the user's message and extract what it reveals — no generation.
@@ -143,7 +149,8 @@ class SalesAgent:
         updated = self._extract_information(updated, conversation_text)
         _record_patches(updated, before, source="extractor")
 
-        if use_tools:
+        should_use_tools = self.enable_tool_planning if use_tools is None else use_tools
+        if should_use_tools:
             calls = plan_tools(self.llm, updated, conversation_text)
             if calls:
                 outcome = self.use_tools(updated, calls)
@@ -216,6 +223,21 @@ class SalesAgent:
             stage_changed = False
         else:
             proposals = []
+            for request in updated.pending_requests:
+                if request.get("type") != "transition":
+                    continue
+                try:
+                    target = Stage(request["stage"])
+                except (KeyError, ValueError):
+                    continue
+                proposals.append(
+                    TransitionProposal(
+                        target=target,
+                        source=ProposalSource.LLM,
+                        reason=str(request.get("reason", "")),
+                    )
+                )
+            updated.pending_requests = []
             if propose_with_llm:
                 llm_proposal = propose_by_llm(self.llm, updated, conversation_text)
                 if llm_proposal is not None:
@@ -241,10 +263,9 @@ class SalesAgent:
             elif verdict.rejection:
                 logger.info(f"[{session_id}] Stage held at {old_stage.value}: {verdict.rejection}")
 
-        # Recent patches ride at the top of the prompt alongside the
-        # arbitration notes. The transcript window is short; this is what keeps
+        # Recent patches ride at the end of the prompt. The transcript window is short; this keeps
         # "the customer just changed their budget" visible even when the turn
-        # that said so has scrolled out.
+        # that said so has scrolled out without invalidating the stable prompt prefix.
         notes = list(updated.system_notes)
         patch_summary = format_for_prompt(
             [StatePatch.from_dict(p) for p in updated.patch_log[-PROMPT_PATCH_WINDOW:]]
