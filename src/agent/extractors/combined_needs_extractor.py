@@ -11,7 +11,7 @@ from typing import Optional
 from llama_index.core.llms import LLM
 
 from src.agent.extractors.base import parse_llm_json
-from src.agent.schemas import UserProfile, VehicleNeeds
+from src.agent.schemas import ExplicitNeeds, ImplicitNeeds, UserProfile, VehicleNeeds
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +100,15 @@ def extract_combined_needs(
 
         explicit_data = parsed.get("explicit", {})
         implicit_data = parsed.get("implicit", {})
+
+        # Some otherwise capable models flatten the requested wrapper and return
+        # the fields directly. Silently discarding that valid extraction leaves
+        # the stage machine stuck, so recover fields by their target schema.
+        if "explicit" not in parsed and "implicit" not in parsed:
+            explicit_fields = ExplicitNeeds.model_fields
+            implicit_fields = ImplicitNeeds.model_fields
+            explicit_data = {key: value for key, value in parsed.items() if key in explicit_fields}
+            implicit_data = {key: value for key, value in parsed.items() if key in implicit_fields}
 
         from src.agent.extractors.base import merge_model
 

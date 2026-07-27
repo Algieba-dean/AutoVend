@@ -48,7 +48,6 @@ def get_vehicle_index(force_reload: bool = False) -> VectorStoreIndex:
     try:
         chroma_client = get_chroma_client()
         vector_store = get_chroma_vector_store(chroma_client)
-        embed_model = get_embedding_model()
 
         # Check if collection has data
         collection_name = vector_store._collection.name
@@ -59,6 +58,9 @@ def get_vehicle_index(force_reload: bool = False) -> VectorStoreIndex:
                 "Run 'python -m scripts.build_index' to build the index first."
             )
 
+        # Loading BGE-M3 is expensive and may require network access. Do it only
+        # after confirming there is an index worth opening.
+        embed_model = get_embedding_model()
         _vehicle_index = load_index(embed_model, vector_store)
         logger.info(f"Loaded vehicle index with {count} documents.")
         return _vehicle_index

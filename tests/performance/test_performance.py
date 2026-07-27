@@ -170,10 +170,10 @@ class TestAggregateKPIs:
                 f"[{sc.dialogue_id}] response_rate={sc.response_generation_rate:.0%}"
             )
 
-    def test_save_results(self):
+    def test_save_results(self, tmp_path):
         """Run full evaluation and persist results."""
         report = run_full_evaluation()
-        filepath = save_report(report, "eval_latest.json")
+        filepath = save_report(report, "eval_latest.json", output_dir=tmp_path)
         assert filepath.exists()
         assert filepath.stat().st_size > 100
 

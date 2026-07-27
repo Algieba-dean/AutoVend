@@ -24,6 +24,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "devDependencies": {
+    "typescript": "4.9.5"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

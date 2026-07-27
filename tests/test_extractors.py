@@ -13,6 +13,7 @@ from backend.app.models.schemas import (
     ReservationInfo,
     UserProfile,
 )
+from src.agent.extractors.combined_needs_extractor import extract_combined_needs
 from src.agent.extractors.implicit_deductor import deduce_implicit_needs
 from src.agent.extractors.needs_extractor import extract_explicit_needs
 from src.agent.extractors.profile_extractor import extract_profile
@@ -143,6 +144,37 @@ class TestNeedsExtractor:
         needs = extract_explicit_needs(llm, "")
         assert needs.brand == ""
         assert needs.prize == ""
+
+
+class TestCombinedNeedsExtractor:
+    def test_extracts_nested_response(self):
+        llm = _mock_llm(
+            {
+                "explicit": {"seat_layout": "7座", "prize": "25-35万"},
+                "implicit": {"family_friendliness": "High"},
+            }
+        )
+
+        needs = extract_combined_needs(llm, "五口之家需要7座车", UserProfile())
+
+        assert needs.explicit.seat_layout == "7座"
+        assert needs.explicit.prize == "25-35万"
+        assert needs.implicit.family_friendliness == "High"
+
+    def test_recovers_flat_response(self):
+        llm = _mock_llm(
+            {
+                "seat_layout": "7座",
+                "prize": "25-35万",
+                "family_friendliness": "High",
+            }
+        )
+
+        needs = extract_combined_needs(llm, "五口之家需要7座车", UserProfile())
+
+        assert needs.explicit.seat_layout == "7座"
+        assert needs.explicit.prize == "25-35万"
+        assert needs.implicit.family_friendliness == "High"
 
 
 # --- Implicit Deductor Tests ---

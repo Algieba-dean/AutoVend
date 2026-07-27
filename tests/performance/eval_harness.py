@@ -87,7 +87,9 @@ def create_scenario_llm(scenario: dict) -> MagicMock:
         p = prompt.lower()
 
         # Extraction prompts → JSON
-        if "profile" in p and "extract" in p:
+        if '"explicit": {...}, "implicit": {...}' in p:
+            resp.text = json.dumps({"explicit": needs_resp, "implicit": implicit_resp})
+        elif "profile" in p and "extract" in p:
             resp.text = json.dumps(profile_resp)
         elif "vehicle requirements" in p or "explicit" in p or "vehicle needs" in p:
             resp.text = json.dumps(needs_resp)
@@ -237,15 +239,20 @@ def run_full_evaluation() -> EvaluationReport:
     return report
 
 
-def save_report(report: EvaluationReport, filename: str | None = None) -> Path:
+def save_report(
+    report: EvaluationReport,
+    filename: str | None = None,
+    output_dir: Path | None = None,
+) -> Path:
     """Save evaluation report as JSON."""
-    EVAL_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir = output_dir or EVAL_RESULTS_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     if filename is None:
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"eval_{ts}.json"
 
-    filepath = EVAL_RESULTS_DIR / filename
+    filepath = output_dir / filename
     filepath.write_text(
         json.dumps(report.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8"
     )

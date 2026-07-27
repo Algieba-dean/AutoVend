@@ -140,12 +140,13 @@ class TestRetryPolicy:
 
 
 class TestRateLimiter:
-    def test_retry_loop_survives_transient_then_succeeds(self):
+    def test_retry_loop_survives_transient_then_succeeds(self, monkeypatch):
         """Regression: `except ... as exc` unbinds `exc`, so reading it after
         the block raised NameError on the very first retry."""
         calls = {"n": 0}
+        monkeypatch.setattr("src.eval.rate_limit._backoff_delay", lambda attempt, exc: 0.0)
 
-        def flaky():
+        async def flaky():
             calls["n"] += 1
             if calls["n"] < 3:
                 raise Exception("503 Service Unavailable")
