@@ -284,6 +284,13 @@ class SalesAgent:
             system_notes=notes,
         )
 
+        # Run Self-Reflection & Compliance Guard
+        from src.agent.reflection import reflect_and_guard
+
+        response_text, reflection_warnings = reflect_and_guard(
+            response_text, updated.matched_cars
+        )
+
         # Notes are per-turn instructions. Carrying them forward would keep
         # telling the model about a constraint change several turns after the
         # customer moved on.
@@ -339,5 +346,14 @@ class SalesAgent:
         # Reservation extraction: active during reservation stages
         if stage in (Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION):
             state.reservation = extract_reservation(self.llm, conversation_text, state.reservation)
+
+        # Run constraint reconciliation engine to detect hard/soft conflicts
+        from src.agent.reconciliation import reconcile_constraints
+
+        conflicts = reconcile_constraints(state)
+        for conflict in conflicts:
+            note = conflict.to_system_note()
+            if note not in state.system_notes:
+                state.system_notes.append(note)
 
         return state

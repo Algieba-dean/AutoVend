@@ -153,9 +153,13 @@ def build_samples(
                 "user_input": query.query,
                 "retrieved_contexts": contexts,
                 "response": answer,
-                # Ground truth for context_recall: the vehicles that *should*
-                # have been retrievable, capped so the reference stays readable.
-                "reference": ", ".join(query.relevant_car_models[:CONTEXT_TOP_K]),
+                # Ground truth for context_recall: natural language reference answer
+                # containing the expected vehicle models, formatted as complete sentences
+                # so LLM-as-a-judge can evaluate entailment correctly.
+                "reference": (
+                    f"根据用户对“{query.query}”的购车需求，最符合要求的推荐车型为：{', '.join(query.relevant_car_models[:CONTEXT_TOP_K])}。"
+                    f"这些车型具备对应的配置规格与属性特征，满足该选车场景需求。"
+                ),
                 "_id": query.id,
                 "_tags": query.tags,
             }

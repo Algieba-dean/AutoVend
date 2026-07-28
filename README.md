@@ -18,18 +18,21 @@ AutoVend 通过多阶段对话引导客户 —— 从问候和画像收集，到
 │  路由 · 会话生命周期 · JSON 存储 · /health · /telemetry/llm    │
 └───────────────────────────┬──────────────────────────────────┘
                             │
-┌───────────────────────────┴──────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────┐
 │  src/  (核心库，零 web 依赖)                                   │
 │                                                              │
 │  privacy/     Presidio 中文 PII 识别 · 可逆脱敏                │
 │  semantic_router/  锚点向量分类（µs 级，控制流短路）            │
 │                                                              │
-│  agent/       SalesAgent · 阶段 FSM · 抽取器 · 记忆 · 语音     │
-│               observe() → 检索 → respond()                    │
+│  agent/       SalesAgent · 阶段 FSM · 约束消解引擎(Reconciliation)│
+│               竞品战术卡(Battlecards) · SPIN销售提问 · 回复自我审视 │
 │               ⚠ 禁止 import backend/fastapi/chromadb（CI 守卫）│
 │                                                              │
+│  rag_service/ Standalone RAG 服务：多维上下文扩展Query · 多车对比   │
+│               RankRefiner精排 · RAGEvalMonitor 线上遥测/语义漂移告警  │
+│                                                              │
 │  retrieval/   HybridPipeline：意图解析 → SQLite 结构化预过滤   │
-│               → 稠密(ChromaDB) + 稀疏(BM25) → RRF 融合         │
+│               → 稠密(ChromaDB) + 稀疏(BM25) 双路并行召回 → RRF 融合  │
 │                                                              │
 │  filter/      LabelRegistry · FilterEngine（含降级阶梯）       │
 │  rag/         BGE-M3 嵌入 · ChromaDB 向量库 · 检索器            │
@@ -55,7 +58,7 @@ AutoVend 通过多阶段对话引导客户 —— 从问候和画像收集，到
 | 推理 | 本地 vLLM (8B 4-bit) + 云端链 (Groq → DeepSeek) |
 | 隐私 | Presidio + 自建中文识别器，会话内可逆脱敏 |
 | 意图 | 锚点向量（K-means 离线聚类，156 KB 常驻 FP32） |
-| 评估 | 116 题黄金集 · recall/precision/MRR/NDCG · RAGAS |
+| 评估 | 全维度综合评估引擎：116 题黄金集 · Recall/Precision/MRR/NDCG · RAGAS(忠诚度/相关度/召回/精排) · Agent SOP 准确率 · SLA p95 |
 | CI | GitHub Actions：lint · test · 架构隔离 · **检索质量门禁** |
 
 ## 快速开始
@@ -166,9 +169,10 @@ WELCOME → PROFILE_ANALYSIS → NEEDS_ANALYSIS → CAR_SELECTION
 - [混合推理架构](docs/hybrid_inference.md) —— 本地/云端分流依据、WSL2 部署坑、实测数字
 - [脱敏与语义路由](docs/privacy_and_routing.md) —— PII 拦截、锚点向量、双重阈值
 - [混合检索方案](docs/hybrid-retrieval-plan.md) —— 三层检索设计
+- [数据解析与增量更新](docs/data_ingestion_and_parsing.md) —— 异构文档 (PDF/Word/HTML/图片) 提取、56维 TOML 转换与增量更新管线
 - [性能指标](docs/PERFORMANCE_METRICS.md) · [测试指南](docs/TESTING_GUIDE.md)
 - [部署指南](docs/deployment_guide.md)
-- [问题记录](docs/record.md) —— 本轮遇到的 30 个问题、根因、解法与实测效力
+- [问题记录](docs/record.md) —— 遇到的 45 个问题、根因、解法与实测效力
 
 ## License
 

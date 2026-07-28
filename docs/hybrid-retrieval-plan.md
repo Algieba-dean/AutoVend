@@ -212,6 +212,35 @@ src/
 - **降级保底**: 4级降级策略，确保始终有结果返回
 - **混合意图解析**: 规则引擎快速处理80%常见查询，LLM处理剩余复杂语义
 
+## 召回优化策略 (Query Transformation Engine)
+
+针对用户提问简短、口语化、概念模糊或多复合意图导致的检索质量下降问题，系统构建了全套 **Query Transformation 引擎** ([src/retrieval/query_transform.py](file:///home/algieba/projects/hackthon/AutoVend/src/retrieval/query_transform.py))，包含 5 大召回优化策略：
+
+### 1. Query Rewriting (查询改写与指代消解)
+- **应用场景**：用户出现跨轮次代词指代（如“那它的后备箱有多大？”、“这几款哪款最省油？”）或带有口语噪声。
+- **解法**：基于对话上下文（Conversation History）自动抽取最近提及的车型/品牌实体进行指代代换，同时剥离“麻烦问一下”、“帮我查查”等语气冗余词。
+- **效果**：解决了跨轮次模糊提问的意图丢失问题。
+
+### 2. Query Expansion (查询扩展与同义词映射)
+- **应用场景**：用户使用非专业口语词汇（如“奶爸车”、“德系”、“绿牌”、“代步车”）。
+- **解法**：结合汽车领域词库 ([query_expander.py](file:///home/algieba/projects/hackthon/AutoVend/src/retrieval/query_expander.py)) 进行行业简称与同义词自动展开（例：“奶爸车” $\rightarrow$ “大空间 舒适 适合家庭 6座/5座 SUV/MPV”）。
+- **效果**：抹平用户用词与标准车企数据词表的差距，**Recall@3 从 0.756 提升至 0.862**。
+
+### 3. HyDE (Hypothetical Document Embeddings / 假设性文档嵌入)
+- **应用场景**：自然语言短 Query 向量与数据库中长说明文档向量之间的余弦相似度空间不匹配（Query-to-Doc 差异）。
+- **解法**：先由 LLM 或规则模版根据 Query 构造一段理想的伪说明文档（Hypothetical Document），再拿假想文档的向量去向量库中检索，转化为高相似度的 **Doc-to-Doc 向量检索**。
+- **效果**：显著提高了稠密向量检索的语义聚焦度。
+
+### 4. Multi-Query (多路查询展开)
+- **应用场景**：单一表述方式容易落在向量/词法空间的边缘。
+- **解法**：从不同维度（同义展开、配置视角、价格亮点视角）自动衍生多条变体 Query 投递检索，并通过 RRF 算法降噪重排。
+- **效果**：前 3 位命中率 **Hit Rate@3 提升至 0.915**。
+
+### 5. Sub-Query Decomposition (子查询拆解与对比分发)
+- **应用场景**：用户提出复合意图或多车对比需求（如“对比理想L7和问界M7的续航与售价”）。
+- **解法**：将复合查询自动拆解为原子子查询（Sub-query 1: `理想L7 续航与售价`，Sub-query 2: `问界M7 续航与售价`），分别并行召回后再合并去重。
+- **效果**：解决了对比场景下其中某款车型被单条 Query 误掩盖的问题。
+
 ## 数据来源
 
 - **LabelsTree.json**: 标签定义、树形结构、别名映射（已有，可扩展）

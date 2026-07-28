@@ -280,9 +280,38 @@ class VehicleDB:
         )
         return [r[0] for r in cursor.fetchall()]
 
-    # ------------------------------------------------------------------
-    # 统计
-    # ------------------------------------------------------------------
+    def get_by_model(self, car_model: str) -> Optional[Dict[str, Any]]:
+        """获取指定 car_model 的记录字典"""
+        cursor = self.conn.execute("SELECT * FROM vehicles WHERE car_model = ?", (car_model,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+    def upsert_vehicle(self, v_data: Dict[str, Any]) -> None:
+        """执行单条车辆记录的插入或更新 (INSERT OR REPLACE)"""
+        car_model = v_data.get("car_model") or v_data.get("model")
+        if not car_model:
+            return
+
+        row_data = {"car_model": str(car_model)}
+        for col in self.columns:
+            val = v_data.get(col)
+            row_data[col] = str(val).lower() if val is not None else ""
+
+        cols = list(row_data.keys())
+        placeholders = ", ".join("?" for _ in cols)
+        col_names = ", ".join(f'"{c}"' for c in cols)
+        sql = f'INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})'
+        self.conn.execute(sql, [row_data[c] for c in cols])
+        self.conn.commit()
+
+    def delete_vehicle(self, car_model: str) -> None:
+        """删除指定 car_model 的记录"""
+        self.conn.execute("DELETE FROM vehicles WHERE car_model = ?", (car_model,))
+        self.conn.commit()
+
+    def get_all_models(self) -> List[str]:
+        """获取所有 car_model 列表"""
+        return self.get_all_car_models()
 
     def summary(self) -> Dict[str, Any]:
         """数据库摘要"""

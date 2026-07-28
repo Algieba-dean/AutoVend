@@ -170,6 +170,14 @@ class SessionState(BaseModel):
     #: retrieval against the constraints the customer just disowned.
     stage_hold: bool = False
 
+    #: Incremental dialogue summary history.
+    #: Stores list of dicts: [{"start_turn": 1, "end_turn": 6, "summary": "..."}, ...]
+    summary_history: List[Dict[str, Any]] = Field(default_factory=list)
+
+    #: Last dialogue turn index that has been compressed into summary_history.
+    last_compressed_turn: int = 0
+
+
 
 class AgentInput(BaseModel):
     """

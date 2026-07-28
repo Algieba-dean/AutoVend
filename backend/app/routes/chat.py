@@ -277,7 +277,7 @@ def _retrieve_cars(state: SessionState) -> list:
             return state.matched_cars
     _prev_explicit[sid] = current_explicit
 
-    query_text = needs_to_query_text(state.needs.explicit)
+    query_text = needs_to_query_text(state.needs.explicit, state.needs.implicit)
 
     try:
         result = _pipeline.search(query_text, top_k=RETRIEVAL_TOP_K)

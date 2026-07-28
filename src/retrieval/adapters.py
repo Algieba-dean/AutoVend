@@ -80,33 +80,43 @@ def _search_result_to_car(result: Any) -> Dict[str, Any]:
     }
 
 
-def needs_to_query_text(explicit: Any) -> str:
+def needs_to_query_text(explicit: Any, implicit: Optional[Any] = None) -> str:
     """
-    Build a natural-language retrieval query from the agent's explicit needs.
+    Build a rich natural-language retrieval query from the agent's explicit & implicit needs.
 
-    The hybrid pipeline parses this text back into structured conditions with
-    its own rule engine (plus LLM fallback), so the phrasing matters: emit the
-    label values verbatim rather than paraphrasing them, since the rule engine
-    matches against the same vocabulary the extractors write.
+    Emits label values verbatim to match rule engine vocabulary, and includes
+    key implicit preference dimensions for enhanced dense vector semantic retrieval.
     """
     parts: List[str] = []
+    
+    # Explicit core attributes
     for attr in (
         "vehicle_category_bottom",
         "powertrain_type",
-        "design_style",
+        "drive_type",
         "seat_layout",
+        "design_style",
+        "autonomous_driving_level",
+        "electric_range",
     ):
-        value = getattr(explicit, attr, None)
+        value = getattr(explicit, attr, None) if explicit else None
         if value:
             parts.append(str(value))
 
-    brand = getattr(explicit, "brand", None)
+    brand = getattr(explicit, "brand", None) if explicit else None
     if brand:
         parts.append(str(brand))
 
-    prize = getattr(explicit, "prize", None)
+    prize = getattr(explicit, "prize", None) if explicit else None
     if prize:
         parts.append(str(prize))
+
+    # Implicit semantic preferences (boost dense vector recall for comfort, smartness, space)
+    if implicit:
+        for imp_attr in ("comfort_level", "smartness", "space", "family_friendliness"):
+            imp_val = getattr(implicit, imp_attr, None)
+            if imp_val and str(imp_val).strip():
+                parts.append(f"{imp_attr}:{imp_val}")
 
     if not parts:
         return "recommend a good vehicle"

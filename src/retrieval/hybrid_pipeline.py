@@ -219,32 +219,108 @@ class HybridPipeline:
             result.rag_result_count = 0
             return
 
-        # 融合需要更深的稠密候选池：只取 top_k 的话，稀疏路推上来的车会因为
-        # 不在稠密结果里而拿不到 rank，融合退化成"稠密结果重新排个序"。
-        dense_depth = top_k * FUSION_DEPTH_MULTIPLIER if self.sparse_index else top_k
+        # 全套 Query Transformation：重写、拓展、HyDE 伪文档生成、多路展开与子查询拆解
+        from src.retrieval.query_transform import QueryTransformationEngine
 
-        query = Query(text=query_text, top_k=dense_depth)
+        transformer = QueryTransformationEngine()
+        transform_res = transformer.transform_all(query_text)
+        search_query_text = transform_res["expanded_query"]
+
+        # 融合需要更深的稠密候选池
+        dense_depth = top_k * FUSION_DEPTH_MULTIPLIER if self.sparse_index else top_k
+        query = Query(text=search_query_text, top_k=dense_depth)
 
         # 如果有候选列表，注入到 query.filters 中（元数据预过滤）
         if filter_result.car_models:
             query.filters = query.filters or {}
             query.filters["car_model_candidates"] = filter_result.car_models
 
-        try:
-            response = self.retriever.search(query)
-        except Exception as e:
-            self.logger.error(f"RAG 精排失败: {e}")
-            result.rag_result_count = 0
-            return
+        # 并行执行：稠密召回 (ChromaDB HyDE) 与 稀疏召回 (BM25)
+        import concurrent.futures
 
-        if self.sparse_index is not None:
-            response = self._fuse_with_sparse(query_text, filter_result, top_k, response, result)
+        dense_response = None
+        sparse_hits = []
+
+        def _do_dense():
+            # 优先使用 HyDE 假设性文档进行向量召回，获得极高的 Doc-to-Doc 向量余弦相似度
+            hyde_query = Query(text=transform_res["hyde_document"], top_k=dense_depth, filters=query.filters)
+            try:
+                return self.retriever.search(hyde_query)
+            except Exception:
+                return self.retriever.search(query)
+
+        def _do_sparse():
+            if self.sparse_index is not None:
+                # 若存在子查询拆解，分别对比检索并合并
+                if len(transform_res["sub_queries"]) > 1:
+                    merged_hits = []
+                    for sq in transform_res["sub_queries"]:
+                        hits = self.sparse_index.search(sq, top_k=top_k * FUSION_DEPTH_MULTIPLIER)
+                        merged_hits.extend(hits)
+                    return merged_hits
+                return self.sparse_index.search(search_query_text, top_k=top_k * FUSION_DEPTH_MULTIPLIER)
+            return []
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            future_dense = executor.submit(_do_dense)
+            future_sparse = executor.submit(_do_sparse)
+
+            try:
+                dense_response = future_dense.result()
+            except Exception as e:
+                self.logger.error(f"RAG 稠密精排失败: {e}")
+                result.rag_result_count = 0
+                return
+
+            try:
+                sparse_hits = future_sparse.result()
+            except Exception as e:
+                self.logger.warning(f"BM25 稀疏召回失败: {e}")
+
+        if self.sparse_index is not None and sparse_hits:
+            response = self._fuse_with_sparse_hits(sparse_hits, filter_result, top_k, dense_response, result)
         else:
+            response = dense_response
             response.results = response.results[:top_k]
             response.total_count = len(response.results)
 
         result.search_response = response
         result.rag_result_count = response.total_count
+
+    def _fuse_with_sparse_hits(
+        self,
+        sparse_hits: List[tuple],
+        filter_result: FilterResult,
+        top_k: int,
+        response: SearchResponse,
+        result: HybridPipelineResult,
+    ) -> SearchResponse:
+        """用 RRF 融合稠密与已获取的 BM25 稀疏排名。"""
+        dense_ranking = [r.vehicle.car_model for r in response.results]
+        sparse_ranking = [model for model, _ in sparse_hits]
+
+        if filter_result.car_models:
+            allowed = set(filter_result.car_models)
+            sparse_ranking = [m for m in sparse_ranking if m in allowed]
+
+        result.sparse_result_count = len(sparse_ranking)
+        weights = weights_for_query(result.matched_keywords, dynamic=self.dynamic_fusion_weights)
+        result.fusion_weights = weights
+
+        fused = reciprocal_rank_fusion(
+            [dense_ranking, sparse_ranking],
+            k=self.fusion_k,
+            weights=weights.as_list(),
+            top_k=top_k,
+        )
+        fused_order = {model: rank for rank, (model, _) in enumerate(fused)}
+
+        reranked = [r for r in response.results if r.vehicle.car_model in fused_order]
+        reranked.sort(key=lambda r: fused_order[r.vehicle.car_model])
+
+        response.results = reranked[:top_k]
+        response.total_count = len(response.results)
+        return response
 
     def _fuse_with_sparse(
         self,

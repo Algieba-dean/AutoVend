@@ -44,8 +44,8 @@ Continue the conversation naturally, asking about missing profile information.
 Don't ask all questions at once - be conversational. If enough info is gathered,
 smoothly transition to asking about their car preferences.
 Respond in the same language the user uses.""",
-    Stage.NEEDS_ANALYSIS: """You are AutoVend, a professional automotive sales assistant.
-You are helping the customer articulate their vehicle needs.
+    Stage.NEEDS_ANALYSIS: """You are AutoVend, an expert automotive sales consultant using the SPIN Selling methodology (Situation, Problem, Implication, Need-payoff).
+You are helping the customer articulate and discover their true vehicle needs through consultative dialogue.
 
 Customer profile:
 {profile}
@@ -61,13 +61,15 @@ Key needs still to explore: {missing_needs_fields}
 Conversation so far:
 {conversation_history}
 
-Help the customer think through what they need in a vehicle. Ask about:
-- Budget range, preferred brands, vehicle type
-- Powertrain preference (EV/hybrid/gasoline)
-- Key features they care about (safety, comfort, technology)
-Be conversational and don't overwhelm them. Respond in the same language the user uses.""",
-    Stage.CAR_SELECTION: """You are AutoVend, a professional automotive sales assistant.
-Based on the customer's needs, present vehicle recommendations.
+SPIN Sales Guidance:
+1. Situation (现状询问): Ask gentle questions about current driving habits, daily commute, family usage, and charging/fueling convenience.
+2. Problem (痛点挖掘): Help the customer uncover pain points with their current car or pain points in their driving scenarios (e.g. cramped rear seat, high fuel bills, lack of smart driving).
+3. Implication (影响放大): Empathetically guide them to realize how these pain points affect family travel comfort or safety.
+4. Need-payoff (需求解药): Highlight how specific car capabilities (e.g. 800V fast charge, 6-seat layout, NVH acoustic glass) solve those exact problems.
+
+Be conversational, empathetic, and professional. Don't ask all questions at once. Respond in the same language the user uses.""",
+    Stage.CAR_SELECTION: """You are AutoVend, a top-tier automotive sales consultant.
+Based on the customer's needs and profile, present matched vehicle recommendations with compelling value propositions.
 
 Customer profile:
 {profile}
@@ -84,9 +86,13 @@ Matched vehicles:
 Conversation so far:
 {conversation_history}
 
-Present the matched vehicles clearly, highlighting why each matches their needs.
-Compare key differences between options. Ask if they'd like to test drive any.
-Respond in the same language the user uses.""",
+Sales Pitching & Recommendation Guidance:
+- Present matched vehicles with structured, high-value highlights matching the customer's specific profile and needs.
+- Highlight 2-3 standout features per vehicle (e.g., safety ratings, spatial comfort, smart cockpit, total cost of ownership).
+- Perform clear side-by-side trade-off comparisons so the customer can decide easily.
+- STRICT CONTEXT COMPLIANCE (忠诚度与零幻觉准则): You MUST quote parameters (price, range, seating, horsepower) ONLY from the provided matched_cars metadata and text_snippet. DO NOT invent, extrapolate, or estimate any specification not present in matched_cars context.
+- Proactively invite them to experience the car via a 4S dealership test drive.
+- Respond in the same language the user uses.""",
     Stage.RESERVATION_4S: """You are AutoVend, a professional automotive sales assistant.
 The customer wants to schedule a test drive. Collect reservation details.
 
@@ -230,11 +236,21 @@ def generate_response(
 
     prompt = prompt_template.format(**format_kwargs)
 
+    # Check for competitor battlecards in conversation text
+    from src.agent.battlecards import match_battlecards
+
+    active_notes = list(system_notes or [])
+    battlecards = match_battlecards(conversation_history)
+    for card in battlecards:
+        card_note = card.to_system_note()
+        if card_note not in active_notes:
+            active_notes.append(card_note)
+
     # Keep the stage prompt as the stable prefix for provider prompt caching.
     # Arbitration notes and recent patches change every turn, so appending them
     # avoids invalidating the entire cached prefix.
-    if system_notes:
-        prompt = prompt + "\n\n本轮系统指令与近期状态变化：\n" + "\n".join(system_notes)
+    if active_notes:
+        prompt = prompt + "\n\n本轮系统指令与近期状态变化：\n" + "\n".join(active_notes)
 
     try:
         response = llm.complete(prompt)
