@@ -1,68 +1,31 @@
-# AutoVend RAG 系统测试指南
+# AutoVend 全方位 Agent & RAG 系统测试与质量指南
 
 ## 📋 概述
 
-本文档介绍如何运行AutoVend RAG系统的各种测试，包括性能测试、单元测试和集成测试。
+本文档全面介绍 AutoVend 系统的自动化测试体系、覆盖矩阵、运行方式及 CI 质量门禁。测试套件涵盖 **单元测试**、**架构隔离守护**、**解耦容器测试**、**算法与 RAG 测试**、**端到端 API 集成测试** 以及 **容错与抗毁测试**。
 
-## 🧪 测试类型
+## 🧪 完整测试矩阵 (Test Matrix)
 
-### 1. 性能测试 (Performance Tests)
-
-测试系统的各项性能指标，包括响应时间、准确率、并发性能等。
-
-#### 运行性能测试
-
-```bash
-# 运行完整性能测试套件
-uv run python tests/test_performance_metrics.py
-
-# 或者使用pytest
-uv run pytest tests/test_performance_metrics.py -v
-```
-
-#### 性能测试内容
-
-- **嵌入模型性能**: 测试BGE-M3模型的嵌入生成速度
-- **检索性能**: 测试向量检索的响应时间和准确性
-- **并发性能**: 测试多线程并发处理能力
-- **内存使用**: 监控系统内存消耗
-- **准确性指标**: 评估检索结果的准确性
-
-#### 性能基准值
-
-| 指标 | 基准值 | 当前值 | 状态 |
-|------|--------|--------|------|
-| 单次嵌入时间 | < 0.3s | 0.28s | ✅ |
-| 批量嵌入时间 | < 0.01s/文本 | 0.001s/文本 | ✅ |
-| 平均检索时间 | < 0.05s | 0.018s | ✅ |
-| QPS | > 20 | 17.87 | ⚠️ |
-| 类别准确率 | > 80% | 25% | ❌ |
-
-### 2. 单元测试 (Unit Tests)
-
-测试各个模块的功能正确性。
-
-#### 运行单元测试
-
-```bash
-# 运行所有单元测试
-uv run pytest tests/ -v
-
-# 运行特定测试文件
-uv run pytest tests/test_embeddings.py -v
-
-# 运行带覆盖率的测试
-uv run pytest tests/ --cov=src --cov-report=html
-```
-
-#### 单元测试覆盖范围
-
-- 数据模型验证
-- 嵌入模型功能
-- 向量存储操作
-- 检索器逻辑
-- 配置管理
-- 日志系统
+| 分类 | 测试模块文件 | 测试目标与覆盖范围 | 常用命令 |
+|---|---|---|---|
+| **架构隔离** | `test_agent_isolation.py` | 守护 Agent 依赖边界，禁止越界 import FastAPI/ChromaDB | `python3 -m pytest tests/test_agent_isolation.py` |
+| **解耦与容器** | `test_architecture_decoupling.py` | 验证 `ServiceContainer` IoC 工厂与 Agent Middleware 插件管道 | `python3 -m pytest tests/test_architecture_decoupling.py` |
+| **Agent 状态机** | `test_stage_arbitration.py` | FSM Stage 转移、触发条件与有向图边跳转校验 | `python3 -m pytest tests/test_stage_arbitration.py` |
+| **属性抽取** | `test_extractors.py` & `test_base_extractor.py` | 验证 Profile、Needs 与 Reservation Pydantic 抽取 | `python3 -m pytest tests/test_extractors.py` |
+| **约束消解引擎** | `test_reconciliation.py` | 验证预算、品牌、空间与家庭人口矛盾检测与二选一建议 | `python3 -m pytest tests/test_reconciliation.py` |
+| **竞品战术卡** | `test_battlecards.py` | 验证 Tesla/BBA/理想/问界竞品提问触发与战术卡匹配 | `python3 -m pytest tests/test_battlecards.py` |
+| **自我审视护栏** | `test_reflection.py` | 验证推荐话术参数幻觉拦截及非法承诺屏蔽 | `python3 -m pytest tests/test_reflection.py` |
+| **工具与 Patch** | `test_tools_and_patches.py` | 验证 Tool 调度、状态 Patch 增量 Diff 与回滚 | `python3 -m pytest tests/test_tools_and_patches.py` |
+| **Query Transformation** | `test_query_transform.py` | 验证 5 大策略：重写、同义词扩展、HyDE、多路与子查询拆解 | `python3 -m pytest tests/test_query_transform.py` |
+| **RAG 实时监控** | `test_rag_eval_monitor.py` | 验证 Zero-Result 告警、Latency 漂移与 OOD 语义漂移窗口 | `python3 -m pytest tests/test_rag_eval_monitor.py` |
+| **独立 RAG 服务** | `test_rag_service.py` | 验证 `RAGService` search_vehicles、compare_vehicles API | `python3 -m pytest tests/test_rag_service.py` |
+| **RRF 融合与过滤** | `test_fusion.py` & `test_filter.py` | 验证 RRF 动态/静态权重与 SQLite 降级阶梯 | `python3 -m pytest tests/test_fusion.py tests/test_filter.py` |
+| **数据增量更新** | `test_ingestion_pipeline.py` | 验证 SHA-256 哈希变更检测与三库原子 Upsert | `python3 -m pytest tests/test_ingestion_pipeline.py` |
+| **异构文档解析** | `test_unstructured_parser.py` | 验证 PDF (含纯图片扫描件 OCR 降级)、Word、HTML 转换 TOML | `python3 -m pytest tests/test_unstructured_parser.py` |
+| **全维度评估** | `test_comprehensive_evaluator.py` | 验证 4 大维度综合评估引擎 (Recall/Precision/RAGAS/SLA) | `python3 -m pytest tests/test_comprehensive_evaluator.py` |
+| **端到端 API** | `test_e2e_api.py` | 验证 FastAPI /health, /api/chat 对话交互 | `python3 -m pytest tests/test_e2e_api.py` |
+| **容错与抗毁** | `test_resilience_and_fault_tolerance.py` | 验证 LLM 超时、数据库异常、空状态下的优雅退化能力 | `python3 -m pytest tests/test_resilience_and_fault_tolerance.py` |
+| **116 题黄金门禁** | `test_golden_set.py` & `test_eval_gate.py` | 116 题黄金集自动化评估与 CI 质量拦截门禁 | `python3 -m pytest tests/test_eval_gate.py` |
 
 ### 3. 集成测试 (Integration Tests)
 
