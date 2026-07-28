@@ -170,6 +170,7 @@ WELCOME → PROFILE_ANALYSIS → NEEDS_ANALYSIS → CAR_SELECTION
 - [脱敏与语义路由](docs/privacy_and_routing.md) —— PII 拦截、锚点向量、双重阈值
 - [混合检索方案](docs/hybrid-retrieval-plan.md) —— 三层检索设计
 - [数据解析与增量更新](docs/data_ingestion_and_parsing.md) —— 异构文档 (PDF/Word/HTML/图片) 提取、56维 TOML 转换与增量更新管线
+- [架构解耦设计](docs/architecture_decoupling_design.md) —— Clean Architecture 领域划分、Agent Middleware Plugin 模式与依赖注入容器
 - [性能指标](docs/PERFORMANCE_METRICS.md) · [测试指南](docs/TESTING_GUIDE.md)
 - [部署指南](docs/deployment_guide.md)
 - [问题记录](docs/record.md) —— 遇到的 45 个问题、根因、解法与实测效力
