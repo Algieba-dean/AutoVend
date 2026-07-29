@@ -5,7 +5,7 @@ Provides per-session conversation history with configurable token limits.
 """
 
 import logging
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.core.memory import ChatMemoryBuffer
