@@ -11,7 +11,11 @@ def test_rag_service_search_vehicles():
     service = RAGService()
     req = VehicleQueryRequest(
         query_text="中型纯电SUV 20万左右",
-        explicit_needs={"vehicle_category_bottom": "中型SUV", "powertrain_type": "纯电动", "prize": "20万"},
+        explicit_needs={
+            "vehicle_category_bottom": "中型SUV",
+            "powertrain_type": "纯电动",
+            "prize": "20万",
+        },
         implicit_needs={"comfort_level": "高", "space": "大"},
         top_k=3,
         enable_rerank=True,

@@ -6,8 +6,8 @@ tactical battlecard guidance for value positioning and comparison.
 """
 
 import logging
-import re
-from typing import Dict, List, Optional
+from typing import List
+
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class Battlecard(BaseModel):
     def to_system_note(self) -> str:
         """Format battlecard into a concise system note for response generator."""
         strengths_str = "、".join(self.strengths)
-        counter_str = "；".join([f"({i+1}) {cp}" for i, cp in enumerate(self.counter_points)])
+        counter_str = "；".join([f"({i + 1}) {cp}" for i, cp in enumerate(self.counter_points)])
         return (
             f"[系统竞品战术卡提示]: 检测到客户提及/关注竞品【{self.name}】（竞品卖点: {strengths_str}）。"
             f"请在回复中予以客观尊重，同时从以下维度突出推荐车型的差异化优势：{counter_str}。"
@@ -91,7 +91,19 @@ BATTLECARDS_REGISTRY: List[Battlecard] = [
     Battlecard(
         name="传统燃油豪车 (BBA - 奔驰C/E/GLC, 宝马3/5/X3, 奥迪A4/A6/Q5)",
         category="传统豪华燃油车",
-        target_competitors=["奔驰", "宝马", "奥迪", "bba", "glc", "x3", "q5", "3系", "5系", "c级", "e级"],
+        target_competitors=[
+            "奔驰",
+            "宝马",
+            "奥迪",
+            "bba",
+            "glc",
+            "x3",
+            "q5",
+            "3系",
+            "5系",
+            "c级",
+            "e级",
+        ],
         strengths=["品牌溢价高", "机械底盘调校底蕴", "保值率预期"],
         counter_points=[
             "对比智能座舱体验（大屏交互、语音全车控、智能化感知）",

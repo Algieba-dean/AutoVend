@@ -9,8 +9,8 @@ or repeating failing search queries without making progress.
 import hashlib
 import json
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,9 @@ class ToolLoopGuardrail:
 
         # 1. Check exact repeat (same tool + same args)
         matching_exact = [
-            o for o in self.observations if o.tool_name == tool_name and self._hash_args(o.arguments) == arg_hash
+            o
+            for o in self.observations
+            if o.tool_name == tool_name and self._hash_args(o.arguments) == arg_hash
         ]
         if len(matching_exact) >= self.exact_repeat_limit:
             msg = f"检测到重复调用工具 [{tool_name}] 且参数完全一致 ({self.exact_repeat_limit} 次)。已熔断重复检索，请更换查询关键词或直接基于现有结果回答。"

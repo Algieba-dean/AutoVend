@@ -7,8 +7,8 @@ Classifies extraction/tool failures and builds actionable correction hints to al
 
 import enum
 import logging
-import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
+
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 class AgentErrorCategory(str, enum.Enum):
     """Taxonomy of Agent errors determining recovery strategy."""
 
-    SCHEMA_MISMATCH = "schema_mismatch"        # Extracted JSON fails Pydantic schema validation
-    MISSING_REQUIRED_SLOT = "missing_slot"      # Essential slot missing (e.g. phone number)
+    SCHEMA_MISMATCH = "schema_mismatch"  # Extracted JSON fails Pydantic schema validation
+    MISSING_REQUIRED_SLOT = "missing_slot"  # Essential slot missing (e.g. phone number)
     CONSTRAINT_CONFLICT = "constraint_conflict"  # Incompatible constraints (e.g. 10万 vs Porsche)
-    TOOL_EXECUTION_ERROR = "tool_error"          # Runtime error inside tool execution
-    TRANSIENT_TIMEOUT = "transient_timeout"      # LLM or network API timeout
+    TOOL_EXECUTION_ERROR = "tool_error"  # Runtime error inside tool execution
+    TRANSIENT_TIMEOUT = "transient_timeout"  # LLM or network API timeout
     UNKNOWN_ERROR = "unknown_error"
 
 
@@ -90,7 +90,9 @@ class AgentSelfHealingLoop:
                 current_attempt += 1
                 self.attempts[session_id] = current_attempt
                 hint = ErrorClassifier.classify(e)
-                logger.warning(f"Self-healing attempt {current_attempt}/{self.max_retries} for session {session_id}: {hint.hint_text}")
+                logger.warning(
+                    f"Self-healing attempt {current_attempt}/{self.max_retries} for session {session_id}: {hint.hint_text}"
+                )
 
                 if not hint.should_retry or current_attempt >= self.max_retries:
                     raise e

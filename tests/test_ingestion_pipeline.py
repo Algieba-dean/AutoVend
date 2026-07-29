@@ -8,6 +8,9 @@ from src.ingestion.pipeline import ChangeType, IncrementalIngestionPipeline
 def test_incremental_ingestion_detect_changes():
     """Test detecting created, updated, and deleted vehicle records."""
     pipeline = IncrementalIngestionPipeline()
+    for m in ["Test_Model_A", "Test_Model_B", "Test_Model_C"]:
+        pipeline.db.delete_vehicle(m)
+        pipeline.checksum_store.pop(m, None)
 
     v1 = {"car_model": "Test_Model_A", "brand": "TestBrand", "prize": "20万"}
     v2 = {"car_model": "Test_Model_B", "brand": "TestBrand", "prize": "30万"}

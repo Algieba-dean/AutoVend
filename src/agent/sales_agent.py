@@ -287,9 +287,7 @@ class SalesAgent:
         # Run Self-Reflection & Compliance Guard
         from src.agent.reflection import reflect_and_guard
 
-        response_text, reflection_warnings = reflect_and_guard(
-            response_text, updated.matched_cars
-        )
+        response_text, reflection_warnings = reflect_and_guard(response_text, updated.matched_cars)
 
         # Notes are per-turn instructions. Carrying them forward would keep
         # telling the model about a constraint change several turns after the

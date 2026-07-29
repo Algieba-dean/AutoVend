@@ -178,7 +178,6 @@ class SessionState(BaseModel):
     last_compressed_turn: int = 0
 
 
-
 class AgentInput(BaseModel):
     """
     Everything the Agent needs to process one conversation turn.

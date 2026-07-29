@@ -2,8 +2,9 @@
 Unit tests for Unstructured Data Parser & TOML Converter (src/ingestion/unstructured_parser.py).
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 import toml
 
 from src.ingestion.unstructured_parser import UnstructuredDataParser, VehicleTOMLConverter
@@ -15,7 +16,10 @@ def test_parse_html_and_text():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         html_file = Path(tmpdir) / "spec.html"
-        html_file.write_text("<html><body><h1>车型：小米SU7</h1><p>价格：21.59万 纯电SUV</p></body></html>", encoding="utf-8")
+        html_file.write_text(
+            "<html><body><h1>车型：小米SU7</h1><p>价格：21.59万 纯电SUV</p></body></html>",
+            encoding="utf-8",
+        )
 
         text = parser.parse_file(html_file)
         assert "小米SU7" in text
@@ -28,7 +32,9 @@ def test_convert_file_to_toml():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         input_file = Path(tmpdir) / "input.txt"
-        input_file.write_text("车型：理想L7 品牌：理想 价格：30.18万 增程式 纯电续航210km 中大型SUV", encoding="utf-8")
+        input_file.write_text(
+            "车型：理想L7 品牌：理想 价格：30.18万 增程式 纯电续航210km 中大型SUV", encoding="utf-8"
+        )
 
         output_dir = Path(tmpdir) / "toml_out"
         toml_path = converter.convert_file_to_toml(input_file, output_dir)

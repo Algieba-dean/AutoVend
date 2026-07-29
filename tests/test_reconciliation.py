@@ -3,7 +3,7 @@ Unit tests for Constraint Reconciliation Engine in AutoVend Agent.
 """
 
 from src.agent.reconciliation import reconcile_constraints
-from src.agent.schemas import ExplicitNeeds, SessionState, UserProfile, VehicleNeeds
+from src.agent.schemas import SessionState
 
 
 def test_reconcile_budget_vs_brand():

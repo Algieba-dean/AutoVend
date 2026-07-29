@@ -6,10 +6,10 @@ and detects Out-of-Domain / vocabulary query drift to trigger automated alerts.
 """
 
 import logging
-import math
 import time
 from collections import deque
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,9 @@ class RetrievalMetricsSnapshot(BaseModel):
 class QueryDriftAlert(BaseModel):
     """Structured alert emitted when query drift or performance degradation occurs."""
 
-    alert_type: str  # e.g. "LOW_CONFIDENCE", "ZERO_RESULT_SPIKE", "OUT_OF_DOMAIN_DRIFT", "LATENCY_DRIFT"
+    alert_type: (
+        str  # e.g. "LOW_CONFIDENCE", "ZERO_RESULT_SPIKE", "OUT_OF_DOMAIN_DRIFT", "LATENCY_DRIFT"
+    )
     severity: str  # "WARNING" | "CRITICAL"
     message: str
     metrics_summary: Dict[str, Any]
@@ -55,7 +57,7 @@ class RAGEvalMonitor:
         self.low_score_threshold = low_score_threshold
         self.max_latency_ms_threshold = max_latency_ms_threshold
         self.ood_alert_ratio_threshold = ood_alert_ratio_threshold
-        
+
         self.window: deque[RetrievalMetricsSnapshot] = deque(maxlen=window_size)
 
     def record_retrieval(
@@ -72,11 +74,15 @@ class RAGEvalMonitor:
         Returns:
             List of generated QueryDriftAlerts (if any thresholds breached).
         """
-        top1_score = results[0].score if (results and hasattr(results[0], "score")) else (
-            results[0].get("score", 0.0) if (results and isinstance(results[0], dict)) else 0.0
+        top1_score = (
+            results[0].score
+            if (results and hasattr(results[0], "score"))
+            else (
+                results[0].get("score", 0.0) if (results and isinstance(results[0], dict)) else 0.0
+            )
         )
         result_count = len(results)
-        is_zero = (result_count == 0 or candidate_count == 0)
+        is_zero = result_count == 0 or candidate_count == 0
 
         # Simple Out-of-Domain heuristic check for non-automotive topics
         is_ood = self._detect_out_of_domain(query_text)
@@ -101,7 +107,18 @@ class RAGEvalMonitor:
         """Heuristic check for query domain drift (e.g. non-automotive prompts)."""
         if not text:
             return False
-        ood_keywords = ["火锅", "烧烤", "代码", "python", "股市", "股票", "天气", "旅游", "电影", "游戏"]
+        ood_keywords = [
+            "火锅",
+            "烧烤",
+            "代码",
+            "python",
+            "股市",
+            "股票",
+            "天气",
+            "旅游",
+            "电影",
+            "游戏",
+        ]
         text_lower = text.lower()
         return any(kw in text_lower for kw in ood_keywords)
 
@@ -116,7 +133,10 @@ class RAGEvalMonitor:
                     alert_type="ZERO_RESULT_SPIKE",
                     severity="CRITICAL",
                     message=f"检索出现空候选结果！Query: '{current.query_text}'",
-                    metrics_summary={"query": current.query_text, "degrade_level": current.degrade_level},
+                    metrics_summary={
+                        "query": current.query_text,
+                        "degrade_level": current.degrade_level,
+                    },
                 )
             )
 
@@ -148,7 +168,7 @@ class RAGEvalMonitor:
                     QueryDriftAlert(
                         alert_type="OUT_OF_DOMAIN_DRIFT",
                         severity="WARNING",
-                        message=f"检测到 Query 语义漂移！非汽车领域提问比例达到 {ood_ratio*100:.1f}%",
+                        message=f"检测到 Query 语义漂移！非汽车领域提问比例达到 {ood_ratio * 100:.1f}%",
                         metrics_summary={
                             "window_size": total_samples,
                             "ood_ratio": round(ood_ratio, 3),
@@ -163,7 +183,7 @@ class RAGEvalMonitor:
                     QueryDriftAlert(
                         alert_type="LOW_CONFIDENCE_DRIFT",
                         severity="WARNING",
-                        message=f"滑动窗口内低置信度结果比例较高: {low_score_ratio*100:.1f}%",
+                        message=f"滑动窗口内低置信度结果比例较高: {low_score_ratio * 100:.1f}%",
                         metrics_summary={
                             "window_size": total_samples,
                             "low_score_ratio": round(low_score_ratio, 3),

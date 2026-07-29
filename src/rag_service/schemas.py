@@ -4,6 +4,7 @@ Defines protocol boundaries for RAG requests, responses, and spec comparisons.
 """
 
 from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -11,10 +12,16 @@ class VehicleQueryRequest(BaseModel):
     """Request payload for vehicle retrieval."""
 
     query_text: str = Field(..., description="Natural language search query")
-    explicit_needs: Optional[Dict[str, Any]] = Field(default=None, description="Explicit structured needs")
-    implicit_needs: Optional[Dict[str, Any]] = Field(default=None, description="Implicit preference labels")
+    explicit_needs: Optional[Dict[str, Any]] = Field(
+        default=None, description="Explicit structured needs"
+    )
+    implicit_needs: Optional[Dict[str, Any]] = Field(
+        default=None, description="Implicit preference labels"
+    )
     top_k: int = Field(default=5, ge=1, le=50, description="Number of candidate vehicles to return")
-    enable_rerank: bool = Field(default=True, description="Enable Cross-Encoder reranking / refinement")
+    enable_rerank: bool = Field(
+        default=True, description="Enable Cross-Encoder reranking / refinement"
+    )
 
 
 class VehicleSearchResult(BaseModel):
@@ -46,7 +53,8 @@ class SpecCompareRequest(BaseModel):
 
     car_models: List[str] = Field(..., min_length=2, description="List of car models to compare")
     target_features: Optional[List[str]] = Field(
-        default=None, description="Specific feature categories to compare (e.g. price, powertrain, safety)"
+        default=None,
+        description="Specific feature categories to compare (e.g. price, powertrain, safety)",
     )
 
 

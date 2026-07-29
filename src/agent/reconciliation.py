@@ -8,10 +8,11 @@ and generates targeted system instructions for trade-off resolution.
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from typing import Dict, List, Optional
 
-from src.agent.schemas import SessionState, UserProfile, VehicleNeeds
+from pydantic import BaseModel
+
+from src.agent.schemas import SessionState
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class ConstraintConflict(BaseModel):
 
     def to_system_note(self) -> str:
         """Format conflict into a system note for response generator."""
-        opts = " 或 ".join([f"({i+1}) {opt}" for i, opt in enumerate(self.suggested_options)])
+        opts = " 或 ".join([f"({i + 1}) {opt}" for i, opt in enumerate(self.suggested_options)])
         return (
             f"[系统约束提示 - 需求冲突通知]: {self.description}。"
             f"请在回复中礼貌向客户说明此矛盾，并给出折中选择方案：{opts}。"
@@ -41,13 +42,13 @@ def _parse_budget_max_k_yuan(prize_str: str) -> Optional[float]:
     """
     if not prize_str:
         return None
-    
+
     # Check numbers followed by 万
     matches = re.findall(r"(\d+(?:\.\d+)?)\s*万", prize_str)
     if matches:
         nums = [float(m) for m in matches]
         return max(nums)
-    
+
     # Check raw numbers
     matches_raw = re.findall(r"(\d+)", prize_str)
     if matches_raw:
@@ -57,7 +58,7 @@ def _parse_budget_max_k_yuan(prize_str: str) -> Optional[float]:
         if val > 1000:
             return val / 10000.0
         return val
-        
+
     return None
 
 
@@ -121,7 +122,7 @@ def check_budget_vs_brand_or_class(state: SessionState) -> Optional[ConstraintCo
                 conflicting_fields=["explicit.prize", "explicit.vehicle_category_bottom"],
                 description=f"客户预算上限为 {budget_k:.0f} 万元，但希望选购 {explicit.vehicle_category_bottom}（市场均价通常在 {min_price:.0f} 万以上）",
                 suggested_options=[
-                    f"调整至中型/紧凑型车型（如中型SUV/MPV）",
+                    "调整至中型/紧凑型车型（如中型SUV/MPV）",
                     f"适当提高预算至 {min_price:.0f} 万元左右",
                 ],
             )
@@ -178,7 +179,9 @@ def check_size_vs_parking(state: SessionState) -> Optional[ConstraintConflict]:
 
     is_narrow = any(k in parking for k in ["窄车位", "立体车库", "老旧小区", "难停车"])
     is_novice = any(k in driver for k in ["新手", "刚拿驾照", "女新手"])
-    is_huge = any(k in category or k in implicit_space for k in ["大型", "全尺寸", "5米以上", "大型MPV"])
+    is_huge = any(
+        k in category or k in implicit_space for k in ["大型", "全尺寸", "5米以上", "大型MPV"]
+    )
 
     if (is_narrow or is_novice) and is_huge:
         return ConstraintConflict(

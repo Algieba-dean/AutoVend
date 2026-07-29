@@ -10,7 +10,8 @@ import json
 import logging
 import time
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 from src.filter.vehicle_db import VehicleDB
@@ -62,7 +63,9 @@ class IncrementalIngestionPipeline:
     UPSERTS into SQLite, ChromaDB vector store, and BM25 index.
     """
 
-    def __init__(self, db: Optional[VehicleDB] = None, hybrid_pipeline: Optional[HybridPipeline] = None):
+    def __init__(
+        self, db: Optional[VehicleDB] = None, hybrid_pipeline: Optional[HybridPipeline] = None
+    ):
         self.db = db or VehicleDB()
         self.hybrid_pipeline = hybrid_pipeline
         self.checksum_store: Dict[str, str] = {}

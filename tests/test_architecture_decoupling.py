@@ -2,7 +2,7 @@
 Unit tests for Architecture Decoupling & Agent Plugin Pipeline (tests/test_architecture_decoupling.py).
 """
 
-from src.agent.plugins import AgentPluginPipeline, BattlecardPlugin, ConstraintReconcilerPlugin, ReflectionGuardPlugin
+from src.agent.plugins import AgentPluginPipeline
 from src.agent.schemas import SessionState
 from src.core.container import ServiceContainer
 from src.core.interfaces import BaseRAGService, RAGQueryRequest, RAGQueryResponse

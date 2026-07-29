@@ -10,6 +10,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 from src.filter.vehicle_db import VehicleDB
+from src.rag_service.eval_monitor import RAGEvalMonitor
 from src.rag_service.reranker import RankRefiner
 from src.rag_service.schemas import (
     SpecCompareRequest,
@@ -21,7 +22,6 @@ from src.rag_service.schemas import (
 )
 from src.retrieval.adapters import hybrid_result_to_cars, needs_to_query_text
 from src.retrieval.hybrid_pipeline import HybridPipeline, build_default_pipeline
-from src.rag_service.eval_monitor import RAGEvalMonitor
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class RAGService:
             VehicleQueryResponse object.
         """
         start_time = time.time()
-        
+
         # Formulate enriched query text
         if request.explicit_needs or request.implicit_needs:
             query_text = needs_to_query_text(request.explicit_needs, request.implicit_needs)

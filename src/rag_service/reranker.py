@@ -4,8 +4,8 @@ Refines candidate vehicle ranking using semantic score fusion and feature alignm
 """
 
 import logging
-import re
-from typing import Any, Dict, List
+from typing import List
+
 from src.rag_service.schemas import VehicleSearchResult
 
 logger = logging.getLogger(__name__)

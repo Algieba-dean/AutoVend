@@ -6,8 +6,8 @@ Strips or isolates `<think> ... </think>` and `<thought> ... </thought>` tags fr
 (DeepSeek-R1, Qwen2.5-Coder-Reasoning, Hermes 3) so customer-facing replies stay clean.
 """
 
-import re
 import logging
+import re
 from typing import Tuple
 
 logger = logging.getLogger(__name__)

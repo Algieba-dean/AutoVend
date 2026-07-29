@@ -2,8 +2,8 @@
 Unit tests for ToolLoopGuardrail and ThinkScrubber (tests/test_hermes_guardrails_and_scrubber.py).
 """
 
-from src.agent.tool_guardrails import ToolLoopGuardrail
 from src.agent.think_scrubber import scrub_think_blocks
+from src.agent.tool_guardrails import ToolLoopGuardrail
 
 
 def test_tool_loop_guardrail_exact_repeat():

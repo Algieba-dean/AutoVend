@@ -5,6 +5,7 @@ Tests FastAPI routes, endpoints, session handling, and fault tolerance.
 """
 
 from fastapi.testclient import TestClient
+
 from backend.app.main import app
 
 client = TestClient(app)

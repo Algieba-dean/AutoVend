@@ -6,7 +6,8 @@ Agent plugins, and DB interfaces without hardcoded cross-layer imports.
 """
 
 import logging
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional
+
 from src.core.interfaces import BaseRAGService
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,7 @@ class ServiceContainer:
         if cls._rag_service is None:
             # Lazy initialize default RAGService if not explicitly registered
             from src.rag_service.service import RAGService
+
             cls._rag_service = RAGService()
             cls._instances["rag_service"] = cls._rag_service
         return cls._rag_service

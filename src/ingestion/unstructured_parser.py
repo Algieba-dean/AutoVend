@@ -5,10 +5,10 @@ Parses raw vehicle data from PDF, DOCX, HTML/Web, and Image formats,
 and converts unstructured text into standard AutoVend TOML vehicle specification files.
 """
 
-import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, Optional
+
 import toml
 
 from src.filter.label_registry import LabelRegistry
@@ -41,13 +41,16 @@ class UnstructuredDataParser:
         """Extract text content from PDF file with automatic Scanned PDF OCR fallback."""
         try:
             import pypdf
+
             reader = pypdf.PdfReader(str(file_path))
             pages_text = [page.extract_text() for page in reader.pages if page.extract_text()]
             full_text = "\n".join(pages_text).strip()
 
             # Scanned PDF Detection: text layer is empty or nearly 0 characters
             if len(full_text) < 20 and len(reader.pages) > 0:
-                logger.info(f"Detected Scanned PDF (纯扫描件) for {file_path.name}, triggering OCR/Vision pipeline.")
+                logger.info(
+                    f"Detected Scanned PDF (纯扫描件) for {file_path.name}, triggering OCR/Vision pipeline."
+                )
                 return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
 
             return full_text
@@ -63,12 +66,15 @@ class UnstructuredDataParser:
         try:
             # Attempt fitz (PyMuPDF) or pdf2image for page rendering
             import fitz  # PyMuPDF
+
             doc = fitz.open(str(file_path))
             ocr_results = []
             for i, page in enumerate(doc):
-                pix = page.get_pixmap()
+                _ = page.get_pixmap()
                 # Represent page rendering for OCR engine
-                ocr_results.append(f"[Scanned PDF Page {i+1} OCR Content]: {page.get_text() or '配置表文本图像抽取'}")
+                ocr_results.append(
+                    f"[Scanned PDF Page {i + 1} OCR Content]: {page.get_text() or '配置表文本图像抽取'}"
+                )
             return "\n".join(ocr_results)
         except Exception as e:
             logger.warning(f"PyMuPDF OCR extraction fallback for {file_path}: {e}")
@@ -79,6 +85,7 @@ class UnstructuredDataParser:
         """Extract text and tables from Word DOCX file."""
         try:
             import docx
+
             doc = docx.Document(str(file_path))
             full_text = [p.text for p in doc.paragraphs if p.text]
             for table in doc.tables:

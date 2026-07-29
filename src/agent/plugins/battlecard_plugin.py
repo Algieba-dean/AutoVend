@@ -3,6 +3,7 @@ Competitor Battlecard Plugin (src/agent/plugins/battlecard_plugin.py).
 """
 
 from typing import Any, Dict
+
 from src.agent.battlecards import match_battlecards
 from src.agent.plugins.base import BaseAgentPlugin
 
@@ -19,7 +20,10 @@ class BattlecardPlugin(BaseAgentPlugin):
         user_input = context.get("user_input", "")
         matched_cards = match_battlecards(user_input)
         if matched_cards:
-            notes = [b.to_system_note() if hasattr(b, "to_system_note") else str(b) for b in matched_cards]
+            notes = [
+                b.to_system_note() if hasattr(b, "to_system_note") else str(b)
+                for b in matched_cards
+            ]
             for note in notes:
                 state.system_notes.append(note)
             context["battlecards_matched"] = len(matched_cards)

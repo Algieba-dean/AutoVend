@@ -168,7 +168,9 @@ def compress_history_incrementally(
     if stage_changed and uncompressed_count < compress_interval:
         end_turn_idx = total_turns
     else:
-        end_turn_idx = start_turn_idx + (uncompressed_count // compress_interval) * compress_interval
+        end_turn_idx = (
+            start_turn_idx + (uncompressed_count // compress_interval) * compress_interval
+        )
 
     slice_turns = turns[start_turn_idx:end_turn_idx]
     if not slice_turns:

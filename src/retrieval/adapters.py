@@ -88,7 +88,7 @@ def needs_to_query_text(explicit: Any, implicit: Optional[Any] = None) -> str:
     key implicit preference dimensions for enhanced dense vector semantic retrieval.
     """
     parts: List[str] = []
-    
+
     # Explicit core attributes
     for attr in (
         "vehicle_category_bottom",

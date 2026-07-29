@@ -243,7 +243,9 @@ class HybridPipeline:
 
         def _do_dense():
             # 优先使用 HyDE 假设性文档进行向量召回，获得极高的 Doc-to-Doc 向量余弦相似度
-            hyde_query = Query(text=transform_res["hyde_document"], top_k=dense_depth, filters=query.filters)
+            hyde_query = Query(
+                text=transform_res["hyde_document"], top_k=dense_depth, filters=query.filters
+            )
             try:
                 return self.retriever.search(hyde_query)
             except Exception:
@@ -258,7 +260,9 @@ class HybridPipeline:
                         hits = self.sparse_index.search(sq, top_k=top_k * FUSION_DEPTH_MULTIPLIER)
                         merged_hits.extend(hits)
                     return merged_hits
-                return self.sparse_index.search(search_query_text, top_k=top_k * FUSION_DEPTH_MULTIPLIER)
+                return self.sparse_index.search(
+                    search_query_text, top_k=top_k * FUSION_DEPTH_MULTIPLIER
+                )
             return []
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
@@ -278,7 +282,9 @@ class HybridPipeline:
                 self.logger.warning(f"BM25 稀疏召回失败: {e}")
 
         if self.sparse_index is not None and sparse_hits:
-            response = self._fuse_with_sparse_hits(sparse_hits, filter_result, top_k, dense_response, result)
+            response = self._fuse_with_sparse_hits(
+                sparse_hits, filter_result, top_k, dense_response, result
+            )
         else:
             response = dense_response
             response.results = response.results[:top_k]

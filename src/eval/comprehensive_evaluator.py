@@ -8,10 +8,9 @@ Unified multi-dimensional benchmark suite covering:
 4. System SLA & Cost: Token Compression Ratio, Latency p95, Degrade Level Distribution
 """
 
-import logging
-import math
 import time
 from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 from src.eval.golden_set import load_golden_set
@@ -51,32 +50,44 @@ class BenchmarkReport(BaseModel):
         for k, v in self.retrieval_metrics.items():
             lines.append(f"| `{k}` | **{v:.4f}** | 确定性客观真值校验 |")
 
-        lines.extend([
-            "",
-            "## 2. RAGAS 大模型裁判指标 (LLM-as-a-Judge Metrics)",
-            "| 维度 | 分数 | 状态 | 说明 |",
-            "|---|---|---|---|",
-        ])
+        lines.extend(
+            [
+                "",
+                "## 2. RAGAS 大模型裁判指标 (LLM-as-a-Judge Metrics)",
+                "| 维度 | 分数 | 状态 | 说明 |",
+                "|---|---|---|---|",
+            ]
+        )
         for k, v in self.ragas_metrics.items():
-            score_str = f"**{v.get('score', 0.0):.4f}**" if isinstance(v, dict) and v.get("score") is not None else "N/A"
+            score_str = (
+                f"**{v.get('score', 0.0):.4f}**"
+                if isinstance(v, dict) and v.get("score") is not None
+                else "N/A"
+            )
             scored = v.get("n_scored", 0) if isinstance(v, dict) else 0
-            lines.append(f"| `{k}` (忠诚/相关/召回/精排) | {score_str} | 成功: {scored} | LLM 语义判断 |")
+            lines.append(
+                f"| `{k}` (忠诚/相关/召回/精排) | {score_str} | 成功: {scored} | LLM 语义判断 |"
+            )
 
-        lines.extend([
-            "",
-            "## 3. Agent 对话治理与 SOP 指标 (Agent Governance)",
-            "| 指标 | 得分 | 说明 |",
-            "|---|---|---|",
-        ])
+        lines.extend(
+            [
+                "",
+                "## 3. Agent 对话治理与 SOP 指标 (Agent Governance)",
+                "| 指标 | 得分 | 说明 |",
+                "|---|---|---|",
+            ]
+        )
         for k, v in self.agent_governance_metrics.items():
             lines.append(f"| `{k}` | **{v:.4f}** | Agent 逻辑与状态控制 |")
 
-        lines.extend([
-            "",
-            "## 4. 系统性能与 SLA (Performance & SLA)",
-            "| 性能维度 | 数值 | 说明 |",
-            "|---|---|---|",
-        ])
+        lines.extend(
+            [
+                "",
+                "## 4. 系统性能与 SLA (Performance & SLA)",
+                "| 性能维度 | 数值 | 说明 |",
+                "|---|---|---|",
+            ]
+        )
         for k, v in self.system_sla_metrics.items():
             lines.append(f"| `{k}` | **{v:.2f}** | 端到端系统开销 |")
 
@@ -89,7 +100,9 @@ class ComprehensiveEvaluator:
     def __init__(self, top_k: int = 5):
         self.top_k = top_k
 
-    def evaluate_retrieval(self, predictions: List[List[str]], ground_truths: List[List[str]]) -> Dict[str, float]:
+    def evaluate_retrieval(
+        self, predictions: List[List[str]], ground_truths: List[List[str]]
+    ) -> Dict[str, float]:
         """Compute deterministic retrieval metrics over predictions and ground truth lists."""
         n = len(predictions)
         if n == 0:

@@ -8,8 +8,9 @@ before allowing Agent to claim task completion or confirm test drive reservation
 
 import logging
 import re
-from typing import Any, Dict, List, Optional, Tuple
-from pydantic import BaseModel, Field
+from typing import List, Tuple
+
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -52,14 +53,19 @@ class VerificationEvidenceLedger:
         """Verify that selected car model exists in repository candidate models."""
         if not car_model:
             return False
-        is_valid = any(car_model.lower() in candidate.lower() or candidate.lower() in car_model.lower() for candidate in candidate_models)
+        is_valid = any(
+            car_model.lower() in candidate.lower() or candidate.lower() in car_model.lower()
+            for candidate in candidate_models
+        )
 
         self.evidences.append(
             VerificationEvidence(
                 evidence_type="CAR_MODEL_VERIFIED",
                 target_value=car_model,
                 verified=is_valid,
-                details=f"在候选库 {len(candidate_models)} 款车型中核验匹配成功" if is_valid else "未在数据库中找到该车型",
+                details=f"在候选库 {len(candidate_models)} 款车型中核验匹配成功"
+                if is_valid
+                else "未在数据库中找到该车型",
             )
         )
         return is_valid

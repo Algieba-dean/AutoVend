@@ -2,7 +2,11 @@
 Unit tests for Self-Reflection & Hallucination Defense Engine in AutoVend Agent.
 """
 
-from src.agent.reflection import check_sales_compliance, reflect_and_guard, verify_numeric_hallucinations
+from src.agent.reflection import (
+    check_sales_compliance,
+    reflect_and_guard,
+    verify_numeric_hallucinations,
+)
 
 
 def test_sales_compliance_risk_interception():

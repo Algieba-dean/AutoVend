@@ -300,7 +300,7 @@ class VehicleDB:
         cols = list(row_data.keys())
         placeholders = ", ".join("?" for _ in cols)
         col_names = ", ".join(f'"{c}"' for c in cols)
-        sql = f'INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})'
+        sql = f"INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})"
         self.conn.execute(sql, [row_data[c] for c in cols])
         self.conn.commit()
 

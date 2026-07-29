@@ -9,6 +9,8 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
+from pydantic import BaseModel
+
 logger = logging.getLogger(__name__)
 
 
@@ -20,7 +22,7 @@ COMPLIANCE_RISK_PATTERNS = [
 ]
 
 
-class ReflectionResult(BaseModel if "BaseModel" in globals() else object):
+class ReflectionResult(BaseModel):
     """Result of inspecting a generated response."""
 
     is_compliant: bool = True
@@ -45,9 +47,7 @@ def check_sales_compliance(text: str) -> Tuple[str, List[str]]:
     return sanitized, warnings
 
 
-def verify_numeric_hallucinations(
-    text: str, matched_cars: List[Dict[str, Any]]
-) -> List[str]:
+def verify_numeric_hallucinations(text: str, matched_cars: List[Dict[str, Any]]) -> List[str]:
     """
     Inspect generated text for numerical vehicle specifications (e.g., range in km, price in 万)
     and verify if they exceed reasonable boundaries of matched_cars.
@@ -63,7 +63,9 @@ def verify_numeric_hallucinations(
         # Get max actual range from matched cars
         actual_ranges = []
         for car in matched_cars:
-            r_val = car.get("electric_range") or car.get("pure_electric_range") or car.get("cltc_range")
+            r_val = (
+                car.get("electric_range") or car.get("pure_electric_range") or car.get("cltc_range")
+            )
             if r_val:
                 r_match = re.search(r"(\d+)", str(r_val))
                 if r_match:

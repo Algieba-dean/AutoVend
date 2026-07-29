@@ -5,7 +5,6 @@ Expands natural language user queries with domain-specific car terminology,
 brand alliances, and usage scenario synonyms to boost RAG Recall and Hit Rate.
 """
 
-import re
 from typing import Dict, List
 
 # Domain Synonym Registry for Automotive RAG

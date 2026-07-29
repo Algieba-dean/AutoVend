@@ -38,8 +38,33 @@ class QueryTransformationEngine:
         pronouns = ["它", "这车", "这几款", "前面的", "刚才提到的"]
         if any(p in rewritten for p in pronouns) and conversation_history:
             # Extract most recent car models or brands mentioned in conversation history
-            models = re.findall(r"([\u4e00-\u9fa5A-Za-z0-9]+(?:-[A-Za-z0-9]+|EV|DM-i|Max|Pro)?)", conversation_history)
-            car_mentions = [m for m in models if any(k in m for k in ["特斯拉", "蔚来", "理想", "问界", "比亚迪", "保时捷", "奔驰", "宝马", "奥迪", "Model", "ES6", "L7", "M7", "SU7"])]
+            models = re.findall(
+                r"([\u4e00-\u9fa5A-Za-z0-9]+(?:-[A-Za-z0-9]+|EV|DM-i|Max|Pro)?)",
+                conversation_history,
+            )
+            car_mentions = [
+                m
+                for m in models
+                if any(
+                    k in m
+                    for k in [
+                        "特斯拉",
+                        "蔚来",
+                        "理想",
+                        "问界",
+                        "比亚迪",
+                        "保时捷",
+                        "奔驰",
+                        "宝马",
+                        "奥迪",
+                        "Model",
+                        "ES6",
+                        "L7",
+                        "M7",
+                        "SU7",
+                    ]
+                )
+            ]
             if car_mentions:
                 recent_car = car_mentions[-1]
                 for p in pronouns:
@@ -56,6 +81,7 @@ class QueryTransformationEngine:
     def expand_query(self, query_text: str) -> str:
         """Expand domain terminology, abbreviations, and informal usage terms."""
         from src.retrieval.query_expander import QueryExpander
+
         return QueryExpander.expand_query(query_text)
 
     # 3. HyDE (Hypothetical Document Embeddings / 假设性文档嵌入)
