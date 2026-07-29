@@ -21,14 +21,18 @@
 * **机制**：`verification_evidence.py` 在 Agent 宣告任务完成或提交结果前，硬性检查是否积累了“客客观验证证据”（如成功执行校验、获取到真实数据）。
 * **精髓**：彻底防止 AI Agent “假装完成”（在未拿到客户完整手机号或试驾 4S 店信息时提前跳转到 `RESERVATION_CONFIRMATION`）。
 
-### 4. 动态偏好与策略积累 (Dynamic Insights Accumulation)
-* **机制**：`insights.py` 在对话流转中动态提取用户的隐性偏好（如“客户特别看重二排静音”、“对电池安全敏感”）并持久化到内存区，为后质推介提供精准依据。
+### 4. 工具死循环熔断与护栏 (Tool Call Loop Circuit-Breaker Guardrails)
+* **机制**：`tool_guardrails.py` 动态追踪单轮对话中的工具调用历史与参数哈希。
+* **精髓**：识别 Agent 是否陷入相同参数的重复工具查询（如连续 2 次用相同关键词查车）或工具连续失败，主动触发熔断指令避开死循环。
+
+### 5. 思考链 `<think>` 标签清洗器 (Chain-of-Thought Scrubber)
+* **机制**：`think_scrubber.py` 构建流式/文本状态机，清洗 DeepSeek-R1、Hermes 3 等 Reasoning LLM 输出的内部思考过程，确保面向客户展示的回复干净、专业。
 
 ---
 
 ## 二、 AutoVend Agent 增强落地方案
 
-结合 AutoVend 的汽车销售与 RAG 业务场景，我们将 Hermes-Agent 的 4 大精髓重构落地为以下 3 个高价值模块：
+结合 AutoVend 的汽车销售与 RAG 业务场景，我们将 Hermes-Agent 的精髓重构落地为以下 5 个高价值模块：
 
 ### 1. `src/agent/error_recovery.py` — Agent 自愈式错误分类与重试流
 - **功能**：捕获属性抽取、SQL 预过滤或 Tool 调度时的结构错配或参数缺失异常，构建 Prompt 自愈 Hint 引导 LLM 自我纠错。
@@ -36,7 +40,13 @@
 ### 2. `src/agent/evidence_ledger.py` — 试驾预约与配置推荐证据存根
 - **功能**：在 `RESERVATION_4S` $\rightarrow$ `RESERVATION_CONFIRMATION` 跳转前，强制校验 `phone_number`（手机号合法性）、`selected_car`（目标车型）与 `store_name`（4S 店）的真实存在性，未集齐证据禁止假装成功。
 
-### 3. `src/agent/memory.py` — 增强型 Head-Body-Tail 结构化记忆压缩
+### 3. `src/agent/tool_guardrails.py` — 工具死循环熔断保护
+- **功能**：监控 Agent 单轮 Tool 调用的重复率与失败率，发现相同参数反复检索时主动触发熔断与引导。
+
+### 4. `src/agent/think_scrubber.py` — 思维链思考块隔离器
+- **功能**：解析并清洗 LLM 输出中的 `<think>...</think>` 内部推演逻辑。
+
+### 5. `src/agent/memory.py` — 增强型 Head-Body-Tail 结构化记忆压缩
 - **功能**：在分层记忆中保留 Profile/Needs (Head)，对历史对话（Body）压缩为 `[已确认需求 / 争议焦点 / 推荐车系历史]` 结构化 Summary，尾部 (Tail) 保留最新 3 轮自然对话。
 
 ---
@@ -45,4 +55,6 @@
 
 1. **`src/agent/error_recovery.py`**：自愈式错误分类器。
 2. **`src/agent/evidence_ledger.py`**：预约证据存根与核验守卫。
-3. **`tests/test_hermes_enhancements.py`**：新增单元测试验证自愈重试与证据存根逻辑。
+3. **`src/agent/tool_guardrails.py`**：工具死循环熔断与护栏。
+4. **`src/agent/think_scrubber.py`**：思维链 `<think>` 标签清洗器。
+5. **`tests/test_hermes_enhancements.py`** & **`tests/test_hermes_guardrails_and_scrubber.py`**：新增单元测试，全部通过 🟢。
