@@ -21,6 +21,7 @@ from src.rag_service.schemas import (
 )
 from src.retrieval.adapters import hybrid_result_to_cars, needs_to_query_text
 from src.retrieval.hybrid_pipeline import HybridPipeline, build_default_pipeline
+from src.rag_service.eval_monitor import RAGEvalMonitor
 
 logger = logging.getLogger(__name__)
 

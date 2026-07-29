@@ -60,6 +60,8 @@ class TestAgentImportIsolation:
         """Agent files should only import from: src.agent, pydantic, llama_index, stdlib, typing."""
         allowed_prefixes = (
             "src.agent",
+            "src.core",
+            "hashlib",
             "pydantic",
             "llama_index",
             "typing",

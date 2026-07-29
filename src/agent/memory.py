@@ -79,6 +79,21 @@ class ChatMemoryManager:
             lines.append(f"{role}: {msg.content}")
         return "\n".join(lines)
 
+    def clear_session(self, session_id: str) -> None:
+        """Clear a session's memory buffer."""
+        if session_id in self._sessions:
+            del self._sessions[session_id]
+            logger.info(f"Cleared memory for session {session_id}")
+
+    def has_session(self, session_id: str) -> bool:
+        """Check if a session exists."""
+        return session_id in self._sessions
+
+    @property
+    def active_sessions(self) -> List[str]:
+        """List all active session IDs."""
+        return list(self._sessions.keys())
+
 
 SUMMARIZE_TURN_SLICE_PROMPT = """你是一个专业的汽车销售对话总结助手。
 
@@ -244,20 +259,3 @@ def _aggregate_hierarchical_summaries(llm, state, fuse_count: int = 3):
         f"{start_turn}-{end_turn}: {aggregated_text[:60]}..."
     )
     return state
-
-
-
-    def clear_session(self, session_id: str) -> None:
-        """Clear a session's memory buffer."""
-        if session_id in self._sessions:
-            del self._sessions[session_id]
-            logger.info(f"Cleared memory for session {session_id}")
-
-    def has_session(self, session_id: str) -> bool:
-        """Check if a session exists."""
-        return session_id in self._sessions
-
-    @property
-    def active_sessions(self) -> List[str]:
-        """List all active session IDs."""
-        return list(self._sessions.keys())
