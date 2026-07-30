@@ -64,7 +64,7 @@ backend/eval_results/
 # uv lock (large, machine-generated)
 uv.lock
 
-# Temporary scratch and cloned repos
-scratch/
-temp_hermes/
+# Temporary directory
+temp/
+
 
