@@ -123,26 +123,32 @@ class SalesAgent:
     ) -> SessionState:
         """
         Record the user's message and extract what it reveals — no generation.
-
-        Split out of `process` so a caller can retrieve vehicles using the needs
-        stated in *this* turn. Retrieving before observing means the index is
-        queried with the previous turn's needs, so a user who says "mid-size
-        electric SUV" gets recommendations for whatever they asked for one turn
-        earlier.
-
-        Args:
-            state: Session state at the start of the turn.
-            user_message: What the user just said.
-            use_tools: Also let the model plan tool calls for this stage. Costs
-                an extra LLM call; the extractors already cover writing fields,
-                so this earns its keep when the turn calls for an action —
-                selecting a vehicle, asking for one specific missing field.
-
-        Returns:
-            An updated copy of the state. The input is not mutated.
         """
+        import uuid
+        from src.privacy.prompt_sanitizer import PromptSanitizer
+        from src.privacy.security_logger import security_audit_logger
+
         updated = state.model_copy(deep=True)
-        self.memory.add_user_message(updated.session_id, user_message)
+        if not updated.trace_id:
+            updated.trace_id = uuid.uuid4().hex[:16]
+
+        # Inspect user_message for Prompt Injection
+        sanitization = PromptSanitizer.inspect_and_sanitize(user_message)
+        effective_message = user_message
+        if sanitization.is_suspicious:
+            security_audit_logger.log_event(
+                event_type="PROMPT_INJECTION",
+                severity="CRITICAL",
+                session_id=updated.session_id,
+                trace_id=updated.trace_id,
+                details={
+                    "raw_input": user_message[:200],
+                    "detected_patterns": sanitization.detected_patterns,
+                },
+            )
+            effective_message = sanitization.sanitized_text
+
+        self.memory.add_user_message(updated.session_id, effective_message)
         conversation_text = self.memory.get_history_as_text(updated.session_id)
 
         before = snapshot(updated)

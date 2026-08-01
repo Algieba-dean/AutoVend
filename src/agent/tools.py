@@ -23,13 +23,99 @@ which tool set which field rather than only that the field changed.
 """
 
 import logging
+import re
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from src.agent.patches import PatchOp, StatePatch, apply_patches, invert
-from src.agent.schemas import SessionState, Stage
+from src.agent.schemas import SessionState, Stage, UserRole
+from src.privacy.security_logger import security_audit_logger
 
 logger = logging.getLogger(__name__)
+
+ROLE_ALLOWED_TOOLS: Dict[UserRole, Tuple[str, ...]] = {
+    UserRole.CUSTOMER: (
+        "record_profile",
+        "record_need",
+        "record_reservation",
+        "request_clarification",
+        "transition_to",
+        "select_vehicle",
+    ),
+    UserRole.SALESPERSON: (
+        "record_profile",
+        "record_need",
+        "record_reservation",
+        "request_clarification",
+        "transition_to",
+        "select_vehicle",
+        "confirm_reservation",
+        "apply_discount",
+        "override_stage",
+    ),
+    UserRole.ADMIN: (
+        "record_profile",
+        "record_need",
+        "record_reservation",
+        "request_clarification",
+        "transition_to",
+        "select_vehicle",
+        "confirm_reservation",
+        "apply_discount",
+        "override_stage",
+    ),
+}
+
+
+def sanitize_tool_args(
+    tool_name: str, args: Dict[str, Any], state: SessionState
+) -> Tuple[Dict[str, Any], bool]:
+    """
+    Sanitize tool call arguments:
+    1. Truncate ultra-long string inputs (>500 chars).
+    2. Strip dangerous HTML/Script tags and SQL injection keywords.
+    """
+    sanitized: Dict[str, Any] = {}
+    was_sanitized = False
+
+    for k, v in args.items():
+        if isinstance(v, str):
+            orig = v
+            if len(v) > 500:
+                v = v[:500]
+                was_sanitized = True
+
+            v_clean = re.sub(
+                r"<(script|iframe|object|embed)[^>]*>.*?</\1>", "", v, flags=re.IGNORECASE
+            )
+            v_clean = re.sub(r"javascript:", "", v_clean, flags=re.IGNORECASE)
+            v_clean = re.sub(
+                r"(\b(SELECT|INSERT|DELETE|UPDATE|DROP|UNION)\b)", "", v_clean, flags=re.IGNORECASE
+            )
+
+            if v_clean != orig:
+                was_sanitized = True
+                v = v_clean
+
+            sanitized[k] = v
+        elif isinstance(v, dict):
+            sub_san, sub_flag = sanitize_tool_args(tool_name, v, state)
+            sanitized[k] = sub_san
+            if sub_flag:
+                was_sanitized = True
+        else:
+            sanitized[k] = v
+
+    if was_sanitized:
+        security_audit_logger.log_event(
+            event_type="ARGS_SANITIZED",
+            severity="WARNING",
+            session_id=state.session_id,
+            trace_id=state.trace_id,
+            details={"tool": tool_name, "raw_args": str(args)[:200]},
+        )
+
+    return sanitized, was_sanitized
 
 
 @dataclass
@@ -377,17 +463,28 @@ def render_catalog(stage: Stage) -> str:
 
 def dispatch(state: SessionState, tool_name: str, args: Dict[str, Any]) -> ToolResult:
     """
-    Run a tool call against the state, enforcing the stage's tool set.
-
-    Two refusals before the handler runs: the tool must exist, and it must be
-    in the current stage's candidate set. The second is the point of this
-    module — a booking recorded during profile gathering is a real failure mode
-    that prompting alone does not prevent.
+    Run a tool call against the state, enforcing RBAC role permissions,
+    stage tool sets, and argument sanitization.
     """
     spec = TOOLS.get(tool_name)
     if spec is None:
         return ToolResult(False, tool_name, f"未知工具：{tool_name}")
 
+    # 1. RBAC UserRole permission check
+    role_allowed = ROLE_ALLOWED_TOOLS.get(state.user_role, ())
+    if tool_name not in role_allowed:
+        msg = f"角色权限不足：当前角色 [{state.user_role.value}] 无权调用工具 [{tool_name}]"
+        logger.warning(f"[{state.session_id}] RBAC refusal: {msg}")
+        security_audit_logger.log_event(
+            event_type="UNAUTHORIZED_TOOL",
+            severity="WARNING",
+            session_id=state.session_id,
+            trace_id=state.trace_id,
+            details={"tool": tool_name, "user_role": state.user_role.value},
+        )
+        return ToolResult(False, tool_name, msg)
+
+    # 2. Stage permission check
     if not is_allowed(state.stage, tool_name):
         allowed = ", ".join(STAGE_TOOLS.get(state.stage, ())) or "无"
         logger.warning(
@@ -399,12 +496,15 @@ def dispatch(state: SessionState, tool_name: str, args: Dict[str, Any]) -> ToolR
             f"当前阶段（{state.stage.value}）不允许调用 {tool_name}，可用工具：{allowed}",
         )
 
-    missing = [name for name in spec.required if not args.get(name)]
+    # 3. Argument sanitization
+    sanitized_args, _ = sanitize_tool_args(tool_name, args, state)
+
+    missing = [name for name in spec.required if not sanitized_args.get(name)]
     if missing:
         return ToolResult(False, tool_name, f"缺少必需参数：{'、'.join(missing)}")
 
     try:
-        return spec.handler(state, args)
+        return spec.handler(state, sanitized_args)
     except Exception as exc:
         logger.error(f"Tool {tool_name} raised: {exc}")
         return ToolResult(False, tool_name, f"工具执行失败：{exc}")

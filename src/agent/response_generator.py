@@ -238,8 +238,14 @@ def generate_response(
 
     # Check for competitor battlecards in conversation text
     from src.agent.battlecards import match_battlecards
+    from src.privacy.prompt_sanitizer import PromptSanitizer
 
     active_notes = list(system_notes or [])
+
+    # Boundary isolation security directive
+    _, _, boundary_directive = PromptSanitizer.wrap_context_boundaries(conversation_history, format_kwargs.get("matched_cars", ""))
+    active_notes.append(boundary_directive)
+
     battlecards = match_battlecards(conversation_history)
     for card in battlecards:
         card_note = card.to_system_note()
@@ -254,9 +260,26 @@ def generate_response(
 
     try:
         response = llm.complete(prompt)
-        return response.text.strip()
+        text = response.text.strip()
+        return redact_output_pii(text)
     except Exception as e:
         logger.error(f"Response generation failed: {e}")
         return (
             "I apologize, but I'm having trouble generating a response. Could you please try again?"
         )
+
+
+def redact_output_pii(text: str) -> str:
+    """
+    Fallback secondary PII redaction on output response before returning to client.
+    Redacts standalone 11-digit mobile numbers (e.g. 13812345678 -> 138****5678).
+    """
+    import re
+    if not text:
+        return text
+
+    def mask_mobile(m):
+        phone = m.group(0)
+        return f"{phone[:3]}****{phone[7:]}"
+
+    return re.sub(r"\b(1[3-9]\d)\d{4}(\d{4})\b", mask_mobile, text)

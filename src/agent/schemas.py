@@ -26,6 +26,14 @@ class Stage(str, Enum):
     FAREWELL = "farewell"
 
 
+class UserRole(str, Enum):
+    """User role for RBAC permissions."""
+
+    CUSTOMER = "customer"
+    SALESPERSON = "salesperson"
+    ADMIN = "admin"
+
+
 class StageInfo(BaseModel):
     """Stage transition info included in API responses."""
 
@@ -131,6 +139,9 @@ class SessionState(BaseModel):
     """
 
     session_id: str = ""
+    tenant_id: str = "default_tenant"
+    trace_id: str = ""
+    user_role: UserRole = UserRole.CUSTOMER
     stage: Stage = Stage.WELCOME
     previous_stage: str = ""
     profile: UserProfile = Field(default_factory=UserProfile)
