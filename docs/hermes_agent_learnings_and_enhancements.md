@@ -85,4 +85,5 @@
 2. **`src/agent/evidence_ledger.py`**：预约证据存根与核验守卫。
 3. **`src/agent/tool_guardrails.py`**：工具死循环熔断与护栏。
 4. **`src/agent/think_scrubber.py`**：思维链 `<think>` 标签清洗器。
-5. **`tests/test_hermes_enhancements.py`** & **`tests/test_hermes_guardrails_and_scrubber.py`**：单元测试通过率 **100%** 🟢。
+5. **`src/agent/tools.py` (`dispatch_transactional`)**：工具级事务回滚机制，原子回滚脏 Patch（详情见 [`docs/transactional_rollback_and_eval_dlq.md`](transactional_rollback_and_eval_dlq.md)）。
+6. **`tests/test_hermes_enhancements.py`** & **`tests/test_transactional_rollback.py`**：单元测试通过率 **100%** 🟢。

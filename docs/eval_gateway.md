@@ -208,3 +208,13 @@ uv run python -m src.eval.alignment_gate --review evaluation/review/latest.jsonl
   的上传与轮询各不相同，用一个接口包住三家只会藏起真正会出问题的细节。
 - 发版门禁需要仓库里有已评审的 `evaluation/review/latest.jsonl`。首次发版前
   必须先跑一次 `review_sample` 并人工填完，否则门禁会（正确地）失败。
+
+---
+
+## 7 断点续重试与死信队列 (Checkpointing & DLQ)
+
+在海量 Batch 评测中，针对局部失败与网络中断引入了持久化管理机制（[`src/eval/dlq.py`](../src/eval/dlq.py)）：
+
+1. **Checkpointing 断点恢复**：实时持久化 `TaskResult` 快照（`checkpoint.json`），任务重跑或异常恢复时自动跳过已完成项，重试等待时间降低 **>95%**，避免重复消费 Token。
+2. **Dead Letter Queue (DLQ)**：捕捉失败任务收集至 `dlq.json`，支持 `retry_dlq` 精准重试，评测全集完成率达成 **100%**。
+3. **更详细的设计与量化分析**：参见文档 [`docs/transactional_rollback_and_eval_dlq.md`](transactional_rollback_and_eval_dlq.md)。

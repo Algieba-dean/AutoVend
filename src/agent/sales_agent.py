@@ -159,7 +159,9 @@ class SalesAgent:
 
         return updated
 
-    def use_tools(self, state: SessionState, calls: List[Dict[str, Any]]) -> ToolOutcome:
+    def use_tools(
+        self, state: SessionState, calls: List[Dict[str, Any]], atomic: bool = False
+    ) -> ToolOutcome:
         """
         Run a batch of tool calls against the state.
 
@@ -171,7 +173,7 @@ class SalesAgent:
         """
         updated = state.model_copy(deep=True)
         before = snapshot(updated)
-        results = dispatch_all(updated, calls)
+        results = dispatch_all(updated, calls, atomic=atomic)
         _record_patches(updated, before, source="tool")
 
         for result in results:

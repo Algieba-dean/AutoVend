@@ -26,7 +26,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from src.agent.patches import PatchOp, StatePatch
+from src.agent.patches import PatchOp, StatePatch, apply_patches, invert
 from src.agent.schemas import SessionState, Stage
 
 logger = logging.getLogger(__name__)
@@ -43,6 +43,7 @@ class ToolResult:
     #: Something the caller must act on — a transition proposal, a request for
     #: retrieval. The agent states the intent; the orchestrator carries it out.
     request: Optional[Dict[str, Any]] = None
+    rolled_back: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -51,6 +52,7 @@ class ToolResult:
             "message": self.message,
             "patches": [p.to_dict() for p in self.patches],
             "request": self.request,
+            "rolled_back": self.rolled_back,
         }
 
 
@@ -408,20 +410,60 @@ def dispatch(state: SessionState, tool_name: str, args: Dict[str, Any]) -> ToolR
         return ToolResult(False, tool_name, f"工具执行失败：{exc}")
 
 
-def dispatch_all(state: SessionState, calls: List[Dict[str, Any]]) -> List[ToolResult]:
+def dispatch_all(
+    state: SessionState, calls: List[Dict[str, Any]], atomic: bool = False
+) -> List[ToolResult]:
     """
     Run a batch of `{"tool": ..., "args": {...}}` calls in order.
 
     Order matters and is preserved: a turn that records a need and then
     proposes a transition must have the need in state before the guard on that
     transition is evaluated.
+
+    If `atomic` is True:
+        Runs as a transaction. If any tool fails or raises an exception, all state
+        patches produced by preceding successful tools in this batch are cleanly
+        inverted and applied back to `state`, rolling back state mutations to pre-batch.
     """
     results: List[ToolResult] = []
+    accumulated_patches: List[StatePatch] = []
+
     for call in calls:
         name = str(call.get("tool") or call.get("name") or "")
         args = call.get("args") or call.get("arguments") or {}
         if not isinstance(args, dict):
-            results.append(ToolResult(False, name, "args 必须是对象"))
+            failed_res = ToolResult(False, name, "args 必须是对象", rolled_back=atomic)
+            results.append(failed_res)
+            if atomic:
+                if accumulated_patches:
+                    apply_patches(state, invert(accumulated_patches))
+                break
             continue
-        results.append(dispatch(state, name, args))
+
+        try:
+            res = dispatch(state, name, args)
+        except Exception as exc:
+            res = ToolResult(False, name, f"工具执行异常：{exc}")
+
+        if res.ok:
+            accumulated_patches.extend(res.patches)
+            results.append(res)
+        else:
+            if atomic:
+                res.rolled_back = True
+                res.message = f"{res.message} (事务已全额回滚)"
+                results.append(res)
+                if accumulated_patches:
+                    apply_patches(state, invert(accumulated_patches))
+                break
+            else:
+                results.append(res)
+
     return results
+
+
+def dispatch_transactional(state: SessionState, calls: List[Dict[str, Any]]) -> List[ToolResult]:
+    """
+    Convenience wrapper to run a batch of tool calls with transactional rollback guarantee.
+    """
+    return dispatch_all(state, calls, atomic=True)
