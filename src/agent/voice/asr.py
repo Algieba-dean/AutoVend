@@ -208,6 +208,20 @@ class WhisperASR:
             res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
             if res.returncode == 0 and Path(out_path).stat().st_size > 0:
                 return out_path
+
+            # Fallback: Treat as raw s16le PCM if container header missing
+            cmd_pcm = [
+                ffmpeg_exe, "-y",
+                "-f", "s16le",
+                "-ar", "16000",
+                "-ac", "1",
+                "-i", in_path,
+                "-c:a", "pcm_s16le",
+                out_path
+            ]
+            res_pcm = subprocess.run(cmd_pcm, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+            if res_pcm.returncode == 0 and Path(out_path).stat().st_size > 0:
+                return out_path
         except Exception as e:
             logger.debug(f"ffmpeg conversion failed: {e}")
         finally:

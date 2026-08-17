@@ -480,12 +480,18 @@ const Chat = () => {
         const avg = sum / dataArray.length;
         setWsAudioLevel(Math.min(100, Math.round(avg * 2)));
 
-        if (avg > 4) {
+        if (avg > 3) {
           // 检测到用户说话
           if (!isSpeakingRef.current) {
             isSpeakingRef.current = true;
             if (wsClientRef.current) {
               wsClientRef.current.startTurn();
+            }
+            if (wsRecorderRef.current && wsRecorderRef.current.state === 'recording') {
+              try {
+                wsRecorderRef.current.stop();
+                wsRecorderRef.current.start(250);
+              } catch (e) {}
             }
           }
           setWsCallState(prev => prev === 'playing' ? 'playing' : 'speaking');
