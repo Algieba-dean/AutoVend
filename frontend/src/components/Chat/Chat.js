@@ -387,7 +387,8 @@ const Chat = () => {
             if (hasText) {
               setMessages(prev => [...prev, { type: 'user', content: recognizedText, isVoice: true, id: Date.now() }]);
             } else {
-              setMessages(prev => [...prev, { type: 'system-asr', content: '🎤 ASR 语音识别完成：未检测到有效声音/环境静音', id: Date.now() }]);
+              setWsCallState('listening');
+              setIsTyping(false);
             }
           } else if (json.type === 'stage_update') {
             if (json.stage) setCurrentStage(json.stage);
@@ -468,52 +469,94 @@ const Chat = () => {
 
       recorder.start(250); // 每 250ms 发送一个音轨切片
 
-      // 5. VAD 音量循环检测
+      // 5. VAD 音量循环检测（基于频段 Peak 音量精准识别人声）
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      const callStartTime = Date.now();
+      let speechConsecutiveFrames = 0;
+      let speechStartTime = 0;
+
       const checkVolume = () => {
         if (!wsStreamRef.current) return;
         analyser.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i];
-        }
-        const avg = sum / dataArray.length;
-        setWsAudioLevel(Math.min(100, Math.round(avg * 2)));
 
-        if (avg > 3) {
-          // 检测到用户说话
-          if (!isSpeakingRef.current) {
-            isSpeakingRef.current = true;
-            if (wsClientRef.current) {
-              wsClientRef.current.startTurn();
-            }
-            if (wsRecorderRef.current && wsRecorderRef.current.state === 'recording') {
-              try {
-                wsRecorderRef.current.stop();
-                wsRecorderRef.current.start(250);
-              } catch (e) {}
-            }
-          }
-          setWsCallState(prev => prev === 'playing' ? 'playing' : 'speaking');
-          if (wsVadTimerRef.current) {
-            clearTimeout(wsVadTimerRef.current);
-            wsVadTimerRef.current = null;
-          }
-        } else if (avg <= 4 && isSpeakingRef.current) {
-          // 用户说话停顿，延迟 1.2 秒自动触发 end_turn
-          if (!wsVadTimerRef.current) {
-            wsVadTimerRef.current = setTimeout(() => {
-              isSpeakingRef.current = false;
-              if (wsRecorderRef.current && wsRecorderRef.current.state === 'recording') {
-                try { wsRecorderRef.current.requestData(); } catch (e) {}
-              }
+        // 聚焦人声主要频段 (0 - 5.5 kHz，即前 64 个频段)，取 Peak 峰值音量
+        let maxVol = 0;
+        const voiceBins = Math.min(64, dataArray.length);
+        for (let i = 0; i < voiceBins; i++) {
+          if (dataArray[i] > maxVol) maxVol = dataArray[i];
+        }
+        setWsAudioLevel(Math.min(100, Math.round(maxVol / 2.5)));
+
+        // 当 AI 正在语音播报 (playing) 或思考中 (thinking) 时，禁用 VAD 人声检测，防止扬声器播报的声音倒灌回麦克风误识别！
+        if (isAudioPlayingRef.current || wsCallState === 'playing' || wsCallState === 'thinking') {
+          speechConsecutiveFrames = 0;
+          animFrameRef.current = requestAnimationFrame(checkVolume);
+          return;
+        }
+
+        // 开启通话前 800ms 为麦克风设备预热期，忽略声音检测，防止硬件爆音误触发
+        if (Date.now() - callStartTime < 800) {
+          animFrameRef.current = requestAnimationFrame(checkVolume);
+          return;
+        }
+
+        const SPEECH_PEAK_THRESHOLD = 25;  // 说话峰值音量门槛 (大于 25 轻松命中说话)
+        const SILENCE_PEAK_THRESHOLD = 12; // 静音峰值音量门槛
+
+        if (maxVol >= SPEECH_PEAK_THRESHOLD) {
+          speechConsecutiveFrames++;
+          // 连续 2 帧（约 100ms）满足峰值门槛即确认为说话
+          if (speechConsecutiveFrames >= 2) {
+            if (!isSpeakingRef.current) {
+              isSpeakingRef.current = true;
+              speechStartTime = Date.now();
+              setAsrTelemetry({ text: '🎙️ 正在实时接收您的语音...', status: 'recording' });
               if (wsClientRef.current) {
-                wsClientRef.current.endTurn();
-                setWsCallState('thinking');
-                setIsTyping(true);
+                wsClientRef.current.startTurn();
               }
+              if (wsRecorderRef.current && wsRecorderRef.current.state === 'recording') {
+                try {
+                  wsRecorderRef.current.stop();
+                  wsRecorderRef.current.start(250);
+                } catch (e) {}
+              }
+            }
+            setWsCallState(prev => prev === 'playing' ? 'playing' : 'speaking');
+            if (wsVadTimerRef.current) {
+              clearTimeout(wsVadTimerRef.current);
               wsVadTimerRef.current = null;
-            }, 1200);
+            }
+          }
+        } else if (maxVol <= SILENCE_PEAK_THRESHOLD) {
+          speechConsecutiveFrames = 0;
+          if (isSpeakingRef.current) {
+            // 静音持续 1.2 秒自动结束本轮说话
+            if (!wsVadTimerRef.current) {
+              wsVadTimerRef.current = setTimeout(() => {
+                const speechDuration = Date.now() - speechStartTime;
+                isSpeakingRef.current = false;
+                wsVadTimerRef.current = null;
+
+                // 若有效说话时长小于 300ms（短暂咳嗽/气音），静默重置
+                if (speechDuration < 300) {
+                  setWsCallState('listening');
+                  if (wsClientRef.current) {
+                    wsClientRef.current.startTurn();
+                  }
+                  return;
+                }
+
+                if (wsRecorderRef.current && wsRecorderRef.current.state === 'recording') {
+                  try { wsRecorderRef.current.requestData(); } catch (e) {}
+                }
+                if (wsClientRef.current) {
+                  wsClientRef.current.endTurn();
+                  setWsCallState('thinking');
+                  setIsTyping(true);
+                  setAsrTelemetry({ text: '⌛ 正在识别语音中...', status: 'processing' });
+                }
+              }, 1200);
+            }
           }
         }
 
@@ -534,6 +577,7 @@ const Chat = () => {
         wsVadTimerRef.current = null;
       }
       isSpeakingRef.current = false;
+      setAsrTelemetry({ text: '⌛ 正在识别您的语音...', status: 'processing' });
       if (wsRecorderRef.current && wsRecorderRef.current.state === 'recording') {
         try { wsRecorderRef.current.requestData(); } catch (e) {}
       }

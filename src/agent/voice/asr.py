@@ -123,10 +123,16 @@ class WhisperASR:
         start_time = time.time()
         target_lang = language or "zh"
 
+        domain_prompt = "以下是关于新能源汽车、预算价格、推荐选车、试驾预约的中文对话："
+
         segments_iter, info = self.model.transcribe(
             audio_path,
             language=target_lang,
-            beam_size=1,
+            beam_size=2,
+            initial_prompt=domain_prompt,
+            no_speech_threshold=0.85,
+            log_prob_threshold=-2.0,
+            compression_ratio_threshold=3.5,
             vad_filter=True,
             vad_parameters=dict(
                 min_silence_duration_ms=200,
@@ -153,7 +159,11 @@ class WhisperASR:
             segments_iter_fallback, info_fallback = self.model.transcribe(
                 audio_path,
                 language=target_lang,
-                beam_size=1,
+                beam_size=2,
+                initial_prompt=domain_prompt,
+                no_speech_threshold=0.85,
+                log_prob_threshold=-2.0,
+                compression_ratio_threshold=3.5,
                 vad_filter=False,
             )
             for seg in segments_iter_fallback:
