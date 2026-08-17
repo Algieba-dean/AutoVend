@@ -121,14 +121,15 @@ class WhisperASR:
         """
         audio_path = str(audio_path)
         start_time = time.time()
+        target_lang = language or "zh"
 
         segments_iter, info = self.model.transcribe(
             audio_path,
-            language=language,
+            language=target_lang,
             beam_size=1,
             vad_filter=True,
             vad_parameters=dict(
-                min_silence_duration_ms=300,
+                min_silence_duration_ms=200,
                 speech_pad_ms=200,
             ),
         )
@@ -151,7 +152,7 @@ class WhisperASR:
         if not full_text_parts:
             segments_iter_fallback, info_fallback = self.model.transcribe(
                 audio_path,
-                language=language,
+                language=target_lang,
                 beam_size=1,
                 vad_filter=False,
             )

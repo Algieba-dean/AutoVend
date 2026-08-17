@@ -254,7 +254,7 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
                         logger.info(f"[{session_id}] Processing turn: {len(audio_buffer)} bytes audio.")
 
                         # ASR
-                        asr_result = _asr.transcribe_bytes(bytes(audio_buffer))
+                        asr_result = _asr.transcribe_bytes(bytes(audio_buffer), language="zh")
                         logger.info(f"[{session_id}] ASR result: '{asr_result.text}' ({asr_result.processing_time_ms}ms)")
 
                         await websocket.send_json(
