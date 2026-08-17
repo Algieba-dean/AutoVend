@@ -61,6 +61,8 @@ class TestAgentImportIsolation:
         allowed_prefixes = (
             "src.agent",
             "src.core",
+            "src.privacy",
+            "uuid",
             "hashlib",
             "pydantic",
             "llama_index",

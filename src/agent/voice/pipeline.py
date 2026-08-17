@@ -158,7 +158,7 @@ class VoicePipeline:
         # Step 3: TTS
         tts_result = TTSResult(audio_bytes=b"", voice=self.tts.voice)
         if not skip_tts and agent_result.response_text:
-            tts_result = asyncio.run(self.tts.synthesize_async(agent_result.response_text))
+            tts_result = self.tts.synthesize(agent_result.response_text)
 
         total_time = (time.time() - pipeline_start) * 1000
 
@@ -227,7 +227,7 @@ class VoicePipeline:
         # Step 3: TTS
         tts_result = TTSResult(audio_bytes=b"", voice=self.tts.voice)
         if not skip_tts and agent_result.response_text:
-            tts_result = asyncio.run(self.tts.synthesize_async(agent_result.response_text))
+            tts_result = self.tts.synthesize(agent_result.response_text)
 
         total_time = (time.time() - pipeline_start) * 1000
 

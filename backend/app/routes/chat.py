@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 from typing import Dict, Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi.responses import StreamingResponse
 
 from backend.app.models.schemas import (
     ChatMessage,
@@ -418,6 +419,69 @@ async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
         matched_car_models=result.session_state.matched_cars,
         reservation_info=result.session_state.reservation,
     )
+
+
+@router.post("/stream")
+async def send_message_stream(request: ChatRequest):
+    """
+    Send a message and stream SSE events (metadata, token deltas, done).
+    """
+    agent = _get_agent()
+    state = _sessions.get(request.session_id) or _restore_session(request.session_id, agent)
+    if state is None:
+        profile = request.profile or UserProfile()
+        state = SessionState(session_id=request.session_id, profile=profile)
+        _sessions[request.session_id] = state
+
+    decision = _classify(request.message, request.session_id)
+    safe_message, pii_found = _mask(request.message, request.session_id)
+
+    skip_extraction = (
+        decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
+    )
+
+    if skip_extraction:
+        state = agent.remember(state, safe_message)
+    else:
+        state = agent.observe(state, safe_message)
+
+    if decision is not None and decision.intent == INTERRUPT_INTENT:
+        state = _rollback_on_constraint_change(state, decision)
+
+    retrieved_cars = _retrieve_cars(state)
+
+    async def sse_event_generator():
+        import json
+        stream_gen = agent.respond_stream(state, retrieved_cars)
+        for event_type, data in stream_gen:
+            if event_type == "metadata":
+                updated_state = data["session_state"]
+                stage_changed = data["stage_changed"]
+                _unmask_state(updated_state, request.session_id)
+                _sessions[request.session_id] = updated_state
+
+                meta_payload = {
+                    "stage": {
+                        "previous_stage": updated_state.previous_stage,
+                        "current_stage": updated_state.stage.value,
+                        "stage_changed": stage_changed,
+                    },
+                    "profile": updated_state.profile.model_dump(),
+                    "needs": updated_state.needs.model_dump(),
+                    "matched_car_models": updated_state.matched_cars,
+                    "reservation_info": updated_state.reservation.model_dump(),
+                }
+                yield f"event: metadata\ndata: {json.dumps(meta_payload, ensure_ascii=False)}\n\n"
+            elif event_type == "delta":
+                unmasked_delta = _unmask(data, request.session_id)
+                token_payload = {"delta": unmasked_delta}
+                yield f"event: token\ndata: {json.dumps(token_payload, ensure_ascii=False)}\n\n"
+            elif event_type == "done":
+                unmasked_text = _unmask(data, request.session_id)
+                done_payload = {"response_text": unmasked_text}
+                yield f"event: done\ndata: {json.dumps(done_payload, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(sse_event_generator(), media_type="text/event-stream")
 
 
 @router.get("/session/{session_id}/messages")

@@ -188,6 +188,10 @@ class SessionState(BaseModel):
     #: Last dialogue turn index that has been compressed into summary_history.
     last_compressed_turn: int = 0
 
+    #: Sub-DAG execution state for complex local stage workflows.
+    subdag_state: Dict[str, Any] = Field(default_factory=dict)
+
+
 
 class AgentInput(BaseModel):
     """

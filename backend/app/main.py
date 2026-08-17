@@ -115,7 +115,7 @@ async def lifespan(app: FastAPI):
         chat.set_pii_interceptor(interceptor)
         _startup_status["pii_ready"] = True
         logger.info("PII interceptor ready.")
-    except Exception as e:
+    except (Exception, SystemExit) as e:
         _startup_status["pii_error"] = str(e)
         logger.warning(
             f"PII interceptor unavailable: {e}. Messages will NOT be masked "

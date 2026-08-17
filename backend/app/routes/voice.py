@@ -242,13 +242,21 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
 
                 msg_type = data.get("type", "")
 
-                if msg_type == "end_turn":
+                if msg_type == "start_turn":
+                    # Speech started: clear old ambient silence buffer
+                    audio_buffer.clear()
+                    logger.info(f"[{session_id}] User speech started — audio buffer cleared.")
+
+                elif msg_type == "end_turn":
                     # Process accumulated audio
                     if audio_buffer:
                         state = _voice_sessions[session_id]
+                        logger.info(f"[{session_id}] Processing turn: {len(audio_buffer)} bytes audio.")
 
                         # ASR
                         asr_result = _asr.transcribe_bytes(bytes(audio_buffer))
+                        logger.info(f"[{session_id}] ASR result: '{asr_result.text}' ({asr_result.processing_time_ms}ms)")
+
                         await websocket.send_json(
                             {
                                 "type": "transcription",

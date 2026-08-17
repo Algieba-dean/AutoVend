@@ -269,6 +269,73 @@ def generate_response(
         )
 
 
+def generate_response_stream(
+    llm: LLM,
+    stage: Stage,
+    conversation_history: str,
+    profile: UserProfile,
+    needs: VehicleNeeds,
+    matched_cars: List[Dict[str, Any]],
+    reservation: ReservationInfo,
+    system_notes: Optional[List[str]] = None,
+):
+    """
+    Stream response token deltas from LLM.
+    Yields string deltas token by token.
+    """
+    prompt_template = STAGE_PROMPTS.get(stage, STAGE_PROMPTS[Stage.WELCOME])
+
+    format_kwargs = {
+        "conversation_history": conversation_history,
+        "profile": profile.model_dump_json(indent=2),
+        "missing_profile_fields": _get_missing_profile_fields(profile),
+        "explicit_needs": needs.explicit.model_dump_json(indent=2),
+        "implicit_needs": needs.implicit.model_dump_json(indent=2),
+        "missing_needs_fields": _get_missing_needs_fields(needs),
+        "matched_cars": _format_matched_cars(matched_cars),
+        "reservation": reservation.model_dump_json(indent=2),
+        "missing_reservation_fields": _get_missing_reservation_fields(reservation),
+        "reservation_driver": reservation.test_driver,
+        "reservation_date": reservation.reservation_date,
+        "reservation_time": reservation.reservation_time,
+        "reservation_location": reservation.reservation_location,
+        "reservation_phone": reservation.reservation_phone_number,
+    }
+
+    prompt = prompt_template.format(**format_kwargs)
+
+    from src.agent.battlecards import match_battlecards
+    from src.privacy.prompt_sanitizer import PromptSanitizer
+
+    active_notes = list(system_notes or [])
+
+    _, _, boundary_directive = PromptSanitizer.wrap_context_boundaries(
+        conversation_history, format_kwargs.get("matched_cars", "")
+    )
+    active_notes.append(boundary_directive)
+
+    battlecards = match_battlecards(conversation_history)
+    for card in battlecards:
+        card_note = card.to_system_note()
+        if card_note not in active_notes:
+            active_notes.append(card_note)
+
+    if active_notes:
+        prompt = prompt + "\n\n本轮系统指令与近期状态变化：\n" + "\n".join(active_notes)
+
+    try:
+        response_gen = llm.stream_complete(prompt)
+        for response_chunk in response_gen:
+            delta = getattr(response_chunk, "delta", None)
+            if delta is None and hasattr(response_chunk, "text"):
+                delta = response_chunk.text
+            if delta:
+                yield delta
+    except Exception as e:
+        logger.error(f"Streaming response generation failed: {e}")
+        yield "I apologize, but I'm having trouble generating a response."
+
+
 def redact_output_pii(text: str) -> str:
     """
     Fallback secondary PII redaction on output response before returning to client.

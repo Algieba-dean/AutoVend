@@ -10,6 +10,8 @@ Provides speech-to-text capabilities with support for:
 
 import io
 import logging
+import os
+import subprocess
 import tempfile
 import time
 from dataclasses import dataclass, field
@@ -21,6 +23,16 @@ import soundfile as sf
 from faster_whisper import WhisperModel
 
 logger = logging.getLogger(__name__)
+
+# Ensure imageio_ffmpeg binary is in PATH
+try:
+    import imageio_ffmpeg
+    ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+    ffmpeg_dir = os.path.dirname(ffmpeg_exe)
+    if ffmpeg_dir not in os.environ.get("PATH", ""):
+        os.environ["PATH"] = ffmpeg_dir + ":" + os.environ.get("PATH", "")
+except Exception:
+    pass
 
 # Default model: "base" balances speed vs accuracy for real-time use
 DEFAULT_MODEL_SIZE = "base"
@@ -124,15 +136,38 @@ class WhisperASR:
         segments = []
         full_text_parts = []
         for seg in segments_iter:
-            ts = TranscriptionSegment(
-                text=seg.text.strip(),
-                start=seg.start,
-                end=seg.end,
-                language=info.language,
-                confidence=1.0 - seg.no_speech_prob,
+            if seg.text.strip():
+                ts = TranscriptionSegment(
+                    text=seg.text.strip(),
+                    start=seg.start,
+                    end=seg.end,
+                    language=info.language,
+                    confidence=1.0 - seg.no_speech_prob,
+                )
+                segments.append(ts)
+                full_text_parts.append(seg.text.strip())
+
+        # Fallback pass if VAD filtered out short / quiet audio
+        if not full_text_parts:
+            segments_iter_fallback, info_fallback = self.model.transcribe(
+                audio_path,
+                language=language,
+                beam_size=5,
+                vad_filter=False,
             )
-            segments.append(ts)
-            full_text_parts.append(seg.text.strip())
+            for seg in segments_iter_fallback:
+                if seg.text.strip():
+                    ts = TranscriptionSegment(
+                        text=seg.text.strip(),
+                        start=seg.start,
+                        end=seg.end,
+                        language=info_fallback.language,
+                        confidence=1.0 - seg.no_speech_prob,
+                    )
+                    segments.append(ts)
+                    full_text_parts.append(seg.text.strip())
+            if full_text_parts:
+                info = info_fallback
 
         processing_time = (time.time() - start_time) * 1000
 
@@ -145,6 +180,40 @@ class WhisperASR:
             processing_time_ms=round(processing_time, 2),
         )
 
+    def _convert_bytes_to_wav(self, audio_bytes: bytes) -> Optional[str]:
+        """Convert container audio bytes (WebM, Opus, Ogg, MP3) to a 16kHz mono WAV file using ffmpeg."""
+        try:
+            import imageio_ffmpeg
+            ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+        except Exception:
+            ffmpeg_exe = "ffmpeg"
+
+        with tempfile.NamedTemporaryFile(suffix=".raw_input", delete=False) as in_tmp:
+            in_tmp.write(audio_bytes)
+            in_path = in_tmp.name
+
+        out_tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+        out_path = out_tmp.name
+        out_tmp.close()
+
+        try:
+            cmd = [
+                ffmpeg_exe, "-y",
+                "-i", in_path,
+                "-ar", "16000",
+                "-ac", "1",
+                "-c:a", "pcm_s16le",
+                out_path
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+            if res.returncode == 0 and Path(out_path).stat().st_size > 0:
+                return out_path
+        except Exception as e:
+            logger.debug(f"ffmpeg conversion failed: {e}")
+        finally:
+            Path(in_path).unlink(missing_ok=True)
+        return None
+
     def transcribe_bytes(
         self,
         audio_bytes: bytes,
@@ -152,36 +221,53 @@ class WhisperASR:
         language: Optional[str] = None,
     ) -> TranscriptionResult:
         """
-        Transcribe audio from raw bytes.
-
-        Args:
-            audio_bytes: Raw audio bytes (PCM 16-bit or WAV format).
-            sample_rate: Sample rate of the audio.
-            language: Optional language code.
-
-        Returns:
-            TranscriptionResult.
+        Transcribe audio from raw bytes (supports WAV, WebM, MP3, FLAC, OGG, raw PCM).
         """
-        # Try to read as WAV/FLAC first; fall back to raw PCM
+        if not audio_bytes:
+            return TranscriptionResult()
+
+        # 1. Try soundfile (WAV, FLAC, OGG, MP3)
         try:
             audio_data, sr = sf.read(io.BytesIO(audio_bytes))
             if audio_data.ndim > 1:
                 audio_data = audio_data.mean(axis=1)
             audio_data = audio_data.astype(np.float32)
+
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                sf.write(tmp.name, audio_data, sr, subtype="PCM_16")
+                tmp_path = tmp.name
+
+            try:
+                res = self.transcribe_file(tmp_path, language=language)
+                if res and res.text:
+                    return res
+            finally:
+                Path(tmp_path).unlink(missing_ok=True)
         except Exception:
-            audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32)
-            audio_data /= 32768.0
-            sr = sample_rate
+            pass
 
-        # Write to temp WAV for faster-whisper (it requires a file path)
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-            sf.write(tmp.name, audio_data, sr, subtype="PCM_16")
-            tmp_path = tmp.name
+        # 2. Try explicit ffmpeg conversion (WebM / Opus container)
+        wav_path = self._convert_bytes_to_wav(audio_bytes)
+        if wav_path:
+            try:
+                res = self.transcribe_file(wav_path, language=language)
+                return res
+            finally:
+                Path(wav_path).unlink(missing_ok=True)
 
+        # 3. Fallback: treat as raw PCM 16-bit ONLY if bytes look like raw PCM
         try:
-            return self.transcribe_file(tmp_path, language=language)
-        finally:
-            Path(tmp_path).unlink(missing_ok=True)
+            audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32768.0
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                sf.write(tmp.name, audio_data, sample_rate, subtype="PCM_16")
+                tmp_path = tmp.name
+            try:
+                return self.transcribe_file(tmp_path, language=language)
+            finally:
+                Path(tmp_path).unlink(missing_ok=True)
+        except Exception as e:
+            logger.error(f"Failed to transcribe audio bytes: {e}")
+            return TranscriptionResult()
 
     def transcribe_numpy(
         self,

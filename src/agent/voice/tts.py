@@ -14,6 +14,7 @@ Features:
 import asyncio
 import io
 import logging
+import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -77,19 +78,19 @@ class EdgeTTSService:
     def synthesize(self, text: str, voice: Optional[str] = None) -> TTSResult:
         """
         Synthesize text to audio bytes (synchronous wrapper).
-
-        Args:
-            text: Text to synthesize.
-            voice: Override voice. If None, uses default.
-
-        Returns:
-            TTSResult with MP3 audio bytes.
         """
-        return (
-            asyncio.get_event_loop().run_until_complete(self.synthesize_async(text, voice))
-            if asyncio.get_event_loop().is_running()
-            else asyncio.run(self.synthesize_async(text, voice))
-        )
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        if loop and loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(lambda: asyncio.run(self.synthesize_async(text, voice)))
+                return future.result()
+        else:
+            return asyncio.run(self.synthesize_async(text, voice))
 
     async def synthesize_async(
         self,
@@ -116,18 +117,35 @@ class EdgeTTSService:
         selected_voice = voice or self._detect_voice(text)
         start_time = time.time()
 
+        proxy = os.getenv("HTTP_PROXY") or os.getenv("http_proxy") or os.getenv("HTTPS_PROXY") or os.getenv("https_proxy")
         communicate = edge_tts.Communicate(
             text=text,
             voice=selected_voice,
             rate=self.rate,
             volume=self.volume,
             pitch=self.pitch,
+            proxy=proxy,
         )
 
         audio_buffer = io.BytesIO()
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                audio_buffer.write(chunk["data"])
+        try:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    audio_buffer.write(chunk["data"])
+        except Exception as e:
+            logger.warning(f"EdgeTTS streaming with proxy failed ({e}), retrying without proxy...")
+            communicate_fallback = edge_tts.Communicate(
+                text=text,
+                voice=selected_voice,
+                rate=self.rate,
+                volume=self.volume,
+                pitch=self.pitch,
+                proxy=None,
+            )
+            audio_buffer = io.BytesIO()
+            async for chunk in communicate_fallback.stream():
+                if chunk["type"] == "audio":
+                    audio_buffer.write(chunk["data"])
 
         audio_bytes = audio_buffer.getvalue()
         processing_time = (time.time() - start_time) * 1000

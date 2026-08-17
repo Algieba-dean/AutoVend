@@ -1,220 +1,184 @@
 .user-profile {
-  min-height: 100vh;
-  background: #fff;
-  padding: 40px;
+  min-height: calc(100vh - 80px);
+  padding: 60px 24px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.back-button {
+  align-self: flex-start;
+  max-width: 1200px;
+  margin: 0 auto 20px auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-cyan);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  transform: translateX(-4px);
+  color: var(--text-primary);
 }
 
 .profile-container {
   display: flex;
-  max-width: 1800px;
-  gap: 60px;
-  align-items: center;
-  margin-top: 60px;
+  max-width: 1200px;
+  width: 100%;
+  gap: 40px;
+  align-items: flex-start;
+  margin: 0 auto;
 }
 
 .profile-content {
-  flex: 1;
+  flex: 1.2;
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: var(--shadow-glass);
 }
 
 .profile-header {
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 
 .red-line {
   width: 40px;
-  height: 3px;
-  background: #FF3B30;
-  margin-bottom: 20px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-indigo));
+  border-radius: 2px;
+  margin-bottom: 12px;
 }
 
 .profile-header h2 {
-  font-size: 30px;
-  color: #252B42;
-  font-weight: bold;
+  font-size: 28px;
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .profile-info {
-  margin-bottom: 40px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .info-item {
-  margin-bottom: 20px;
-  font-size: 16px;
-  color: gray;
+  font-size: 15px;
+  color: var(--text-secondary);
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border-glass);
+  padding: 14px 18px;
+  border-radius: 12px;
 }
 
 .info-label {
   position: relative;
-  padding-left: 15px;
-}
-
-.info-label::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: gray;
-}
-
-.start-demo-btn {
-  background: white;
-  color:#23A6F0;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  transition: all 0.3s;
-}
-
-.start-demo-btn:hover {
-  color: #1873CC;
-}
-
-.arrow {
-  font-size: 20px;
-}
-
-.profile-images {
-  flex: 1;
-  display: flex;
-  gap: 20px;
-}
-
-.chat-image, .friends-image {
-  width: 100%;
-  max-width: 300px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.friends-image {
-  margin-top: 40px;
-}
-
-
-.back-button {
-  position: absolute;
-  top: 100px;
-  left: 150px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #23A6F0;
-  cursor: pointer;
-  font-size: 16px;
-  transition: color 0.3s;
-}
-
-.back-button:hover {
-  color: #1873CC;
-}
-
-
-.error-message {
-  color: #FF3B30;
-  font-size: 14px;
-  margin-top: 8px;
-}
-
-.phone-input {
-  width: 100%;
-  max-width: 300px;
-  padding: 10px 15px;
-  border: 1px solid #E6E6E6;
-  border-radius: 5px;
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.phone-input:focus {
-  border-color: #23A6F0;
-}
-
-.phone-input.error {
-  border-color: #FF3B30;
-}
-
-.custom-item {
-  margin-bottom: 20px;
-}
-
-.input-label {
-  min-width: 80px;
-  color: #252B42;
+  color: var(--text-secondary);
   font-weight: 500;
-}
-
-.add-field-btn {
-  background: none;
-  border: none;
-  color: #23A6F0;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 10px;
-}
-
-.add-field-btn:hover {
-  color: #1873CC;
-}
-
-.delete-field-btn {
-  background: #FF3B30;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 20px;
-  transition: all 0.3s;
-}
-
-.delete-field-btn:hover {
-  background: #E02E24;
-}
-
-.section-header {
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-  width: 100%;
-}
-
-.section-header h3 {
-  color: #666;
-  font-size: 16px;
-  margin-bottom: 10px;
 }
 
 .input-group {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 12px;
 }
 
 .input-label {
-  min-width: 150px;
+  min-width: 130px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.custom-input, .phone-input {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.custom-input:focus, .phone-input:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.phone-input.error {
+  border-color: var(--accent-rose);
+}
+
+select.custom-input {
+  cursor: pointer;
+}
+
+select.custom-input option {
+  background: #0f172a;
+  color: var(--text-primary);
+}
+
+.start-demo-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+  color: white;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+}
+
+.start-demo-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.45);
+}
+
+.profile-images {
+  flex: 0.8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-image {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 20px;
+  border: 1px solid var(--border-glass-bright);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), var(--shadow-glow-cyan);
+}
+
+.global-error {
+  color: var(--accent-rose);
+  font-size: 14px;
+  margin-top: 12px;
+  text-align: center;
   font-weight: 500;
 }
 
-.custom-input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.custom-input:focus {
-  border-color: #1E90FF;
-  outline: none;
+@media (max-width: 900px) {
+  .profile-container {
+    flex-direction: column;
+  }
 }

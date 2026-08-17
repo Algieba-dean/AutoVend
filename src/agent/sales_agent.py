@@ -19,7 +19,7 @@ from src.agent.extractors.profile_extractor import extract_profile
 from src.agent.extractors.reservation_extractor import extract_reservation
 from src.agent.memory import ChatMemoryManager
 from src.agent.patches import StatePatch, diff, format_for_prompt, snapshot
-from src.agent.response_generator import generate_response
+from src.agent.response_generator import generate_response, generate_response_stream
 from src.agent.schemas import (
     AgentInput,
     AgentResult,
@@ -27,6 +27,7 @@ from src.agent.schemas import (
     Stage,
 )
 from src.agent.stages import ProposalSource, TransitionProposal, advance, propose_forward
+from src.agent.subdag import run_stage_subdag
 from src.agent.tool_planner import plan_tools
 from src.agent.tools import ToolResult, dispatch_all
 from src.agent.transition_proposer import propose_by_llm
@@ -309,6 +310,106 @@ class SalesAgent:
             response_text=response_text,
             stage_changed=stage_changed,
         )
+
+    def respond_stream(
+        self,
+        state: SessionState,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        propose_with_llm: bool = False,
+    ):
+        """
+        Arbitrate the stage machine and stream generated reply tokens.
+
+        Yields tuples:
+        - ("metadata", {"session_state": updated, "stage_changed": stage_changed})
+        - ("delta", token_chunk)
+        - ("done", full_response_text)
+        """
+        updated = state.model_copy(deep=True)
+        session_id = updated.session_id
+        conversation_text = self.memory.get_history_as_text(session_id)
+
+        if retrieved_cars:
+            updated.matched_cars = retrieved_cars
+
+        old_stage = updated.stage
+        updated.previous_stage = old_stage.value
+
+        if updated.stage_hold:
+            logger.info(f"[{session_id}] Stage held at {old_stage.value}: rollback in progress")
+            updated.stage_hold = False
+            stage_changed = False
+        else:
+            proposals = []
+            for request in updated.pending_requests:
+                if request.get("type") != "transition":
+                    continue
+                try:
+                    target = Stage(request["stage"])
+                except (KeyError, ValueError):
+                    continue
+                proposals.append(
+                    TransitionProposal(
+                        target=target,
+                        source=ProposalSource.LLM,
+                        reason=str(request.get("reason", "")),
+                    )
+                )
+            updated.pending_requests = []
+            if propose_with_llm:
+                llm_proposal = propose_by_llm(self.llm, updated, conversation_text)
+                if llm_proposal is not None:
+                    proposals.append(llm_proposal)
+            forward = propose_forward(updated)
+            if forward is not None:
+                proposals.append(forward)
+
+            verdict = advance(updated, proposals)
+            updated.stage = verdict.stage
+
+            if verdict.system_note:
+                updated.system_notes = [*updated.system_notes, verdict.system_note]
+
+            stage_changed = updated.stage != old_stage
+
+        # Execute Sub-DAG workflow for current stage
+        updated = run_stage_subdag(updated)
+
+        # Yield metadata first so the caller receives updated stage, profile, matched cars immediately
+        yield ("metadata", {"session_state": updated, "stage_changed": stage_changed})
+
+        notes = list(updated.system_notes)
+        patch_summary = format_for_prompt(
+            [StatePatch.from_dict(p) for p in updated.patch_log[-PROMPT_PATCH_WINDOW:]]
+        )
+        if patch_summary:
+            notes.append(patch_summary)
+
+        full_text_chunks = []
+        token_stream = generate_response_stream(
+            self.generation_llm,
+            updated.stage,
+            conversation_text,
+            updated.profile,
+            updated.needs,
+            updated.matched_cars,
+            updated.reservation,
+            system_notes=notes,
+        )
+
+        for delta in token_stream:
+            full_text_chunks.append(delta)
+            yield ("delta", delta)
+
+        full_response_text = "".join(full_text_chunks)
+
+        from src.agent.reflection import reflect_and_guard
+        full_response_text, _ = reflect_and_guard(full_response_text, updated.matched_cars)
+
+        updated.system_notes = []
+        self.memory.add_assistant_message(session_id, full_response_text)
+
+        yield ("done", full_response_text)
 
     def process(self, agent_input: AgentInput) -> AgentResult:
         """
