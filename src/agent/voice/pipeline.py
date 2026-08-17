@@ -321,3 +321,68 @@ class VoicePipeline:
             retrieved_cars=retrieved_cars or [],
         )
         return self.agent.process(agent_input)
+
+    async def process_text_stream_tts(
+        self,
+        text: str,
+        session_state: SessionState,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+    ):
+        """
+        Stream LLM tokens and synthesize TTS on complete sentences on-the-fly.
+
+        Yields tuples:
+        - ("metadata", {"stage": str, "stage_changed": bool})
+        - ("sentence", {"text": sentence_str, "audio_bytes": bytes, "time_ms": float})
+        - ("done", {"full_text": str, "total_time_ms": float})
+        """
+        import re
+        start_time = time.time()
+
+        # Step 1: Observe turn
+        observed_state = self.agent.observe(session_state, text)
+
+        # Step 2: Stream response from agent
+        sentence_buffer = ""
+        full_text_parts = []
+        old_stage = session_state.stage
+
+        punctuation_regex = re.compile(r'([。！？!?\n;；]|(?<=[\u4e00-\u9fa5]{10})[，,])')
+
+        for item in self.agent.respond_stream(observed_state, retrieved_cars=retrieved_cars):
+            kind = item[0]
+            if kind == "metadata":
+                meta = item[1]
+                stage_changed = meta["session_state"].stage != old_stage
+                yield ("metadata", {"stage": meta["session_state"].stage.value, "stage_changed": stage_changed})
+            elif kind == "delta":
+                token = item[1]
+                sentence_buffer += token
+                full_text_parts.append(token)
+
+                # Check for sentence split boundary
+                parts = punctuation_regex.split(sentence_buffer)
+                if len(parts) > 1:
+                    completed_sentence = "".join(parts[:-1]).strip()
+                    sentence_buffer = parts[-1]
+
+                    if completed_sentence:
+                        tts_res = await self.tts.synthesize_async(completed_sentence)
+                        yield ("sentence", {
+                            "text": completed_sentence,
+                            "audio_bytes": tts_res.audio_bytes,
+                            "time_ms": tts_res.processing_time_ms
+                        })
+
+        # Process remaining sentence tail
+        remaining = sentence_buffer.strip()
+        if remaining:
+            tts_res = await self.tts.synthesize_async(remaining)
+            yield ("sentence", {
+                "text": remaining,
+                "audio_bytes": tts_res.audio_bytes,
+                "time_ms": tts_res.processing_time_ms
+            })
+
+        total_time = (time.time() - start_time) * 1000
+        yield ("done", {"full_text": "".join(full_text_parts), "total_time_ms": total_time})

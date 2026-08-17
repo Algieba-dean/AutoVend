@@ -42,6 +42,8 @@ const Chat = () => {
   const isSpeakingRef = useRef(false);
   const playingAudioRef = useRef(null);
   const animFrameRef = useRef(null);
+  const audioQueueRef = useRef([]);
+  const isAudioPlayingRef = useRef(false);
 
   // Get sessionData and profile from location.state
   useEffect(() => {
@@ -387,21 +389,33 @@ const Chat = () => {
             } else {
               setMessages(prev => [...prev, { type: 'system-asr', content: '🎤 ASR 语音识别完成：未检测到有效声音/环境静音', id: Date.now() }]);
             }
-          } else if (json.type === 'response') {
-            if (json.text) {
-              setMessages(prev => [...prev, { type: 'assistant', content: json.text, isVoice: true, id: Date.now() + 1 }]);
-            }
-            if (json.stage) {
-              setCurrentStage(json.stage);
-            }
+          } else if (json.type === 'stage_update') {
+            if (json.stage) setCurrentStage(json.stage);
+          } else if (json.type === 'response_chunk') {
             setIsTyping(false);
-          } else if (json.type === 'tts_start') {
-            setWsCallState('playing');
-            setTtsTelemetry({
-              status: '正在语音播报',
-              size: json.size || 0,
-              format: json.format || 'mp3'
+            setMessages(prev => {
+              const last = prev[prev.length - 1];
+              if (last && last.type === 'assistant' && last.isStreaming) {
+                return [...prev.slice(0, -1), { ...last, content: last.content + json.text }];
+              } else {
+                return [...prev, { type: 'assistant', content: json.text, isVoice: true, isStreaming: true, id: Date.now() }];
+              }
             });
+          } else if (json.type === 'response_done') {
+            setIsTyping(false);
+            setMessages(prev => {
+              const last = prev[prev.length - 1];
+              if (last && last.type === 'assistant') {
+                return [...prev.slice(0, -1), { ...last, isStreaming: false }];
+              }
+              return prev;
+            });
+          } else if (json.type === 'tts_chunk') {
+            setTtsTelemetry(prev => ({
+              status: '正在流式播报',
+              size: (prev?.size || 0) + (json.size || 0),
+              format: json.format || 'mp3'
+            }));
           } else if (json.type === 'error') {
             console.error('[VoiceWS Error]', json.message);
             setWsCallState('listening');
@@ -409,18 +423,27 @@ const Chat = () => {
           }
         },
         onAudio: (arrayBuffer) => {
-          if (playingAudioRef.current) {
-            playingAudioRef.current.pause();
+          audioQueueRef.current.push(arrayBuffer);
+          if (!isAudioPlayingRef.current) {
+            const playNext = () => {
+              if (audioQueueRef.current.length === 0) {
+                isAudioPlayingRef.current = false;
+                setWsCallState('listening');
+                return;
+              }
+              isAudioPlayingRef.current = true;
+              setWsCallState('playing');
+              const buf = audioQueueRef.current.shift();
+              const blob = new Blob([buf], { type: 'audio/mp3' });
+              const url = URL.createObjectURL(blob);
+              const audio = new Audio(url);
+              playingAudioRef.current = audio;
+              audio.onended = playNext;
+              audio.onerror = playNext;
+              audio.play().catch(playNext);
+            };
+            playNext();
           }
-          const blob = new Blob([arrayBuffer], { type: 'audio/mp3' });
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          playingAudioRef.current = audio;
-
-          audio.onended = () => {
-            setWsCallState('listening');
-          };
-          audio.play().catch(e => console.error('[VoiceWS] Audio play error:', e));
         },
         onError: () => {
           setWsCallState('idle');

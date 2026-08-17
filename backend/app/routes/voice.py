@@ -266,32 +266,45 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
                             }
                         )
 
-                        # Agent processing
+                        # Agent + Streaming Sentence TTS processing
                         if asr_result.text.strip():
-                            result = pipeline.process_text(asr_result.text, state, skip_tts=True)
+                            async for item in pipeline.process_text_stream_tts(asr_result.text, state):
+                                kind = item[0]
+                                if kind == "metadata":
+                                    meta = item[1]
+                                    await websocket.send_json({
+                                        "type": "stage_update",
+                                        "stage": meta["stage"],
+                                        "stage_changed": meta["stage_changed"],
+                                    })
+                                elif kind == "sentence":
+                                    chunk_data = item[1]
+                                    sent_text = chunk_data["text"]
+                                    audio_bytes = chunk_data["audio_bytes"]
 
-                            await websocket.send_json(
-                                {
-                                    "type": "response",
-                                    "text": result.agent_response,
-                                    "stage": result.stage,
-                                    "stage_changed": result.stage_changed,
-                                    "agent_time_ms": result.agent_time_ms,
-                                }
-                            )
+                                    # Stream text chunk
+                                    await websocket.send_json({
+                                        "type": "response_chunk",
+                                        "text": sent_text,
+                                    })
 
-                            # TTS — send audio as binary
-                            if result.agent_response:
-                                tts_result = await _tts.synthesize_async(result.agent_response)
-                                if tts_result.audio_bytes:
-                                    await websocket.send_json(
-                                        {
-                                            "type": "tts_start",
+                                    # Stream binary audio chunk for this sentence
+                                    if audio_bytes:
+                                        await websocket.send_json({
+                                            "type": "tts_chunk",
                                             "format": "mp3",
-                                            "size": len(tts_result.audio_bytes),
-                                        }
-                                    )
-                                    await websocket.send_bytes(tts_result.audio_bytes)
+                                            "size": len(audio_bytes),
+                                            "text": sent_text,
+                                        })
+                                        await websocket.send_bytes(audio_bytes)
+
+                                elif kind == "done":
+                                    done_data = item[1]
+                                    await websocket.send_json({
+                                        "type": "response_done",
+                                        "text": done_data["full_text"],
+                                        "total_time_ms": done_data["total_time_ms"],
+                                    })
 
                     # Clear buffer for next turn
                     audio_buffer.clear()

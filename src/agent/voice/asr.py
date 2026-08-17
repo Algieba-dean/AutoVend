@@ -125,7 +125,7 @@ class WhisperASR:
         segments_iter, info = self.model.transcribe(
             audio_path,
             language=language,
-            beam_size=5,
+            beam_size=1,
             vad_filter=True,
             vad_parameters=dict(
                 min_silence_duration_ms=300,
@@ -152,7 +152,7 @@ class WhisperASR:
             segments_iter_fallback, info_fallback = self.model.transcribe(
                 audio_path,
                 language=language,
-                beam_size=5,
+                beam_size=1,
                 vad_filter=False,
             )
             for seg in segments_iter_fallback:
