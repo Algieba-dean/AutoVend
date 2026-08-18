@@ -1,4 +1,4 @@
-# Grafana Tempo 配置文件 (Distributed Tracing Backend)
+# Grafana Tempo 配置文件 (Distributed Tracing Backend v3.0)
 stream_over_http_enabled: true
 
 server:
@@ -11,17 +11,10 @@ distributor:
         grpc:
           endpoint: 0.0.0.0:4317
 
-ingester:
-  max_block_duration: 5m
-
-compactor:
-  compaction:
-    block_retention: 48h
-
 storage:
   trace:
     backend: local
     wal:
-      path: /tmp/tempo/wal
+      path: /var/tempo/wal
     local:
-      path: /tmp/tempo/blocks
+      path: /var/tempo/blocks

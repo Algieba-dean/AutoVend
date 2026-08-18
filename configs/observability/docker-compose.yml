@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. OpenTelemetry Collector (全量 Trace 与 Metrics 收集网关)
   otel-collector:
@@ -23,6 +21,7 @@ services:
     image: prom/prometheus:latest
     container_name: autovend-prometheus
     restart: unless-stopped
+    user: "0:0"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -42,10 +41,11 @@ services:
     image: grafana/tempo:latest
     container_name: autovend-tempo
     restart: unless-stopped
+    user: "0:0"
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml:ro
-      - tempo_data:/tmp/tempo
+      - tempo_data:/var/tempo
     ports:
       - "3200:3200"   # Tempo HTTP / status
     networks:
@@ -56,6 +56,7 @@ services:
     image: grafana/loki:latest
     container_name: autovend-loki
     restart: unless-stopped
+    user: "0:0"
     command: ["-config.file=/etc/loki/loki.yaml"]
     volumes:
       - ./loki.yaml:/etc/loki/loki.yaml:ro
