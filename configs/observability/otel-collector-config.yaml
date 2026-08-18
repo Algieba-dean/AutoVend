@@ -1,0 +1,46 @@
+# OpenTelemetry Collector 配置文件
+# 接收 AutoVend 应用 (FastAPI, vLLM, Agent) 发送的 OTLP Traces 与 Metrics
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    send_batch_size: 256
+    timeout: 1s
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 80
+    spike_limit_percentage: 20
+
+exporters:
+  # 将链路 Trace 发送到 Grafana Tempo
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+  # 暴露 Prometheus 抓取 endpoint
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: "autovend"
+
+  # 控制台调试日志输出
+  debug:
+    verbosity: basic
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/tempo, debug]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [prometheus]

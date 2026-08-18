@@ -1,0 +1,22 @@
+# Prometheus 抓取配置文件
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  # 1. 抓取 OpenTelemetry Collector 产生的应用层 Metrics
+  - job_name: "otel-collector"
+    static_configs:
+      - targets: ["otel-collector:8889"]
+
+  # 2. 抓取 vLLM 推理服务 metrics (GPU 显存、KV Cache 命中率、推理 QPS)
+  - job_name: "vllm-server"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["host.docker.internal:8101"]
+
+  # 3. 抓取 AutoVend FastAPI 后端 metrics
+  - job_name: "autovend-backend"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["host.docker.internal:8000"]

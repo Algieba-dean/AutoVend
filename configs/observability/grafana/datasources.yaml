@@ -1,0 +1,39 @@
+# Grafana 自动数据源配置 (Auto Datasources Provisioning)
+apiVersion: 1
+
+datasources:
+  # 1. Prometheus (Metrics)
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      httpMethod: POST
+      timeInterval: 5s
+
+  # 2. Grafana Tempo (Traces)
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    jsonData:
+      httpMode: GET
+      tracesToLogsV2:
+        datasourceUid: 'Loki'
+        spanStartTimeShift: '-1m'
+        spanEndTimeShift: '1m'
+        filterByTraceID: true
+        filterBySpanID: false
+
+  # 3. Grafana Loki (Logs)
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      derivedFields:
+        - datasourceUid: 'Tempo'
+          name: TraceID
+          matcherRegex: "trace_id=([a-f0-9]+)"
+          url: '$${__value.raw}'

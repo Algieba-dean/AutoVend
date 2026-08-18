@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # 1. OpenTelemetry Collector (全量 Trace 与 Metrics 收集网关)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: autovend-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8889:8889"   # Prometheus metrics exporter
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - observability-net
+
+  # 2. Prometheus (指标与监控系统)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: autovend-prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - observability-net
+
+  # 3. Grafana Tempo (分布式链路追踪 Trace 存储后端)
+  tempo:
+    image: grafana/tempo:latest
+    container_name: autovend-tempo
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml:ro
+      - tempo_data:/tmp/tempo
+    ports:
+      - "3200:3200"   # Tempo HTTP / status
+    networks:
+      - observability-net
+
+  # 4. Grafana Loki (日志聚合与分析后端)
+  loki:
+    image: grafana/loki:latest
+    container_name: autovend-loki
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    volumes:
+      - ./loki.yaml:/etc/loki/loki.yaml:ro
+      - loki_data:/tmp/loki
+    ports:
+      - "3100:3100"   # Loki HTTP
+    networks:
+      - observability-net
+
+  # 5. Grafana (统一可视化仪表盘)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: autovend-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"   # Grafana Web UI (端口映射为 3001 避免冲突)
+    depends_on:
+      - prometheus
+      - tempo
+      - loki
+    networks:
+      - observability-net
+
+networks:
+  observability-net:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  tempo_data:
+  loki_data:
+  grafana_data:
