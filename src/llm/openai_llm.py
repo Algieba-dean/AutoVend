@@ -179,6 +179,45 @@ class OpenAILLM(BaseLLM):
         except Exception as e:
             raise Exception(f"LLM request failed: {e}")
 
+    def chat_stream_tokens(self, messages: List[Dict[str, str]], **kwargs):
+        """Yield token chunks as they arrive from the API stream."""
+        payload = self._payload(messages, **kwargs)
+        payload["stream"] = True
+        payload["stream_options"] = {"include_usage": True}
+
+        started = time.perf_counter()
+
+        try:
+            with self.session.post(
+                f"{self.base_url}/chat/completions",
+                headers=self._headers(),
+                json=payload,
+                timeout=self.timeout,
+                stream=True,
+            ) as response:
+                if response.status_code != 200:
+                    raise Exception(f"API Error: {response.status_code} - {response.text}")
+
+                for line in response.iter_lines(decode_unicode=True):
+                    if not line or not line.startswith("data: "):
+                        continue
+                    data = line[len("data: ") :]
+                    if data == "[DONE]":
+                        break
+
+                    event = json.loads(data)
+                    if event.get("usage"):
+                        self.last_usage = event["usage"]
+
+                    for choice in event.get("choices", []):
+                        piece = (choice.get("delta") or {}).get("content")
+                        if piece:
+                            if self.last_ttft_s is None:
+                                self.last_ttft_s = time.perf_counter() - started
+                            yield piece
+        except Exception as e:
+            raise Exception(f"LLM request failed: {e}")
+
     def is_available(self) -> bool:
         """Check if the LLM service is available"""
         try:

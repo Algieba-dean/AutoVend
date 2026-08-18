@@ -181,6 +181,34 @@ class HybridRouter:
         """Run a chat completion for `task`."""
         return self._invoke(task, "chat", messages, **kwargs)
 
+    def stream_chat(self, task: Task, messages: List[Dict[str, str]], **kwargs):
+        """Stream token chunks for `task` dynamically."""
+        plan = self.plan_for(task)
+        last_error: Optional[Exception] = None
+
+        for index, (backend, route) in enumerate(plan):
+            try:
+                if hasattr(backend, "chat_stream_tokens"):
+                    yield from backend.chat_stream_tokens(messages, **kwargs)
+                    return
+                else:
+                    text = self._call(backend, route, task, "chat", messages, **kwargs)
+                    yield text
+                    return
+            except Exception as exc:
+                last_error = exc
+                model = getattr(backend, "model", "?")
+                remaining = len(plan) - index - 1
+                logger.warning(
+                    f"{route.value} backend '{model}' failed during stream_chat for {task.value} ({exc}); "
+                    + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
+                )
+                if route is Route.LOCAL:
+                    self._local_healthy = False
+
+        if last_error:
+            raise last_error
+
     def _invoke(self, task: Task, method: str, payload: Any, **kwargs) -> str:
         plan = self.plan_for(task)
         last_error: Optional[Exception] = None

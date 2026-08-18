@@ -192,7 +192,6 @@ const Chat = () => {
     setIsTyping(true);
 
     const assistantMsgId = Date.now() + 1;
-    let assistantMsgCreated = false;
 
     try {
       await chatService.sendMessageStream(sessionId, userMsgText, {
@@ -215,9 +214,10 @@ const Chat = () => {
         },
         onToken: (delta) => {
           setIsTyping(false);
+          if (!delta) return;
           setMessages(prev => {
-            if (!assistantMsgCreated) {
-              assistantMsgCreated = true;
+            const exists = prev.some(msg => msg.id === assistantMsgId);
+            if (!exists) {
               return [...prev, { type: 'assistant', content: delta, id: assistantMsgId }];
             } else {
               return prev.map(msg =>
@@ -228,23 +228,49 @@ const Chat = () => {
             }
           });
         },
-        onDone: () => {
+        onDone: (responseText) => {
           setIsTyping(false);
           setShouldPoll(false);
+          if (responseText) {
+            setMessages(prev => {
+              const exists = prev.some(msg => msg.id === assistantMsgId);
+              if (!exists) {
+                return [...prev, { type: 'assistant', content: responseText, id: assistantMsgId }];
+              } else {
+                return prev.map(msg =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, content: responseText }
+                    : msg
+                );
+              }
+            });
+          }
         },
         onError: async (err) => {
           console.warn('Stream failed, falling back to standard API:', err);
           try {
             const response = await chatService.sendMessage(sessionId, userMsgText);
-            if (response && response.response) {
-              setMessages(prev => [...prev, {
-                type: 'assistant',
-                content: response.response.content,
-                id: Date.now()
-              }]);
-            }
+            const content = (response && response.response && response.response.content) || (response && response.response) || '消息处理完成。';
+            setMessages(prev => {
+              const exists = prev.some(msg => msg.id === assistantMsgId);
+              if (!exists) {
+                return [...prev, { type: 'assistant', content, id: assistantMsgId }];
+              } else {
+                return prev.map(msg =>
+                  msg.id === assistantMsgId ? { ...msg, content } : msg
+                );
+              }
+            });
           } catch (e) {
             console.error('Fallback send message failed:', e);
+            setMessages(prev => {
+              const exists = prev.some(msg => msg.id === assistantMsgId);
+              if (!exists) {
+                return [...prev, { type: 'assistant', content: '服务超时，请重试。', id: assistantMsgId }];
+              } else {
+                return prev;
+              }
+            });
           }
           setIsTyping(false);
         }
@@ -821,9 +847,16 @@ const Chat = () => {
     );
   };
 
-  // Function to scroll to the bottom
+  const scrollScheduledRef = useRef(false);
+
+  // Function to scroll to the bottom (throttled to 60fps)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollScheduledRef.current) return;
+    scrollScheduledRef.current = true;
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      scrollScheduledRef.current = false;
+    });
   };
 
   // Automatically scroll when the message list updates
@@ -857,9 +890,9 @@ const Chat = () => {
   // Modify rendering part
   return (
     <div className="chat-container">
-      <div className="back-button-chat" onClick={handleBack}>
+      <button type="button" className="back-button-chat" onClick={handleBack} aria-label="Return to previous page">
         ← Back
-      </div>
+      </button>
       <div className="chat-content">
         {/* ASR & TTS 实时语音诊断与监控面板 */}
         <div className="voice-diagnostics-bar">
@@ -907,14 +940,16 @@ const Chat = () => {
 
             <div className="ws-call-actions">
               <button 
+                type="button"
                 className="ws-action-btn send-turn"
                 onClick={handleManualEndTurn}
                 disabled={wsCallState === 'thinking' || wsCallState === 'playing'}
                 title="说完后可手动提前触发AI回答"
+                aria-label="Send voice turn early"
               >
                 ⚡ 立即发送
               </button>
-              <button className="ws-action-btn hangup" onClick={handleStopWsCall}>
+              <button type="button" className="ws-action-btn hangup" onClick={handleStopWsCall} aria-label="End voice call">
                 🔴 结束通话
               </button>
             </div>
@@ -967,34 +1002,43 @@ const Chat = () => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
+            aria-label="Type your message"
           />
           <div className="button-group">
             <button
+              type="button"
               className={`ws-call-start-btn ${isWsCallActive ? 'active' : ''}`}
               onClick={isWsCallActive ? handleStopWsCall : handleStartWsCall}
               title="低延迟全双工 WebSocket 实时语音通话"
+              aria-label={isWsCallActive ? "End WebSocket live call" : "Start WebSocket live call"}
             >
               {isWsCallActive ? '🔴 结束实时通话' : '📞 开启 WS 实时通话'}
             </button>
             <button
+              type="button"
               className={`voice-button ${isRecording ? 'recording' : ''}`}
               onMouseDown={handleStartRecording}
               onMouseUp={handleStopRecording}
               onTouchStart={handleStartRecording}
               onTouchEnd={handleStopRecording}
               title="按住说话，松开自动发送语音"
+              aria-label="Hold to speak voice button"
             >
               {isRecording ? '🎙️ 正在录音(松开发送)' : '🎤 按住说话'}
             </button>
             <button
+              type="button"
               className="send-button"
               onClick={handleSendMessage}
               disabled={!inputMessage.trim()}
+              aria-label="Send message"
             >
               Send
             </button>
             <button
+              type="button"
               className="hang-up-button"
+              aria-label="End conversation and return"
               onClick={async () => {
                 if (window.confirm('Are you sure you want to end the current conversation? This conversation will be recorded')) {
                   try {

@@ -1,0 +1,17 @@
+{
+  "model_name": "Qwen3-8B-unsloth-bnb-4bit",
+  "served_model_name": "qwen3-8b-bnb-4bit",
+  "model_path": "~/models/Qwen/Qwen3-8B-unsloth-bnb-4bit",
+  "venv_path": ".venv-vllm",
+  "host": "0.0.0.0",
+  "port": 8101,
+  "quantization": "bitsandbytes",
+  "dtype": "bfloat16",
+  "gpu_memory_utilization": 0.85,
+  "max_model_len": 8192,
+  "trust_remote_code": true,
+  "enforce_eager": true,
+  "extra_args": [
+    "--enable-prefix-caching"
+  ]
+}

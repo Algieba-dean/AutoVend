@@ -426,6 +426,9 @@ async def send_message_stream(request: ChatRequest):
     """
     Send a message and stream SSE events (metadata, token deltas, done).
     """
+    import asyncio
+    import json
+
     agent = _get_agent()
     state = _sessions.get(request.session_id) or _restore_session(request.session_id, agent)
     if state is None:
@@ -433,27 +436,47 @@ async def send_message_stream(request: ChatRequest):
         state = SessionState(session_id=request.session_id, profile=profile)
         _sessions[request.session_id] = state
 
-    decision = _classify(request.message, request.session_id)
-    safe_message, pii_found = _mask(request.message, request.session_id)
-
-    skip_extraction = (
-        decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
-    )
-
-    if skip_extraction:
-        state = agent.remember(state, safe_message)
-    else:
-        state = agent.observe(state, safe_message)
-
-    if decision is not None and decision.intent == INTERRUPT_INTENT:
-        state = _rollback_on_constraint_change(state, decision)
-
-    retrieved_cars = _retrieve_cars(state)
-
     async def sse_event_generator():
-        import json
-        stream_gen = agent.respond_stream(state, retrieved_cars)
-        for event_type, data in stream_gen:
+        nonlocal state
+        loop = asyncio.get_running_loop()
+
+        def prepare():
+            nonlocal state
+            decision = _classify(request.message, request.session_id)
+            safe_message, pii_found = _mask(request.message, request.session_id)
+
+            skip_extraction = (
+                decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
+            )
+
+            if skip_extraction:
+                state = agent.remember(state, safe_message)
+            else:
+                state = agent.observe(state, safe_message)
+
+            if decision is not None and decision.intent == INTERRUPT_INTENT:
+                state = _rollback_on_constraint_change(state, decision)
+
+        await loop.run_in_executor(None, prepare)
+        retrieved_cars = _retrieve_cars(state)
+
+        import queue
+        q = queue.Queue()
+
+        def generate():
+            try:
+                for event_type, data in agent.respond_stream(state, retrieved_cars):
+                    q.put((event_type, data))
+            finally:
+                q.put(None)
+
+        loop.run_in_executor(None, generate)
+
+        while True:
+            item = await loop.run_in_executor(None, q.get)
+            if item is None:
+                break
+            event_type, data = item
             if event_type == "metadata":
                 updated_state = data["session_state"]
                 stage_changed = data["stage_changed"]

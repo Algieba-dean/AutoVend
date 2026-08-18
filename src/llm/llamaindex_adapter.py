@@ -75,21 +75,19 @@ class RoutedLLM(CustomLLM):
         )
         return CompletionResponse(text=text)
 
-    @llm_completion_callback()
     def stream_complete(
         self, prompt: str, formatted: bool = False, **kwargs: Any
     ) -> CompletionResponseGen:
         """
-        Single-shot 'stream'.
-
-        The transport already streams internally to measure TTFT, but it
-        accumulates before returning; exposing a genuine token stream would
-        need a second code path through the router. Nothing in the agent
-        consumes tokens incrementally today, so this yields once rather than
-        pretending to be incremental.
+        Token-by-token stream. Yields CompletionResponse with delta for each token chunk.
         """
-        response = self.complete(prompt, formatted=formatted, **kwargs)
-        yield response
+        messages = [{"role": "user", "content": prompt}]
+        full_text = ""
+        for token in self.router.stream_chat(
+            self.task, messages, max_tokens=kwargs.pop("max_tokens", self.num_output), **kwargs
+        ):
+            full_text += token
+            yield CompletionResponse(text=full_text, delta=token)
 
     @llm_chat_callback()
     def chat(self, messages: Sequence[ChatMessage], **kwargs: Any) -> ChatResponse:
