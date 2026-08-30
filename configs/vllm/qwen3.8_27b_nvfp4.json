@@ -1,0 +1,17 @@
+{
+  "model_name": "Qwen3.8-27B-NVFP4",
+  "served_model_name": "qwen3.8-27b-nvfp4",
+  "model_path": "~/models/Qwen/Qwen3.8-27B-NVFP4",
+  "venv_path": ".venv-vllm",
+  "host": "0.0.0.0",
+  "port": 8101,
+  "quantization": "compressed-tensors",
+  "dtype": "bfloat16",
+  "gpu_memory_utilization": 0.92,
+  "max_model_len": 8192,
+  "trust_remote_code": true,
+  "enforce_eager": true,
+  "extra_args": [
+    "--enable-prefix-caching"
+  ]
+}

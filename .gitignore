@@ -66,5 +66,9 @@ uv.lock
 
 # Temporary directory
 temp/
+.gemini/
+.cursor/
+.github/skills/
+*.png
 
 

@@ -49,6 +49,8 @@ dependencies = [
     "opentelemetry-api>=1.25.0",
     "opentelemetry-sdk>=1.25.0",
     "opentelemetry-exporter-otlp>=1.25.0",
+    "playwright>=1.62.0",
+    "beautifulsoup4>=4.15.0",
 ]
 
 [project.optional-dependencies]
