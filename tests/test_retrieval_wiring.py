@@ -245,6 +245,23 @@ class TestRetrieveCars:
 
         assert chat_route._retrieve_cars(_state()) == []
 
+    def test_freshness_filtering_in_retrieve_cars(self):
+        """Verify tombstoned vehicles are filtered out and upgrade notes injected into state."""
+        stub = _StubPipeline(cars=("高合HiPhi X", "2023款比亚迪汉EV", "问界M9"))
+        chat_route.set_pipeline(stub)
+        chat_route._prev_explicit.clear()
+        try:
+            state = _state(Stage.CAR_SELECTION)
+            cars = chat_route._retrieve_cars(state)
+            car_names = [c["car_model"] for c in cars]
+            assert "问界M9" in car_names
+            assert "高合HiPhi X" not in car_names
+            assert "2023款比亚迪汉EV" not in car_names
+            assert any("2025款比亚迪汉EV" in note for note in state.system_notes)
+        finally:
+            chat_route.set_pipeline(None)
+            chat_route._prev_explicit.clear()
+
 
 class TestRetrievalOrdering:
     """

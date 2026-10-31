@@ -2,10 +2,12 @@
 Automotive Domain Query & Synonym Expander (src/retrieval/query_expander.py).
 
 Expands natural language user queries with domain-specific car terminology,
-brand alliances, and usage scenario synonyms to boost RAG Recall and Hit Rate.
+OEM proprietary technology taxonomy, brand alliances, and usage scenario synonyms
+to boost RAG Recall, Precision, and Hit Rate.
 """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
+from src.core.terminology import AutomotiveKnowledgeGraph
 
 # Domain Synonym Registry for Automotive RAG
 AUTOMOTIVE_SYNONYMS: Dict[str, List[str]] = {
@@ -24,18 +26,34 @@ AUTOMOTIVE_SYNONYMS: Dict[str, List[str]] = {
 
 
 class QueryExpander:
-    """Expands queries with domain synonyms and multi-perspective rewrites."""
+    """Expands queries with domain synonyms and OEM proprietary technology knowledge."""
 
     @staticmethod
-    def expand_query(query_text: str) -> str:
-        """Expand natural language query with domain synonyms."""
+    def expand_query(query_text: str, include_tech_graph: bool = True) -> str:
+        """
+        Expand natural language query with domain synonyms and OEM proprietary technologies.
+        """
         if not query_text:
             return query_text
 
         expanded_tokens: List[str] = [query_text]
 
+        # 1. Base automotive domain synonyms
         for key, synonyms in AUTOMOTIVE_SYNONYMS.items():
             if key in query_text:
                 expanded_tokens.extend(synonyms[:3])
 
-        return " ".join(expanded_tokens)
+        # 2. OEM Proprietary Terminology Knowledge Graph enrichment
+        if include_tech_graph:
+            try:
+                kg = AutomotiveKnowledgeGraph.get_instance()
+                enriched = kg.enrich_rag_query(query_text)
+                if enriched and enriched != query_text:
+                    # Append new tokens not already present
+                    for token in enriched.split():
+                        if token not in expanded_tokens:
+                            expanded_tokens.append(token)
+            except Exception:
+                pass
+
+        return " ".join(dict.fromkeys(expanded_tokens))

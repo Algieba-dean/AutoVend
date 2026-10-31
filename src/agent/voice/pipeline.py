@@ -36,6 +36,7 @@ class VoiceTurnResult:
     stage: str = ""
     stage_changed: bool = False
     agent_time_ms: float = 0.0
+    session_state: Optional[SessionState] = None
 
     # TTS
     audio_bytes: bytes = b""
@@ -126,6 +127,30 @@ class VoicePipeline:
         self.tts = tts or EdgeTTSService()
         self._session_metrics: Dict[str, VoiceSessionMetrics] = {}
 
+    def _synthesize_speech(self, text: str) -> TTSResult:
+        """Synthesize TTS audio safely in both sync and async runtime contexts."""
+        if not text:
+            return TTSResult(audio_bytes=b"", voice=self.tts.voice)
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        if loop and loop.is_running():
+            return self.tts.synthesize(text)
+        else:
+            coro = self.tts.synthesize_async(text)
+            try:
+                return asyncio.run(coro)
+            except RuntimeError:
+                if asyncio.iscoroutine(coro):
+                    coro.close()
+                return self.tts.synthesize(text)
+            finally:
+                # If asyncio.run was patched in unit tests and did not await coro, close it cleanly
+                if asyncio.iscoroutine(coro) and getattr(coro, "cr_frame", None) is not None:
+                    coro.close()
+
     def process_audio_file(
         self,
         audio_path: str | Path,
@@ -137,15 +162,6 @@ class VoicePipeline:
         Process one voice turn from an audio file.
 
         Pipeline: Audio File → ASR → Agent → TTS → Result
-
-        Args:
-            audio_path: Path to user's audio file.
-            session_state: Current session state.
-            retrieved_cars: Optional RAG retrieval results.
-            skip_tts: If True, skip TTS synthesis (text-only response).
-
-        Returns:
-            VoiceTurnResult with all intermediate results.
         """
         pipeline_start = time.time()
 
@@ -158,25 +174,39 @@ class VoicePipeline:
         # Step 3: TTS
         tts_result = TTSResult(audio_bytes=b"", voice=self.tts.voice)
         if not skip_tts and agent_result.response_text:
-            tts_result = self.tts.synthesize(agent_result.response_text)
+            tts_result = self._synthesize_speech(agent_result.response_text)
 
         total_time = (time.time() - pipeline_start) * 1000
+        asr_ms = (
+            float(asr_result.processing_time_ms)
+            if isinstance(asr_result.processing_time_ms, (int, float))
+            else 0.0
+        )
+        tts_ms = (
+            float(tts_result.processing_time_ms)
+            if isinstance(tts_result.processing_time_ms, (int, float))
+            else 0.0
+        )
+        agent_time = max(0.0, total_time - asr_ms - tts_ms)
 
         turn_result = VoiceTurnResult(
-            user_text=asr_result.text,
-            asr_language=asr_result.language,
-            asr_confidence=asr_result.language_probability,
-            asr_time_ms=asr_result.processing_time_ms,
-            agent_response=agent_result.response_text,
+            user_text=str(asr_result.text) if asr_result.text is not None else "",
+            asr_language=str(asr_result.language) if asr_result.language else "zh",
+            asr_confidence=float(asr_result.language_probability)
+            if isinstance(asr_result.language_probability, (int, float))
+            else 0.0,
+            asr_time_ms=asr_ms,
+            agent_response=str(agent_result.response_text) if agent_result.response_text else "",
             stage=agent_result.session_state.stage.value,
             stage_changed=agent_result.stage_changed,
-            agent_time_ms=(
-                total_time - asr_result.processing_time_ms - tts_result.processing_time_ms
-            ),
-            audio_bytes=tts_result.audio_bytes,
-            audio_format=tts_result.audio_format,
-            tts_voice=tts_result.voice,
-            tts_time_ms=tts_result.processing_time_ms,
+            agent_time_ms=agent_time,
+            session_state=agent_result.session_state,
+            audio_bytes=tts_result.audio_bytes
+            if isinstance(tts_result.audio_bytes, bytes)
+            else b"",
+            audio_format=str(tts_result.audio_format) if tts_result.audio_format else "mp3",
+            tts_voice=str(tts_result.voice) if tts_result.voice else "",
+            tts_time_ms=tts_ms,
             total_time_ms=total_time,
         )
 
@@ -187,9 +217,9 @@ class VoicePipeline:
         self._session_metrics[sid].update(turn_result)
 
         logger.info(
-            f"[{sid}] Voice turn: ASR={asr_result.processing_time_ms:.0f}ms "
-            f"Agent={turn_result.agent_time_ms:.0f}ms "
-            f"TTS={tts_result.processing_time_ms:.0f}ms "
+            f"[{sid}] Voice turn: ASR={asr_ms:.0f}ms "
+            f"Agent={agent_time:.0f}ms "
+            f"TTS={tts_ms:.0f}ms "
             f"Total={total_time:.0f}ms"
         )
 
@@ -205,16 +235,6 @@ class VoicePipeline:
     ) -> VoiceTurnResult:
         """
         Process one voice turn from raw audio bytes.
-
-        Args:
-            audio_bytes: Raw audio data (WAV or PCM).
-            session_state: Current session state.
-            sample_rate: Audio sample rate.
-            retrieved_cars: Optional RAG results.
-            skip_tts: If True, skip TTS.
-
-        Returns:
-            VoiceTurnResult.
         """
         pipeline_start = time.time()
 
@@ -227,25 +247,39 @@ class VoicePipeline:
         # Step 3: TTS
         tts_result = TTSResult(audio_bytes=b"", voice=self.tts.voice)
         if not skip_tts and agent_result.response_text:
-            tts_result = self.tts.synthesize(agent_result.response_text)
+            tts_result = self._synthesize_speech(agent_result.response_text)
 
         total_time = (time.time() - pipeline_start) * 1000
+        asr_ms = (
+            float(asr_result.processing_time_ms)
+            if isinstance(asr_result.processing_time_ms, (int, float))
+            else 0.0
+        )
+        tts_ms = (
+            float(tts_result.processing_time_ms)
+            if isinstance(tts_result.processing_time_ms, (int, float))
+            else 0.0
+        )
+        agent_time = max(0.0, total_time - asr_ms - tts_ms)
 
         turn_result = VoiceTurnResult(
-            user_text=asr_result.text,
-            asr_language=asr_result.language,
-            asr_confidence=asr_result.language_probability,
-            asr_time_ms=asr_result.processing_time_ms,
-            agent_response=agent_result.response_text,
+            user_text=str(asr_result.text) if asr_result.text is not None else "",
+            asr_language=str(asr_result.language) if asr_result.language else "zh",
+            asr_confidence=float(asr_result.language_probability)
+            if isinstance(asr_result.language_probability, (int, float))
+            else 0.0,
+            asr_time_ms=asr_ms,
+            agent_response=str(agent_result.response_text) if agent_result.response_text else "",
             stage=agent_result.session_state.stage.value,
             stage_changed=agent_result.stage_changed,
-            agent_time_ms=(
-                total_time - asr_result.processing_time_ms - tts_result.processing_time_ms
-            ),
-            audio_bytes=tts_result.audio_bytes,
-            audio_format=tts_result.audio_format,
-            tts_voice=tts_result.voice,
-            tts_time_ms=tts_result.processing_time_ms,
+            agent_time_ms=agent_time,
+            session_state=agent_result.session_state,
+            audio_bytes=tts_result.audio_bytes
+            if isinstance(tts_result.audio_bytes, bytes)
+            else b"",
+            audio_format=str(tts_result.audio_format) if tts_result.audio_format else "mp3",
+            tts_voice=str(tts_result.voice) if tts_result.voice else "",
+            tts_time_ms=tts_ms,
             total_time_ms=total_time,
         )
 
@@ -265,17 +299,6 @@ class VoicePipeline:
     ) -> VoiceTurnResult:
         """
         Process a text message through Agent + TTS (skip ASR).
-
-        Useful for testing the agent+TTS pipeline without audio input.
-
-        Args:
-            text: User text message.
-            session_state: Current session state.
-            retrieved_cars: Optional RAG results.
-            skip_tts: If True, skip TTS.
-
-        Returns:
-            VoiceTurnResult.
         """
         pipeline_start = time.time()
 
@@ -284,7 +307,7 @@ class VoicePipeline:
 
         tts_result = TTSResult(audio_bytes=b"", voice=self.tts.voice)
         if not skip_tts and agent_result.response_text:
-            tts_result = asyncio.run(self.tts.synthesize_async(agent_result.response_text))
+            tts_result = self._synthesize_speech(agent_result.response_text)
 
         total_time = (time.time() - pipeline_start) * 1000
 
@@ -297,6 +320,7 @@ class VoicePipeline:
             stage=agent_result.session_state.stage.value,
             stage_changed=agent_result.stage_changed,
             agent_time_ms=agent_time,
+            session_state=agent_result.session_state,
             audio_bytes=tts_result.audio_bytes,
             audio_format=tts_result.audio_format,
             tts_voice=tts_result.voice,
@@ -327,34 +351,45 @@ class VoicePipeline:
         text: str,
         session_state: SessionState,
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        already_observed: bool = False,
     ):
         """
         Stream LLM tokens and synthesize TTS on complete sentences on-the-fly.
 
         Yields tuples:
-        - ("metadata", {"stage": str, "stage_changed": bool})
+        - ("metadata", {"stage": str, "stage_changed": bool, "session_state": SessionState})
         - ("sentence", {"text": sentence_str, "audio_bytes": bytes, "time_ms": float})
         - ("done", {"full_text": str, "total_time_ms": float})
         """
         import re
+
         start_time = time.time()
 
-        # Step 1: Observe turn
-        observed_state = self.agent.observe(session_state, text)
+        # Step 1: Observe turn unless caller already observed (e.g. before retrieval)
+        observed_state = (
+            session_state if already_observed else self.agent.observe(session_state, text)
+        )
 
         # Step 2: Stream response from agent
         sentence_buffer = ""
         full_text_parts = []
         old_stage = session_state.stage
 
-        punctuation_regex = re.compile(r'([。！？!?\n;；]|(?<=[\u4e00-\u9fa5]{10})[，,])')
+        punctuation_regex = re.compile(r"([。！？!?\n;；]|(?<=[\u4e00-\u9fa5]{10})[，,])")
 
         for item in self.agent.respond_stream(observed_state, retrieved_cars=retrieved_cars):
             kind = item[0]
             if kind == "metadata":
                 meta = item[1]
                 stage_changed = meta["session_state"].stage != old_stage
-                yield ("metadata", {"stage": meta["session_state"].stage.value, "stage_changed": stage_changed})
+                yield (
+                    "metadata",
+                    {
+                        "stage": meta["session_state"].stage.value,
+                        "stage_changed": stage_changed,
+                        "session_state": meta["session_state"],
+                    },
+                )
             elif kind == "delta":
                 token = item[1]
                 sentence_buffer += token
@@ -368,21 +403,27 @@ class VoicePipeline:
 
                     if completed_sentence:
                         tts_res = await self.tts.synthesize_async(completed_sentence)
-                        yield ("sentence", {
-                            "text": completed_sentence,
-                            "audio_bytes": tts_res.audio_bytes,
-                            "time_ms": tts_res.processing_time_ms
-                        })
+                        yield (
+                            "sentence",
+                            {
+                                "text": completed_sentence,
+                                "audio_bytes": tts_res.audio_bytes,
+                                "time_ms": tts_res.processing_time_ms,
+                            },
+                        )
 
         # Process remaining sentence tail
         remaining = sentence_buffer.strip()
         if remaining:
             tts_res = await self.tts.synthesize_async(remaining)
-            yield ("sentence", {
-                "text": remaining,
-                "audio_bytes": tts_res.audio_bytes,
-                "time_ms": tts_res.processing_time_ms
-            })
+            yield (
+                "sentence",
+                {
+                    "text": remaining,
+                    "audio_bytes": tts_res.audio_bytes,
+                    "time_ms": tts_res.processing_time_ms,
+                },
+            )
 
         total_time = (time.time() - start_time) * 1000
         yield ("done", {"full_text": "".join(full_text_parts), "total_time_ms": total_time})

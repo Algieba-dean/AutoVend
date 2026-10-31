@@ -4,16 +4,24 @@ Voice API routes — WebSocket and REST endpoints for voice interaction.
 Provides:
 - WebSocket endpoint for real-time voice streaming
 - REST endpoint for single-turn voice processing (file upload)
-- Voice session management
+- Unified session state & vehicle retrieval shared with text chat routes
 """
 
 import json
 import logging
 import uuid
-from typing import Dict, Optional
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 
+from backend.app.routes.chat import (
+    _retrieve_cars,
+    get_or_restore_session,
+    save_session_state,
+)
+from backend.app.routes.chat import (
+    _sessions as _voice_sessions,
+)
 from src.agent.schemas import SessionState, UserProfile
 from src.agent.voice.asr import WhisperASR
 from src.agent.voice.pipeline import VoicePipeline
@@ -27,9 +35,6 @@ router = APIRouter(prefix="/api/voice", tags=["voice"])
 _pipeline: Optional[VoicePipeline] = None
 _asr: Optional[WhisperASR] = None
 _tts: Optional[EdgeTTSService] = None
-
-# Voice session state store
-_voice_sessions: Dict[str, SessionState] = {}
 
 
 def set_voice_pipeline(pipeline: VoicePipeline) -> None:
@@ -123,13 +128,13 @@ async def synthesize_speech(text: str, voice: Optional[str] = None):
 
 @router.post("/session")
 async def create_voice_session(phone_number: str = ""):
-    """Create a new voice chat session."""
-    _get_pipeline()
+    """Create a new voice chat session (shared with text chat store)."""
+    pipeline = _get_pipeline()
 
     session_id = str(uuid.uuid4())
     profile = UserProfile(phone_number=phone_number)
     state = SessionState(session_id=session_id, profile=profile)
-    _voice_sessions[session_id] = state
+    save_session_state(session_id, state, pipeline.agent)
 
     return {
         "session_id": session_id,
@@ -149,7 +154,7 @@ async def process_voice_turn(file: UploadFile, session_id: str):
 
     pipeline = _get_pipeline()
 
-    state = _voice_sessions.get(session_id)
+    state = get_or_restore_session(session_id, pipeline.agent, auto_create=False)
     if state is None:
         raise HTTPException(status_code=404, detail="Voice session not found.")
 
@@ -157,10 +162,12 @@ async def process_voice_turn(file: UploadFile, session_id: str):
     if not audio_bytes:
         raise HTTPException(status_code=400, detail="Empty audio file.")
 
-    result = pipeline.process_audio_bytes(audio_bytes, state)
+    retrieved_cars = _retrieve_cars(state)
+    result = pipeline.process_audio_bytes(audio_bytes, state, retrieved_cars=retrieved_cars)
 
     # Update session state via agent result
-    _voice_sessions[session_id] = pipeline.agent.memory  # state is updated in-place
+    if result.session_state is not None:
+        save_session_state(session_id, result.session_state, pipeline.agent)
 
     return {
         "session_id": session_id,
@@ -216,9 +223,8 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
     pipeline = _get_pipeline()
     await websocket.accept()
 
-    # Create or get session state
-    if session_id not in _voice_sessions:
-        _voice_sessions[session_id] = SessionState(session_id=session_id)
+    # Create or restore unified session state
+    state = get_or_restore_session(session_id, pipeline.agent, auto_create=True)
 
     audio_buffer = bytearray()
 
@@ -251,16 +257,19 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
                     # Process accumulated audio
                     if audio_buffer:
                         try:
-                            state = _voice_sessions.get(session_id)
-                            if state is None:
-                                state = SessionState(session_id=session_id)
-                                _voice_sessions[session_id] = state
+                            state = get_or_restore_session(
+                                session_id, pipeline.agent, auto_create=True
+                            )
 
-                            logger.info(f"[{session_id}] Processing turn: {len(audio_buffer)} bytes audio.")
+                            logger.info(
+                                f"[{session_id}] Processing turn: {len(audio_buffer)} bytes audio."
+                            )
 
                             # ASR
                             asr_result = _asr.transcribe_bytes(bytes(audio_buffer), language="zh")
-                            logger.info(f"[{session_id}] ASR result: '{asr_result.text}' ({asr_result.processing_time_ms}ms)")
+                            logger.info(
+                                f"[{session_id}] ASR result: '{asr_result.text}' ({asr_result.processing_time_ms}ms)"
+                            )
 
                             await websocket.send_json(
                                 {
@@ -271,63 +280,93 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
                                 }
                             )
 
-                            # Agent + Streaming Sentence TTS processing
-                            if asr_result.text.strip():
-                                async for item in pipeline.process_text_stream_tts(asr_result.text, state):
+                            # Observe + Retrieve + Streaming Sentence TTS processing
+                            user_text = asr_result.text.strip()
+                            if user_text:
+                                observed_state = pipeline.agent.observe(state, user_text)
+                                retrieved_cars = _retrieve_cars(observed_state, user_query=user_text)
+
+                                async for item in pipeline.process_text_stream_tts(
+                                    user_text,
+                                    observed_state,
+                                    retrieved_cars=retrieved_cars,
+                                    already_observed=True,
+                                ):
                                     kind = item[0]
                                     if kind == "metadata":
                                         meta = item[1]
-                                        await websocket.send_json({
-                                            "type": "stage_update",
-                                            "stage": meta["stage"],
-                                            "stage_changed": meta["stage_changed"],
-                                        })
+                                        updated_state = meta.get("session_state")
+                                        if updated_state is not None:
+                                            save_session_state(
+                                                session_id, updated_state, pipeline.agent
+                                            )
+                                        await websocket.send_json(
+                                            {
+                                                "type": "stage_update",
+                                                "stage": meta["stage"],
+                                                "stage_changed": meta["stage_changed"],
+                                            }
+                                        )
                                     elif kind == "sentence":
                                         chunk_data = item[1]
                                         sent_text = chunk_data["text"]
                                         audio_bytes = chunk_data["audio_bytes"]
 
                                         # Stream text chunk
-                                        await websocket.send_json({
-                                            "type": "response_chunk",
-                                            "text": sent_text,
-                                        })
+                                        await websocket.send_json(
+                                            {
+                                                "type": "response_chunk",
+                                                "text": sent_text,
+                                            }
+                                        )
 
                                         # Stream binary audio chunk for this sentence
                                         if audio_bytes:
-                                            await websocket.send_json({
-                                                "type": "tts_chunk",
-                                                "format": "mp3",
-                                                "size": len(audio_bytes),
-                                                "text": sent_text,
-                                            })
+                                            await websocket.send_json(
+                                                {
+                                                    "type": "tts_chunk",
+                                                    "format": "mp3",
+                                                    "size": len(audio_bytes),
+                                                    "text": sent_text,
+                                                }
+                                            )
                                             await websocket.send_bytes(audio_bytes)
 
                                     elif kind == "done":
                                         done_data = item[1]
-                                        await websocket.send_json({
-                                            "type": "response_done",
-                                            "text": done_data["full_text"],
-                                            "total_time_ms": done_data["total_time_ms"],
-                                        })
+                                        await websocket.send_json(
+                                            {
+                                                "type": "response_done",
+                                                "text": done_data["full_text"],
+                                                "total_time_ms": done_data["total_time_ms"],
+                                            }
+                                        )
                             else:
-                                await websocket.send_json({
+                                await websocket.send_json(
+                                    {
+                                        "type": "response_done",
+                                        "text": "",
+                                        "total_time_ms": 0,
+                                    }
+                                )
+                        except Exception as turn_err:
+                            logger.error(
+                                f"[{session_id}] Turn processing error: {turn_err}", exc_info=True
+                            )
+                            await websocket.send_json(
+                                {
+                                    "type": "error",
+                                    "message": f"Turn processing error: {str(turn_err)}",
+                                }
+                            )
+                            await websocket.send_json(
+                                {
                                     "type": "response_done",
                                     "text": "",
                                     "total_time_ms": 0,
-                                })
-                        except Exception as turn_err:
-                            logger.error(f"[{session_id}] Turn processing error: {turn_err}", exc_info=True)
-                            await websocket.send_json({
-                                "type": "error",
-                                "message": f"Turn processing error: {str(turn_err)}"
-                            })
-                            await websocket.send_json({
-                                "type": "response_done",
-                                "text": "",
-                                "total_time_ms": 0,
-                                "error": str(turn_err)
-                            })
+                                    "error": str(turn_err),
+                                }
+                            )
 
                     # Clear buffer for next turn
                     audio_buffer.clear()

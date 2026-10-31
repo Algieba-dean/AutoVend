@@ -12,13 +12,17 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from llama_index.core.llms import LLM
+from llama_index.core.llms import LLM, MessageRole
 
+from src.agent.circuit_breaker import AgentCircuitBreaker, default_circuit_breaker
 from src.agent.extractors.combined_needs_extractor import extract_combined_needs
 from src.agent.extractors.profile_extractor import extract_profile
 from src.agent.extractors.reservation_extractor import extract_reservation
 from src.agent.memory import ChatMemoryManager
 from src.agent.patches import StatePatch, diff, format_for_prompt, snapshot
+from src.agent.plugins.pipeline import AgentPluginPipeline
+from src.agent.reconciliation import reconcile_constraints
+from src.agent.reflection import reflect_and_guard
 from src.agent.response_generator import generate_response, generate_response_stream
 from src.agent.schemas import (
     AgentInput,
@@ -26,11 +30,24 @@ from src.agent.schemas import (
     SessionState,
     Stage,
 )
-from src.agent.stages import ProposalSource, TransitionProposal, advance, propose_forward
+from src.agent.stages import (
+    ProposalSource,
+    TransitionProposal,
+    TransitionVerdict,
+    advance,
+    advance_adaptive,
+    propose_forward,
+    should_advance_to_car_selection,
+    should_advance_to_confirmation,
+)
 from src.agent.subdag import run_stage_subdag
 from src.agent.tool_planner import plan_tools
 from src.agent.tools import ToolResult, dispatch_all
+from src.agent.topic_manager import TopicManager, UserDialogueIntent
 from src.agent.transition_proposer import propose_by_llm
+from src.core.tiered_engine import TieredRetrievalEngine
+from src.privacy.prompt_sanitizer import PromptSanitizer
+from src.privacy.security_logger import security_audit_logger
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +94,8 @@ class SalesAgent:
         llm: LLM,
         generation_llm: Optional[LLM] = None,
         enable_tool_planning: bool = False,
+        circuit_breaker: Optional[AgentCircuitBreaker] = None,
+        plugin_pipeline: Optional[AgentPluginPipeline] = None,
     ):
         """
         Args:
@@ -96,6 +115,8 @@ class SalesAgent:
         self.llm = llm
         self.generation_llm = generation_llm or llm
         self.enable_tool_planning = enable_tool_planning
+        self.circuit_breaker = circuit_breaker or AgentCircuitBreaker()
+        self.plugin_pipeline = plugin_pipeline or AgentPluginPipeline()
         self.memory = ChatMemoryManager()
 
     def remember(self, state: SessionState, user_message: str) -> SessionState:
@@ -126,8 +147,6 @@ class SalesAgent:
         Record the user's message and extract what it reveals — no generation.
         """
         import uuid
-        from src.privacy.prompt_sanitizer import PromptSanitizer
-        from src.privacy.security_logger import security_audit_logger
 
         updated = state.model_copy(deep=True)
         if not updated.trace_id:
@@ -153,7 +172,9 @@ class SalesAgent:
         conversation_text = self.memory.get_history_as_text(updated.session_id)
 
         before = snapshot(updated)
-        updated = self._extract_information(updated, conversation_text)
+        updated = self._extract_information(
+            updated, conversation_text, latest_user_message=effective_message
+        )
         _record_patches(updated, before, source="extractor")
 
         should_use_tools = self.enable_tool_planning if use_tools is None else use_tools
@@ -193,24 +214,19 @@ class SalesAgent:
             requests=[r.request for r in results if r.ok and r.request],
         )
 
-    def respond(
+    def _prepare_turn_context(
         self,
         state: SessionState,
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         propose_with_llm: bool = False,
-    ) -> AgentResult:
+    ) -> tuple[SessionState, str, bool, List[str], Dict[str, Any]]:
         """
-        Arbitrate the stage machine and generate the reply for an observed turn.
-
-        Expects `state` to already carry this turn's extractions — i.e. the
-        output of `observe`.
-
-        Args:
-            retrieved_cars: Candidates from the backend, if any.
-            propose_with_llm: Also ask the model whether the stage is complete.
-                Its answer is a *proposal*; `stages.arbitrate` still decides.
-                Off by default because it costs an extra call per turn and the
-                rule-based proposer covers the linear path.
+        Shared pre-response pipeline for both synchronous `respond` and streaming `respond_stream`:
+        1. Topic hopping & interruptibility analysis + Tier-0 fast spec grounding
+        2. Stage FSM arbitration (linear, adaptive multi-hop, or rollback hold)
+        3. Anti-loop circuit breaker recording
+        4. Pre-response middleware plugin pipeline (Reconciliation, Battlecards, Terminology, Truth)
+        5. Stage Sub-DAG execution & prompt patch summary assembly
         """
         updated = state.model_copy(deep=True)
         session_id = updated.session_id
@@ -222,14 +238,106 @@ class SalesAgent:
         old_stage = updated.stage
         updated.previous_stage = old_stage.value
 
+        history = self.memory.get_history(session_id)
+        last_user_msg = next(
+            (msg.content for msg in reversed(history) if msg.role == MessageRole.USER), ""
+        )
+
+        # Dynamic Intent Interruptibility & Topic Hopping Analysis
+        topic_res = TopicManager.analyze_user_turn(last_user_msg, old_stage, updated)
+        is_topic_hopping = False
+        if topic_res.is_interrupt:
+            if topic_res.intent in (
+                UserDialogueIntent.SIDE_QUESTION,
+                UserDialogueIntent.SPEC_COMPARISON,
+            ) or (
+                topic_res.intent == UserDialogueIntent.MULTI_INTENT
+                and topic_res.topic_label
+                and topic_res.topic_label != "车辆参数与技术咨询"
+                and not any(
+                    k in last_user_msg
+                    for k in ("改一下", "换成", "预算调整为", "改选", "重新考虑", "重新选车", "重新选")
+                )
+            ):
+                TopicManager.push_goal(updated, old_stage, topic_res.topic_label)
+                if not topic_res.is_multi_intent:
+                    is_topic_hopping = True
+            elif topic_res.intent == UserDialogueIntent.CONSTRAINT_UPDATE or (
+                topic_res.intent == UserDialogueIntent.MULTI_INTENT
+                and any(
+                    k in last_user_msg
+                    for k in (
+                        "改一下",
+                        "换成",
+                        "预算调整为",
+                        "改选",
+                        "重新考虑",
+                        "重新选车",
+                        "重新选",
+                        "不要轿车",
+                        "不要SUV",
+                        "不要油车",
+                        "不要纯电",
+                        "先别急着约",
+                        "先不约",
+                        "先别约",
+                        "不急着约",
+                    )
+                )
+            ):
+                from src.agent.stages import handle_constraint_change
+
+                outcome = handle_constraint_change(updated, reason="topic_manager_constraint_update")
+                if outcome and outcome.rolled_back:
+                    old_stage = updated.stage
+
+            if (
+                topic_res.suggested_directive
+                and topic_res.suggested_directive not in updated.system_notes
+            ):
+                updated.system_notes.append(topic_res.suggested_directive)
+            try:
+                car_hint = (
+                    updated.matched_cars[0].get("car_model")
+                    if updated.matched_cars and isinstance(updated.matched_cars[0], dict)
+                    else None
+                )
+                t0_hit = TieredRetrievalEngine.get_instance().search_tier0(
+                    last_user_msg, car_model_hint=car_hint
+                )
+                if t0_hit is not None and t0_hit.results:
+                    fact_note = f"[技术与规格事实依据] {t0_hit.facts_summary}"
+                    if fact_note not in updated.system_notes:
+                        updated.system_notes.append(fact_note)
+            except Exception as te:
+                logger.debug(f"Tier 0 lookup failed in _prepare_turn_context: {te}")
+        else:
+            if (
+                topic_res.suggested_directive
+                and topic_res.suggested_directive not in updated.system_notes
+            ):
+                updated.system_notes.append(topic_res.suggested_directive)
+
         if updated.stage_hold:
-            # A rollback happened this turn. Advancing now would undo it
-            # immediately: the constraint the customer disowned is still in
-            # state, so the forward guard still passes. Hold for one turn and
-            # let them state the revised value first.
             logger.info(f"[{session_id}] Stage held at {old_stage.value}: rollback in progress")
             updated.stage_hold = False
             stage_changed = False
+            verdict = TransitionVerdict(
+                accepted=True,
+                stage=old_stage,
+                proposal=TransitionProposal(target=old_stage, source=ProposalSource.RULE),
+            )
+        elif is_topic_hopping:
+            stage_changed = False
+            verdict = TransitionVerdict(
+                accepted=True,
+                stage=old_stage,
+                proposal=TransitionProposal(
+                    target=old_stage,
+                    source=ProposalSource.RULE,
+                    reason="topic_hopping_side_question",
+                ),
+            )
         else:
             proposals = []
             for request in updated.pending_requests:
@@ -255,11 +363,26 @@ class SalesAgent:
             if forward is not None:
                 proposals.append(forward)
 
-            verdict = advance(updated, proposals)
+            has_multi_slots = (
+                topic_res.is_multi_intent
+                or len(topic_res.extracted_slots_hint) >= 2
+                or (len(updated.last_patch) >= 2 and any("needs" in k for k in updated.last_patch))
+                or (
+                    updated.stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS)
+                    and bool(updated.needs.explicit.prize)
+                    and should_advance_to_car_selection(updated.needs)
+                )
+                or (
+                    updated.stage in (Stage.CAR_SELECTION, Stage.RESERVATION_4S)
+                    and should_advance_to_confirmation(updated.reservation)
+                )
+            )
+            if has_multi_slots:
+                verdict = advance_adaptive(updated, proposals)
+            else:
+                verdict = advance(updated, proposals)
             updated.stage = verdict.stage
 
-            # A refused transition must not stall silently: the guard's reason
-            # is handed to the generator so the reply asks for what is missing.
             if verdict.system_note:
                 updated.system_notes = [*updated.system_notes, verdict.system_note]
 
@@ -272,15 +395,58 @@ class SalesAgent:
             elif verdict.rejection:
                 logger.info(f"[{session_id}] Stage held at {old_stage.value}: {verdict.rejection}")
 
-        # Recent patches ride at the end of the prompt. The transcript window is short; this keeps
-        # "the customer just changed their budget" visible even when the turn
-        # that said so has scrolled out without invalidating the stable prompt prefix.
+        # Check Anti-Loop Circuit Breaker with Topic Hopping Awareness
+        rej_reason = verdict.rejection if (not verdict.accepted) else None
+        trip = self.circuit_breaker.record_turn(
+            session_id=session_id,
+            current_stage=updated.stage,
+            rejection_reason=rej_reason,
+            is_topic_hopping=is_topic_hopping,
+        )
+        if trip:
+            updated.system_notes = [*updated.system_notes, trip.intervention_note]
+
+        # Run AgentPluginPipeline (ConstraintReconciler, Battlecards, Terminology, TruthDebiaser)
+        plugin_context: Dict[str, Any] = {
+            "user_input": last_user_msg or conversation_text,
+            "conversation_text": conversation_text,
+            "matched_cars": updated.matched_cars,
+        }
+        self.plugin_pipeline.run_before_response(updated, plugin_context)
+
+        # Execute Sub-DAG workflow for current stage
+        updated = run_stage_subdag(updated)
+
+        # Assemble notes including recent state patch summary
         notes = list(updated.system_notes)
         patch_summary = format_for_prompt(
             [StatePatch.from_dict(p) for p in updated.patch_log[-PROMPT_PATCH_WINDOW:]]
         )
         if patch_summary:
             notes.append(patch_summary)
+
+        return updated, conversation_text, stage_changed, notes, plugin_context
+
+    def respond(
+        self,
+        state: SessionState,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        propose_with_llm: bool = False,
+    ) -> AgentResult:
+        """
+        Arbitrate the stage machine and generate the reply for an observed turn.
+
+        Expects `state` to already carry this turn's extractions — i.e. the
+        output of `observe`.
+        """
+        updated, conversation_text, stage_changed, notes, plugin_context = (
+            self._prepare_turn_context(
+                state=state,
+                retrieved_cars=retrieved_cars,
+                propose_with_llm=propose_with_llm,
+            )
+        )
+        session_id = updated.session_id
 
         response_text = generate_response(
             self.generation_llm,
@@ -293,14 +459,10 @@ class SalesAgent:
             system_notes=notes,
         )
 
-        # Run Self-Reflection & Compliance Guard
-        from src.agent.reflection import reflect_and_guard
+        # Run post-response plugins (Reflection & Compliance Guard)
+        response_text = self.plugin_pipeline.run_after_response(response_text, plugin_context)
 
-        response_text, reflection_warnings = reflect_and_guard(response_text, updated.matched_cars)
-
-        # Notes are per-turn instructions. Carrying them forward would keep
-        # telling the model about a constraint change several turns after the
-        # customer moved on.
+        # Notes are per-turn instructions.
         updated.system_notes = []
 
         self.memory.add_assistant_message(session_id, response_text)
@@ -325,67 +487,18 @@ class SalesAgent:
         - ("delta", token_chunk)
         - ("done", full_response_text)
         """
-        updated = state.model_copy(deep=True)
+        updated, conversation_text, stage_changed, notes, plugin_context = (
+            self._prepare_turn_context(
+                state=state,
+                retrieved_cars=retrieved_cars,
+                propose_with_llm=propose_with_llm,
+            )
+        )
         session_id = updated.session_id
-        conversation_text = self.memory.get_history_as_text(session_id)
-
-        if retrieved_cars:
-            updated.matched_cars = retrieved_cars
-
-        old_stage = updated.stage
-        updated.previous_stage = old_stage.value
-
-        if updated.stage_hold:
-            logger.info(f"[{session_id}] Stage held at {old_stage.value}: rollback in progress")
-            updated.stage_hold = False
-            stage_changed = False
-        else:
-            proposals = []
-            for request in updated.pending_requests:
-                if request.get("type") != "transition":
-                    continue
-                try:
-                    target = Stage(request["stage"])
-                except (KeyError, ValueError):
-                    continue
-                proposals.append(
-                    TransitionProposal(
-                        target=target,
-                        source=ProposalSource.LLM,
-                        reason=str(request.get("reason", "")),
-                    )
-                )
-            updated.pending_requests = []
-            if propose_with_llm:
-                llm_proposal = propose_by_llm(self.llm, updated, conversation_text)
-                if llm_proposal is not None:
-                    proposals.append(llm_proposal)
-            forward = propose_forward(updated)
-            if forward is not None:
-                proposals.append(forward)
-
-            verdict = advance(updated, proposals)
-            updated.stage = verdict.stage
-
-            if verdict.system_note:
-                updated.system_notes = [*updated.system_notes, verdict.system_note]
-
-            stage_changed = updated.stage != old_stage
-
-        # Execute Sub-DAG workflow for current stage
-        updated = run_stage_subdag(updated)
 
         # Yield metadata first so the caller receives updated stage, profile, matched cars immediately
         yield ("metadata", {"session_state": updated, "stage_changed": stage_changed})
 
-        notes = list(updated.system_notes)
-        patch_summary = format_for_prompt(
-            [StatePatch.from_dict(p) for p in updated.patch_log[-PROMPT_PATCH_WINDOW:]]
-        )
-        if patch_summary:
-            notes.append(patch_summary)
-
-        full_text_chunks = []
         token_stream = generate_response_stream(
             self.generation_llm,
             updated.stage,
@@ -397,14 +510,36 @@ class SalesAgent:
             system_notes=notes,
         )
 
+        # Sentence-boundary streaming buffer so compliance guard runs BEFORE yielding deltas
+        stream_buffer = ""
+        emitted_chunks: List[str] = []
+        sentence_delims = ("。", "！", "？", "；", "\n")
+
         for delta in token_stream:
-            full_text_chunks.append(delta)
-            yield ("delta", delta)
+            stream_buffer += delta
+            # Flush on sentence boundary or if buffer exceeds 32 chars
+            last_delim = max(stream_buffer.rfind(d) for d in sentence_delims)
+            if last_delim != -1:
+                to_guard = stream_buffer[: last_delim + 1]
+                stream_buffer = stream_buffer[last_delim + 1 :]
+                guarded_chunk, _ = reflect_and_guard(to_guard, updated.matched_cars)
+                emitted_chunks.append(guarded_chunk)
+                yield ("delta", guarded_chunk)
+            elif len(stream_buffer) >= 48:
+                guarded_chunk, _ = reflect_and_guard(stream_buffer, updated.matched_cars)
+                stream_buffer = ""
+                emitted_chunks.append(guarded_chunk)
+                yield ("delta", guarded_chunk)
 
-        full_response_text = "".join(full_text_chunks)
+        if stream_buffer:
+            guarded_chunk, _ = reflect_and_guard(stream_buffer, updated.matched_cars)
+            emitted_chunks.append(guarded_chunk)
+            yield ("delta", guarded_chunk)
 
-        from src.agent.reflection import reflect_and_guard
-        full_response_text, _ = reflect_and_guard(full_response_text, updated.matched_cars)
+        full_response_text = "".join(emitted_chunks)
+        full_response_text = self.plugin_pipeline.run_after_response(
+            full_response_text, plugin_context
+        )
 
         updated.system_notes = []
         self.memory.add_assistant_message(session_id, full_response_text)
@@ -429,34 +564,71 @@ class SalesAgent:
         return self.respond(state, agent_input.retrieved_cars)
 
     def clear_session(self, session_id: str) -> None:
-        """Clear memory for a session."""
+        """Clear memory and circuit breaker state for a session."""
         self.memory.clear_session(session_id)
+        self.circuit_breaker.reset_session(session_id)
+        default_circuit_breaker.reset_session(session_id)
 
     def get_history_text(self, session_id: str) -> str:
         """Get formatted conversation history for a session."""
         return self.memory.get_history_as_text(session_id)
 
-    def _extract_information(self, state: SessionState, conversation_text: str) -> SessionState:
-        """Run extractors relevant to the current stage."""
-        stage = state.stage
+    def _extract_information(
+        self,
+        state: SessionState,
+        conversation_text: str,
+        latest_user_message: str = "",
+    ) -> SessionState:
+        """
+        Run extractors relevant to the current stage or detected user multi-intent
+        in the latest user turn (instead of re-scanning the entire conversation history).
+        """
+        import re
 
-        # Profile extraction: active during welcome and profile_analysis
-        if stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS):
+        stage = state.stage
+        signal_text = latest_user_message if latest_user_message else conversation_text
+
+        # Multi-Intent signal detection on the current turn:
+        has_profile_signal = stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS) or bool(
+            re.search(
+                r"我叫|我是|姓|先生|女士|本人|自己开|家人|老婆|老公|太太|爱人|小孩|孩子|老人|口之|代步|通勤|岁|居住|住在|工程师|<CN_PERSON",
+                signal_text,
+            )
+        )
+
+        has_needs_signal = stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION) or bool(
+            re.search(
+                r"\d+万|预算|价格|纯电|插混|增程|油车|混动|ev|suv|轿车|mpv|猎装|轿跑|续航|加速|马力|空间|座椅|\d座",
+                signal_text,
+                re.IGNORECASE,
+            )
+        )
+
+        has_reservation_signal = (
+            stage in (Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION)
+            or bool(
+                re.search(
+                    r"试驾|预约|门店|4s店|体验店|体验中心|明天|后天|周末|周[一二三四五六日天]|\d{1,2}\s*[点:：]|上午|下午|1[3-9]\d{9}|<CN_PHONE",
+                    signal_text,
+                )
+            )
+        )
+
+        # Profile extraction: active during profile stages or when profile info provided in this turn
+        if has_profile_signal:
             state.profile = extract_profile(self.llm, conversation_text, state.profile)
 
         # Combined needs extraction: explicit + implicit in one LLM call
-        if stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
+        if has_needs_signal:
             state.needs = extract_combined_needs(
                 self.llm, conversation_text, state.profile, state.needs
             )
 
-        # Reservation extraction: active during reservation stages
-        if stage in (Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION):
+        # Reservation extraction: active during reservation stages or when booking info provided
+        if has_reservation_signal:
             state.reservation = extract_reservation(self.llm, conversation_text, state.reservation)
 
         # Run constraint reconciliation engine to detect hard/soft conflicts
-        from src.agent.reconciliation import reconcile_constraints
-
         conflicts = reconcile_constraints(state)
         for conflict in conflicts:
             note = conflict.to_system_note()

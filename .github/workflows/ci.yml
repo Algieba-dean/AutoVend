@@ -228,3 +228,42 @@ jobs:
           name: kpi-report
           path: kpi-report.md
           retention-days: 90
+
+  # ── Enterprise MLOps Gate ──────────────────────────────────
+  mlops-gate:
+    name: "Enterprise MLOps & Drift Gate"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Run MLOps lifecycle test suite
+        run: uv run pytest tests/test_mlops.py -v
+
+      - name: Verify MLOps registry and prompt versioning
+        run: |
+          uv run python -c "
+          from src.mlops import prompt_registry, model_registry, dataset_registry
+          print('MLOps registries initialized successfully.')
+          "
+
+      - name: Run semantic drift regression check
+        run: |
+          uv run python -c "
+          from src.mlops import semantic_drift_detector
+          report = semantic_drift_detector.generate_drift_report()
+          print('Drift status:', report.overall_level.value)
+          "
+

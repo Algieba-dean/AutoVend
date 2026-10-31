@@ -148,6 +148,7 @@ class ComprehensiveEvaluator:
         self,
         samples_limit: Optional[int] = 30,
         run_ragas: bool = False,
+        pipeline: Optional[Any] = None,
     ) -> BenchmarkReport:
         """Run comprehensive benchmark across all dimensions."""
         queries = load_golden_set()
@@ -157,7 +158,7 @@ class ComprehensiveEvaluator:
         from src.retrieval.adapters import search_response_to_cars
         from src.retrieval.hybrid_pipeline import build_default_pipeline
 
-        pipeline = build_default_pipeline()
+        pipeline = pipeline or build_default_pipeline()
         predictions: List[List[str]] = []
         ground_truths: List[List[str]] = [q.relevant_car_models for q in queries]
         latencies: List[float] = []

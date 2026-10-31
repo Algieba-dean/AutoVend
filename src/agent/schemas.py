@@ -191,6 +191,10 @@ class SessionState(BaseModel):
     #: Sub-DAG execution state for complex local stage workflows.
     subdag_state: Dict[str, Any] = Field(default_factory=dict)
 
+    #: Interrupted sales goal stack for topic hopping & seamless resumption.
+    #: Each entry: {"stage": "Stage value", "topic_label": "...", "target_action": "...", "turn_index": int}
+    interrupted_goals: List[Dict[str, Any]] = Field(default_factory=list)
+
 
 
 class AgentInput(BaseModel):

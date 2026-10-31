@@ -57,7 +57,7 @@ class VehicleDB:
     @property
     def conn(self) -> sqlite3.Connection:
         if self._conn is None:
-            self._conn = sqlite3.connect(self.db_path)
+            self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
             self._conn.row_factory = sqlite3.Row
         return self._conn
 
@@ -285,6 +285,40 @@ class VehicleDB:
         cursor = self.conn.execute("SELECT * FROM vehicles WHERE car_model = ?", (car_model,))
         row = cursor.fetchone()
         return dict(row) if row else None
+
+    def get_vehicle(self, car_model: str) -> Optional[Any]:
+        """获取指定 car_model 并重构为 Vehicle 对象"""
+        row = self.get_by_model(car_model)
+        if not row:
+            return None
+        from src.models.vehicle import AmbiguousLabels, KeyDetails, PreciseLabels, Vehicle
+
+        precise = PreciseLabels(
+            brand=row.get("brand"),
+            prize=row.get("prize"),
+            vehicle_category_bottom=row.get("vehicle_category_bottom"),
+            powertrain_type=row.get("powertrain_type"),
+            wheelbase=row.get("wheelbase"),
+            chassis_height=row.get("chassis_height"),
+            passenger_sapce_volume=row.get("passenger_space_volume") or row.get("passenger_sapce_volume"),
+            trunk_volume=row.get("trunk_volume"),
+        )
+        ambiguous = AmbiguousLabels(
+            size=row.get("size"),
+            family_friendliness=row.get("family_friendliness"),
+            comfort_level=row.get("comfort_level"),
+            passibility=row.get("passability") or row.get("passibility"),
+            power=row.get("power"),
+            handling=row.get("handling"),
+        )
+        key_details = KeyDetails(key_details=row.get("key_details") or "")
+        return Vehicle(
+            car_model=row.get("car_model", car_model),
+            PriciseLabels=precise,
+            AmbiguousLabels=ambiguous,
+            KeyDetails=key_details,
+            raw_data=row,
+        )
 
     def upsert_vehicle(self, v_data: Dict[str, Any]) -> None:
         """执行单条车辆记录的插入或更新 (INSERT OR REPLACE)"""

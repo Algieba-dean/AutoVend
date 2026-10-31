@@ -20,7 +20,7 @@ from src.filter.label_registry import LabelRegistry
 from src.filter.llm_parser import LLMParser
 from src.filter.query_parser import ParsedQuery, QueryParser
 from src.filter.vehicle_db import VehicleDB
-from src.models.query import Query, SearchResponse
+from src.models.query import MatchScore, Query, SearchResponse, SearchResult
 from src.retrieval.fusion import DEFAULT_K as DEFAULT_RRF_K
 from src.retrieval.fusion import reciprocal_rank_fusion, weights_for_query
 from src.utils.logger import get_logger
@@ -215,7 +215,37 @@ class HybridPipeline:
     ) -> None:
         """对粗筛候选做稠密召回，可选与 BM25 稀疏召回做 RRF 融合"""
         if self.retriever is None:
-            self.logger.warning("未配置 retriever，跳过 RAG 精排")
+            self.logger.warning("未配置 retriever，降级执行纯 BM25 稀疏检索")
+            if self.sparse_index is not None:
+                from src.retrieval.query_expander import QueryExpander
+
+                expanded_query = QueryExpander.expand_query(query_text)
+                sparse_hits = self.sparse_index.search(expanded_query, top_k=top_k)
+                if filter_result.car_models:
+                    allowed = set(filter_result.car_models)
+                    sparse_hits = [h for h in sparse_hits if h[0] in allowed]
+                sparse_results = []
+                for model, score in sparse_hits:
+                    if self.db is not None:
+                        veh = self.db.get_vehicle(model)
+                        if veh:
+                            sparse_results.append(
+                                SearchResult(
+                                    vehicle=veh,
+                                    score=MatchScore(overall_score=min(1.0, float(score) / 10.0)),
+                                    explanation=f"BM25稀疏检索命中 (分数: {score:.2f})",
+                                )
+                            )
+                response = SearchResponse(
+                    query=Query(text=query_text, top_k=top_k),
+                    results=sparse_results[:top_k],
+                    total_count=len(sparse_results[:top_k]),
+                    search_time=0.0,
+                )
+                result.search_response = response
+                result.rag_result_count = response.total_count
+                result.sparse_result_count = len(sparse_hits)
+                return
             result.rag_result_count = 0
             return
 
@@ -242,14 +272,16 @@ class HybridPipeline:
         sparse_hits = []
 
         def _do_dense():
-            # 优先使用 HyDE 假设性文档进行向量召回，获得极高的 Doc-to-Doc 向量余弦相似度
-            hyde_query = Query(
-                text=transform_res["hyde_document"], top_k=dense_depth, filters=query.filters
-            )
-            try:
-                return self.retriever.search(hyde_query)
-            except Exception:
-                return self.retriever.search(query)
+            # 若配置了 LLM 则使用高质量 HyDE 文档；离线确定性环境使用意图增强查询
+            if transformer.llm is not None and transform_res.get("hyde_document"):
+                hyde_query = Query(
+                    text=transform_res["hyde_document"], top_k=dense_depth, filters=query.filters
+                )
+                try:
+                    return self.retriever.search(hyde_query)
+                except Exception:
+                    pass
+            return self.retriever.search(query)
 
         def _do_sparse():
             if self.sparse_index is not None:
@@ -273,13 +305,18 @@ class HybridPipeline:
                 dense_response = future_dense.result()
             except Exception as e:
                 self.logger.error(f"RAG 稠密精排失败: {e}")
-                result.rag_result_count = 0
-                return
+                dense_response = SearchResponse(
+                    query=query,
+                    results=[],
+                    total_count=0,
+                    search_time=0.0,
+                )
 
             try:
                 sparse_hits = future_sparse.result()
             except Exception as e:
                 self.logger.warning(f"BM25 稀疏召回失败: {e}")
+                sparse_hits = []
 
         if self.sparse_index is not None and sparse_hits:
             response = self._fuse_with_sparse_hits(
@@ -319,10 +356,21 @@ class HybridPipeline:
             weights=weights.as_list(),
             top_k=top_k,
         )
-        fused_order = {model: rank for rank, (model, _) in enumerate(fused)}
-
-        reranked = [r for r in response.results if r.vehicle.car_model in fused_order]
-        reranked.sort(key=lambda r: fused_order[r.vehicle.car_model])
+        dense_map = {r.vehicle.car_model: r for r in response.results}
+        reranked = []
+        for model, rrf_score in fused:
+            if model in dense_map:
+                reranked.append(dense_map[model])
+            elif self.db is not None:
+                veh = self.db.get_vehicle(model)
+                if veh:
+                    reranked.append(
+                        SearchResult(
+                            vehicle=veh,
+                            score=MatchScore(overall_score=min(1.0, float(rrf_score) * 10)),
+                            explanation=f"BM25稀疏检索命中 (RRF评分: {rrf_score:.4f})",
+                        )
+                    )
 
         response.results = reranked[:top_k]
         response.total_count = len(response.results)
@@ -372,13 +420,21 @@ class HybridPipeline:
             weights=weights.as_list(),
             top_k=top_k,
         )
-        fused_order = {model: rank for rank, (model, _) in enumerate(fused)}
-
-        # 只有稠密路检索到的车才有 SearchResult 对象可用；稀疏路独有的车没有
-        # 向量分数与匹配解释，无法凭空构造，因此融合在这里只重排而不引入新车。
-        # （引入新车需要稀疏路也走一遍打分，属于下一步的优化。）
-        reranked = [r for r in response.results if r.vehicle.car_model in fused_order]
-        reranked.sort(key=lambda r: fused_order[r.vehicle.car_model])
+        dense_map = {r.vehicle.car_model: r for r in response.results}
+        reranked = []
+        for model, rrf_score in fused:
+            if model in dense_map:
+                reranked.append(dense_map[model])
+            elif self.db is not None:
+                veh = self.db.get_vehicle(model)
+                if veh:
+                    reranked.append(
+                        SearchResult(
+                            vehicle=veh,
+                            score=MatchScore(overall_score=min(1.0, float(rrf_score) * 10)),
+                            explanation=f"BM25稀疏检索命中 (RRF评分: {rrf_score:.4f})",
+                        )
+                    )
 
         response.results = reranked[:top_k]
         response.total_count = len(response.results)
@@ -436,12 +492,16 @@ def build_default_pipeline(
     registry = LabelRegistry()
     db = VehicleDB(registry=registry)
 
-    retriever = VehicleRetriever(
-        BGEEmbeddingModel(),
-        ChromaVectorStore(),
-        similarity_threshold=similarity_threshold,
-        price_tolerance=price_tolerance,
-    )
+    retriever = None
+    try:
+        retriever = VehicleRetriever(
+            BGEEmbeddingModel(),
+            ChromaVectorStore(),
+            similarity_threshold=similarity_threshold,
+            price_tolerance=price_tolerance,
+        )
+    except Exception as exc:
+        get_logger(__name__).warning(f"稠密向量检索初始化失败，降级为无向量检索/纯规则与稀疏检索: {exc}")
 
     llm_parser = None
     if enable_llm_parser:

@@ -9,11 +9,18 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.utils import get_tokenizer
 
 logger = logging.getLogger(__name__)
 
 # Default token limit for memory buffer
 DEFAULT_TOKEN_LIMIT = 3000
+
+# Pre-warm tokenizer at module import to avoid cold-start BPE dictionary loading during conversation turns
+try:
+    _SHARED_TOKENIZER = get_tokenizer()
+except Exception:
+    _SHARED_TOKENIZER = None
 
 
 class ChatMemoryManager:
@@ -31,9 +38,10 @@ class ChatMemoryManager:
     def get_or_create(self, session_id: str) -> ChatMemoryBuffer:
         """Get existing memory buffer or create a new one for the session."""
         if session_id not in self._sessions:
-            self._sessions[session_id] = ChatMemoryBuffer.from_defaults(
-                token_limit=self._token_limit,
-            )
+            kwargs = {"token_limit": self._token_limit}
+            if _SHARED_TOKENIZER is not None:
+                kwargs["tokenizer_fn"] = _SHARED_TOKENIZER
+            self._sessions[session_id] = ChatMemoryBuffer.from_defaults(**kwargs)
             logger.info(f"Created new memory buffer for session {session_id}")
         return self._sessions[session_id]
 

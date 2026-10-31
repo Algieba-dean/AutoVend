@@ -212,71 +212,37 @@ export const chatService = {
   }
 };
 
-// Vehicle Needs API
+// Vehicle Needs API (backed by session/profile details)
 export const needsService = {
-  getUserNeeds: async (profileId) => {
+  getUserNeeds: async (sessionOrProfileId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/needs/${profileId}`);
-      return response.data;
+      const response = await axios.get(`${API_BASE_URL}/chat/session/${sessionOrProfileId}`);
+      return {
+        explicit: response.data.explicit_needs || {},
+        implicit: response.data.implicit_needs || {}
+      };
     } catch (error) {
       console.error('Failed to get user needs:', error);
-      throw error;
-    }
-  },
-
-  addNeed: async (profileId, category, value, isImplicit = false) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/needs/${profileId}`, {
-        category,
-        value,
-        is_implicit: isImplicit
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to add need:', error);
-      throw error;
-    }
-  },
-
-  // 添加更新需求的方法
-  updateNeed: async (profileId, needId, needData) => {
-    try {
-      const response = await axios.put(`${API_BASE_URL}/needs/${profileId}/${needId}`, needData);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to update need:', error);
-      throw error;
-    }
-  },
-
-  // 添加删除需求的方法
-  deleteNeed: async (profileId, needId) => {
-    try {
-      const response = await axios.delete(`${API_BASE_URL}/needs/${profileId}/${needId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to delete need:', error);
       throw error;
     }
   }
 };
 
-// Vehicle Recommendation API
+// Vehicle Recommendation & Truth Catalog API
 export const recommendationService = {
-  getRecommendations: async (profileId) => {
+  getRecommendations: async (sessionId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/recommendations/${profileId}`);
-      return response.data;
+      const response = await axios.get(`${API_BASE_URL}/chat/session/${sessionId}`);
+      return response.data.matched_cars || [];
     } catch (error) {
       console.error('Failed to get vehicle recommendations:', error);
       throw error;
     }
   },
 
-  // 添加获取特定车型详情的方法
-  getCarDetails: async (carId) => {
+  getCarDetails: async (carModel) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/car/${carId}`);
+      const response = await axios.get(`${API_BASE_URL}/truth/report/${encodeURIComponent(carModel)}`);
       return response.data;
     } catch (error) {
       console.error('Failed to get car details:', error);
@@ -284,15 +250,136 @@ export const recommendationService = {
     }
   },
 
-  // 添加搜索车型的方法
-  searchCars: async (searchParams) => {
+  listKnownModels: async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/cars/search`, searchParams);
+      const response = await axios.get(`${API_BASE_URL}/truth/models`);
       return response.data;
     } catch (error) {
-      console.error('Failed to search cars:', error);
+      console.error('Failed to list known models:', error);
       throw error;
     }
+  }
+};
+
+// Consumer Truth Engine API (/api/truth/*)
+export const truthService = {
+  deconstructSpecs: async (carModel) => {
+    const response = await axios.get(`${API_BASE_URL}/truth/deconstruct`, {
+      params: { car_model: carModel }
+    });
+    return response.data;
+  },
+
+  debiasMarketing: async (claim, carModel = null) => {
+    const response = await axios.post(`${API_BASE_URL}/truth/debias`, {
+      claim,
+      car_model: carModel
+    });
+    return response.data;
+  },
+
+  getReliability: async (carModel, queryFilter = '') => {
+    const response = await axios.get(`${API_BASE_URL}/truth/reliability`, {
+      params: { car_model: carModel, query_filter: queryFilter }
+    });
+    return response.data;
+  },
+
+  calculatePricing: async ({ carModel, msrpWan = null, cashDiscount = 0, perksDiscount = 0, tradeInSubsidy = 0 }) => {
+    const response = await axios.post(`${API_BASE_URL}/truth/pricing`, {
+      car_model: carModel,
+      msrp_wan: msrpWan,
+      cash_discount: cashDiscount,
+      perks_discount: perksDiscount,
+      trade_in_subsidy: tradeInSubsidy
+    });
+    return response.data;
+  },
+
+  getNationalStandards: async () => {
+    const response = await axios.get(`${API_BASE_URL}/truth/standards`);
+    return response.data;
+  },
+
+  getFullTruthReport: async (carModel) => {
+    const response = await axios.get(`${API_BASE_URL}/truth/report/${encodeURIComponent(carModel)}`);
+    return response.data;
+  }
+};
+
+// Automotive Terminology Knowledge Graph API (/api/terminology/*)
+export const terminologyService = {
+  resolveTerm: async (term, context = '') => {
+    const response = await axios.get(`${API_BASE_URL}/terminology/resolve`, {
+      params: { term, context }
+    });
+    return response.data;
+  },
+
+  extractTerms: async (text) => {
+    const response = await axios.post(`${API_BASE_URL}/terminology/extract`, { text });
+    return response.data;
+  },
+
+  compareTechnologies: async (terms) => {
+    const response = await axios.post(`${API_BASE_URL}/terminology/compare`, { terms });
+    return response.data;
+  },
+
+  getEquivalents: async (term) => {
+    const response = await axios.get(`${API_BASE_URL}/terminology/equivalents/${encodeURIComponent(term)}`);
+    return response.data;
+  },
+
+  getBrandTechStack: async (brandKey) => {
+    const response = await axios.get(`${API_BASE_URL}/terminology/brand/${encodeURIComponent(brandKey)}`);
+    return response.data;
+  },
+
+  listCategories: async () => {
+    const response = await axios.get(`${API_BASE_URL}/terminology/categories`);
+    return response.data;
+  }
+};
+
+// Enterprise MLOps & Observability API (/api/v1/mlops/*)
+export const mlopsService = {
+  listExperiments: async (experimentName = null) => {
+    const response = await axios.get(`${API_BASE_URL}/v1/mlops/experiments`, {
+      params: experimentName ? { experiment_name: experimentName } : {}
+    });
+    return response.data;
+  },
+
+  listPrompts: async (promptName = 'response_generation') => {
+    const response = await axios.get(`${API_BASE_URL}/v1/mlops/prompts`, {
+      params: { prompt_name: promptName }
+    });
+    return response.data;
+  },
+
+  getDriftReport: async (format = 'json') => {
+    const response = await axios.get(`${API_BASE_URL}/v1/mlops/drift`, {
+      params: { format }
+    });
+    return response.data;
+  },
+
+  getCanaryStatus: async () => {
+    const response = await axios.get(`${API_BASE_URL}/v1/mlops/canary`);
+    return response.data;
+  },
+
+  listDlqTasks: async (status = null) => {
+    const response = await axios.get(`${API_BASE_URL}/v1/mlops/dlq`, {
+      params: status ? { status } : {}
+    });
+    return response.data;
+  },
+
+  listAlerts: async () => {
+    const response = await axios.get(`${API_BASE_URL}/v1/mlops/alerts`);
+    return response.data;
   }
 };
 
@@ -506,4 +593,4 @@ export const voiceService = {
       }
     };
   }
-};
+};

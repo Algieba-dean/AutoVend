@@ -7,7 +7,7 @@
   "port": 8101,
   "quantization": "bitsandbytes",
   "dtype": "bfloat16",
-  "gpu_memory_utilization": 0.85,
+  "gpu_memory_utilization": 0.75,
   "max_model_len": 8192,
   "trust_remote_code": true,
   "enforce_eager": true,

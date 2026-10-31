@@ -118,14 +118,17 @@ class EdgeTTSService:
         start_time = time.time()
 
         proxy = os.getenv("HTTP_PROXY") or os.getenv("http_proxy") or os.getenv("HTTPS_PROXY") or os.getenv("https_proxy")
-        communicate = edge_tts.Communicate(
-            text=text,
-            voice=selected_voice,
-            rate=self.rate,
-            volume=self.volume,
-            pitch=self.pitch,
-            proxy=proxy,
-        )
+        comm_kwargs = {
+            "text": text,
+            "voice": selected_voice,
+            "rate": self.rate,
+            "volume": self.volume,
+            "pitch": self.pitch,
+        }
+        if proxy:
+            comm_kwargs["proxy"] = proxy
+        communicate = edge_tts.Communicate(**comm_kwargs)
+
 
         audio_buffer = io.BytesIO()
         try:

@@ -262,6 +262,24 @@ def arbitrate(state: SessionState, proposal: TransitionProposal) -> TransitionVe
                 system_note=f"[系统] {rejection}",
             )
 
+    # Evidence Ledger validation for forward stage progression
+    if not is_rollback(current, target):
+        from src.agent.evidence_ledger import VerificationEvidenceLedger
+
+        ledger = VerificationEvidenceLedger()
+        allowed, missing_evidences = ledger.validate_stage_transition(current, target, state)
+        if not allowed and missing_evidences:
+            rejection = "；".join(missing_evidences)
+            logger.info(f"Transition blocked by evidence ledger [{proposal.source.value}]: {rejection}")
+            return TransitionVerdict(
+                accepted=False,
+                stage=current,
+                proposal=proposal,
+                rejection=rejection,
+                system_note=f"[系统证据账本拦截] {rejection}，请核验对应事实后再推进。",
+            )
+
+
     note = ""
     if is_rollback(current, target):
         note = (
@@ -389,6 +407,71 @@ def advance(
         if verdict.accepted:
             return verdict
     return verdict
+
+
+def advance_adaptive(
+    state: SessionState,
+    proposals: Optional[List[TransitionProposal]] = None,
+    max_hops: int = 4,
+) -> TransitionVerdict:
+    """
+    Adaptive multi-hop arbitration: advances the conversation as far as verified
+    ground truth and guards permit in a single turn.
+
+    Jumps past redundant single-slot waiting turns when a customer provides
+    multiple slots simultaneously (e.g. Profile + Budget + Needs at Welcome),
+    while strictly enforcing every intermediate edge and guard along the path.
+    """
+    current_state = state.model_copy(deep=True)
+    hop_count = 0
+    accumulated_notes: List[str] = []
+    last_verdict: Optional[TransitionVerdict] = None
+
+    # First try explicit proposals if provided
+    if proposals:
+        for prop in proposals:
+            v = arbitrate(current_state, prop)
+            if v.accepted:
+                current_state.stage = v.stage
+                last_verdict = v
+                if v.system_note:
+                    accumulated_notes.append(v.system_note)
+                break
+        if last_verdict is None:
+            return advance(current_state, proposals)
+
+    # Continue adaptive forward advancement as long as forward guards pass
+    while hop_count < max_hops:
+        hop_count += 1
+        forward = propose_forward(current_state)
+        if forward is None:
+            break
+        v = arbitrate(current_state, forward)
+        if v.accepted:
+            current_state.stage = v.stage
+            last_verdict = v
+            if v.system_note:
+                accumulated_notes.append(v.system_note)
+        else:
+            if last_verdict is None:
+                last_verdict = v
+            break
+
+    if last_verdict is None:
+        return TransitionVerdict(
+            accepted=False,
+            stage=state.stage,
+            proposal=TransitionProposal(target=state.stage, source=ProposalSource.RULE),
+        )
+
+    combined_note = "\n".join(accumulated_notes) if accumulated_notes else last_verdict.system_note
+    return TransitionVerdict(
+        accepted=last_verdict.accepted,
+        stage=current_state.stage,
+        proposal=last_verdict.proposal,
+        rejection=last_verdict.rejection,
+        system_note=combined_note,
+    )
 
 
 def determine_next_stage(

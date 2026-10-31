@@ -7,11 +7,15 @@ from src.agent.plugins.battlecard_plugin import BattlecardPlugin
 from src.agent.plugins.pipeline import AgentPluginPipeline
 from src.agent.plugins.reconciler_plugin import ConstraintReconcilerPlugin
 from src.agent.plugins.reflection_plugin import ReflectionGuardPlugin
+from src.agent.plugins.terminology_plugin import TerminologyPlugin
+from src.agent.plugins.truth_plugin import TruthDebiaserPlugin
 
 __all__ = [
     "BaseAgentPlugin",
     "ConstraintReconcilerPlugin",
     "BattlecardPlugin",
+    "TerminologyPlugin",
+    "TruthDebiaserPlugin",
     "ReflectionGuardPlugin",
     "AgentPluginPipeline",
 ]

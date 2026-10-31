@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from backend.app.config import APP_ENVIRONMENT, DEBUG, OPENAI_API_KEY
-from backend.app.routes import chat, profile, test_drive, voice
+from backend.app.routes import chat, mlops, profile, terminology, test_drive, truth, voice
 from src.agent.sales_agent import SalesAgent
 
 # Configure logging
@@ -84,6 +84,9 @@ async def lifespan(app: FastAPI):
         logger.warning("No LLM credentials configured — running with MockLLM.")
         agent = SalesAgent(llm=llm, enable_tool_planning=True)
     chat.set_agent(agent)
+    from src.core.container import ServiceContainer
+
+    ServiceContainer.register("sales_agent", agent)
     _startup_status["agent_ready"] = True
 
     # Initialize voice services
@@ -148,8 +151,12 @@ async def lifespan(app: FastAPI):
 
         pipeline = build_default_pipeline(llm_router=getattr(app.state, "llm_router", None))
         chat.set_pipeline(pipeline)
+        from src.rag_service.service import RAGService
+
+        rag_service = RAGService(pipeline=pipeline, db=pipeline.db)
+        ServiceContainer.register_rag_service(rag_service)
         _startup_status["rag_index_ready"] = True
-        logger.info("Hybrid retrieval pipeline ready.")
+        logger.info("Hybrid retrieval pipeline and RAGService ready.")
     except Exception as e:
         _startup_status["rag_index_error"] = str(e)
         logger.warning(
@@ -200,6 +207,9 @@ app.include_router(chat.router)
 app.include_router(profile.router)
 app.include_router(test_drive.router)
 app.include_router(voice.router)
+app.include_router(mlops.router)
+app.include_router(terminology.router)
+app.include_router(truth.router)
 
 
 @app.exception_handler(RequestValidationError)
@@ -297,3 +307,21 @@ async def llm_telemetry():
     from src.llm.telemetry import telemetry
 
     return telemetry.summary()
+
+
+@app.get("/metrics")
+async def prometheus_metrics():
+    """
+    Prometheus-compatible metrics exposition endpoint for enterprise observability.
+    Returns OpenMetrics/Prometheus formatted text.
+    """
+    from fastapi import Response
+
+    from src.mlops.observability import prometheus_exporter
+
+    metrics_text = prometheus_exporter.export_metrics_text()
+    return Response(
+        content=metrics_text,
+        media_type="text/plain; version=0.0.4; charset=utf-8",
+    )
+

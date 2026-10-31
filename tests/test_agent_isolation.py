@@ -86,6 +86,9 @@ class TestAgentImportIsolation:
             "soundfile",
             "faster_whisper",
             "edge_tts",
+            "concurrent",
+            "subprocess",
+            "imageio_ffmpeg",
         )
         violations = []
         for py_file in _get_all_python_files(AGENT_DIR):

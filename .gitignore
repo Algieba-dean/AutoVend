@@ -37,6 +37,7 @@ models/**
 **/storage/profiles/**
 **/storage/sessions/**
 **/storage/test_drives/**
+**/storage/mlops/**
 
 # IDE / local tooling
 **/.idea/**

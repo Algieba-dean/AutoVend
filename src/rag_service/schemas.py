@@ -22,6 +22,10 @@ class VehicleQueryRequest(BaseModel):
     enable_rerank: bool = Field(
         default=True, description="Enable Cross-Encoder reranking / refinement"
     )
+    enable_context_compression: bool = Field(
+        default=True, description="Enable context compression and hallucination-grounded pruning on snippets"
+    )
+
 
 
 class VehicleSearchResult(BaseModel):

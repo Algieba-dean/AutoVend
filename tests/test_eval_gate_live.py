@@ -31,6 +31,17 @@ def indices_available():
     except Exception as exc:  # pragma: no cover - environment-dependent
         pytest.skip(f"vector store unavailable: {exc}")
 
+    from src.rag.embeddings import BGEEmbeddingModel, _DummySentenceTransformer
+
+    try:
+        emb = BGEEmbeddingModel()
+        if isinstance(emb.model, _DummySentenceTransformer):
+            pytest.skip(
+                "real BGE-M3 weights unavailable (running with dummy offline embedder) — skip live gate"
+            )
+    except Exception as exc:  # pragma: no cover
+        pytest.skip(f"embedding model unavailable: {exc}")
+
 
 def test_production_system_meets_its_baseline(indices_available):
     comparison = check(PRODUCTION_SYSTEM)

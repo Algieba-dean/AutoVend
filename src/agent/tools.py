@@ -43,6 +43,12 @@ ROLE_ALLOWED_TOOLS: Dict[UserRole, Tuple[str, ...]] = {
         "select_vehicle",
         "request_more_options",
         "confirm_reservation",
+        "search_market_intelligence",
+        "deconstruct_vehicle_specs",
+        "uncover_marketing_fluff",
+        "get_real_owner_feedback_and_safety_cases",
+        "calculate_real_drive_away_price",
+        "explain_automotive_term",
     ),
     UserRole.SALESPERSON: (
         "record_profile",
@@ -54,6 +60,12 @@ ROLE_ALLOWED_TOOLS: Dict[UserRole, Tuple[str, ...]] = {
         "confirm_reservation",
         "apply_discount",
         "override_stage",
+        "search_market_intelligence",
+        "deconstruct_vehicle_specs",
+        "uncover_marketing_fluff",
+        "get_real_owner_feedback_and_safety_cases",
+        "calculate_real_drive_away_price",
+        "explain_automotive_term",
     ),
     UserRole.ADMIN: (
         "record_profile",
@@ -65,6 +77,12 @@ ROLE_ALLOWED_TOOLS: Dict[UserRole, Tuple[str, ...]] = {
         "confirm_reservation",
         "apply_discount",
         "override_stage",
+        "search_market_intelligence",
+        "deconstruct_vehicle_specs",
+        "uncover_marketing_fluff",
+        "get_real_owner_feedback_and_safety_cases",
+        "calculate_real_drive_away_price",
+        "explain_automotive_term",
     ),
 }
 
@@ -132,6 +150,8 @@ class ToolResult:
     #: retrieval. The agent states the intent; the orchestrator carries it out.
     request: Optional[Dict[str, Any]] = None
     rolled_back: bool = False
+    recovery_hint: str = ""
+    savepoint: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -141,7 +161,10 @@ class ToolResult:
             "patches": [p.to_dict() for p in self.patches],
             "request": self.request,
             "rolled_back": self.rolled_back,
+            "recovery_hint": self.recovery_hint,
+            "savepoint": self.savepoint,
         }
+
 
 
 @dataclass(frozen=True)
@@ -347,6 +370,204 @@ def _transition_to(state: SessionState, args: Dict[str, Any]) -> ToolResult:
     )
 
 
+def _search_market_intelligence(state: SessionState, args: Dict[str, Any]) -> ToolResult:
+    """
+    Search real-time vehicle market intelligence (sales volume, promotions, and reviews).
+    """
+    car_model = str(args.get("car_model", "")).strip()
+    query_type = str(args.get("query_type", "all")).strip()
+    if not car_model:
+        return ToolResult(False, "search_market_intelligence", "缺少车型名称 car_model")
+
+    from src.core.market_search import MarketSearchFacade
+    facade = MarketSearchFacade.get_instance()
+    res = facade.search(query=car_model, query_type=query_type, car_model=car_model)
+
+    note = res.summary_markdown
+    if note and note not in state.system_notes:
+        state.system_notes.append(note)
+
+    return ToolResult(
+        ok=True,
+        tool="search_market_intelligence",
+        message=f"已成功获取【{res.car_model}】最新市场行情数据",
+        request={"type": "market_search", "car_model": res.car_model, "query_type": query_type},
+    )
+
+
+def _deconstruct_vehicle_specs(state: SessionState, args: Dict[str, Any]) -> ToolResult:
+    """
+    Dismantle public vehicle declaration parameters and national standards.
+    """
+    car_model = str(args.get("car_model", "")).strip()
+    if not car_model:
+        return ToolResult(False, "deconstruct_vehicle_specs", "缺少车型名称 car_model")
+
+    from src.core.truth_engine import TruthEngineFacade
+
+    facade = TruthEngineFacade.get_instance()
+    res = facade.deconstruct_vehicle_specs(car_model)
+
+    note = res.get("summary_markdown", "")
+    if note and note not in state.system_notes:
+        state.system_notes.append(note)
+
+    return ToolResult(
+        ok=True,
+        tool="deconstruct_vehicle_specs",
+        message=f"已成功拆解【{car_model}】工信部申报参数与国标基准",
+        request={"type": "deconstruct_specs", "car_model": car_model},
+    )
+
+
+def _uncover_marketing_fluff(state: SessionState, args: Dict[str, Any]) -> ToolResult:
+    """
+    Identify and expose invalid/misleading marketing, revealing nominal vs real-world physical gaps.
+    """
+    claim_or_feature = str(args.get("claim_or_feature", "")).strip()
+    car_model = str(args.get("car_model", "")).strip() or None
+    if not claim_or_feature and not car_model:
+        return ToolResult(False, "uncover_marketing_fluff", "缺少宣传话术或车型名称")
+
+    from src.core.truth_engine import TruthEngineFacade
+
+    facade = TruthEngineFacade.get_instance()
+    res = facade.uncover_marketing_fluff(claim_or_feature, car_model=car_model)
+
+    note = res.get("summary_markdown", "")
+    if note and note not in state.system_notes:
+        state.system_notes.append(note)
+
+    return ToolResult(
+        ok=True,
+        tool="uncover_marketing_fluff",
+        message=f"已成功去魅宣传话术并测算物理工况差异（识别到 {res.get('detected_fluff_count', 0)} 项营销包装）",
+        request={"type": "uncover_fluff", "claim": claim_or_feature, "car_model": car_model},
+    )
+
+
+def _get_real_owner_feedback_and_safety_cases(state: SessionState, args: Dict[str, Any]) -> ToolResult:
+    """
+    Retrieve real owner defect cases, safety controversies, crash test ratings, and transparent prices.
+    """
+    car_model = str(args.get("car_model", "")).strip()
+    query_filter = str(args.get("query_filter", "")).strip()
+    if not car_model:
+        return ToolResult(False, "get_real_owner_feedback_and_safety_cases", "缺少车型名称 car_model")
+
+    from src.core.truth_engine import TruthEngineFacade
+
+    facade = TruthEngineFacade.get_instance()
+    res = facade.get_real_owner_feedback_and_safety_cases(car_model, query_filter=query_filter)
+
+    note = res.get("summary_markdown", "")
+    if note and note not in state.system_notes:
+        state.system_notes.append(note)
+
+    return ToolResult(
+        ok=True,
+        tool="get_real_owner_feedback_and_safety_cases",
+        message=f"已成功检索【{car_model}】车主真实故障率、安全争议与碰撞测试案例",
+        request={"type": "safety_and_reliability", "car_model": car_model, "query_filter": query_filter},
+    )
+
+
+def _calculate_real_drive_away_price(state: SessionState, args: Dict[str, Any]) -> ToolResult:
+    """
+    Calculate transparent real drive-away price, detailing purchase tax, insurance,
+    registration, and exposing 4S dealership hidden fees (outbound fees, finance service charges).
+    """
+    car_model = str(args.get("car_model", "")).strip()
+    if not car_model:
+        return ToolResult(False, "calculate_real_drive_away_price", "缺少车型名称 car_model")
+
+    msrp_wan = float(args.get("msrp_wan")) if args.get("msrp_wan") is not None else None
+    cash_discount = float(args.get("cash_discount", 0.0) or args.get("cash_discount_wan", 0.0))
+    perks_discount = float(args.get("perks_discount", 0.0) or args.get("perks_discount_wan", 0.0))
+    trade_in_subsidy = float(args.get("trade_in_subsidy", 0.0) or args.get("trade_in_subsidy_wan", 0.0))
+
+    from src.core.truth_engine import TruthEngineFacade
+
+    facade = TruthEngineFacade.get_instance()
+    res = facade.calculate_drive_away_price(
+        car_model=car_model,
+        msrp_wan=msrp_wan,
+        cash_discount=cash_discount,
+        perks_discount=perks_discount,
+        trade_in_subsidy=trade_in_subsidy,
+    )
+
+    note = res.get("summary_markdown", "")
+    if note and note not in state.system_notes:
+        state.system_notes.append(note)
+
+    calc = res.get("calculation", {})
+    total_price = calc.get("total_drive_away_price_wan", 0.0)
+    return ToolResult(
+        ok=True,
+        tool="calculate_real_drive_away_price",
+        message=f"已成功测算【{car_model}】全包透明落地价：约 {total_price:.2f} 万元（已剔除4S店金融服务费、出库费等隐形套路）",
+        request={"type": "drive_away_price", "car_model": car_model, "details": calc},
+    )
+
+
+def _explain_automotive_term(state: SessionState, args: Dict[str, Any]) -> ToolResult:
+    """
+    Explain and demystify automotive technical terms, proprietary marketing nouns (e.g. 800V, CTB, One-Box, 易四方),
+    and map them to standardized physical concepts and competing OEM technologies.
+    """
+    term = str(args.get("term", "")).strip()
+    context = str(args.get("context", "")).strip()
+    if not term:
+        return ToolResult(False, "explain_automotive_term", "缺少需要解析的汽车技术名词 term")
+
+    from src.core.terminology import AutomotiveKnowledgeGraph
+
+    kg = AutomotiveKnowledgeGraph.get_instance()
+    res = kg.resolve_term(term, context=context)
+    if not res or not res.primary_entity:
+        from src.core.truth_engine import TruthEngineFacade
+
+        facade = TruthEngineFacade.get_instance()
+        fluff_res = facade.uncover_marketing_fluff(term)
+        if fluff_res.get("detected_fluff_count", 0) > 0:
+            note = fluff_res.get("summary_markdown", "")
+            if note and note not in state.system_notes:
+                state.system_notes.append(note)
+            return ToolResult(
+                ok=True,
+                tool="explain_automotive_term",
+                message=f"已解析汽车专有名词【{term}】的营销包装与技术真相",
+                request={"type": "term_explanation", "term": term},
+            )
+        return ToolResult(False, "explain_automotive_term", f"未收录汽车技术名词：{term}")
+
+    ent = res.primary_entity
+    explanation_lines = [
+        f"### 📖 【汽车技术名词解析】: {ent.name} ({ent.brand})",
+        f"- **技术范畴**: {ent.category.value}",
+        f"- **通俗解释**: {ent.summary}",
+        f"- **工程原理与技术真相**: {ent.description}",
+    ]
+    if ent.advantages:
+        explanation_lines.append(f"- **核心优势**: {'；'.join(ent.advantages)}")
+    if ent.limitations:
+        explanation_lines.append(f"- **客观局限与成本取舍**: {'；'.join(ent.limitations)}")
+    if ent.representative_vehicles:
+        explanation_lines.append(f"- **代表搭载车型**: {'、'.join(ent.representative_vehicles)}")
+
+    note = "\n".join(explanation_lines)
+    if note not in state.system_notes:
+        state.system_notes.append(note)
+
+    return ToolResult(
+        ok=True,
+        tool="explain_automotive_term",
+        message=f"已成功解析汽车技术名词【{ent.name}】的技术真相与竞品对标",
+        request={"type": "term_explanation", "term": ent.name, "entity": ent.model_dump()},
+    )
+
+
 # ── Registry ──────────────────────────────────────────────────────────
 
 TOOLS: Dict[str, ToolSpec] = {
@@ -415,6 +636,68 @@ TOOLS: Dict[str, ToolSpec] = {
             handler=_transition_to,
             required=("stage",),
         ),
+        ToolSpec(
+            name="search_market_intelligence",
+            description="查询目标车型的实时市场行情数据，包括月销量/同级交付榜单、最新终端优惠/降价促销与置换补贴、以及近期改款/实测新闻",
+            parameters={
+                "car_model": "车型名称，如 小米SU7、比亚迪汉、问界M9",
+                "query_type": "查询类别：sales(销量), discount(降价优惠), news(新闻口碑), all(全部行情)",
+            },
+            handler=_search_market_intelligence,
+            required=("car_model",),
+        ),
+        ToolSpec(
+            name="deconstruct_vehicle_specs",
+            description="拆解目标车型在工信部的公开申报参数（整备质量、电池重量占比、电机峰值与额定持续功率比）并对照强制性国家标准（GB 38031、GB 7258、CLTC测试方法）",
+            parameters={
+                "car_model": "车型名称，如 小米SU7、比亚迪汉、特斯拉Model 3",
+            },
+            handler=_deconstruct_vehicle_specs,
+            required=("car_model",),
+        ),
+        ToolSpec(
+            name="uncover_marketing_fluff",
+            description="剥离车企无效宣传与硬宣传（如加92号油、全栈自研、超跑级加速无热衰说明），测算CLTC标称续航在冬季与高速120km/h的真实达成率及充电峰值均值曲线",
+            parameters={
+                "claim_or_feature": "宣传话术或关注点，如 加92号油、超跑加速、虚标续航、峰值充电",
+                "car_model": "可选，目标车型名称",
+            },
+            handler=_uncover_marketing_fluff,
+            required=("claim_or_feature",),
+        ),
+        ToolSpec(
+            name="get_real_owner_feedback_and_safety_cases",
+            description="查询目标车型的真实车主故障率（车机黑屏/重启频次、OTA负优化）、机械与电池安全争议（刹车踏板防断腿溃缩原理、线控机械液压备份、电池托底穿刺）、中保研碰撞测试结果及二手保值率和真实落地价",
+            parameters={
+                "car_model": "车型名称，如 小米SU7、特斯拉Model 3、比亚迪汉",
+                "query_filter": "可选，过滤关键词，如 刹车踏板、电池起火、黑屏、中保研、落地价",
+            },
+            handler=_get_real_owner_feedback_and_safety_cases,
+            required=("car_model",),
+        ),
+        ToolSpec(
+            name="calculate_real_drive_away_price",
+            description="计算目标车型全包透明真实落地价（包含官方裸车价、购置税、商业险、交强险、上牌费，核算置换与现金权益补贴，曝光并剔除4S店金融服务费、出库费、强制装潢等隐形加价套路）",
+            parameters={
+                "car_model": "车型名称，如 小米SU7 Max、比亚迪汉EV、特斯拉Model 3",
+                "msrp_wan": "可选，官方指导价（万元），留空则使用官方标称指导价",
+                "cash_discount": "可选，现金直降优惠（万元）",
+                "perks_discount": "可选，选装或权益礼包抵扣（万元）",
+                "trade_in_subsidy": "可选，二手置换补贴（万元）",
+            },
+            handler=_calculate_real_drive_away_price,
+            required=("car_model",),
+        ),
+        ToolSpec(
+            name="explain_automotive_term",
+            description="深度拆解汽车专业术语与车企营销自造词（如800V高压、碳化硅SiC、增程 vs 插混、CTB电池车身一体化、One-Box线控底盘、激光雷达端到端智驾、云辇底盘），说明通俗定义、工程原理、行业真相与优缺点",
+            parameters={
+                "term": "需要拆解的汽车名词，如 800V、增程、CTB、One-Box、云辇、城市NOA",
+                "context": "可选，上下文或品牌线索，如 比亚迪、小米、华为问界",
+            },
+            handler=_explain_automotive_term,
+            required=("term",),
+        ),
     )
 }
 
@@ -426,16 +709,42 @@ TOOLS: Dict[str, ToolSpec] = {
 #: requirement while looking at recommendations, and forcing that through a
 #: stage change first would lose the correction.
 STAGE_TOOLS: Dict[Stage, Tuple[str, ...]] = {
-    Stage.WELCOME: ("transition_to",),
-    Stage.PROFILE_ANALYSIS: ("record_profile", "request_clarification", "transition_to"),
-    Stage.NEEDS_ANALYSIS: ("record_need", "request_clarification", "transition_to"),
+    Stage.WELCOME: ("transition_to", "explain_automotive_term"),
+    Stage.PROFILE_ANALYSIS: (
+        "record_profile",
+        "request_clarification",
+        "explain_automotive_term",
+        "transition_to",
+    ),
+    Stage.NEEDS_ANALYSIS: (
+        "record_need",
+        "search_market_intelligence",
+        "deconstruct_vehicle_specs",
+        "uncover_marketing_fluff",
+        "get_real_owner_feedback_and_safety_cases",
+        "calculate_real_drive_away_price",
+        "explain_automotive_term",
+        "request_clarification",
+        "transition_to",
+    ),
     Stage.CAR_SELECTION: (
         "select_vehicle",
         "record_need",
+        "search_market_intelligence",
+        "deconstruct_vehicle_specs",
+        "uncover_marketing_fluff",
+        "get_real_owner_feedback_and_safety_cases",
+        "calculate_real_drive_away_price",
+        "explain_automotive_term",
         "request_more_options",
         "transition_to",
     ),
-    Stage.RESERVATION_4S: ("record_reservation", "request_clarification", "transition_to"),
+    Stage.RESERVATION_4S: (
+        "record_reservation",
+        "calculate_real_drive_away_price",
+        "request_clarification",
+        "transition_to",
+    ),
     Stage.RESERVATION_CONFIRMATION: (
         "confirm_reservation",
         "record_reservation",
@@ -473,6 +782,22 @@ def dispatch(state: SessionState, tool_name: str, args: Dict[str, Any]) -> ToolR
         return ToolResult(False, tool_name, f"未知工具：{tool_name}")
 
     # 1. RBAC UserRole permission check
+    if (
+        tool_name == "confirm_reservation"
+        and state.user_role == UserRole.CUSTOMER
+        and state.stage != Stage.RESERVATION_CONFIRMATION
+    ):
+        msg = f"角色权限不足：当前角色 [{state.user_role.value}] 无权调用工具 [{tool_name}]"
+        logger.warning(f"[{state.session_id}] RBAC refusal: {msg}")
+        security_audit_logger.log_event(
+            event_type="UNAUTHORIZED_TOOL",
+            severity="WARNING",
+            session_id=state.session_id,
+            trace_id=state.trace_id,
+            details={"tool": tool_name, "user_role": state.user_role.value},
+        )
+        return ToolResult(False, tool_name, msg)
+
     role_allowed = ROLE_ALLOWED_TOOLS.get(state.user_role, ())
     if tool_name not in role_allowed:
         msg = f"角色权限不足：当前角色 [{state.user_role.value}] 无权调用工具 [{tool_name}]"
@@ -526,15 +851,32 @@ def dispatch_all(
         Runs as a transaction. If any tool fails or raises an exception, all state
         patches produced by preceding successful tools in this batch are cleanly
         inverted and applied back to `state`, rolling back state mutations to pre-batch.
+        Supports savepoint checkpoints via `{"tool": "savepoint", "args": {"name": ...}}`
+        or `rollback_to_savepoint`.
     """
     results: List[ToolResult] = []
     accumulated_patches: List[StatePatch] = []
+    savepoints: Dict[str, int] = {}
 
     for call in calls:
         name = str(call.get("tool") or call.get("name") or "")
         args = call.get("args") or call.get("arguments") or {}
+
+        # Handle savepoint markers
+        if name == "savepoint":
+            sp_name = str(args.get("name") or call.get("savepoint_name") or f"sp_{len(savepoints)}")
+            savepoints[sp_name] = len(accumulated_patches)
+            sp_res = ToolResult(
+                ok=True, tool="savepoint", message=f"Savepoint '{sp_name}' established", savepoint=sp_name
+            )
+            results.append(sp_res)
+            continue
+
         if not isinstance(args, dict):
             failed_res = ToolResult(False, name, "args 必须是对象", rolled_back=atomic)
+            from src.agent.error_recovery import ErrorClassifier
+
+            failed_res.recovery_hint = ErrorClassifier.classify(TypeError("args 必须是对象")).hint_text
             results.append(failed_res)
             if atomic:
                 if accumulated_patches:
@@ -547,17 +889,38 @@ def dispatch_all(
         except Exception as exc:
             res = ToolResult(False, name, f"工具执行异常：{exc}")
 
+        # Check for inline savepoint tag
+        if "savepoint" in call and call["savepoint"]:
+            sp_name = str(call["savepoint"])
+            savepoints[sp_name] = len(accumulated_patches)
+
         if res.ok:
             accumulated_patches.extend(res.patches)
             results.append(res)
         else:
+            from src.agent.error_recovery import ErrorClassifier
+
+            res.recovery_hint = ErrorClassifier.classify(Exception(res.message)).hint_text
+
             if atomic:
-                res.rolled_back = True
-                res.message = f"{res.message} (事务已全额回滚)"
-                results.append(res)
-                if accumulated_patches:
-                    apply_patches(state, invert(accumulated_patches))
-                break
+                target_sp = call.get("rollback_to_savepoint")
+                if target_sp and target_sp in savepoints:
+                    sp_idx = savepoints[target_sp]
+                    rollback_slice = accumulated_patches[sp_idx:]
+                    res.rolled_back = True
+                    res.message = f"{res.message} (事务已回滚至保存点 '{target_sp}')"
+                    results.append(res)
+                    if rollback_slice:
+                        apply_patches(state, invert(rollback_slice))
+                    del accumulated_patches[sp_idx:]
+                    break
+                else:
+                    res.rolled_back = True
+                    res.message = f"{res.message} (事务已全额回滚)"
+                    results.append(res)
+                    if accumulated_patches:
+                        apply_patches(state, invert(accumulated_patches))
+                    break
             else:
                 results.append(res)
 

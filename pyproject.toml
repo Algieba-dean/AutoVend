@@ -36,6 +36,8 @@ dependencies = [
     "toml>=0.10.2",
     "pydantic>=2.10.0",
     "pydantic-settings>=2.0.0",
+    "pymupdf>=1.24.0",
+    "pdfplumber>=0.11.0",
     # Configuration
     "python-dotenv>=1.0.0",
     # Logging
@@ -51,6 +53,9 @@ dependencies = [
     "opentelemetry-exporter-otlp>=1.25.0",
     "playwright>=1.62.0",
     "beautifulsoup4>=4.15.0",
+    "openpyxl>=3.1.5",
+    "python-docx>=1.2.0",
+    "python-pptx>=1.0.2",
 ]
 
 [project.optional-dependencies]
@@ -107,6 +112,7 @@ ignore = ["E501"]
 # legitimately follow that call.
 "src/main.py" = ["E402"]
 "src/test_llm.py" = ["E402"]
+"scripts/*.py" = ["E402"]
 # Benchmarks assign results to force evaluation before timing the call.
 "tests/test_performance_metrics.py" = ["E402", "F841"]
 

@@ -130,18 +130,29 @@ class PIIInterceptor:
         return self._analyzer
 
     def _build_analyzer(self):
-        from presidio_analyzer import AnalyzerEngine
-        from presidio_analyzer.nlp_engine import NlpEngineProvider
-
         # Map zh onto the English spaCy pipeline: the Chinese recognizers are
         # pure regex and never consult it, but Presidio requires *some* NLP
         # engine registered for the language it is asked to analyze.
+        import spacy.util
+        from presidio_analyzer import AnalyzerEngine
+        from presidio_analyzer.nlp_engine import NlpEngineProvider
+
+        installed_models = spacy.util.get_installed_models()
+        if "en_core_web_lg" in installed_models:
+            spacy_model = "en_core_web_lg"
+        elif "en_core_web_sm" in installed_models:
+            spacy_model = "en_core_web_sm"
+        elif installed_models:
+            spacy_model = installed_models[0]
+        else:
+            spacy_model = "en_core_web_sm"
+
         provider = NlpEngineProvider(
             nlp_configuration={
                 "nlp_engine_name": "spacy",
                 "models": [
-                    {"lang_code": "en", "model_name": "en_core_web_lg"},
-                    {"lang_code": "zh", "model_name": "en_core_web_lg"},
+                    {"lang_code": "en", "model_name": spacy_model},
+                    {"lang_code": "zh", "model_name": spacy_model},
                 ],
             }
         )
