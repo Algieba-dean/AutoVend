@@ -103,8 +103,8 @@ const Chat = () => {
   // Add needs state
   const [needs, setNeeds] = useState([]);
 
-  // Add matchedCars state
-  const [matchedCars, setMatchedCars] = useState([]);
+  // Add matchedCars state with popular baseline models for immediate inspection
+  const [matchedCars, setMatchedCars] = useState(['小米SU7', '比亚迪 汉EV 智驾版', '极氪 001']);
 
   // Periodically fetch new messages
   useEffect(() => {

@@ -473,7 +473,25 @@ const TruthRadar = () => {
                 {compareMatrix.key_differentiators && (
                   <div className="diff-card">
                     <h4><i className="fa-solid fa-bolt"></i> 核心差异与选购结论</h4>
-                    <p>{compareMatrix.key_differentiators}</p>
+                    {typeof compareMatrix.key_differentiators === 'string' ? (
+                      <p>{compareMatrix.key_differentiators}</p>
+                    ) : (
+                      <div className="differentiator-items">
+                        {Object.entries(compareMatrix.key_differentiators).map(([k, v], idx) => (
+                          <div key={idx} className="diff-item" style={{ marginBottom: '8px' }}>
+                            <strong style={{ color: '#38bdf8' }}>{k}：</strong>
+                            <span>{typeof v === 'string' ? v : JSON.stringify(v)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {compareMatrix.sales_guidance && (
+                  <div className="diff-card guidance-card" style={{ marginTop: '12px', background: 'rgba(56, 189, 248, 0.08)', borderColor: 'rgba(56, 189, 248, 0.25)' }}>
+                    <h4 style={{ color: '#38bdf8' }}><i className="fa-solid fa-compass"></i> 4S店销售话术鉴别与选购指南</h4>
+                    <p>{typeof compareMatrix.sales_guidance === 'string' ? compareMatrix.sales_guidance : JSON.stringify(compareMatrix.sales_guidance)}</p>
                   </div>
                 )}
               </div>
