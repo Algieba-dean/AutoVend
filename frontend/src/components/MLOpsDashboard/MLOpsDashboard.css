@@ -1,0 +1,279 @@
+.mlops-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.mlops-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.mlops-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 9999px;
+  color: var(--accent-emerald);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.mlops-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.gradient-emerald {
+  background: linear-gradient(135deg, var(--accent-emerald), #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mlops-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  max-width: 780px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+
+.mlops-nav-tabs {
+  display: inline-flex;
+  gap: 8px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass);
+  flex-wrap: wrap;
+}
+
+/* KPI 指标卡片网格 */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  padding: 20px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.kpi-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.text-cyan {
+  color: var(--accent-cyan);
+}
+
+.text-emerald {
+  color: var(--accent-emerald);
+}
+
+/* 卡片基类 */
+.mlops-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-glass);
+}
+
+/* 拓扑流向图 */
+.topology-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 32px 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.topo-node {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--border-glass);
+  padding: 16px 20px;
+  border-radius: 12px;
+}
+
+.node-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.node-info strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.node-info p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.topo-arrow {
+  color: var(--accent-cyan);
+  font-size: 1.2rem;
+}
+
+/* 漂移指标 */
+.drift-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.drift-metric {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.metric-title {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.metric-score {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.metric-status {
+  font-size: 0.85rem;
+}
+
+/* Prompt 版本表 */
+.prompt-meta-bar {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.versions-table-wrap {
+  overflow-x: auto;
+}
+
+.versions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.versions-table th, .versions-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.versions-table th {
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--accent-emerald);
+  font-size: 0.92rem;
+}
+
+.version-id {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.badge-active {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--accent-emerald);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badge-inactive {
+  background: rgba(100, 116, 139, 0.2);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.btn-rollback {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: var(--accent-rose);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* DLQ & 告警空状态 */
+.empty-dlq, .empty-alerts {
+  text-align: center;
+  padding: 48px;
+}
+
+.empty-dlq i, .empty-alerts i {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.empty-dlq h4, .empty-alerts h4 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.empty-dlq p, .empty-alerts p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}

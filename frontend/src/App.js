@@ -9,6 +9,8 @@ import './App.css';
 import DealerPortal from './components/DealerPortal/DealerPortal';
 import UserDetail from './components/DealerPortal/UserDetail';
 import VoiceTest from './components/VoiceTest/VoiceTest';
+import TruthRadar from './components/TruthRadar/TruthRadar';
+import MLOpsDashboard from './components/MLOpsDashboard/MLOpsDashboard';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path="/select-user" element={<UserSelect />} />
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/truth-radar" element={<TruthRadar />} />
+          <Route path="/mlops-dashboard" element={<MLOpsDashboard />} />
           <Route path="/voice-test" element={<VoiceTest />} />
           <Route path="/dealer-portal" element={<DealerPortal />} />
           <Route path="/dealer-portal/user/:id" element={<UserDetail />} />

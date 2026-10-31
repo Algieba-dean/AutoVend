@@ -3,6 +3,7 @@ import App from './App';
 
 test('renders the AutoVend home page', () => {
   render(<App />);
-  expect(screen.getByText('AUTOVEND')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /start the demo/i })).toBeInTheDocument();
+  expect(screen.getByText('AUTO')).toBeInTheDocument();
+  expect(screen.getByText('VEND')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /start demo experience/i })).toBeInTheDocument();
 });

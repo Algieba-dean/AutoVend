@@ -26,19 +26,31 @@ const Navbar = () => {
             className={`nav-btn ${location.pathname === '/' ? 'active' : ''}`}
             onClick={() => navigate('/')}
           >
-            <i className="fa-solid fa-house"></i> Home
+            <i className="fa-solid fa-house"></i> 首页
           </button>
           <button 
             className={`nav-btn ${location.pathname.startsWith('/select-user') || location.pathname.startsWith('/chat') || location.pathname.startsWith('/user-profile') ? 'active' : ''}`}
             onClick={() => navigate('/select-user')}
           >
-            <i className="fa-solid fa-robot"></i> Sales Agent
+            <i className="fa-solid fa-robot"></i> 销售智驾 Agent
+          </button>
+          <button 
+            className={`nav-btn ${location.pathname.startsWith('/truth-radar') ? 'active' : ''}`}
+            onClick={() => navigate('/truth-radar')}
+          >
+            <i className="fa-solid fa-shield-halved"></i> 避坑真值雷达
           </button>
           <button 
             className={`nav-btn ${location.pathname.startsWith('/dealer-portal') ? 'active' : ''}`}
             onClick={() => navigate('/dealer-portal')}
           >
-            <i className="fa-solid fa-store"></i> 4S Dealer Portal
+            <i className="fa-solid fa-store"></i> 4S 门店工作台
+          </button>
+          <button 
+            className={`nav-btn ${location.pathname.startsWith('/mlops-dashboard') ? 'active' : ''}`}
+            onClick={() => navigate('/mlops-dashboard')}
+          >
+            <i className="fa-solid fa-server"></i> MLOps 监控
           </button>
           <button 
             className={`nav-btn ${location.pathname.startsWith('/voice-test') ? 'active' : ''}`}
@@ -50,7 +62,7 @@ const Navbar = () => {
 
         <div className="nav-system-status">
           <span className="status-dot-active"></span>
-          <span className="status-label">RAG + Voice WS Active</span>
+          <span className="status-label">Truth Engine + Hybrid RAG Active</span>
         </div>
       </nav>
     </header>

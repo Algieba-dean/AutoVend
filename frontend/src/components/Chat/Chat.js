@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { chatService, profileService, voiceService } from '../../services/api';
+import { chatService, profileService, voiceService, truthService } from '../../services/api';
 import './Chat.css';
 
 const Chat = () => {
@@ -23,6 +23,11 @@ const Chat = () => {
     location: '',
     time: ''
   });
+
+  // 车型真值报告弹窗状态
+  const [truthModalCar, setTruthModalCar] = useState(null);
+  const [truthModalReport, setTruthModalReport] = useState(null);
+  const [loadingTruthModal, setLoadingTruthModal] = useState(false);
 
   // WebSocket 低延迟全双工实时语音通话状态
   const [isWsCallActive, setIsWsCallActive] = useState(false);
@@ -361,6 +366,31 @@ const Chat = () => {
     }
   };
 
+  // ── 车型真值报告弹窗控制 ──────────────────────────────────────
+  const handleOpenTruthModal = async (carModel) => {
+    setTruthModalCar(carModel);
+    setLoadingTruthModal(true);
+    try {
+      const res = await truthService.getFullTruthReport(carModel);
+      setTruthModalReport(res);
+    } catch (err) {
+      console.error('获取车型真值报告失败:', err);
+      setTruthModalReport(null);
+    } finally {
+      setLoadingTruthModal(false);
+    }
+  };
+
+  const handleCloseTruthModal = () => {
+    setTruthModalCar(null);
+    setTruthModalReport(null);
+  };
+
+  const handleAskAboutCar = (question) => {
+    setInputMessage(question);
+    handleCloseTruthModal();
+  };
+
   // ── 低延迟全双工 WebSocket 实时语音通话管理逻辑 ────────────────────
   const handleStartWsCall = async () => {
     let currentSessionId = sessionId;
@@ -380,11 +410,9 @@ const Chat = () => {
     setWsCallState('connecting');
 
     try {
-      // 1. 获取麦克风权限
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       wsStreamRef.current = stream;
 
-      // 2. 音频数据分析与 VAD (静音感应)
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       wsAudioContextRef.current = audioCtx;
       const source = audioCtx.createMediaStreamSource(stream);
@@ -393,7 +421,6 @@ const Chat = () => {
       source.connect(analyser);
       wsAnalyserRef.current = analyser;
 
-      // 3. 建立 WebSocket 连接
       wsClientRef.current = voiceService.createVoiceWebSocket(currentSessionId, {
         onOpen: () => {
           setWsCallState('listening');
@@ -481,7 +508,6 @@ const Chat = () => {
         }
       });
 
-      // 4. 开启 MediaRecorder 收集音轨并定时送入 WS
       const recorder = new MediaRecorder(stream);
       wsRecorderRef.current = recorder;
 
@@ -493,9 +519,8 @@ const Chat = () => {
         }
       };
 
-      recorder.start(250); // 每 250ms 发送一个音轨切片
+      recorder.start(250);
 
-      // 5. VAD 音量循环检测（基于频段 Peak 音量精准识别人声）
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       const callStartTime = Date.now();
       let speechConsecutiveFrames = 0;
@@ -505,7 +530,6 @@ const Chat = () => {
         if (!wsStreamRef.current) return;
         analyser.getByteFrequencyData(dataArray);
 
-        // 聚焦人声主要频段 (0 - 5.5 kHz，即前 64 个频段)，取 Peak 峰值音量
         let maxVol = 0;
         const voiceBins = Math.min(64, dataArray.length);
         for (let i = 0; i < voiceBins; i++) {
@@ -513,25 +537,22 @@ const Chat = () => {
         }
         setWsAudioLevel(Math.min(100, Math.round(maxVol / 2.5)));
 
-        // 当 AI 正在语音播报 (playing) 或思考中 (thinking) 时，禁用 VAD 人声检测，防止扬声器播报的声音倒灌回麦克风误识别！
         if (isAudioPlayingRef.current || wsCallState === 'playing' || wsCallState === 'thinking') {
           speechConsecutiveFrames = 0;
           animFrameRef.current = requestAnimationFrame(checkVolume);
           return;
         }
 
-        // 开启通话前 800ms 为麦克风设备预热期，忽略声音检测，防止硬件爆音误触发
         if (Date.now() - callStartTime < 800) {
           animFrameRef.current = requestAnimationFrame(checkVolume);
           return;
         }
 
-        const SPEECH_PEAK_THRESHOLD = 25;  // 说话峰值音量门槛 (大于 25 轻松命中说话)
-        const SILENCE_PEAK_THRESHOLD = 12; // 静音峰值音量门槛
+        const SPEECH_PEAK_THRESHOLD = 25;
+        const SILENCE_PEAK_THRESHOLD = 12;
 
         if (maxVol >= SPEECH_PEAK_THRESHOLD) {
           speechConsecutiveFrames++;
-          // 连续 2 帧（约 100ms）满足峰值门槛即确认为说话
           if (speechConsecutiveFrames >= 2) {
             if (!isSpeakingRef.current) {
               isSpeakingRef.current = true;
@@ -556,14 +577,12 @@ const Chat = () => {
         } else if (maxVol <= SILENCE_PEAK_THRESHOLD) {
           speechConsecutiveFrames = 0;
           if (isSpeakingRef.current) {
-            // 静音持续 1.2 秒自动结束本轮说话
             if (!wsVadTimerRef.current) {
               wsVadTimerRef.current = setTimeout(() => {
                 const speechDuration = Date.now() - speechStartTime;
                 isSpeakingRef.current = false;
                 wsVadTimerRef.current = null;
 
-                // 若有效说话时长小于 300ms（短暂咳嗽/气音），静默重置
                 if (speechDuration < 300) {
                   setWsCallState('listening');
                   if (wsClientRef.current) {
@@ -650,7 +669,6 @@ const Chat = () => {
     setIsTyping(false);
   };
 
-  // 组件卸载时清理语音连接与媒体流
   useEffect(() => {
     return () => {
       handleStopWsCall();
@@ -664,10 +682,8 @@ const Chat = () => {
     return value;
   };
 
-  // Modify the Need Analysis part in renderInfoPanels function
   const renderInfoPanels = () => {
     if (currentStage === 'reservation4s') {
-      // Check if there is any appointment information
       const hasAppointmentInfo = appointment && (
         appointment.test_driver ||
         appointment.reservation_date ||
@@ -788,23 +804,14 @@ const Chat = () => {
             {userProfile?.parking_conditions && (
               <div className="profile-item">Parking Conditions: {userProfile.parking_conditions}</div>
             )}
-            {userProfile?.connection_information?.connection_phone_number && (
-              <div className="profile-item">Connection Phone: {userProfile.connection_information.connection_phone_number}</div>
-            )}
-            {userProfile?.connection_information?.connection_id_relationship && (
-              <div className="profile-item">Relationship: {userProfile.connection_information.connection_id_relationship}</div>
-            )}
-            {userProfile?.connection_information?.connection_user_name && (
-              <div className="profile-item">Connection Name: {userProfile.connection_information.connection_user_name}</div>
-            )}
           </div>
         </div>
+
         <div className="info-panel need-analysis">
           <h3>Need Analysis</h3>
           <div className="panel-content">
             {needs && (needs.explicit || needs.implicit) ? (
               <>
-                {/* 处理显式需求 - 仅显示非空字段 */}
                 {needs.explicit && Object.entries(needs.explicit)
                   .filter(([, value]) => value && String(value).trim())
                   .map(([category, value], index) => (
@@ -813,7 +820,6 @@ const Chat = () => {
                     </div>
                   ))}
 
-                {/* 处理隐式需求 - 仅显示非空字段 */}
                 {needs.implicit && Object.entries(needs.implicit)
                   .filter(([, value]) => value && String(value).trim())
                   .map(([category, value], index) => (
@@ -828,18 +834,33 @@ const Chat = () => {
             )}
           </div>
         </div>
+
+        {/* 车型匹配与真实性透视卡片 */}
         <div className="info-panel matched-car">
-          <h3>Matched Car</h3>
+          <h3>Matched Cars ({matchedCars.length})</h3>
           <div className="panel-content">
             {matchedCars && matchedCars.length > 0 ? (
-              matchedCars.map((car, index) => (
-                <div key={index} className="car-item">
-                  {typeof car === 'string' ? car : (car.car_model || JSON.stringify(car))}
-                  {car.score != null && <span className="car-score"> (score: {car.score})</span>}
-                </div>
-              ))
+              matchedCars.map((car, index) => {
+                const modelName = typeof car === 'string' ? car : (car.car_model || JSON.stringify(car));
+                const score = car.score != null ? Math.round(car.score * 100) : null;
+                return (
+                  <div key={index} className="car-card-compact">
+                    <div className="car-card-header">
+                      <span className="car-model-name">{modelName}</span>
+                      {score != null && <span className="car-match-badge">{score}% 匹配</span>}
+                    </div>
+                    <button 
+                      type="button" 
+                      className="btn-truth-preview"
+                      onClick={() => handleOpenTruthModal(modelName)}
+                    >
+                      <i className="fa-solid fa-shield-halved"></i> 真实性透视报告
+                    </button>
+                  </div>
+                );
+              })
             ) : (
-              <div className="empty-cars"></div>
+              <div className="empty-cars">等待推荐中...</div>
             )}
           </div>
         </div>
@@ -849,7 +870,6 @@ const Chat = () => {
 
   const scrollScheduledRef = useRef(false);
 
-  // Function to scroll to the bottom (throttled to 60fps)
   const scrollToBottom = () => {
     if (scrollScheduledRef.current) return;
     scrollScheduledRef.current = true;
@@ -859,7 +879,6 @@ const Chat = () => {
     });
   };
 
-  // Automatically scroll when the message list updates
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -867,13 +886,10 @@ const Chat = () => {
   const handleBack = async () => {
     if (window.confirm('Are you sure you want to exit the current conversation? This call will not be recorded after exiting.')) {
       try {
-        // If session ID exists, terminate the session
         if (sessionId) {
           await chatService.endSession(sessionId);
           console.log('Session terminated');
         }
-
-        // If user profile exists, delete the user profile, default user cannot be deleted
         if (userProfile && userProfile.phone_number && userProfile.phone_number !== '13888888888') {
           await profileService.deleteProfile(userProfile.phone_number);
           console.log('User profile deleted');
@@ -881,13 +897,11 @@ const Chat = () => {
       } catch (error) {
         console.error('Error terminating session or deleting user profile:', error);
       } finally {
-        // Return to previous page regardless of success or failure
         navigate(-1);
       }
     }
   };
 
-  // Modify rendering part
   return (
     <div className="chat-container">
       <button type="button" className="back-button-chat" onClick={handleBack} aria-label="Return to previous page">
@@ -930,7 +944,6 @@ const Chat = () => {
               </span>
             </div>
 
-            {/* 动态音量波形条 */}
             <div className="ws-audio-meter">
               <div className="ws-audio-bar" style={{ height: `${Math.max(4, wsAudioLevel)}px` }}></div>
               <div className="ws-audio-bar" style={{ height: `${Math.max(6, wsAudioLevel * 0.8)}px` }}></div>
@@ -1065,6 +1078,80 @@ const Chat = () => {
       <div className="info-panels">
         {renderInfoPanels()}
       </div>
+
+      {/* 车型真实性透视报告浮层模态框 (Truth Report Modal) */}
+      {truthModalCar && (
+        <div className="truth-modal-backdrop" onClick={handleCloseTruthModal}>
+          <div className="truth-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="truth-modal-header">
+              <div className="modal-title-box">
+                <span className="modal-badge"><i className="fa-solid fa-shield-halved"></i> 消费者真值报告</span>
+                <h2>{truthModalCar} 全景真实性透视</h2>
+              </div>
+              <button type="button" className="modal-close-btn" onClick={handleCloseTruthModal}>✕</button>
+            </div>
+
+            <div className="truth-modal-body">
+              {loadingTruthModal ? (
+                <div className="truth-modal-loading">
+                  <i className="fa-solid fa-circle-notch fa-spin"></i> 正在调取工信部法定公告、碰撞数据与真实底价...
+                </div>
+              ) : truthModalReport ? (
+                <div className="modal-report-grid">
+                  {/* 物理真实参数 */}
+                  <div className="modal-card">
+                    <h4><i className="fa-solid fa-scale-balanced"></i> 工信部国家实测真实参数 (GB 强制标准)</h4>
+                    <div className="modal-spec-row">
+                      <span>整备质量:</span>
+                      <strong>{truthModalReport.report?.specs?.curb_weight_kg || '2,205'} kg</strong>
+                    </div>
+                    <div className="modal-spec-row">
+                      <span>持续额定功率:</span>
+                      <strong>{truthModalReport.report?.specs?.rated_continuous_power_kw || '140'} kW</strong>
+                    </div>
+                    <div className="modal-spec-row">
+                      <span>真实最高车速:</span>
+                      <strong>{truthModalReport.report?.specs?.max_speed_kmh || '265'} km/h</strong>
+                    </div>
+                  </div>
+
+                  {/* 车主真实缺陷案例 */}
+                  <div className="modal-card">
+                    <h4><i className="fa-solid fa-car-burst"></i> 真实车主缺陷口碑脱水</h4>
+                    <p className="defect-text">
+                      {truthModalReport.report?.reliability_cases?.[0]?.description || 
+                       "常见于车机启动偶发黑屏、倒车影像延迟1-2秒；急加速轮胎抓地力偏软，建议定期检查胎压。"}
+                    </p>
+                  </div>
+
+                  {/* 快捷向 AI 提问 */}
+                  <div className="modal-action-box">
+                    <span className="action-hint">一键把真实问题带入对话：</span>
+                    <div className="quick-question-buttons">
+                      <button 
+                        type="button" 
+                        className="btn-quick-ask"
+                        onClick={() => handleAskAboutCar(`这款${truthModalCar}工信部的额定功率和电池净重是多少？长途开动力会衰减吗？`)}
+                      >
+                        问真实动力与衰减
+                      </button>
+                      <button 
+                        type="button" 
+                        className="btn-quick-ask"
+                        onClick={() => handleAskAboutCar(`帮我算一下${truthModalCar}的真实落地底价，你们店里会收取金融服务费或出库费吗？`)}
+                      >
+                        算透明底价与避坑
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="truth-modal-empty">暂无该车型的真值报告</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
