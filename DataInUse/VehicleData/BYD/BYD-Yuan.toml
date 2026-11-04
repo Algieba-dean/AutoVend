@@ -162,8 +162,8 @@ electric_consumption_comments = "The energy consumption is rated at 13.5kWh/100k
 driving_range = "400~800km"
 driving_range_comments = "The BYD-Yuan offers a CLTC-rated range of 510km on a single charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "The BYD-Yuan is front-wheel drive, providing good traction and efficiency."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

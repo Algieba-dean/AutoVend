@@ -162,8 +162,8 @@ electric_consumption_comments = "Not applicable as the BYD-F3 is not an electric
 driving_range = "None"
 driving_range_comments = "Not applicable as the BYD-F3 is not an electric vehicle."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "The BYD-F3 is front-wheel drive, which is typical for compact sedans."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

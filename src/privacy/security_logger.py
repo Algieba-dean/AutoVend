@@ -7,7 +7,7 @@ Sanitized Tool Arguments) with trace IDs and outputs structured JSONL logs for S
 
 import json
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional
 

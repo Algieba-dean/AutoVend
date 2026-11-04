@@ -162,7 +162,7 @@ electric_consumption_comments = "Electric consumption of 13.5kWh/100km in EV mod
 driving_range = "400~800km"
 driving_range_comments = "Total range of 600km (combined hybrid mode), with 80km in pure EV mode."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "AWD system with electric motor powering the rear axle."
 

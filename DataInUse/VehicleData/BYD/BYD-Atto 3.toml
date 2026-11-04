@@ -162,8 +162,8 @@ electric_consumption_comments = "Energy consumption is rated at 13.8kWh/100km un
 driving_range = "400~800km"
 driving_range_comments = "WLTP-rated range of 420km (260 miles) on a single charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "Front-wheel drive configuration with single motor setup."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

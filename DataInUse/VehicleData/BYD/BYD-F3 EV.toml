@@ -162,8 +162,8 @@ electric_consumption_comments = "The energy consumption is 13.5 kWh/100 km under
 driving_range = "300~400km"
 driving_range_comments = "The NEDC-rated range is 350 km on a full charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "The BYD-F3 EV uses front-wheel drive for efficiency and simplicity."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

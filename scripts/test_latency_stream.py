@@ -5,16 +5,17 @@ Measures TTFB (Time to First Byte / Metadata), TTFT (Time to First Token), Total
 """
 
 import json
-import time
-import requests
 import sys
+import time
+
+import requests
 
 API_URL = "http://localhost:8000/api/chat/stream"
 
 def test_stream_latency(session_id: str, message: str):
-    print(f"\n==================================================")
+    print("\n==================================================")
     print(f"📊 正在测试消息: \"{message}\"")
-    print(f"==================================================")
+    print("==================================================")
     sys.stdout.flush()
 
     start_time = time.perf_counter()
@@ -75,7 +76,7 @@ def test_stream_latency(session_id: str, message: str):
     print(f"📈 生成吞吐速率    (Generation Speed): {tps:.2f} 字/秒 ({token_count} 字 / {gen_time:.2f}秒)")
     print(f"📍 当前 SOP 阶段: [{stage_info}]")
     print(f"💬 完整回复内容: {full_text}")
-    print(f"--------------------------------------------------")
+    print("--------------------------------------------------")
     sys.stdout.flush()
 
 if __name__ == "__main__":

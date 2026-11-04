@@ -8,14 +8,12 @@ Tests for Security Enhancements across 5 core dimensions:
 """
 
 import json
-import pytest
-from pathlib import Path
 
+from src.agent.response_generator import redact_output_pii
 from src.agent.schemas import SessionState, Stage, UserRole
 from src.agent.tools import dispatch, sanitize_tool_args
 from src.privacy.prompt_sanitizer import PromptSanitizer
 from src.privacy.security_logger import SecurityAuditLogger
-from src.agent.response_generator import redact_output_pii
 
 
 class TestSecurityEnhancements:

@@ -162,8 +162,8 @@ electric_consumption_comments = "The BYD-Dolphin EV has an energy consumption of
 driving_range = "400~800km"
 driving_range_comments = "The BYD-Dolphin EV offers a CLTC-rated range of 490km (standard) and 570km (extended range)."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "The BYD-Dolphin EV features front-wheel drive for efficiency and urban maneuverability."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

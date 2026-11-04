@@ -162,7 +162,7 @@ electric_consumption_comments = "Average energy consumption is 13.5kWh/100km und
 driving_range = "400~800km"
 driving_range_comments = "The BYD-Song Pro EV offers a range of 505km (NEDC) on a full charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "Dual-motor all-wheel drive system for improved traction and performance."
 

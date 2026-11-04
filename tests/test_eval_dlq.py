@@ -2,11 +2,9 @@
 Tests for EvalDLQManager (Checkpointing & Failures DLQ).
 """
 
-import json
 import pytest
-from pathlib import Path
 
-from src.eval.async_runner import EvalTask, QueueReport, TaskResult
+from src.eval.async_runner import EvalTask, TaskResult
 from src.eval.dlq import DLQItem, EvalDLQManager
 
 

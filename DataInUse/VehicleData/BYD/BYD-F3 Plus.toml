@@ -162,8 +162,8 @@ electric_consumption_comments = "Not applicable as this is a gasoline-only model
 driving_range = "400~800km"
 driving_range_comments = "Approximately 650 km on a full tank under mixed driving conditions."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "Front-wheel drive configuration for better fuel efficiency."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

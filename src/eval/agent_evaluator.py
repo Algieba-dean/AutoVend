@@ -9,11 +9,10 @@ Evaluates Agent on:
 4. Overall Trajectory Score (综合多维评测得得分)
 """
 
-import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
-from src.agent.schemas import SessionState, Stage
+from src.agent.schemas import SessionState
 from src.eval.golden_agent_dataset import AgentGoldenCase, load_golden_agent_dataset
 from src.utils.logger import get_logger
 
@@ -157,7 +156,7 @@ class AgentEvaluator:
 
         # Benchmark simulation runner
         for case in test_cases:
-            state = SessionState(
+            _state = SessionState(
                 session_id=case.case_id,
                 stage=case.stage,
                 user_role=case.user_role,

@@ -162,7 +162,7 @@ electric_consumption_comments = "Electric consumption is 13.5kWh/100km in pure E
 driving_range = "400~800km"
 driving_range_comments = "Total range is 600km (combined), with 80km in pure electric mode."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "The BYD-Song features an all-wheel-drive system for improved traction."
 

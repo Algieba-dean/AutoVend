@@ -162,7 +162,7 @@ electric_consumption_comments = "The energy consumption is rated at 13.5kWh/100k
 driving_range = "400~800km"
 driving_range_comments = "The BYD-EC7 offers a range of 610km (NEDC) on a single charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "Rear-Wheel Drive"
 drive_type_comments = "Rear-wheel drive provides balanced handling and efficiency."
 

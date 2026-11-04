@@ -8,7 +8,6 @@ Measures turn-by-turn response time when routing control-path tasks to local vLL
 import json
 import time
 import urllib.request
-from pathlib import Path
 
 API_URL = "http://localhost:8000/api/chat/message"
 SESSION_ID = f"latency_test_session_{int(time.time())}"
@@ -55,7 +54,7 @@ def benchmark():
                 stage_info = data.get("stage", {})
                 curr_stage = stage_info.get("current_stage", "UNKNOWN")
                 response_text = data.get("response", {}).get("content", "")
-                
+
                 print(f"⏱️ 响应延迟: {elapsed_ms:.2f} ms ({elapsed_ms / 1000:.2f} 秒)")
                 print(f"📍 当前 SOP 阶段: [{curr_stage}]")
                 print(f"🤖 算法回复摘要: {response_text[:80]}...")

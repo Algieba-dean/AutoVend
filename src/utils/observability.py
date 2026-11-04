@@ -12,10 +12,10 @@ Tracks:
 import json
 import statistics
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional
 
 from src.utils.config import PROJECT_ROOT
 from src.utils.logger import get_logger

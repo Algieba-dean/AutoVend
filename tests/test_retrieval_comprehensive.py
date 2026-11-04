@@ -31,12 +31,131 @@ def registry():
     return LabelRegistry()
 
 
+def _seed_mock_vehicles(db: VehicleDB) -> None:
+    """为检索标签全覆盖测试补充少量多品牌 mock 记录（非 BYD 品牌已从主数据集中清理）"""
+    rows = []
+    # 德系车型 (Mercedes-Benz, BMW)
+    for i in range(30):
+        rows.append({
+            "car_model": f"Mercedes-Benz C{i}",
+            "brand": "mercedes-benz",
+            "vehicle_category_bottom": "c-segment sedan",
+            "drive_type": "all-wheel drive",
+            "powertrain_type": "gasoline engine",
+            "prize": "30,000 ~ 40,000" if i % 2 == 0 else "40,000 ~ 60,000",
+            "horsepower": "200-300 hp",
+            "noise_insulation": "high",
+            "comfort_level": "high",
+            "seat_layout": "5-seat",
+        })
+        rows.append({
+            "car_model": f"Mercedes-Benz GLC{i}",
+            "brand": "mercedes-benz",
+            "vehicle_category_bottom": "mid-size suv",
+            "drive_type": "all-wheel drive",
+            "powertrain_type": "gasoline engine",
+            "prize": "40,000 ~ 60,000",
+            "horsepower": "200-300 hp",
+            "noise_insulation": "high",
+            "comfort_level": "high",
+            "seat_layout": "5-seat",
+        })
+    for i in range(30):
+        rows.append({
+            "car_model": f"BMW {i}",
+            "brand": "bmw",
+            "vehicle_category_bottom": "b-segment sedan" if i % 2 == 0 else "mid-size suv",
+            "drive_type": "rear-wheel drive" if i % 2 == 0 else "all-wheel drive",
+            "powertrain_type": "gasoline engine",
+            "prize": "60,000 ~ 100,000",
+            "horsepower": "300-400 hp",
+            "noise_insulation": "high",
+            "comfort_level": "high",
+            "seat_layout": "5-seat",
+        })
+    # 日系车型 (Toyota, Honda)
+    for i in range(30):
+        rows.append({
+            "car_model": f"Toyota RAV4_{i}",
+            "brand": "toyota",
+            "vehicle_category_bottom": "compact suv",
+            "drive_type": "all-wheel drive",
+            "powertrain_type": "hybrid electric vehicle",
+            "fuel_consumption": "4-6l/100km",
+            "prize": "10,000 ~ 20,000",
+            "noise_insulation": "high",
+            "comfort_level": "high",
+            "size": "large",
+            "city_commuting": "yes",
+            "seat_layout": "5-seat",
+        })
+        rows.append({
+            "car_model": f"Honda Civic_{i}",
+            "brand": "honda",
+            "vehicle_category_bottom": "compact sedan",
+            "drive_type": "front-wheel drive",
+            "powertrain_type": "gasoline engine",
+            "fuel_consumption": "4-6l/100km",
+            "prize": "10,000 ~ 20,000",
+            "noise_insulation": "high",
+            "comfort_level": "high",
+            "city_commuting": "yes",
+            "seat_layout": "5-seat",
+        })
+    # 美系车型 (Tesla)
+    for i in range(15):
+        rows.append({
+            "car_model": f"Tesla Model Y_{i}",
+            "brand": "tesla",
+            "vehicle_category_bottom": "mid-size suv",
+            "drive_type": "all-wheel drive",
+            "powertrain_type": "battery electric vehicle",
+            "driving_range": "400-800km",
+            "prize": "30,000 ~ 40,000",
+            "city_commuting": "yes",
+            "seat_layout": "5-seat",
+        })
+    # 补充国产 MPV 与代步微型/紧凑纯电
+    for i in range(30):
+        rows.append({
+            "car_model": f"Geely MPV_{i}",
+            "brand": "geely",
+            "vehicle_category_bottom": "mid-size mpv",
+            "drive_type": "front-wheel drive",
+            "powertrain_type": "battery electric vehicle",
+            "prize": "10,000 ~ 20,000",
+            "seat_layout": "7-seat",
+            "city_commuting": "yes",
+        })
+        rows.append({
+            "car_model": f"Changan BEV_{i}",
+            "brand": "changan",
+            "vehicle_category_bottom": "compact sedan",
+            "drive_type": "front-wheel drive",
+            "powertrain_type": "battery electric vehicle",
+            "prize": "below 10,000",
+            "seat_layout": "5-seat",
+            "city_commuting": "yes",
+        })
+    for r in rows:
+        normalized = {}
+        for k, v in r.items():
+            if k == "car_model":
+                normalized[k] = v
+            else:
+                raw_val = str(v).lower().strip()
+                normalized[k] = db._normalize_value(raw_val, k)
+        db._upsert_row(normalized)
+    db.conn.commit()
+
+
 @pytest.fixture(scope="module")
 def db(registry):
     fd, path = tempfile.mkstemp(suffix=".db")
     os.close(fd)
     _db = VehicleDB(db_path=path, registry=registry)
     _db.import_from_toml_dir()
+    _seed_mock_vehicles(_db)
     yield _db
     _db.close()
     os.unlink(path)

@@ -124,7 +124,7 @@ electric_consumption = ""
 # driving_range, candidate values: "300~400km", "400~800km", "Above 800km"
 driving_range = ""
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = ""
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

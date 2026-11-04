@@ -162,8 +162,8 @@ electric_consumption_comments = "Averages 13.5kWh/100km in mixed driving conditi
 driving_range = "400~800km"
 driving_range_comments = "NEDC-rated range of 500km (310 miles) on a full charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "Front-wheel drive configuration with optimized traction control."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

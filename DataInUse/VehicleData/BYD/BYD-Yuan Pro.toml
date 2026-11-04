@@ -162,8 +162,8 @@ electric_consumption_comments = "Rated at 13.5kWh/100km under NEDC testing condi
 driving_range = "400~800km"
 driving_range_comments = "NEDC-rated range of 501km (60.48kWh battery)."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
-drive_type = "Font-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+drive_type = "Front-Wheel Drive"
 drive_type_comments = "Front-wheel drive configuration for efficiency."
 
 # suspension, candidate values: "Independent Suspension", "Non-independent Suspension"

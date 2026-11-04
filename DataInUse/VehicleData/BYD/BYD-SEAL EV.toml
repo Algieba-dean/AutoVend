@@ -162,7 +162,7 @@ electric_consumption_comments = "Rated at 12.6kWh/100km (CLTC cycle) for the Lon
 driving_range = "400~800km"
 driving_range_comments = "CLTC-rated range is 700km for Long Range version; 550km for Standard Range."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "Performance model features dual-motor AWD; base models are RWD."
 

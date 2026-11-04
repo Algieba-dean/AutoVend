@@ -162,7 +162,7 @@ electric_consumption_comments = "17.9kWh/100km combined consumption (NEDC)."
 driving_range = "400~800km"
 driving_range_comments = "NEDC range of 565km (351 miles) on single charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "Dual motor AWD system with intelligent torque distribution."
 

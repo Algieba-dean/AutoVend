@@ -162,7 +162,7 @@ electric_consumption_comments = "Official consumption is 13.5kWh/100km in WLTP c
 driving_range = "400~800km"
 driving_range_comments = "CLTC-rated range is 650km (404 miles) for the long-range version."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "Available in RWD or AWD configurations, with torque vectoring on AWD models."
 

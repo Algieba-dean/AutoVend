@@ -52,7 +52,7 @@ def main():
     parser.add_argument("--gpu-memory-utilization", type=float, help="Override GPU memory utilization ratio")
     parser.add_argument("--max-model-len", type=int, help="Override max model length")
     parser.add_argument("--dry-run", action="store_true", help="Print command without executing")
-    
+
     args = parser.parse_args()
 
     config_file = expand_path(args.config)
@@ -61,7 +61,7 @@ def main():
     # Resolve paths
     raw_model_path = cfg.get("model_path", "~/models/Qwen/Qwen3-8B-unsloth-bnb-4bit")
     model_path = expand_path(raw_model_path)
-    
+
     venv_name = cfg.get("venv_path", ".venv-vllm")
     venv_dir = expand_path(venv_name)
 
@@ -126,7 +126,7 @@ def main():
         cmd.append("--trust-remote-code")
     if enforce_eager:
         cmd.append("--enforce-eager")
-    
+
     if extra_args:
         cmd.extend([str(a) for a in extra_args])
 

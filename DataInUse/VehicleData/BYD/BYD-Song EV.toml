@@ -162,7 +162,7 @@ electric_consumption_comments = "Averages 13.5 kWh/100 km under mixed driving co
 driving_range = "400~800km"
 driving_range_comments = "CLTC-rated range of 605 km (376 miles) on a full charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "Dual-motor AWD system with torque vectoring."
 

@@ -162,7 +162,7 @@ electric_consumption_comments = "13.5kWh/100km combined consumption (CLTC cycle)
 driving_range = "Above 800km"
 driving_range_comments = "CLTC-rated range of 820km (510 miles) on single charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "Dual-motor AWD with torque vectoring capability."
 

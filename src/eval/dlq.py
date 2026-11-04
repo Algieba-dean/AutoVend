@@ -11,9 +11,9 @@ Provides:
 
 import json
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from src.eval.async_runner import EvalTask, QueueReport, TaskResult, run_queue
 from src.eval.rate_limit import RateLimits

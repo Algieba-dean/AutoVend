@@ -2,8 +2,6 @@
 Tests for Production Observability Collector, Step-level Error Tracing and Agent Evaluator.
 """
 
-import pytest
-from pathlib import Path
 
 from src.eval.agent_evaluator import AgentEvaluator
 from src.eval.golden_agent_dataset import load_golden_agent_dataset

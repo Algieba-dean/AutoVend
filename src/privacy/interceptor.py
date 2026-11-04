@@ -140,8 +140,8 @@ class PIIInterceptor:
             nlp_configuration={
                 "nlp_engine_name": "spacy",
                 "models": [
-                    {"lang_code": "en", "model_name": "en_core_web_lg"},
-                    {"lang_code": "zh", "model_name": "en_core_web_lg"},
+                    {"lang_code": "en", "model_name": "en_core_web_sm"},
+                    {"lang_code": "zh", "model_name": "en_core_web_sm"},
                 ],
             }
         )

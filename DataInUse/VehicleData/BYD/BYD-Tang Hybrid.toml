@@ -162,7 +162,7 @@ electric_consumption_comments = "18.4kWh/100km in pure electric mode (NEDC)."
 driving_range = "400~800km"
 driving_range_comments = "100km pure electric range, 800km total hybrid range (NEDC)."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "eAWD system with torque vectoring capability."
 

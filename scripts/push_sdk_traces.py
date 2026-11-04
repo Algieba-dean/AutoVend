@@ -4,11 +4,13 @@ and send directly to OTel Collector OTLP HTTP receiver (localhost:4318).
 """
 
 import time
+
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
 
 def main():
     # Setup Resource & Tracer

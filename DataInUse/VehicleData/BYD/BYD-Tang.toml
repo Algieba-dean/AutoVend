@@ -162,7 +162,7 @@ electric_consumption_comments = "Electric-only consumption of 13.5kWh/100km."
 driving_range = "400~800km"
 driving_range_comments = "Total hybrid range of 600km (100km electric-only)."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "AWD system with torque vectoring for improved traction."
 

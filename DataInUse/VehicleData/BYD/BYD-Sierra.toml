@@ -162,7 +162,7 @@ electric_consumption_comments = "14.2 kWh/100km combined (WLTP cycle) with regen
 driving_range = "400~800km"
 driving_range_comments = "520km (CLTC) or 460km (WLTP) on full charge."
 
-# drive_type, candidate values: "Font-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
+# drive_type, candidate values: "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive"
 drive_type = "All-Wheel Drive"
 drive_type_comments = "Dual-motor AWD with torque vectoring (base model is RWD)."
 

@@ -28,9 +28,9 @@ turns = [
 
 
 def send_turn(turn_idx: int, user_message: str):
-    print(f"\n==================================================")
+    print("\n==================================================")
     print(f"【Turn {turn_idx + 1}】 用户输入: {user_message}")
-    print(f"--------------------------------------------------")
+    print("--------------------------------------------------")
 
     payload = json.dumps({
         "session_id": SESSION_ID,

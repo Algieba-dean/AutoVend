@@ -2,7 +2,6 @@
 Tests for Tool-level Transactional Rollback (dispatch_transactional & dispatch_all(atomic=True)).
 """
 
-import pytest
 from src.agent.schemas import SessionState, Stage
 from src.agent.tools import dispatch_all, dispatch_transactional
 

@@ -10,7 +10,7 @@ Constructs a multi-dimensional benchmark suite covering:
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from src.agent.schemas import ExplicitNeeds, SessionState, Stage, UserProfile, UserRole
+from src.agent.schemas import Stage, UserRole
 
 
 @dataclass
