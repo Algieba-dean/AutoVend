@@ -6,7 +6,6 @@ Carries session state, user input, node outputs, and helper methods for variable
 
 import re
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
 
 from src.agent.schemas import SessionState
 

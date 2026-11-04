@@ -23,7 +23,7 @@ from src.agent.patches import (
     removal_patches,
     snapshot,
 )
-from src.agent.schemas import ExplicitNeeds, SessionState, Stage, VehicleNeeds
+from src.agent.schemas import ExplicitNeeds, SessionState, Stage, UserRole, VehicleNeeds
 from src.agent.tools import (
     STAGE_TOOLS,
     TOOLS,
@@ -174,7 +174,7 @@ class TestToolHandlers:
         assert "A" in result.message
 
     def test_confirm_reservation_names_missing_slots(self):
-        state = _state(Stage.RESERVATION_CONFIRMATION)
+        state = _state(Stage.RESERVATION_CONFIRMATION, user_role=UserRole.SALESPERSON)
 
         result = dispatch(state, "confirm_reservation", {})
 

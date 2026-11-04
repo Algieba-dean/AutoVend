@@ -126,6 +126,7 @@ class SalesAgent:
         Record the user's message and extract what it reveals — no generation.
         """
         import uuid
+
         from src.privacy.prompt_sanitizer import PromptSanitizer
         from src.privacy.security_logger import security_audit_logger
 

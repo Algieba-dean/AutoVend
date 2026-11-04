@@ -4,10 +4,9 @@ Node Definitions for Sub-DAG Workflow Engine.
 Implements Start, End, Condition, API, LLM, and Decision nodes.
 """
 
-import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from src.agent.subdag.context import SubDAGContext
 
@@ -103,7 +102,6 @@ class APINode(BaseSubDAGNode):
     def execute(self, context: SubDAGContext) -> Tuple[Dict[str, Any], Optional[str]]:
         api_name = self.config.get("api_name", "generic_api")
         url = context.resolve_template(self.config.get("url", ""))
-        params = self.config.get("params", {})
 
         # Custom handler override if provided in config
         custom_handler = self.config.get("handler")

@@ -47,4 +47,7 @@ TEST_DRIVES_DIR = STORAGE_DIR / "test_drives"
 
 # Ensure directories exist
 for _dir in [DATA_DIR, STORAGE_DIR, SESSIONS_DIR, PROFILES_DIR, TEST_DRIVES_DIR]:
-    _dir.mkdir(parents=True, exist_ok=True)
+    try:
+        _dir.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass

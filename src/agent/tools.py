@@ -42,7 +42,6 @@ ROLE_ALLOWED_TOOLS: Dict[UserRole, Tuple[str, ...]] = {
         "transition_to",
         "select_vehicle",
         "request_more_options",
-        "confirm_reservation",
     ),
     UserRole.SALESPERSON: (
         "record_profile",

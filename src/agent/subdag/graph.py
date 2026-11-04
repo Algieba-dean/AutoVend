@@ -3,7 +3,7 @@ Workflow Graph topology and routing for Sub-DAG.
 """
 
 from collections import deque
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 
 class SubDAGGraph:

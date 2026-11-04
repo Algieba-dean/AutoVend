@@ -132,6 +132,34 @@ class ReservationInfo(BaseModel):
 # ── Agent Protocol ─────────────────────────────────────────────
 
 
+# ── Anchor Vehicle Context ─────────────────────────────────────
+
+
+class AnchorVehicleContext(BaseModel):
+    """
+    Offline 4S showroom in-cabin anchor vehicle context.
+    Represents the physical showroom car the customer is seated in.
+    """
+
+    brand: str = "BYD"
+    series: str = "Dynasty"  # "Dynasty" (王朝) or "Ocean" (海洋)
+    model_name: str = "BYD-Han EV"
+    trim: str = "715KM 旗舰型"
+    powertrain: str = "纯电 (刀片电池 + e平台3.0)"
+    cockpit_system: str = "DiLink 100 高阶智能座舱 (15.6英寸自适应旋转Pad)"
+    chassis: str = "云辇-C 智能阻尼车身控制系统"
+    adas: str = "DiPilot 智能驾驶辅助"
+    price_guidance: str = "24.98万元"
+    key_selling_points: List[str] = Field(
+        default_factory=lambda: [
+            "刀片电池超级安全，针刺不起火",
+            "零百加速 3.9秒，四驱性能旗舰",
+            "云辇-C 毫秒级阻尼调节，兼顾操控与豪华舒适",
+            "DiLink 智能网联系统，全场景智能语音连续对话",
+        ]
+    )
+
+
 class SessionState(BaseModel):
     """
     Serializable snapshot of all session-level state.
@@ -142,6 +170,7 @@ class SessionState(BaseModel):
     tenant_id: str = "default_tenant"
     trace_id: str = ""
     user_role: UserRole = UserRole.CUSTOMER
+    anchor_vehicle: AnchorVehicleContext = Field(default_factory=AnchorVehicleContext)
     stage: Stage = Stage.WELCOME
     previous_stage: str = ""
     profile: UserProfile = Field(default_factory=UserProfile)

@@ -62,6 +62,8 @@ class TestAgentImportIsolation:
             "src.agent",
             "src.core",
             "src.privacy",
+            "src.governance",
+            "src.tools",
             "uuid",
             "hashlib",
             "pydantic",
@@ -86,6 +88,9 @@ class TestAgentImportIsolation:
             "soundfile",
             "faster_whisper",
             "edge_tts",
+            "subprocess",
+            "imageio_ffmpeg",
+            "concurrent",
         )
         violations = []
         for py_file in _get_all_python_files(AGENT_DIR):

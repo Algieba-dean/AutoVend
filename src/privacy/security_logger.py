@@ -80,6 +80,13 @@ class SecurityAuditLogger:
             self.log_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.log_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(event.to_dict(), ensure_ascii=False) + "\n")
+        except OSError:
+            try:
+                fallback_path = Path("/tmp/security_audit.jsonl")
+                with open(fallback_path, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(event.to_dict(), ensure_ascii=False) + "\n")
+            except Exception:
+                pass
         except Exception as exc:
             logger.error(f"Failed to write security audit log to {self.log_path}: {exc}")
 

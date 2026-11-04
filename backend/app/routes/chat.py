@@ -39,6 +39,7 @@ from backend.app.models.schemas import (
 from backend.app.models.storage import FileStorage
 from src.agent.sales_agent import SalesAgent
 from src.agent.schemas import SessionState, Stage, UserProfile
+from src.governance import get_governance_engine
 from src.retrieval.adapters import hybrid_result_to_cars, needs_to_query_text
 
 logger = logging.getLogger(__name__)
@@ -132,15 +133,17 @@ def set_pipeline(pipeline) -> None:
 
 
 def set_semantic_router(semantic_router) -> None:
-    """Inject the anchor-vector router. None disables the fast path."""
+    """Inject the anchor-vector router into governance engine."""
     global _semantic_router
     _semantic_router = semantic_router
+    get_governance_engine().set_semantic_router(semantic_router)
 
 
 def set_pii_interceptor(interceptor) -> None:
-    """Inject the PII interceptor. None disables masking."""
+    """Inject the PII interceptor into governance engine."""
     global _pii
     _pii = interceptor
+    get_governance_engine().set_pii_interceptor(interceptor)
 
 
 def _get_agent() -> SalesAgent:
@@ -149,23 +152,15 @@ def _get_agent() -> SalesAgent:
     return _agent
 
 
-# ── privacy and semantic gates ────────────────────────────────────────
+# ── privacy and semantic gates (delegated to Governance Layer) ────────
 
 
 def _mask(text: str, session_id: str) -> tuple:
-    """
-    Replace PII with per-session placeholders.
-
-    Returns (masked_text, found_any). The flag feeds the fast-path guard: a
-    turn containing PII must never skip extraction.
-
-    Fails open — a recognizer bug should not take the conversation down — but
-    logs at error level, because an unmasked turn is a real privacy event.
-    """
-    if _pii is None:
+    gov = get_governance_engine()
+    if gov.pii_interceptor is None:
         return text, False
     try:
-        masked, matches = _pii.mask(text, session_id)
+        masked, matches = gov.pii_interceptor.mask(text, session_id)
         return masked, bool(matches)
     except Exception as exc:
         logger.error(f"[{session_id}] PII masking failed, message sent unmasked: {exc}")
@@ -173,47 +168,34 @@ def _mask(text: str, session_id: str) -> tuple:
 
 
 def _unmask(text: str, session_id: str) -> str:
-    if _pii is None or not text:
+    gov = get_governance_engine()
+    if gov.pii_interceptor is None or not text:
         return text
     try:
-        return _pii.unmask(text, session_id)
+        return gov.pii_interceptor.unmask(text, session_id)
     except Exception as exc:
         logger.error(f"[{session_id}] PII unmasking failed: {exc}")
         return text
 
 
 def _unmask_state(state: SessionState, session_id: str) -> None:
-    """
-    Restore placeholders inside the extracted profile and reservation, in place.
-
-    Without this the session would store `<CN_PERSON_1>` as the customer's name
-    and put it on the test-drive booking.
-    """
-    if _pii is None:
+    gov = get_governance_engine()
+    if gov.pii_interceptor is None:
         return
-    try:
-        for model in (state.profile, state.reservation):
-            for field, value in model.model_dump().items():
-                if isinstance(value, str) and "<" in value:
-                    setattr(model, field, _pii.unmask(value, session_id))
-    except Exception as exc:
-        logger.error(f"[{session_id}] PII unmasking of session state failed: {exc}")
+    from src.governance.post_generate_hook import unmask_state_fields
+    unmask_state_fields(state, session_id, gov.pii_interceptor)
 
 
 def _classify(text: str, session_id: str):
-    """Route the turn against anchor vectors, or None when unavailable."""
-    if _semantic_router is None:
+    gov = get_governance_engine()
+    if gov.semantic_router is None:
         return None
     try:
-        decision = _semantic_router.classify(text)
+        decision = gov.semantic_router.classify(text)
     except Exception as exc:
         logger.error(f"[{session_id}] semantic routing failed: {exc}")
         return None
     if not decision.matched:
-        logger.debug(
-            f"[{session_id}] no semantic match "
-            f"(best={decision.score:.3f}, margin={decision.margin:.3f})"
-        )
         return None
     return decision
 
@@ -303,6 +285,13 @@ async def create_session(request: SessionCreateRequest, background_tasks: Backgr
     profile = request.profile or UserProfile(phone_number=request.phone_number)
     state = SessionState(session_id=session_id, profile=profile)
     _sessions[session_id] = state
+
+    # Governance: SessionStart hook
+    get_governance_engine().on_session_start(
+        session_id=session_id,
+        user_role=state.user_role.value if hasattr(state.user_role, "value") else str(state.user_role),
+    )
+
     background_tasks.add_task(_persist_session, session_id, _session_payload(state, _get_agent()))
 
     return SessionCreateResponse(
@@ -325,60 +314,42 @@ async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
         state = SessionState(session_id=request.session_id, profile=profile)
         _sessions[request.session_id] = state
 
-    # Gate 1 — classify with anchor vectors. Microseconds, no model.
-    #
-    # Runs on the *raw* text, before masking. Masking first would hand the
-    # embedder "我叫<CN_PERSON_1>，手机<CN_PHONE_NUMBER_1>" — placeholders carry
-    # no meaning, and an introduction reliably mis-classified as small talk,
-    # which then skipped the very extraction that should have captured the name.
-    # The embedding model is local and in-process; the threat this layer defends
-    # against is PII reaching a third-party API, which happens further down.
-    decision = _classify(request.message, request.session_id)
-
-    # Gate 2 — mask PII before the text reaches memory, prompts or a cloud API.
-    safe_message, pii_found = _mask(request.message, request.session_id)
-
-    # Observe first, retrieve second: retrieval must see the needs stated in
-    # *this* message. Querying before extraction lags a turn behind the user —
-    # ask for a mid-size electric SUV and you get last turn's recommendations.
-    #
-    # A control-flow turn skips extraction but still enters memory: "我再想想吧"
-    # is part of the conversation the generator has to read, it just has nothing
-    # for the extractor to pull out.
-    # A turn carrying PII always goes through extraction, whatever the router
-    # thinks. Someone giving their name or number has stated something the
-    # profile needs; a classifier confident enough to skip that would be wrong
-    # in the one direction the product cannot absorb.
-    skip_extraction = (
-        decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
+    # ── Governance Layer: PreObserve (PII desensitization + intent short-circuit) ──
+    gov = get_governance_engine()
+    role_val = state.user_role.value if hasattr(state.user_role, "value") else str(state.user_role)
+    ctx = gov.pre_observe(
+        user_message=request.message,
+        session_id=request.session_id,
+        trace_id=state.trace_id,
+        user_role=role_val,
     )
 
-    if skip_extraction:
-        state = agent.remember(state, safe_message)
+    if ctx.skip_extraction:
+        state = agent.remember(state, ctx.safe_message)
         logger.info(
-            f"[{request.session_id}] semantic fast-path: {decision.intent} "
-            f"(score={decision.score:.3f}) — extraction skipped"
+            f"[{request.session_id}] governance fast-path: {getattr(ctx.decision, 'intent', '')} — extraction skipped"
         )
     else:
-        state = agent.observe(state, safe_message)
+        state = agent.observe(state, ctx.safe_message)
 
     # Interrupt: the customer contradicted a constraint they had already given.
-    # Roll back along a legal backward edge before retrieval runs, so the query
-    # is built from the revised needs rather than the superseded ones.
-    if decision is not None and decision.intent == INTERRUPT_INTENT:
-        state = _rollback_on_constraint_change(state, decision)
+    if ctx.interrupt_detected and ctx.decision is not None:
+        state = _rollback_on_constraint_change(state, ctx.decision)
 
     # Vehicle retrieval (backend concern — results passed back to the agent)
     retrieved_cars = _retrieve_cars(state)
 
     result = agent.respond(state, retrieved_cars)
 
-    # Restore real values before anything is stored or shown. The models only
-    # ever saw placeholders; the session state holds the truth.
-    _unmask_state(result.session_state, request.session_id)
-    result = result.model_copy(
-        update={"response_text": _unmask(result.response_text, request.session_id)}
+    # ── Governance Layer: PostGenerate (Compliance validation & PII restitution) ──
+    final_text, warnings = gov.post_generate(
+        response_text=result.response_text,
+        state=result.session_state,
+        session_id=request.session_id,
+        trace_id=result.session_state.trace_id,
+        user_role=role_val,
     )
+    result = result.model_copy(update={"response_text": final_text})
 
     # Update stored session state
     _sessions[request.session_id] = result.session_state
@@ -442,20 +413,26 @@ async def send_message_stream(request: ChatRequest):
 
         def prepare():
             nonlocal state
-            decision = _classify(request.message, request.session_id)
-            safe_message, pii_found = _mask(request.message, request.session_id)
-
-            skip_extraction = (
-                decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
+            gov = get_governance_engine()
+            role_val = (
+                state.user_role.value
+                if hasattr(state.user_role, "value")
+                else str(state.user_role)
+            )
+            ctx = gov.pre_observe(
+                user_message=request.message,
+                session_id=request.session_id,
+                trace_id=state.trace_id,
+                user_role=role_val,
             )
 
-            if skip_extraction:
-                state = agent.remember(state, safe_message)
+            if ctx.skip_extraction:
+                state = agent.remember(state, ctx.safe_message)
             else:
-                state = agent.observe(state, safe_message)
+                state = agent.observe(state, ctx.safe_message)
 
-            if decision is not None and decision.intent == INTERRUPT_INTENT:
-                state = _rollback_on_constraint_change(state, decision)
+            if ctx.interrupt_detected and ctx.decision is not None:
+                state = _rollback_on_constraint_change(state, ctx.decision)
 
         await loop.run_in_executor(None, prepare)
         retrieved_cars = _retrieve_cars(state)
@@ -500,8 +477,20 @@ async def send_message_stream(request: ChatRequest):
                 token_payload = {"delta": unmasked_delta}
                 yield f"event: token\ndata: {json.dumps(token_payload, ensure_ascii=False)}\n\n"
             elif event_type == "done":
-                unmasked_text = _unmask(data, request.session_id)
-                done_payload = {"response_text": unmasked_text}
+                gov = get_governance_engine()
+                role_val = (
+                    state.user_role.value
+                    if hasattr(state.user_role, "value")
+                    else str(state.user_role)
+                )
+                final_text, _ = gov.post_generate(
+                    response_text=data,
+                    state=state,
+                    session_id=request.session_id,
+                    trace_id=state.trace_id,
+                    user_role=role_val,
+                )
+                done_payload = {"response_text": final_text}
                 yield f"event: done\ndata: {json.dumps(done_payload, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(sse_event_generator(), media_type="text/event-stream")
@@ -554,4 +543,5 @@ async def end_session(session_id: str):
     _prev_explicit.pop(session_id, None)
     agent.clear_session(session_id)
     FileStorage.delete_session(session_id)
+    get_governance_engine().on_session_end(session_id=session_id)
     return {"message": "Session ended successfully.", "session_id": session_id}

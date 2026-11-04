@@ -17,7 +17,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from backend.app.config import APP_ENVIRONMENT, DEBUG, OPENAI_API_KEY
 from backend.app.routes import chat, profile, test_drive, voice
-from src.agent.sales_agent import SalesAgent
+from src.agent.orchestrator import SalesOrchestrator
 
 # Configure logging
 logging.basicConfig(
@@ -71,7 +71,7 @@ async def lifespan(app: FastAPI):
         app.state.llm_router = router
         extraction_llm, generation_llm = build_agent_llms(router)
         logger.info(f"LLM routing: {router.describe()}")
-        agent = SalesAgent(
+        agent = SalesOrchestrator(
             llm=extraction_llm,
             generation_llm=generation_llm,
             enable_tool_planning=True,
@@ -82,7 +82,7 @@ async def lifespan(app: FastAPI):
         app.state.llm_router = None
         llm = MockLLM(max_tokens=500)
         logger.warning("No LLM credentials configured — running with MockLLM.")
-        agent = SalesAgent(llm=llm, enable_tool_planning=True)
+        agent = SalesOrchestrator(llm=llm, enable_tool_planning=True)
     chat.set_agent(agent)
     _startup_status["agent_ready"] = True
 

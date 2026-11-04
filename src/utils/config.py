@@ -139,7 +139,10 @@ class Config(BaseSettings):
 
         for directory in directories:
             if directory and not os.path.exists(directory):
-                os.makedirs(directory, exist_ok=True)
+                try:
+                    os.makedirs(directory, exist_ok=True)
+                except OSError:
+                    pass
 
     @property
     def has_llm_credentials(self) -> bool:
