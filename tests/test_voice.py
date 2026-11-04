@@ -317,25 +317,30 @@ class TestEdgeTTSService:
     @pytest.mark.asyncio
     @patch("src.agent.voice.tts.edge_tts.Communicate")
     async def test_synthesize_async_voice_override(self, mock_communicate_class):
-        mock_instance = MagicMock()
+        with patch.dict(
+            "os.environ",
+            {"HTTP_PROXY": "", "http_proxy": "", "HTTPS_PROXY": "", "https_proxy": ""},
+            clear=False,
+        ):
+            mock_instance = MagicMock()
 
-        async def mock_stream():
-            yield {"type": "audio", "data": b"\xff"}
+            async def mock_stream():
+                yield {"type": "audio", "data": b"\xff"}
 
-        mock_instance.stream = mock_stream
-        mock_communicate_class.return_value = mock_instance
+            mock_instance.stream = mock_stream
+            mock_communicate_class.return_value = mock_instance
 
-        tts = EdgeTTSService()
-        result = await tts.synthesize_async("Hello", voice=VOICE_EN_FEMALE)
+            tts = EdgeTTSService()
+            result = await tts.synthesize_async("Hello", voice=VOICE_EN_FEMALE)
 
-        mock_communicate_class.assert_called_once_with(
-            text="Hello",
-            voice=VOICE_EN_FEMALE,
-            rate="+0%",
-            volume="+0%",
-            pitch="+0Hz",
-        )
-        assert result.voice == VOICE_EN_FEMALE
+            mock_communicate_class.assert_called_once_with(
+                text="Hello",
+                voice=VOICE_EN_FEMALE,
+                rate="+0%",
+                volume="+0%",
+                pitch="+0Hz",
+            )
+            assert result.voice == VOICE_EN_FEMALE
 
     @pytest.mark.asyncio
     @patch("src.agent.voice.tts.edge_tts.Communicate")
@@ -756,7 +761,7 @@ class TestVoiceIntegration:
         pipeline.process_audio_file("zh.wav", state)
 
         # English turn
-        mock_asr.transcribe_file.return_value = _make_mock_transcription("I want a Tesla", "en")
+        mock_asr.transcribe_file.return_value = _make_mock_transcription("I want a BYD Seal", "en")
         mock_asyncio_run.return_value = _make_mock_tts_result()
         pipeline.process_audio_file("en.wav", state)
 

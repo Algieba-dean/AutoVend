@@ -96,7 +96,7 @@ def send_sample_trace():
                                 "attributes": [
                                     {"key": "db.system", "value": {"stringValue": "chromadb"}},
                                     {"key": "rag.top_k", "value": {"intValue": 3}},
-                                    {"key": "rag.retrieved_cars", "value": {"stringValue": "Xiaomi SU7 Max, Tesla Model 3"}},
+                                    {"key": "rag.retrieved_cars", "value": {"stringValue": "BYD-Han EV, BYD-SEAL EV"}},
                                 ],
                             },
                         ],

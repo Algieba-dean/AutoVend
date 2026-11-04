@@ -2,12 +2,14 @@
 Unit tests for Incremental Ingestion & Index Pipeline (src/ingestion/pipeline.py).
 """
 
+from src.filter.vehicle_db import VehicleDB
 from src.ingestion.pipeline import ChangeType, IncrementalIngestionPipeline
 
 
-def test_incremental_ingestion_detect_changes():
+def test_incremental_ingestion_detect_changes(tmp_path):
     """Test detecting created, updated, and deleted vehicle records."""
-    pipeline = IncrementalIngestionPipeline()
+    test_db = VehicleDB(db_path=str(tmp_path / "test_vehicles.db"))
+    pipeline = IncrementalIngestionPipeline(db=test_db)
     for m in ["Test_Model_A", "Test_Model_B", "Test_Model_C"]:
         pipeline.db.delete_vehicle(m)
         pipeline.checksum_store.pop(m, None)

@@ -51,7 +51,7 @@ def main():
             with tracer.start_as_current_span("ChromaDB RAG Retrieval") as rag_span:
                 rag_span.set_attribute("db.system", "chromadb")
                 rag_span.set_attribute("rag.top_k", 3)
-                rag_span.set_attribute("rag.matched_cars", "Xiaomi SU7, Tesla Model 3")
+                rag_span.set_attribute("rag.matched_cars", "BYD-Han EV, BYD-SEAL EV")
                 time.sleep(0.03)
 
             # 4. Cloud LLM Synthesis

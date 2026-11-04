@@ -34,10 +34,10 @@ def test_rag_service_search_vehicles():
 def test_rag_service_compare_vehicles():
     """Test side-by-side spec comparison matrix."""
     service = RAGService()
-    req = SpecCompareRequest(car_models=["蔚来-ES6", "特斯拉-Model Y"])
+    req = SpecCompareRequest(car_models=["BYD-SEAL EV", "BYD-Dolphin"])
     res = service.compare_vehicles(req)
 
-    assert res.car_models == ["蔚来-ES6", "特斯拉-Model Y"]
+    assert res.car_models == ["BYD-SEAL EV", "BYD-Dolphin"]
     assert len(res.diff_matrix) > 0
     assert "vs" in res.comparison_summary
 
