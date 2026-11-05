@@ -173,7 +173,7 @@ class TableBlock:
 
         # Clean rows
         cleaned_rows: List[List[str]] = []
-        for r in rows:
+        for r in (rows or []):
             cleaned_rows.append(
                 [
                     str(c).replace("\r\n", " ").replace("\n", " ").replace("\r", " ").strip()
@@ -2490,24 +2490,20 @@ def _isolated_layout_worker(func, args, kwargs, child_conn, temp_file_path=None)
 
 class DualTrackLayoutEngine(BaseLayoutEngine):
     """
-    Dual-track document parsing engine with fallback tiers:
+    Dual-track document parsing engine with staged fallback tiers:
 
-    1. Pre-flight probe: PyMuPDF (5ms) checks corruption, password, dimensions, and genuine_chars count.
-    2. Digital Track (genuine_chars >= 30/page):
-       - L1 Primary: IBM Docling TableFormer (high-precision layout + composite tables)
-       - 💣 If OOM / Timeout (>30s) / Exception ->
-       - L2 Fallback: pdfplumber bordered table extraction (CPU geometry solving, preserves basic 2D grid)
-       - 💣 If still fails ->
-       - L3 Ultimate Fallback: PyMuPDF raw text extraction (fitz.get_text(), abandons table topologies)
-    3. Scanned Track (genuine_chars < 30/page):
-       - L1 Primary: PaddleOCR PP-Structure (CPU-isolated layout recovery + seal elimination)
-       - 💣 If Paddle crashes / Exception ->
-       - L2 Fallback: PyMuPDF local OCR (fitz Tesseract/OCR, preserves text, loses table structure)
-       - 💣 If still fails ->
-       - L3 Ultimate Fallback: PyMuPDF raw text extraction (fitz.get_text())
-    4. Compliance Audit & Honest Metadata:
-       - Marked with is_degraded=True, extraction_quality='degraded', fallback_level, degraded_reason.
-       - Absolutely zero mock data. If even PyMuPDF extracts 0 chars, raises DocumentParsingUnrecoverableError.
+    1. Pre-flight probe: PyMuPDF checks file integrity, page dimensions, and character density.
+    2. Digital track (character density >= threshold):
+       - Primary: IBM Docling TableFormer for layout and table structure.
+       - Fallback: pdfplumber table extraction if Docling times out or fails.
+       - Final fallback: PyMuPDF text extraction if table extraction fails.
+    3. Scanned track (character density < threshold):
+       - Primary: PaddleOCR PP-Structure for layout and OCR.
+       - Fallback: PyMuPDF OCR text extraction.
+       - Final fallback: PyMuPDF raw text extraction.
+    4. Degradation metadata:
+       - Sets is_degraded=True, extraction_quality='degraded', fallback_level, and degraded_reason.
+       - Raises DocumentParsingUnrecoverableError if no readable content is extracted.
     """
 
     def __init__(
@@ -2560,102 +2556,104 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         parent_conn = None
         child_conn = None
 
-        # Prefer spawn context to avoid POSIX fork deadlocks in multi-threaded runtimes.
-        # Fallback to fork context if target/args cannot be pickled (e.g. local test closures).
-        for ctx_method in ("spawn", "fork"):
-            try:
-                ctx = mp.get_context(ctx_method)
-                parent_conn, child_conn = ctx.Pipe()
-                proc = ctx.Process(
-                    target=_isolated_layout_worker,
-                    args=(func, args, kwargs, child_conn, temp_file_path),
-                )
-                proc.start()
-                break
-            except (AttributeError, TypeError, pickle.PicklingError):
-                if child_conn is not None:
-                    try:
-                        child_conn.close()
-                    except Exception:
-                        pass
-                if parent_conn is not None:
-                    try:
-                        parent_conn.close()
-                    except Exception:
-                        pass
-                if ctx_method == "fork":
-                    raise
-                continue
-
-        start_time = time.time()
-        result_payload = None
-        has_result = False
-
         try:
-            # Continuously poll to drain pipe, preventing OS pipe buffer deadlocks on large payloads
-            while time.time() - start_time < timeout_seconds:
-                if parent_conn.poll(0.05):
-                    has_result = True
-                    result_payload = parent_conn.recv()
-                    break
-                if not proc.is_alive():
-                    if parent_conn.poll():
+            # Prefer spawn context to avoid POSIX fork deadlocks in multi-threaded runtimes.
+            # Fallback to fork context if target/args cannot be pickled or if spawn child fails during startup.
+            for ctx_method in ("spawn", "fork"):
+                try:
+                    ctx = mp.get_context(ctx_method)
+                    parent_conn, child_conn = ctx.Pipe()
+                    proc = ctx.Process(
+                        target=_isolated_layout_worker,
+                        args=(func, args, kwargs, child_conn, temp_file_path),
+                    )
+                    proc.start()
+                except Exception:
+                    if child_conn is not None:
+                        try:
+                            child_conn.close()
+                        except Exception:
+                            pass
+                    if parent_conn is not None:
+                        try:
+                            parent_conn.close()
+                        except Exception:
+                            pass
+                    if ctx_method == "fork":
+                        raise
+                    continue
+
+                start_time = time.time()
+                result_payload = None
+                has_result = False
+
+                # Continuously poll to drain pipe, preventing OS pipe buffer deadlocks on large payloads
+                while time.time() - start_time < timeout_seconds:
+                    if parent_conn.poll(0.05):
                         has_result = True
                         result_payload = parent_conn.recv()
-                    break
+                        break
+                    if not proc.is_alive():
+                        if parent_conn.poll():
+                            has_result = True
+                            result_payload = parent_conn.recv()
+                        break
 
-            if not has_result:
+                if not has_result:
+                    if proc.is_alive():
+                        child_pid = proc.pid
+                        # Attempt graceful termination (SIGTERM) before hard kill (SIGKILL)
+                        try:
+                            proc.terminate()
+                            proc.join(timeout=0.3)
+                        except Exception:
+                            pass
+                        if proc.is_alive():
+                            proc.kill()
+                            proc.join(timeout=1.0)
+                        parent_conn.close()
+                        try:
+                            proc.close()
+                        except Exception:
+                            pass
+                        raise TimeoutError(
+                            f"Operation timed out after {timeout_seconds}s (SIGKILL delivered to PID {child_pid})"
+                        )
+                    else:
+                        exit_code = proc.exitcode
+                        parent_conn.close()
+                        try:
+                            proc.close()
+                        except Exception:
+                            pass
+                        if ctx_method == "spawn" and exit_code != 0:
+                            # Spawn child terminated during bootstrap (e.g. unpicklable dynamic closure); retry with fork
+                            continue
+                        raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
+
+                # Wait for worker process to exit cleanly
+                proc.join(timeout=1.0)
                 if proc.is_alive():
-                    child_pid = proc.pid
-                    # Attempt graceful termination (SIGTERM) before hard kill (SIGKILL)
-                    try:
-                        proc.terminate()
-                        proc.join(timeout=0.3)
-                    except Exception:
-                        pass
+                    proc.terminate()
+                    proc.join(timeout=0.5)
                     if proc.is_alive():
                         proc.kill()
-                        proc.join(timeout=1.0)
-                    parent_conn.close()
-                    try:
-                        proc.close()
-                    except Exception:
-                        pass
-                    raise TimeoutError(
-                        f"Operation timed out after {timeout_seconds}s (SIGKILL delivered to PID {child_pid})"
-                    )
-                else:
-                    exit_code = proc.exitcode
-                    parent_conn.close()
-                    try:
-                        proc.close()
-                    except Exception:
-                        pass
-                    raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
+                        proc.join(timeout=0.5)
+                parent_conn.close()
+                try:
+                    proc.close()
+                except Exception:
+                    pass
 
-            # Wait for worker process to exit cleanly
-            proc.join(timeout=1.0)
-            if proc.is_alive():
-                proc.terminate()
-                proc.join(timeout=0.5)
-                if proc.is_alive():
-                    proc.kill()
-                    proc.join(timeout=0.5)
-            parent_conn.close()
-            try:
-                proc.close()
-            except Exception:
-                pass
-
-            success, value = result_payload
-            if success:
-                if isinstance(value, dict) and "__ipc_file__" in value:
-                    f_path = value["__ipc_file__"]
-                    if Path(f_path).exists():
-                        with open(f_path, "rb") as f:
-                            return pickle.loads(f.read())
-                return value
-            raise value
+                success, value = result_payload
+                if success:
+                    if isinstance(value, dict) and "__ipc_file__" in value:
+                        f_path = value["__ipc_file__"]
+                        if Path(f_path).exists():
+                            with open(f_path, "rb") as f:
+                                return pickle.loads(f.read())
+                    return value
+                raise value
         finally:
             if temp_file_path and Path(temp_file_path).exists():
                 try:

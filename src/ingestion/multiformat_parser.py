@@ -1,7 +1,7 @@
 """
-Multi-Format Enterprise Ingestion Engine for AutoVend (src/ingestion/multiformat_parser.py).
+Multi-format document parser for AutoVend (src/ingestion/multiformat_parser.py).
 
-Provides enterprise-grade document ingestion across:
+Parses diverse automotive specification documents across:
 1. Excel (.xlsx, .xls, .csv, .tsv):
    - Multi-sheet workbook navigation & sheet naming
    - Merged cell resolution (propagating top-left values across spans)
@@ -716,9 +716,9 @@ def infer_automotive_vehicle_model(file_path: Union[str, Path], doc_title: str, 
 
 class ExcelParser(BaseFormatParser):
     """
-    Enterprise Excel parser using openpyxl (pure Python library) with OLE2 fallback:
+    Excel workbook parser using openpyxl with logical grid layout extraction:
     - Multi-sheet workbook navigation
-    - Merged cell resolution (propagating top-left values across spans)
+    - Merged cell resolution (propagating top-left values down vertical categories)
     - Formula evaluation with fallback to cached values (data_only=True)
     - Currency and date formatting
     - Conversion to TableBlock and TextSection objects with sheet metadata

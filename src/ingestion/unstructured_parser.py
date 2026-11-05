@@ -302,7 +302,7 @@ class VehicleTOMLConverter:
             if not matches:
                 return False
             neg_pattern = re.compile(
-                rf"(?:绝非|并非|不是|不属于|非|拒绝|免除|彻底解决|摆脱)\s*(?:是|为)?\s*{re.escape(term)}",
+                rf"(?:绝非|并非|不是|不属于|非|拒绝|免除|彻底解决|摆脱|not\s+a|not|non-?|never)\s*(?:是|为)?\s*{re.escape(term)}",
                 re.IGNORECASE,
             )
             neg_matches = list(neg_pattern.finditer(text))

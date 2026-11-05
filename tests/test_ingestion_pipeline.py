@@ -127,3 +127,119 @@ def test_saga_rollback_and_dlq_on_downstream_failure(tmp_path):
 
     # Checksum was NOT advanced
     assert "Model_Fail" not in pipeline.checksum_store
+
+
+def test_change_type_string_and_enum_variations(tmp_path):
+    """Verify string 'DELETED', 'deleted', and ChangeType.DELETED all trigger explicit deletion."""
+    test_db = VehicleDB(db_path=str(tmp_path / "test_del_variants.db"))
+    pipeline = IncrementalIngestionPipeline(db=test_db)
+
+    pipeline.ingest_batch([
+        {"car_model": "Model_1", "brand": "B1", "prize": "10万"},
+        {"car_model": "Model_2", "brand": "B2", "prize": "20万"},
+    ])
+
+    # Pass uppercase 'DELETED'
+    patches = pipeline.detect_changes([{"car_model": "Model_1", "change_type": "DELETED"}])
+    assert len(patches) == 1
+    assert patches[0].car_model == "Model_1"
+    assert patches[0].change_type == ChangeType.DELETED
+
+    # Execute batch and verify Model_2 remains untouched
+    summary = pipeline.ingest_batch([{"car_model": "Model_1", "change_type": "DELETED"}])
+    assert summary.deleted_count == 1
+    assert test_db.get_by_model("Model_1") is None
+    assert test_db.get_by_model("Model_2") is not None
+
+
+def test_saga_rollback_restores_preexisting_record(tmp_path):
+    """
+    Verify SAGA rollback restores the previous SQLite record when an update fails downstream,
+    rather than deleting the record.
+    """
+    test_db = VehicleDB(db_path=str(tmp_path / "saga_restore.db"))
+    pipeline = IncrementalIngestionPipeline(db=test_db)
+
+    original = {"car_model": "Model_Preserve", "brand": "OriginalBrand", "prize": "30万"}
+    pipeline.ingest_batch([original])
+
+    # Set up failing vector store
+    mock_vs = MagicMock()
+    mock_vs.upsert_document.side_effect = TimeoutError("ChromaDB timeout")
+    mock_retriever = MagicMock()
+    mock_retriever.vector_store = mock_vs
+    mock_hybrid = MagicMock()
+    mock_hybrid.retriever = mock_retriever
+    pipeline.hybrid_pipeline = mock_hybrid
+
+    # Attempt to update the vehicle
+    updated = {"car_model": "Model_Preserve", "brand": "ChangedBrand", "prize": "40万"}
+    summary = pipeline.ingest_batch([updated])
+
+    assert summary.updated_count == 0
+    # SQLite must retain original data
+    stored = test_db.get_by_model("Model_Preserve")
+    assert stored is not None
+    assert stored.get("brand") == "originalbrand"
+
+
+def test_file_and_doc_keys_ignored_in_full_sync_reconciliation(tmp_path):
+    """Verify that file: and doc: checksum keys are not treated as vehicle models in full_sync."""
+    test_db = VehicleDB(db_path=str(tmp_path / "file_keys_sync.db"))
+    pipeline = IncrementalIngestionPipeline(db=test_db)
+
+    # Ingest a vehicle model
+    pipeline.ingest_batch([{"car_model": "Real_Car", "brand": "CarBrand", "prize": "15万"}])
+
+    # Artificially insert a file and doc key into checksum store
+    pipeline._set_checksum("file:somehash:manual.pdf", "hash123")
+    pipeline._set_checksum("doc:tech_spec_su7", "dochash456")
+
+    # Perform full_sync with only Real_Car
+    patches = pipeline.detect_changes([{"car_model": "Real_Car", "brand": "CarBrand", "prize": "15万"}], full_sync=True)
+
+    # Real_Car is UNCHANGED, and neither file: nor doc: should be marked DELETED
+    patch_models = [p.car_model for p in patches]
+    assert patch_models == ["Real_Car"]
+    assert patches[0].change_type == ChangeType.UNCHANGED
+
+
+def test_table_block_handles_none_rows():
+    """Verify TableBlock does not raise TypeError when rows is None."""
+    from src.ingestion.layout_parser import TableBlock
+
+    tbl = TableBlock(page_num=1, rows=None)
+    assert tbl.row_count == 0
+    assert tbl.col_count == 0
+    assert tbl.headers == []
+    assert tbl.body_rows == []
+
+
+def test_vehicle_db_price_normalization_and_outbox(tmp_path):
+    """Verify VehicleDB normalizes 'price' to 'prize' and supports outbox querying."""
+    test_db = VehicleDB(db_path=str(tmp_path / "vdb_test.db"))
+
+    # Test outbox recording and retrieval
+    test_db.record_outbox_event(
+        event_id="evt_001",
+        event_type="test_sync",
+        payload_json='{"test": 123}',
+        status="FAILED",
+        error_message="downstream unavailable",
+    )
+    events = test_db.get_outbox_events(status="FAILED")
+    assert len(events) == 1
+    assert events[0]["id"] == "evt_001"
+    assert events[0]["error_message"] == "downstream unavailable"
+
+    # Test price normalization in TOML rows
+    toml_path = tmp_path / "model_p.toml"
+    toml_path.write_text(
+        'car_model = "Model_P"\n[PriciseLabels]\nprice = "100,000 ~ 200,000"\nbrand = "TestBrand"\n',
+        encoding="utf-8",
+    )
+    row = test_db._parse_toml(str(toml_path))
+    assert row is not None
+    assert "prize" in row
+    assert row["prize"] == "100,000 ~ 200,000"
+

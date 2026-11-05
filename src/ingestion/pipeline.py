@@ -54,7 +54,12 @@ class IngestionSummary(BaseModel):
 
 def compute_vehicle_checksum(data: Dict[str, Any]) -> str:
     """Compute SHA256 checksum of vehicle dictionary data."""
-    raw_str = json.dumps(data, sort_keys=True, ensure_ascii=False)
+    # Exclude transient runtime control flags to ensure deterministic hashing
+    clean_data = {
+        k: v for k, v in data.items()
+        if not k.startswith("_") and k not in ("is_deleted", "change_type")
+    }
+    raw_str = json.dumps(clean_data, sort_keys=True, ensure_ascii=False, default=str)
     return hashlib.sha256(raw_str.encode("utf-8")).hexdigest()
 
 
@@ -122,11 +127,17 @@ class IncrementalIngestionPipeline:
                 logger.warning(f"Failed to delete persistent checksum for {key}: {e}")
 
     def _get_vehicle_models_in_store(self) -> List[str]:
-        """Return all car model keys in checksum store, ignoring file: or doc: keys."""
-        return [
+        """Return all car model keys in checksum store and SQLite database."""
+        models = {
             k for k in self.checksum_store.keys()
             if not k.startswith("file:") and not k.startswith("doc:")
-        ]
+        }
+        if hasattr(self.db, "get_all_models"):
+            try:
+                models.update(self.db.get_all_models())
+            except Exception:
+                pass
+        return sorted(list(models))
 
     def _record_dlq(
         self,
@@ -149,7 +160,7 @@ class IncrementalIngestionPipeline:
             try:
                 import uuid
                 event_id = f"outbox_{uuid.uuid4().hex[:12]}"
-                payload_str = json.dumps(dlq_entry, ensure_ascii=False)
+                payload_str = json.dumps(dlq_entry, ensure_ascii=False, default=str)
                 self.db.record_outbox_event(
                     event_id=event_id,
                     event_type=f"vehicle_sync_{operation}",
@@ -187,7 +198,8 @@ class IncrementalIngestionPipeline:
             # Check explicit deletion marker
             is_explicit_delete = bool(
                 v_data.get("is_deleted")
-                or v_data.get("change_type") in (ChangeType.DELETED, "deleted")
+                or str(v_data.get("change_type", "")).lower() == "deleted"
+                or v_data.get("change_type") == ChangeType.DELETED
                 or v_data.get("_deleted")
             )
             if is_explicit_delete:
@@ -320,13 +332,10 @@ class IncrementalIngestionPipeline:
             if not downstream_ok:
                 # SAGA Rollback SQLite write
                 try:
-                    if patch.change_type == ChangeType.CREATED:
+                    if prev_record:
+                        self.db.upsert_vehicle(prev_record)
+                    else:
                         self.db.delete_vehicle(patch.car_model)
-                    elif patch.change_type == ChangeType.UPDATED:
-                        if prev_record:
-                            self.db.upsert_vehicle(prev_record)
-                        else:
-                            self.db.delete_vehicle(patch.car_model)
                 except Exception as rb_exc:
                     logger.critical(f"SAGA rollback failed for {patch.car_model}: {rb_exc}")
 
@@ -422,9 +431,9 @@ class IncrementalIngestionPipeline:
         parser: Optional[Any] = None,
     ) -> IngestionSummary:
         """
-        Incrementally ingest any enterprise document (PDF, Excel, Word, PPTX, Image, CSV).
-        Uses canonical path hash-based change detection (SHA-256) to ensure zero key collision
-        and zero redundant processing across restarts.
+        Incrementally ingest documents (PDF, Excel, Word, PPTX, Image, CSV).
+        Identifies updates using SHA-256 checksums keyed by canonical path to avoid
+        name collisions across different directories.
         """
         p = Path(file_path).resolve()
         if not p.exists():

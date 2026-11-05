@@ -22,6 +22,7 @@ TOML_FIELD_NORMALIZE: Dict[str, str] = {
     "voice_interfaction": "voice_interaction",
     "passibility": "passability",
     "clod_resistance": "cold_resistance",
+    "price": "prize",
 }
 
 
@@ -397,7 +398,7 @@ class VehicleDB:
             cursor = self.conn.execute("SELECT checksum FROM checksum_store WHERE key = ?", (key,))
             row = cursor.fetchone()
             return row[0] if row else None
-        except sqlite3.OperationalError:
+        except sqlite3.Error:
             return None
 
     def set_checksum(self, key: str, checksum: str) -> None:
@@ -408,7 +409,7 @@ class VehicleDB:
                 (key, checksum, time.time()),
             )
             self.conn.commit()
-        except sqlite3.OperationalError as e:
+        except sqlite3.Error as e:
             self.logger.debug(f"Unable to write persistent checksum: {e}")
 
     def delete_checksum(self, key: str) -> None:
@@ -416,7 +417,7 @@ class VehicleDB:
         try:
             self.conn.execute("DELETE FROM checksum_store WHERE key = ?", (key,))
             self.conn.commit()
-        except sqlite3.OperationalError as e:
+        except sqlite3.Error as e:
             self.logger.debug(f"Unable to delete persistent checksum: {e}")
 
     def get_all_checksums(self) -> Dict[str, str]:
@@ -424,7 +425,7 @@ class VehicleDB:
         try:
             cursor = self.conn.execute("SELECT key, checksum FROM checksum_store")
             return {row[0]: row[1] for row in cursor.fetchall()}
-        except sqlite3.OperationalError:
+        except sqlite3.Error:
             return {}
 
     # ------------------------------------------------------------------
@@ -449,5 +450,35 @@ class VehicleDB:
                 (event_id, event_type, payload_json, status, error_message or "", now, now),
             )
             self.conn.commit()
-        except sqlite3.OperationalError as e:
+        except sqlite3.Error as e:
             self.logger.debug(f"Unable to record outbox event: {e}")
+
+    def get_outbox_events(self, status: Optional[str] = None) -> List[Dict[str, Any]]:
+        """获取 Outbox / DLQ 事件列表"""
+        try:
+            if status:
+                cursor = self.conn.execute(
+                    """SELECT id, event_type, payload, status, error_message, created_at, updated_at
+                       FROM outbox_events WHERE status = ? ORDER BY created_at ASC""",
+                    (status,),
+                )
+            else:
+                cursor = self.conn.execute(
+                    """SELECT id, event_type, payload, status, error_message, created_at, updated_at
+                       FROM outbox_events ORDER BY created_at ASC"""
+                )
+            rows = cursor.fetchall()
+            return [
+                {
+                    "id": r[0],
+                    "event_type": r[1],
+                    "payload": r[2],
+                    "status": r[3],
+                    "error_message": r[4],
+                    "created_at": r[5],
+                    "updated_at": r[6],
+                }
+                for r in rows
+            ]
+        except sqlite3.Error:
+            return []

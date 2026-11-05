@@ -1,10 +1,10 @@
 """
-PaddleOCR (PP-Structure) Adapter for AutoVend (src/ingestion/paddle_ocr_adapter.py).
+PaddleOCR (PP-Structure) adapter for AutoVend (src/ingestion/paddle_ocr_adapter.py).
 
-Dedicated heavy OCR & structure engine for scanned PDFs, stamped contracts, and images:
-- CPU-isolated execution (use_gpu=False) to prevent CUDA memory hijacking and OpenMP deadlocks.
-- SLANet table recovery, layout analysis, and text line orientation classification.
-- Converts OCR & structure output into AutoVend ontology (ParsedDocument, TableBlock, TextSection).
+Layout analysis and OCR for scanned documents and images:
+- CPU-based execution to avoid CUDA/OpenMP threading contention.
+- Direct memory buffer extraction from PyMuPDF pix.samples into NumPy arrays.
+- Converts OCR and table structure into ParsedDocument, TableBlock, and TextSection objects.
 """
 
 import logging
