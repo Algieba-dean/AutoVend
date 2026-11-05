@@ -2504,11 +2504,13 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         When timeout_seconds expires, forcefully terminates the worker process
         with OS-level SIGKILL (process.kill()) to reclaim handles, VRAM, and CPU,
         preventing unkillable zombie worker threads.
+        Drains pipe continuously to avoid OS pipe buffer deadlocks on large payloads.
         """
         if not timeout_seconds or timeout_seconds <= 0:
             return func(*args, **kwargs)
 
         import multiprocessing as mp
+        import time
 
         try:
             ctx = mp.get_context("fork")
@@ -2531,26 +2533,60 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
 
         proc = ctx.Process(target=_worker_entry)
         proc.start()
-        proc.join(timeout=timeout_seconds)
 
+        start_time = time.time()
+        result_payload = None
+        has_result = False
+
+        # Continuously poll to drain pipe, preventing OS pipe buffer deadlocks on large payloads
+        while time.time() - start_time < timeout_seconds:
+            if parent_conn.poll(0.05):
+                has_result = True
+                result_payload = parent_conn.recv()
+                break
+            if not proc.is_alive():
+                if parent_conn.poll():
+                    has_result = True
+                    result_payload = parent_conn.recv()
+                break
+
+        if not has_result:
+            if proc.is_alive():
+                child_pid = proc.pid
+                proc.kill()
+                proc.join(timeout=2.0)
+                parent_conn.close()
+                try:
+                    proc.close()
+                except Exception:
+                    pass
+                raise TimeoutError(
+                    f"Operation timed out after {timeout_seconds}s (SIGKILL delivered to PID {child_pid})"
+                )
+            else:
+                exit_code = proc.exitcode
+                parent_conn.close()
+                try:
+                    proc.close()
+                except Exception:
+                    pass
+                raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
+
+        # Wait for worker process to exit cleanly
+        proc.join(timeout=1.0)
         if proc.is_alive():
             proc.kill()
-            proc.join(timeout=2.0)
-            parent_conn.close()
-            raise TimeoutError(
-                f"Operation timed out after {timeout_seconds}s (SIGKILL delivered to PID {proc.pid})"
-            )
-
+            proc.join(timeout=1.0)
+        parent_conn.close()
         try:
-            if parent_conn.poll():
-                success, value = parent_conn.recv()
-                if success:
-                    return value
-                raise value
-            exit_code = proc.exitcode
-            raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
-        finally:
-            parent_conn.close()
+            proc.close()
+        except Exception:
+            pass
+
+        success, value = result_payload
+        if success:
+            return value
+        raise value
 
     @staticmethod
     @contextlib.contextmanager
@@ -2570,21 +2606,28 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         temp_dir = tempfile.mkdtemp(prefix="autovend_slice_")
         temp_pdf_path = Path(temp_dir) / file_path.name
 
-        doc = fitz.open(str(file_path))
-        new_doc = fitz.open()
-        page_map: Dict[int, int] = {}
-
-        for new_idx, orig_p in enumerate(sorted_pages, start=1):
-            orig_idx = orig_p - 1
-            if 0 <= orig_idx < len(doc):
-                new_doc.insert_pdf(doc, from_page=orig_idx, to_page=orig_idx)
-                page_map[new_idx] = orig_p
-
-        new_doc.save(str(temp_pdf_path))
-        new_doc.close()
-        doc.close()
-
         try:
+            doc = fitz.open(str(file_path))
+            new_doc = fitz.open()
+            page_map: Dict[int, int] = {}
+
+            for new_idx, orig_p in enumerate(sorted_pages, start=1):
+                orig_idx = orig_p - 1
+                if 0 <= orig_idx < len(doc):
+                    new_doc.insert_pdf(doc, from_page=orig_idx, to_page=orig_idx)
+                    page_map[new_idx] = orig_p
+
+            if not page_map:
+                new_doc.close()
+                doc.close()
+                raise ValueError(
+                    f"No valid pages found in {file_path.name} for requested page numbers: {page_numbers}"
+                )
+
+            new_doc.save(str(temp_pdf_path))
+            new_doc.close()
+            doc.close()
+
             yield temp_pdf_path, page_map
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
@@ -2598,28 +2641,31 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         across sections, tables, bounding boxes, headings, and dimension metadata.
         """
         doc.title = original_title
+        first_orig_page = min(page_map.values()) if page_map else 1
+
         for s in doc.sections:
             old_p = s.page_num
-            if old_p in page_map:
-                new_p = page_map[old_p]
-                s.page_num = new_p
-                if s.bbox is not None:
-                    s.bbox.page = new_p
-                s.title = s.title.replace(f"第 {old_p} 页", f"第 {new_p} 页")
-                s.breadcrumb_path = [b.replace(f"第 {old_p} 页", f"第 {new_p} 页") for b in s.breadcrumb_path]
+            new_p = page_map.get(old_p, first_orig_page)
+            s.page_num = new_p
+            if s.bbox is not None:
+                s.bbox.page = new_p
+            s.title = s.title.replace(f"第 {old_p} 页", f"第 {new_p} 页").replace(f"第{old_p}页", f"第{new_p}页")
+            s.breadcrumb_path = [
+                b.replace(f"第 {old_p} 页", f"第 {new_p} 页").replace(f"第{old_p}页", f"第{new_p}页")
+                for b in s.breadcrumb_path
+            ]
 
         for t in doc.tables:
             old_p = t.page_num
-            if old_p in page_map:
-                new_p = page_map[old_p]
-                t.page_num = new_p
-                if t.bbox is not None:
-                    t.bbox.page = new_p
-                t.title = t.title.replace(f"P{old_p}_", f"P{new_p}_")
-                t.metadata["breadcrumb_path"] = [
-                    b.replace(f"第 {old_p} 页", f"第 {new_p} 页")
-                    for b in t.metadata.get("breadcrumb_path", [])
-                ]
+            new_p = page_map.get(old_p, first_orig_page)
+            t.page_num = new_p
+            if t.bbox is not None:
+                t.bbox.page = new_p
+            t.title = t.title.replace(f"P{old_p}_", f"P{new_p}_")
+            t.metadata["breadcrumb_path"] = [
+                b.replace(f"第 {old_p} 页", f"第 {new_p} 页").replace(f"第{old_p}页", f"第{new_p}页")
+                for b in t.metadata.get("breadcrumb_path", [])
+            ]
             if hasattr(t, "pages") and t.pages:
                 t.pages = [page_map.get(p, p) for p in t.pages]
             if hasattr(t, "page_bboxes") and t.page_bboxes:
@@ -2943,8 +2989,9 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         try:
             logger.info(f"[Scanned Path L1] Attempting PaddleOCR on {file_path.name}")
             doc = self._run_with_timeout(
-                lambda p: self.paddle.parse_scanned_pdf(p, page_numbers=page_numbers),
+                self.paddle.parse_scanned_pdf,
                 file_path,
+                page_numbers=page_numbers,
                 timeout_seconds=self.timeout_seconds,
             )
             if not doc or (not doc.sections and not doc.tables and not doc.raw_text.strip()):

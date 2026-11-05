@@ -449,6 +449,17 @@ class TestHonestDegradationAndCircuitBreakers:
         for t in doc.tables:
             assert t.extraction_engine == "pymupdf_pdfplumber"
 
+    def test_docling_adapter_strict_no_fallback_raises(self):
+        """Verify that when allow_fallback=False, conversion exceptions raise directly without falling back."""
+        adapter = RealDoclingAdapter(allow_fallback=False)
+        mock_converter = MagicMock()
+        mock_converter.convert.side_effect = RuntimeError("Fatal Docling conversion error")
+        adapter._converter = mock_converter
+
+        with pytest.raises(RuntimeError) as exc_info:
+            adapter.parse(PDF_SAMPLE_PATH)
+        assert "Fatal Docling conversion error" in str(exc_info.value)
+
     def test_process_timeout_sigkill_termination(self):
         """
         Critical Test for Vulnerability 2:
@@ -484,6 +495,24 @@ class TestHonestDegradationAndCircuitBreakers:
         except ProcessLookupError:
             # Expected: Process does not exist
             pass
+
+    def test_process_timeout_large_payload_no_deadlock(self):
+        """
+        Verify that _run_with_timeout drains pipe continuously and does not deadlock
+        when worker returns large payloads (> 64KB OS pipe buffer limit).
+        """
+        def large_payload_worker():
+            return "D" * 2_000_000  # 2MB payload exceeds OS pipe buffer
+
+        t0 = time.time()
+        res = DualTrackLayoutEngine._run_with_timeout(
+            large_payload_worker,
+            timeout_seconds=3.0,
+        )
+        elapsed = time.time() - t0
+
+        assert len(res) == 2_000_000
+        assert elapsed < 1.0  # Must return immediately without pipe buffer deadlock
 
     def test_digital_path_l1_oom_trips_to_l2_pdfplumber(self, monkeypatch):
         """Verify that Docling OOM trips circuit breaker to L2 pdfplumber with honest metadata."""
@@ -537,8 +566,8 @@ class TestHonestDegradationAndCircuitBreakers:
         assert len(doc.sections) >= 1
         assert len(doc.raw_text.strip()) > 50
 
-    def test_scanned_path_l1_failure_trips_to_l2_or_l3(self, tmp_path, monkeypatch):
-        """Verify that PaddleOCR crash on scanned document trips circuit breaker to PyMuPDF OCR or text."""
+    def test_scanned_path_l1_failure_trips_to_l2_pymupdf_ocr(self, tmp_path, monkeypatch):
+        """Verify that PaddleOCR crash on scanned document trips circuit breaker specifically to L2 PyMuPDF OCR."""
         scanned_path = tmp_path / "scanned_doc.pdf"
         doc_pdf = fitz.open()
         page = doc_pdf.new_page(width=400, height=300)
@@ -549,18 +578,78 @@ class TestHonestDegradationAndCircuitBreakers:
 
         engine = DualTrackLayoutEngine(char_density_threshold=30)
 
-        def mock_paddle_crash(path, **kwargs):
-            raise RuntimeError("PaddleOCR PPStructure crashed: SIGSEGV")
+        monkeypatch.setattr(
+            engine.paddle,
+            "parse_scanned_pdf",
+            lambda *a, **k: (_ for _ in ()).throw(RuntimeError("PaddleOCR PPStructure crashed: SIGSEGV")),
+        )
 
-        monkeypatch.setattr(engine.paddle, "parse_scanned_pdf", mock_paddle_crash)
+        mock_l2_doc = ParsedDocument(
+            title=scanned_path.stem,
+            sections=[
+                TextSection(
+                    title=f"{scanned_path.stem} 第 1 页 OCR正文",
+                    content="OCR识别出的文字内容",
+                    level=1,
+                    page_num=1,
+                    breadcrumb_path=[scanned_path.stem, "第 1 页"],
+                )
+            ],
+            tables=[],
+            pages=1,
+            raw_text="OCR识别出的文字内容",
+            metadata={
+                "engine": "pymupdf_ocr_fallback",
+                "extraction_quality": "degraded",
+                "fallback_level": "L2_pymupdf_ocr",
+                "degraded_reason": "PaddleOCR PPStructure crashed: SIGSEGV",
+                "is_degraded": True,
+            },
+        )
+        monkeypatch.setattr(engine, "_extract_l2_pymupdf_ocr", lambda *a, **k: mock_l2_doc)
 
         doc = engine.parse(scanned_path)
 
         assert isinstance(doc, ParsedDocument)
         assert doc.is_degraded is True
-        assert doc.metadata.get("extraction_quality") == "degraded"
-        assert doc.metadata.get("fallback_level") in ["L2_pymupdf_ocr", "L3_pymupdf_text"]
-        assert "PaddleOCR PPStructure crashed" in doc.metadata.get("degraded_reason", "")
+        assert doc.metadata["extraction_quality"] == "degraded"
+        assert doc.metadata["fallback_level"] == "L2_pymupdf_ocr"
+        assert doc.metadata["engine"] == "pymupdf_ocr_fallback"
+        assert "PaddleOCR PPStructure crashed" in doc.metadata["degraded_reason"]
+        assert len(doc.sections) == 1
+
+    def test_scanned_path_l2_failure_trips_to_l3_pymupdf_text(self, tmp_path, monkeypatch):
+        """Verify that when both PaddleOCR and PyMuPDF OCR fail, circuit breaker trips specifically to L3 raw text."""
+        scanned_path = tmp_path / "scanned_doc.pdf"
+        doc_pdf = fitz.open()
+        page = doc_pdf.new_page(width=400, height=300)
+        page.insert_text((50, 50), "短文本")  # 3 chars < 30
+        page.draw_rect(fitz.Rect(10, 10, 390, 290), color=(0, 0, 0))
+        doc_pdf.save(str(scanned_path))
+        doc_pdf.close()
+
+        engine = DualTrackLayoutEngine(char_density_threshold=30)
+
+        monkeypatch.setattr(
+            engine.paddle,
+            "parse_scanned_pdf",
+            lambda *a, **k: (_ for _ in ()).throw(RuntimeError("PaddleOCR PPStructure crashed")),
+        )
+        monkeypatch.setattr(
+            engine,
+            "_extract_l2_pymupdf_ocr",
+            lambda *a, **k: (_ for _ in ()).throw(RuntimeError("Tesseract OCR engine missing")),
+        )
+
+        doc = engine.parse(scanned_path)
+
+        assert isinstance(doc, ParsedDocument)
+        assert doc.is_degraded is True
+        assert doc.metadata["extraction_quality"] == "degraded"
+        assert doc.metadata["fallback_level"] == "L3_pymupdf_text"
+        assert doc.metadata["engine"] == "pymupdf_raw_text_fallback"
+        assert "PaddleOCR PPStructure crashed" in doc.metadata["degraded_reason"]
+        assert "Tesseract OCR engine missing" in doc.metadata["degraded_reason"]
         assert len(doc.sections) >= 1
 
     def test_zero_mock_data_unrecoverable_error(self, tmp_path):
@@ -774,3 +863,16 @@ class TestPreFlightProbeAndAnchorPropagation:
         assert 1 in pages_found
         assert 2 in pages_found
         assert pages_found == sorted(pages_found)
+
+    def test_slice_pdf_to_temp_invalid_pages(self, tmp_path):
+        """Verify _slice_pdf_to_temp raises ValueError cleanly and does not leak directories on invalid pages."""
+        pdf_path = tmp_path / "simple.pdf"
+        doc_pdf = fitz.open()
+        doc_pdf.new_page(width=400, height=300)
+        doc_pdf.save(str(pdf_path))
+        doc_pdf.close()
+
+        with pytest.raises(ValueError) as exc_info:
+            with DualTrackLayoutEngine._slice_pdf_to_temp(pdf_path, [999, 1000]):
+                pass
+        assert "No valid pages found" in str(exc_info.value)

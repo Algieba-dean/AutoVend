@@ -158,6 +158,8 @@ class RealDoclingAdapter(BaseLayoutEngine):
                 },
             )
         except Exception as e:
+            if not self.allow_fallback:
+                raise
             logger.error(f"Docling conversion failed for {file_path}: {e}; falling back to PyMuPDF")
             fallback_doc = self._fallback.parse(file_path)
             fallback_doc.is_degraded = True
