@@ -12,6 +12,7 @@ from typing import Any, Dict, Optional
 import toml
 
 from src.filter.label_registry import LabelRegistry
+from src.ingestion.layout_parser import DocumentParsingUnrecoverableError
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -38,46 +39,70 @@ class UnstructuredDataParser:
 
     @staticmethod
     def parse_pdf(file_path: Path, layout_aware: bool = False) -> str:
-        """Extract text content from PDF file with layout awareness or PyPDF fallback."""
+        """Extract text content from PDF file with layout awareness or PyMuPDF/DualTrack fallback."""
+        file_path = Path(file_path)
         if layout_aware:
             try:
                 from src.ingestion.layout_parser import LayoutAwareParser
-                parser = LayoutAwareParser(engine_type="hybrid")
+
+                parser = LayoutAwareParser(engine_type="dual_track")
                 doc = parser.parse(file_path)
                 return doc.get_full_markdown()
             except Exception as e:
                 logger.warning(f"Layout-aware parsing failed for {file_path}: {e}")
 
         try:
-            import pypdf
+            import fitz
 
-            reader = pypdf.PdfReader(str(file_path))
-            pages_text = [page.extract_text() for page in reader.pages if page.extract_text()]
+            try:
+                doc = fitz.open(str(file_path))
+            except Exception as open_err:
+                logger.warning(f"PyMuPDF open failed for {file_path}: {open_err}")
+                return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
+
+            if getattr(doc, "is_encrypted", False) and not doc.authenticate(""):
+                raise DocumentParsingUnrecoverableError(
+                    f"PDF document is encrypted/password-protected: {file_path.name}"
+                )
+
+            pages_text = [page.get_text() for page in doc if page.get_text()]
             full_text = "\n".join(pages_text).strip()
 
-            # Scanned PDF Detection: text layer is empty or nearly 0 characters
-            if len(full_text) < 20 and len(reader.pages) > 0:
+            genuine_chars = sum(1 for c in full_text if not c.isspace())
+
+            # Scanned PDF Detection: text layer is empty or nearly 0 characters (< 30)
+            if genuine_chars < 30 and len(doc) > 0:
                 logger.info(
-                    f"Detected Scanned PDF (纯扫描件) for {file_path.name}, triggering OCR/Vision pipeline."
+                    f"Detected Scanned PDF (纯扫描件) for {file_path.name} ({genuine_chars} chars), triggering OCR pipeline."
                 )
                 return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
 
+            if not full_text:
+                return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
+
             return full_text
+        except DocumentParsingUnrecoverableError:
+            raise
         except Exception as e:
-            logger.warning(f"PyPDF extraction fallback for {file_path}: {e}")
+            logger.warning(f"PyMuPDF extraction fallback for {file_path}: {e}")
             return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
 
     @staticmethod
-    def parse_pdf_layout_aware(file_path: Path, engine_type: str = "hybrid"):
+    def parse_pdf_layout_aware(file_path: Path, engine_type: str = "dual_track"):
         """Extract structured document and tables with exact BBox and Markdown."""
         from src.ingestion.layout_parser import LayoutAwareParser
+
         return LayoutAwareParser(engine_type=engine_type).parse(file_path)
 
     @staticmethod
     def parse_scanned_pdf_ocr(file_path: Path) -> str:
         """
-        Dedicated OCR / Vision parser for scanned PDFs using PaddleOCR PP-Structure.
+        Dedicated OCR / Vision parser for scanned PDFs:
+        L1 PaddleOCR PP-Structure -> L2 PyMuPDF OCR -> L3 PyMuPDF raw text.
+        Zero mock data: raises DocumentParsingUnrecoverableError if unrecoverable.
         """
+        file_path = Path(file_path)
+        # Try L1: RealPaddleOCRAdapter
         try:
             from src.ingestion.paddle_ocr_adapter import RealPaddleOCRAdapter
 
@@ -90,21 +115,52 @@ class UnstructuredDataParser:
         except Exception as e:
             logger.warning(f"PaddleOCR scanned PDF parsing failed for {file_path}: {e}")
 
+        # Try L2: PyMuPDF local OCR (fitz Tesseract)
         try:
             import fitz
 
             doc = fitz.open(str(file_path))
             results = []
             for i, page in enumerate(doc):
-                txt = page.get_text().strip()
+                txt = ""
+                try:
+                    tp = page.get_textpage_ocr(language="chi_sim+eng", dpi=150, full=True)
+                    txt = page.get_text(textpage=tp).strip()
+                except Exception as page_ocr_err:
+                    logger.debug(f"PyMuPDF OCR failed on page {i + 1}: {page_ocr_err}")
+                    txt = ""
+
+                if not txt:
+                    txt = page.get_text().strip()
+
                 if txt:
                     results.append(f"[Scanned PDF Page {i + 1} OCR Content]: {txt}")
+            doc.close()
             if results:
                 return "\n".join(results)
         except Exception as e:
-            logger.warning(f"PyMuPDF fallback for {file_path}: {e}")
+            logger.warning(f"PyMuPDF OCR fallback for {file_path}: {e}")
 
-        return f"[扫描件PDF图像内容]: 车型配置手册包含大空间、高阶智驾与电池续航参数 ({file_path.name})"
+        # Try L3: PyMuPDF raw text
+        try:
+            import fitz
+
+            doc = fitz.open(str(file_path))
+            raw_results = []
+            for i, page in enumerate(doc):
+                txt = page.get_text().strip()
+                if txt:
+                    raw_results.append(txt)
+            doc.close()
+            if raw_results:
+                return "\n".join(raw_results)
+        except Exception as e:
+            logger.warning(f"PyMuPDF raw text fallback for {file_path}: {e}")
+
+        # If even PyMuPDF extracts nothing, raise honest unrecoverable error
+        raise DocumentParsingUnrecoverableError(
+            f"Document {file_path.name} contains no text and could not be recovered via PaddleOCR or PyMuPDF."
+        )
 
     @staticmethod
     def parse_docx(file_path: Path, layout_aware: bool = False) -> str:
@@ -127,10 +183,15 @@ class UnstructuredDataParser:
                     row_data = [cell.text.strip() for cell in row.cells if cell.text.strip()]
                     if row_data:
                         full_text.append(" | ".join(row_data))
-            return "\n".join(full_text)
+            result = "\n".join(full_text).strip()
+            if not result:
+                raise DocumentParsingUnrecoverableError(f"Word DOCX file {file_path.name} contains no text.")
+            return result
+        except DocumentParsingUnrecoverableError:
+            raise
         except Exception as e:
-            logger.warning(f"python-docx extraction fallback for {file_path}: {e}")
-            return f"Raw DOCX content from {file_path.name}"
+            logger.warning(f"python-docx extraction failed for {file_path}: {e}")
+            raise DocumentParsingUnrecoverableError(f"Word DOCX extraction failed for {file_path.name}: {e}") from e
 
     @staticmethod
     def parse_excel(file_path: Path, layout_aware: bool = False) -> str:

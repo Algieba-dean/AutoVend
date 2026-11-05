@@ -22,6 +22,11 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 logger = logging.getLogger(__name__)
 
 
+class DocumentParsingUnrecoverableError(Exception):
+    """Raised when document parsing fails unrecoverably or extracted content is completely empty."""
+    pass
+
+
 class BoundingBox:
     """Represents a 2D bounding box on a document page (x0, top, x1, bottom)."""
 
@@ -837,6 +842,14 @@ class ParsedDocument:
         self.page_dimensions = page_dimensions or {}
         self.page_orientations = page_orientations or {}
 
+    @property
+    def is_degraded(self) -> bool:
+        return bool(self.metadata.get("is_degraded", False))
+
+    @is_degraded.setter
+    def is_degraded(self, value: bool) -> None:
+        self.metadata["is_degraded"] = bool(value)
+
     def get_full_markdown(self) -> str:
         """Compose all sections and tables into full layout-preserved Markdown sorted by reading position."""
         parts: List[str] = []
@@ -1567,7 +1580,12 @@ class PyMuPDFPlumberEngine(BaseLayoutEngine):
         self.filter_noise = filter_noise
         self.reading_order_sort = reading_order_sort
 
-    def extract_tables(self, file_path: Path, stitch: Optional[bool] = None) -> List[TableBlock]:
+    def extract_tables(
+        self,
+        file_path: Path,
+        stitch: Optional[bool] = None,
+        page_numbers: Optional[Sequence[int]] = None,
+    ) -> List[TableBlock]:
         """Extract tables using pdfplumber with exact bounding boxes, cell contents, and optional stitching."""
         tables: List[TableBlock] = []
         page_dimensions: Dict[int, Tuple[float, float]] = {}
@@ -1578,6 +1596,8 @@ class PyMuPDFPlumberEngine(BaseLayoutEngine):
             with pdfplumber.open(str(file_path)) as pdf:
                 for page_idx, page in enumerate(pdf.pages):
                     page_num = page_idx + 1
+                    if page_numbers is not None and page_num not in page_numbers:
+                        continue
                     page_dimensions[page_num] = (float(page.width), float(page.height))
                     extracted_tables = page.find_tables()
 
@@ -1734,7 +1754,11 @@ class PyMuPDFPlumberEngine(BaseLayoutEngine):
             logger.error(f"PyMuPDF fallback failed for {file_path}: {e}")
         return tables
 
-    def parse(self, file_path: Path) -> ParsedDocument:
+    def parse(
+        self,
+        file_path: Union[str, Path],
+        page_numbers: Optional[Sequence[int]] = None,
+    ) -> ParsedDocument:
         """
         Full layout analysis:
         1. Extract tables with BBox & cross-page stitching.
@@ -1744,7 +1768,8 @@ class PyMuPDFPlumberEngine(BaseLayoutEngine):
         5. Build hierarchical heading tree (H1-H4) and track ancestor breadcrumbs.
         6. Prevent duplicate table-region text in body paragraphs.
         """
-        tables = self.extract_tables(file_path)
+        file_path = Path(file_path)
+        tables = self.extract_tables(file_path, page_numbers=page_numbers)
 
         doc_title = file_path.stem
         vehicle_model = ""
@@ -1768,6 +1793,9 @@ class PyMuPDFPlumberEngine(BaseLayoutEngine):
             font_sizes: List[float] = []
             top_texts: List[str] = []
             for page_idx, page in enumerate(doc):
+                p_num = page_idx + 1
+                if page_numbers is not None and p_num not in page_numbers:
+                    continue
                 p_h = page.rect.height
                 blocks = page.get_text("dict").get("blocks", [])
                 for b in blocks:
@@ -1788,6 +1816,8 @@ class PyMuPDFPlumberEngine(BaseLayoutEngine):
             # Classify page layout and dimensions with noise filtering
             for page_idx, page in enumerate(doc):
                 p_num = page_idx + 1
+                if page_numbers is not None and p_num not in page_numbers:
+                    continue
                 page_dimensions[p_num] = (float(page.rect.width), float(page.rect.height))
                 page_orientations[p_num] = "landscape" if page.rect.width > page.rect.height else "portrait"
 
@@ -1828,6 +1858,8 @@ class PyMuPDFPlumberEngine(BaseLayoutEngine):
 
             for page_idx, page in enumerate(doc):
                 page_num = page_idx + 1
+                if page_numbers is not None and page_num not in page_numbers:
+                    continue
                 page_class = pages_classification.get(page_num, "digital")
                 page_rot = OCROrientationDetector.detect_page_rotation(page)
                 if page_rot != 0:
@@ -2339,28 +2371,21 @@ class MinerUDoclingEngine(BaseLayoutEngine):
         return doc
 
 
-class DualTrackLayoutEngine(BaseLayoutEngine):
+class PreFlightProbe:
     """
-    Production Dual-Track Isolation Pipeline (双轨隔离分流流水线):
-    1. Fast Channel: genuine_chars >= 30/page -> IBM Docling (TableFormer, do_ocr=False).
-    2. Heavy OCR Failover Channel: genuine_chars < 30/page -> PaddleOCR PP-Structure (CPU-isolated).
-    Strict page-level hard routing avoids redundant computation and eliminates PyTorch/Paddle GPU conflicts.
+    Lightweight Pre-Flight Probe powered by PyMuPDF (fitz) (<5ms execution).
+    Performs:
+    1. Document corruption & password / encryption verification.
+    2. Page count, dimensions (width, height), orientation (portrait/landscape), and rotation.
+    3. Genuine characters density counting for hard routing (>= 30 digital, < 30 scanned).
     """
 
-    def __init__(
-        self,
-        char_density_threshold: int = 30,
-        docling_kwargs: Optional[Dict[str, Any]] = None,
-        paddle_kwargs: Optional[Dict[str, Any]] = None,
-    ):
-        super().__init__()
-        self.threshold = char_density_threshold
-        self.docling = RealDoclingAdapter(**(docling_kwargs or {}))
-        self.paddle = RealPaddleOCRAdapter(**(paddle_kwargs or {}))
-        self._fallback = PyMuPDFPlumberEngine()
+    @staticmethod
+    def inspect(file_path: Union[str, Path], char_density_threshold: int = 30) -> Dict[str, Any]:
+        file_path = Path(file_path)
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
 
-    def check_density(self, file_path: Path) -> Dict[str, Any]:
-        """Classify each page as digital-native (>= threshold) or scanned (< threshold)."""
         suffix = file_path.suffix.lower()
         if suffix in [".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".webp"]:
             return {
@@ -2368,102 +2393,484 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                 "digital_pages": [],
                 "scanned_pages": [1],
                 "page_counts": {1: 0},
+                "page_dimensions": {1: (0.0, 0.0)},
+                "page_orientations": {1: "portrait"},
+                "page_rotations": {1: 0},
             }
 
         import fitz
 
+        try:
+            doc = fitz.open(str(file_path))
+        except Exception as e:
+            raise DocumentParsingUnrecoverableError(
+                f"PDF document is corrupted or unreadable: {file_path.name} ({e})"
+            ) from e
+
+        try:
+            if getattr(doc, "is_encrypted", False):
+                if not doc.authenticate(""):
+                    raise DocumentParsingUnrecoverableError(
+                        f"PDF document is encrypted/password-protected: {file_path.name}"
+                    )
+
+            total_pages = len(doc)
+            if total_pages == 0:
+                raise DocumentParsingUnrecoverableError(
+                    f"PDF document has 0 pages or is corrupted: {file_path.name}"
+                )
+
+            digital_pages: List[int] = []
+            scanned_pages: List[int] = []
+            page_counts: Dict[int, int] = {}
+            page_dimensions: Dict[int, Tuple[float, float]] = {}
+            page_orientations: Dict[int, str] = {}
+            page_rotations: Dict[int, int] = {}
+
+            for p_idx, page in enumerate(doc):
+                p_num = p_idx + 1
+                rect = page.rect
+                page_dimensions[p_num] = (round(float(rect.width), 2), round(float(rect.height), 2))
+                page_orientations[p_num] = "landscape" if rect.width > rect.height else "portrait"
+                page_rotations[p_num] = int(page.rotation)
+
+                txt = page.get_text() or ""
+                genuine_chars = sum(1 for c in txt if not c.isspace())
+                page_counts[p_num] = genuine_chars
+
+                if genuine_chars >= char_density_threshold:
+                    digital_pages.append(p_num)
+                else:
+                    scanned_pages.append(p_num)
+
+            return {
+                "total_pages": total_pages,
+                "digital_pages": digital_pages,
+                "scanned_pages": scanned_pages,
+                "page_counts": page_counts,
+                "page_dimensions": page_dimensions,
+                "page_orientations": page_orientations,
+                "page_rotations": page_rotations,
+            }
+        finally:
+            doc.close()
+
+
+class DualTrackLayoutEngine(BaseLayoutEngine):
+    """
+    Production 4-Tier Circuit Breaker Dual-Track Pipeline (生产级四级熔断降级架构):
+
+    1. Pre-flight probe: PyMuPDF (5ms) checks corruption, password, dimensions, and genuine_chars count.
+    2. Digital Track (genuine_chars >= 30/page):
+       - L1 Primary: IBM Docling TableFormer (high-precision layout + composite tables)
+       - 💣 If OOM / Timeout (>30s) / Exception ->
+       - L2 Fallback: pdfplumber bordered table extraction (CPU geometry solving, preserves basic 2D grid)
+       - 💣 If still fails ->
+       - L3 Ultimate Fallback: PyMuPDF raw text extraction (fitz.get_text(), abandons table topologies)
+    3. Scanned Track (genuine_chars < 30/page):
+       - L1 Primary: PaddleOCR PP-Structure (CPU-isolated layout recovery + seal elimination)
+       - 💣 If Paddle crashes / Exception ->
+       - L2 Fallback: PyMuPDF local OCR (fitz Tesseract/OCR, preserves text, loses table structure)
+       - 💣 If still fails ->
+       - L3 Ultimate Fallback: PyMuPDF raw text extraction (fitz.get_text())
+    4. Compliance Audit & Honest Metadata:
+       - Marked with is_degraded=True, extraction_quality='degraded', fallback_level, degraded_reason.
+       - Absolutely zero mock data. If even PyMuPDF extracts 0 chars, raises DocumentParsingUnrecoverableError.
+    """
+
+    def __init__(
+        self,
+        char_density_threshold: int = 30,
+        timeout_seconds: float = 30.0,
+        docling_kwargs: Optional[Dict[str, Any]] = None,
+        paddle_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__()
+        self.threshold = char_density_threshold
+        self.timeout_seconds = timeout_seconds
+        self.docling = RealDoclingAdapter(**(docling_kwargs or {}))
+        self.paddle = RealPaddleOCRAdapter(**(paddle_kwargs or {}))
+        self._fallback = PyMuPDFPlumberEngine()
+
+    def check_density(self, file_path: Path) -> Dict[str, Any]:
+        """Pre-flight probe delegator for page character density classification."""
+        return PreFlightProbe.inspect(file_path, char_density_threshold=self.threshold)
+
+    @staticmethod
+    def _run_with_timeout(func, *args, timeout_seconds: float = 30.0, **kwargs):
+        if not timeout_seconds or timeout_seconds <= 0:
+            return func(*args, **kwargs)
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(func, *args, **kwargs)
+            try:
+                return future.result(timeout=timeout_seconds)
+            except concurrent.futures.TimeoutError as te:
+                raise TimeoutError(f"Operation timed out after {timeout_seconds}s") from te
+
+    @staticmethod
+    def _filter_doc_pages(doc: ParsedDocument, target_pages: Sequence[int]) -> ParsedDocument:
+        target_set = set(target_pages)
+        filtered_sections = [s for s in doc.sections if s.page_num in target_set]
+        filtered_tables = [t for t in doc.tables if t.page_num in target_set]
+        combined_raw = "\n\n".join(s.content for s in filtered_sections if s.content.strip())
+        doc.sections = filtered_sections
+        doc.tables = filtered_tables
+        doc.raw_text = combined_raw
+        return doc
+
+    def _extract_l2_pdfplumber(
+        self,
+        file_path: Path,
+        page_numbers: Optional[Sequence[int]] = None,
+        degraded_reason: str = "",
+    ) -> ParsedDocument:
+        """L2 Fallback on digital track: Pure CPU geometric bordered table extraction via pdfplumber."""
+        file_path = Path(file_path)
+        doc = self._fallback.parse(file_path, page_numbers=page_numbers)
+        for t in doc.tables:
+            t.extraction_engine = "pdfplumber_bordered_table"
+
+        doc.metadata["engine"] = "pdfplumber_bordered_table"
+        doc.metadata["extraction_quality"] = "degraded"
+        doc.metadata["fallback_level"] = "L2_pdfplumber"
+        doc.metadata["degraded_reason"] = degraded_reason or "Docling TableFormer unavailable or tripped"
+        doc.metadata["is_degraded"] = True
+        doc.is_degraded = True
+        return doc
+
+    def _extract_l2_pymupdf_ocr(
+        self,
+        file_path: Path,
+        page_numbers: Optional[Sequence[int]] = None,
+        degraded_reason: str = "",
+    ) -> ParsedDocument:
+        """L2 Fallback on scanned track: PyMuPDF local OCR (fitz Tesseract)."""
+        import fitz
+
+        file_path = Path(file_path)
         doc = fitz.open(str(file_path))
-        digital_pages: List[int] = []
-        scanned_pages: List[int] = []
-        page_counts: Dict[int, int] = {}
+        target_pages = set(page_numbers) if page_numbers is not None else set(range(1, len(doc) + 1))
+        sections: List[TextSection] = []
+        raw_texts: List[str] = []
+        page_dims: Dict[int, Tuple[float, float]] = {}
+        page_oris: Dict[int, str] = {}
+
+        has_ocr_content = False
+        for p_idx, page in enumerate(doc):
+            p_num = p_idx + 1
+            if p_num not in target_pages:
+                continue
+
+            rect = page.rect
+            page_dims[p_num] = (round(float(rect.width), 2), round(float(rect.height), 2))
+            page_oris[p_num] = "landscape" if rect.width > rect.height else "portrait"
+
+            txt = ""
+            try:
+                tp = page.get_textpage_ocr(language="chi_sim+eng", dpi=150, full=True)
+                txt = page.get_text(textpage=tp).strip()
+            except Exception as ocr_err:
+                logger.debug(f"PyMuPDF OCR failed on page {p_num}: {ocr_err}")
+                txt = ""
+
+            if not txt:
+                txt = page.get_text().strip()
+
+            if txt:
+                has_ocr_content = True
+                raw_texts.append(txt)
+                sections.append(
+                    TextSection(
+                        title=f"{file_path.stem} 第 {p_num} 页 OCR正文",
+                        content=txt,
+                        level=1,
+                        page_num=p_num,
+                        bbox=BoundingBox(0.0, 0.0, float(rect.width), float(rect.height), page=p_num),
+                        breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                    )
+                )
+
+        doc.close()
+
+        if not has_ocr_content or not "\n\n".join(raw_texts).strip():
+            raise RuntimeError(f"PyMuPDF OCR extracted 0 characters from {file_path.name}")
+
+        full_raw = "\n\n".join(raw_texts).strip()
+        parsed = ParsedDocument(
+            title=file_path.stem,
+            sections=sections,
+            tables=[],  # L2 OCR: 保住基础文字，丢失表格结构
+            pages=len(sections) if target_pages else len(page_dims),
+            raw_text=full_raw,
+            metadata={
+                "engine": "pymupdf_ocr_fallback",
+                "extraction_quality": "degraded",
+                "fallback_level": "L2_pymupdf_ocr",
+                "degraded_reason": degraded_reason or "PaddleOCR unavailable or tripped",
+                "is_degraded": True,
+            },
+            page_dimensions=page_dims,
+            page_orientations=page_oris,
+        )
+        parsed.is_degraded = True
+        return parsed
+
+    def _extract_l3_pymupdf_text(
+        self,
+        file_path: Path,
+        page_numbers: Optional[Sequence[int]] = None,
+        degraded_reason: str = "",
+    ) -> ParsedDocument:
+        """L3 Ultimate Fallback: Directly extract character stream via PyMuPDF fitz.get_text(), dropping table topology."""
+        import fitz
+
+        file_path = Path(file_path)
+        doc = fitz.open(str(file_path))
+        target_pages = set(page_numbers) if page_numbers is not None else set(range(1, len(doc) + 1))
+        sections: List[TextSection] = []
+        raw_texts: List[str] = []
+        page_dims: Dict[int, Tuple[float, float]] = {}
+        page_oris: Dict[int, str] = {}
 
         for p_idx, page in enumerate(doc):
             p_num = p_idx + 1
-            txt = page.get_text() or ""
-            genuine_chars = sum(1 for c in txt if not c.isspace())
-            page_counts[p_num] = genuine_chars
-            if genuine_chars >= self.threshold:
-                digital_pages.append(p_num)
-            else:
-                scanned_pages.append(p_num)
+            if p_num not in target_pages:
+                continue
 
-        return {
-            "total_pages": len(doc),
-            "digital_pages": digital_pages,
-            "scanned_pages": scanned_pages,
-            "page_counts": page_counts,
-        }
+            rect = page.rect
+            page_dims[p_num] = (round(float(rect.width), 2), round(float(rect.height), 2))
+            page_oris[p_num] = "landscape" if rect.width > rect.height else "portrait"
+
+            txt = page.get_text().strip()
+            if txt:
+                raw_texts.append(txt)
+                sections.append(
+                    TextSection(
+                        title=f"{file_path.stem} 第 {p_num} 页正文",
+                        content=txt,
+                        level=1,
+                        page_num=p_num,
+                        bbox=BoundingBox(0.0, 0.0, float(rect.width), float(rect.height), page=p_num),
+                        breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                    )
+                )
+
+        doc.close()
+
+        full_raw = "\n\n".join(raw_texts).strip()
+        if not full_raw:
+            raise DocumentParsingUnrecoverableError(
+                f"Document {file_path.name} contains no text extractable by PyMuPDF at L3兜底"
+            )
+
+        parsed = ParsedDocument(
+            title=file_path.stem,
+            sections=sections,
+            tables=[],  # L3: 放弃所有表格拓扑
+            pages=len(sections) if target_pages else len(page_dims),
+            raw_text=full_raw,
+            metadata={
+                "engine": "pymupdf_raw_text_fallback",
+                "extraction_quality": "degraded",
+                "fallback_level": "L3_pymupdf_text",
+                "degraded_reason": degraded_reason or "All higher-tier parsers failed",
+                "is_degraded": True,
+            },
+            page_dimensions=page_dims,
+            page_orientations=page_oris,
+        )
+        parsed.is_degraded = True
+        return parsed
+
+    def parse_digital_track(
+        self, file_path: Path, page_numbers: Optional[Sequence[int]] = None
+    ) -> ParsedDocument:
+        """
+        Digital Track Circuit Breaker (有字符层 genuine_chars >= 30):
+        L1: Docling TableFormer -> L2: pdfplumber 表格提取 -> L3: PyMuPDF 纯文本提取
+        """
+        reason_l1 = ""
+        reason_l2 = ""
+
+        # --- L1: Docling TableFormer ---
+        try:
+            logger.info(f"[Digital Path L1] Attempting Docling TableFormer on {file_path.name}")
+            doc = self._run_with_timeout(self.docling.parse, file_path, timeout_seconds=self.timeout_seconds)
+            if not doc or (not doc.sections and not doc.tables and not doc.raw_text.strip()):
+                raise ValueError("Docling returned empty document")
+            if page_numbers is not None:
+                doc = self._filter_doc_pages(doc, page_numbers)
+                if not doc.sections and not doc.tables and not doc.raw_text.strip():
+                    raise ValueError(f"Docling produced no content for target pages {page_numbers}")
+
+            doc.metadata["extraction_quality"] = "high_quality"
+            doc.metadata["fallback_level"] = "L1_docling"
+            doc.metadata["is_degraded"] = False
+            doc.is_degraded = False
+            return doc
+        except Exception as l1_err:
+            reason_l1 = f"Docling TableFormer failure: {l1_err}"
+            logger.warning(
+                f"[Circuit Breaker] Digital Path L1 failed on {file_path.name}: {reason_l1}. Tripping to L2 pdfplumber."
+            )
+
+        # --- L2: pdfplumber bordered table extraction ---
+        try:
+            logger.info(f"[Digital Path L2] Attempting pdfplumber bordered table extraction on {file_path.name}")
+            doc = self._extract_l2_pdfplumber(file_path, page_numbers=page_numbers, degraded_reason=reason_l1)
+            return doc
+        except Exception as l2_err:
+            reason_l2 = f"{reason_l1} -> pdfplumber failure: {l2_err}"
+            logger.warning(
+                f"[Circuit Breaker] Digital Path L2 failed on {file_path.name}: {reason_l2}. Tripping to L3 PyMuPDF raw text."
+            )
+
+        # --- L3: PyMuPDF raw text extraction ---
+        logger.info(f"[Digital Path L3] Attempting PyMuPDF raw text extraction on {file_path.name}")
+        return self._extract_l3_pymupdf_text(file_path, page_numbers=page_numbers, degraded_reason=reason_l2)
+
+    def parse_scanned_track(
+        self, file_path: Path, page_numbers: Optional[Sequence[int]] = None
+    ) -> ParsedDocument:
+        """
+        Scanned Track Circuit Breaker (纯扫描件 genuine_chars < 30):
+        L1: PaddleOCR (CPU) -> L2: PyMuPDF 本地 OCR -> L3: PyMuPDF 纯文本提取
+        """
+        reason_l1 = ""
+        reason_l2 = ""
+
+        # --- L1: PaddleOCR (CPU) ---
+        try:
+            logger.info(f"[Scanned Path L1] Attempting PaddleOCR on {file_path.name}")
+            doc = self._run_with_timeout(
+                lambda p: self.paddle.parse_scanned_pdf(p, page_numbers=page_numbers),
+                file_path,
+                timeout_seconds=self.timeout_seconds,
+            )
+            if not doc or (not doc.sections and not doc.tables and not doc.raw_text.strip()):
+                raise ValueError("PaddleOCR returned empty document")
+            if page_numbers is not None:
+                doc = self._filter_doc_pages(doc, page_numbers)
+                if not doc.sections and not doc.tables and not doc.raw_text.strip():
+                    raise ValueError(f"PaddleOCR produced no content for target pages {page_numbers}")
+
+            doc.metadata["extraction_quality"] = "high_quality"
+            doc.metadata["fallback_level"] = "L1_paddleocr"
+            doc.metadata["is_degraded"] = False
+            doc.is_degraded = False
+            return doc
+        except Exception as l1_err:
+            reason_l1 = f"PaddleOCR failure: {l1_err}"
+            logger.warning(
+                f"[Circuit Breaker] Scanned Path L1 failed on {file_path.name}: {reason_l1}. Tripping to L2 PyMuPDF OCR."
+            )
+
+        # --- L2: PyMuPDF local OCR ---
+        try:
+            logger.info(f"[Scanned Path L2] Attempting PyMuPDF local OCR on {file_path.name}")
+            doc = self._extract_l2_pymupdf_ocr(file_path, page_numbers=page_numbers, degraded_reason=reason_l1)
+            return doc
+        except Exception as l2_err:
+            reason_l2 = f"{reason_l1} -> PyMuPDF OCR failure: {l2_err}"
+            logger.warning(
+                f"[Circuit Breaker] Scanned Path L2 failed on {file_path.name}: {reason_l2}. Tripping to L3 PyMuPDF raw text."
+            )
+
+        # --- L3: PyMuPDF raw text extraction ---
+        logger.info(f"[Scanned Path L3] Attempting PyMuPDF raw text extraction on {file_path.name}")
+        return self._extract_l3_pymupdf_text(file_path, page_numbers=page_numbers, degraded_reason=reason_l2)
 
     def parse(self, file_path: Union[str, Path]) -> ParsedDocument:
         file_path = Path(file_path)
-        try:
-            density_info = self.check_density(file_path)
-        except Exception as e:
-            logger.warning(f"Could not compute page character density for {file_path}: {e}")
-            return self._fallback.parse(file_path)
 
-        digital_pages = density_info["digital_pages"]
-        scanned_pages = density_info["scanned_pages"]
-        total_pages = density_info["total_pages"]
+        # Step 1: Pre-flight probe (<5ms)
+        probe_info = PreFlightProbe.inspect(file_path, char_density_threshold=self.threshold)
+
+        total_pages = probe_info["total_pages"]
+        digital_pages = probe_info["digital_pages"]
+        scanned_pages = probe_info["scanned_pages"]
+        page_dimensions = probe_info["page_dimensions"]
+        page_orientations = probe_info["page_orientations"]
 
         logger.info(
-            f"DualTrack routing for {file_path.name}: "
-            f"{len(digital_pages)} digital pages (>= {self.threshold} chars) -> Docling, "
-            f"{len(scanned_pages)} scanned pages (< {self.threshold} chars) -> PaddleOCR"
+            f"PreFlightProbe for {file_path.name}: {total_pages} pages, "
+            f"{len(digital_pages)} digital (>= {self.threshold} chars), "
+            f"{len(scanned_pages)} scanned (< {self.threshold} chars)"
         )
 
-        # 1. Pure Digital Track: all pages >= threshold
+        # Case A: Pure Digital Track
         if digital_pages and not scanned_pages:
-            doc = self.docling.parse(file_path)
+            doc = self.parse_digital_track(file_path, page_numbers=digital_pages)
             doc.metadata["dual_track_route"] = "all_digital_docling"
+            doc.metadata["density_page_counts"] = probe_info["page_counts"]
+            doc.page_dimensions = page_dimensions
+            doc.page_orientations = page_orientations
             return doc
 
-        # 2. Pure Scanned Track: all pages < threshold
+        # Case B: Pure Scanned Track
         if scanned_pages and not digital_pages:
-            doc = self.paddle.parse(file_path)
+            doc = self.parse_scanned_track(file_path, page_numbers=scanned_pages)
             doc.metadata["dual_track_route"] = "all_scanned_paddleocr"
+            doc.metadata["density_page_counts"] = probe_info["page_counts"]
+            doc.page_dimensions = page_dimensions
+            doc.page_orientations = page_orientations
             return doc
 
-        # 3. Mixed Document: Page-level Hard Routing
-        # Digital pages -> Docling; Scanned pages -> PaddleOCR (CPU)
-        try:
-            docling_doc = self.docling.parse(file_path)
-            paddle_doc = self.paddle.parse_scanned_pdf(file_path, page_numbers=scanned_pages)
+        # Case C: Mixed Document (Page-Level Hard Routing)
+        digital_doc = self.parse_digital_track(file_path, page_numbers=digital_pages)
+        scanned_doc = self.parse_scanned_track(file_path, page_numbers=scanned_pages)
 
-            # Filter docling elements to digital pages
-            filtered_tables = [
-                t for t in docling_doc.tables if t.page_num in digital_pages
-            ] + [
-                t for t in paddle_doc.tables if t.page_num in scanned_pages
-            ]
-            filtered_sections = [
-                s for s in docling_doc.sections if s.page_num in digital_pages
-            ] + [
-                s for s in paddle_doc.sections if s.page_num in scanned_pages
-            ]
+        combined_tables = [t for t in digital_doc.tables if t.page_num in digital_pages] + [
+            t for t in scanned_doc.tables if t.page_num in scanned_pages
+        ]
+        combined_sections = [s for s in digital_doc.sections if s.page_num in digital_pages] + [
+            s for s in scanned_doc.sections if s.page_num in scanned_pages
+        ]
 
-            filtered_tables.sort(key=lambda t: t.page_num)
-            filtered_sections.sort(key=lambda s: s.page_num)
+        combined_tables.sort(key=lambda t: (t.page_num, t.bbox.top if t.bbox else 0.0))
+        combined_sections.sort(key=lambda s: (s.page_num, s.bbox.top if s.bbox else 0.0))
 
-            combined_raw = "\n\n".join(s.content for s in filtered_sections)
+        combined_raw = "\n\n".join(s.content for s in combined_sections if s.content.strip()).strip()
+        if not combined_raw and not combined_tables:
+            raise DocumentParsingUnrecoverableError(f"Mixed document {file_path.name} produced 0 content.")
 
-            return ParsedDocument(
-                title=file_path.stem,
-                sections=filtered_sections,
-                tables=filtered_tables,
-                pages=total_pages,
-                raw_text=combined_raw,
-                metadata={
-                    "engine": "dual_track_isolation_pipeline",
-                    "dual_track_route": "mixed_pages",
-                    "digital_pages": digital_pages,
-                    "scanned_pages": scanned_pages,
-                    "density_page_counts": density_info["page_counts"],
-                },
-            )
-        except Exception as e:
-            logger.error(f"Dual-track mixed routing failed for {file_path}: {e}; falling back to hybrid")
-            return self._fallback.parse(file_path)
+        is_degraded = bool(digital_doc.is_degraded or scanned_doc.is_degraded)
+        fallback_levels: List[str] = []
+        if digital_doc.is_degraded:
+            fallback_levels.append(digital_doc.metadata.get("fallback_level", "degraded"))
+        if scanned_doc.is_degraded:
+            fallback_levels.append(scanned_doc.metadata.get("fallback_level", "degraded"))
+
+        degraded_reasons: List[str] = []
+        if digital_doc.metadata.get("degraded_reason"):
+            degraded_reasons.append(digital_doc.metadata["degraded_reason"])
+        if scanned_doc.metadata.get("degraded_reason"):
+            degraded_reasons.append(scanned_doc.metadata["degraded_reason"])
+
+        merged_doc = ParsedDocument(
+            title=file_path.stem,
+            sections=combined_sections,
+            tables=combined_tables,
+            pages=total_pages,
+            raw_text=combined_raw,
+            metadata={
+                "engine": "dual_track_isolation_pipeline",
+                "dual_track_route": "mixed_pages",
+                "digital_pages": digital_pages,
+                "scanned_pages": scanned_pages,
+                "density_page_counts": probe_info["page_counts"],
+                "extraction_quality": "degraded" if is_degraded else "high_quality",
+                "fallback_level": "+".join(fallback_levels) if fallback_levels else "L1_dual_track",
+                "degraded_reason": "; ".join(degraded_reasons) if degraded_reasons else None,
+                "is_degraded": is_degraded,
+            },
+            page_dimensions=page_dimensions,
+            page_orientations=page_orientations,
+        )
+        merged_doc.is_degraded = is_degraded
+        return merged_doc
 
     def extract_tables(self, file_path: Union[str, Path]) -> List[TableBlock]:
         return self.parse(file_path).tables

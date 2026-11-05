@@ -50,10 +50,32 @@ def test_convert_file_to_toml():
 
 def test_scanned_pdf_ocr_fallback():
     """Test automatic detection and fallback for scanned PDF files."""
+    import fitz
+    import pytest
+    from src.ingestion.layout_parser import DocumentParsingUnrecoverableError
+
     parser = UnstructuredDataParser()
     with tempfile.TemporaryDirectory() as tmpdir:
         dummy_pdf = Path(tmpdir) / "scanned_poster.pdf"
-        dummy_pdf.write_bytes(b"%PDF-1.4 empty pdf without text layer")
+        doc = fitz.open()
+        page = doc.new_page(width=400, height=300)
+        page.insert_text((50, 50), "扫描件 PDF 测试文本")
+        doc.save(str(dummy_pdf))
+        doc.close()
 
         text = parser.parse_pdf(dummy_pdf)
         assert "扫描件" in text or "PDF" in text
+
+
+def test_corrupted_empty_pdf_raises_unrecoverable_error():
+    """Test that a completely corrupted or empty PDF raises DocumentParsingUnrecoverableError."""
+    import pytest
+    from src.ingestion.layout_parser import DocumentParsingUnrecoverableError
+
+    parser = UnstructuredDataParser()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        dummy_pdf = Path(tmpdir) / "corrupt.pdf"
+        dummy_pdf.write_bytes(b"%PDF-1.4 empty pdf without text layer")
+        with pytest.raises(DocumentParsingUnrecoverableError):
+            parser.parse_pdf(dummy_pdf)
+
