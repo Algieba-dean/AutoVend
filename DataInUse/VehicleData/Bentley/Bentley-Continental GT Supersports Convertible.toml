@@ -19,8 +19,8 @@ brand_comments = "Bentley is a British luxury automotive brand known for high-pe
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "Powered by a 6.0L twin-turbocharged W12 gasoline engine."
 
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers generous space for two front passengers, with a focus on luxury and comfort."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers generous space for two front passengers, with a focus on luxury and comfort."
 
 trunk_volume = "200~300L"
 trunk_volume_comments = "Trunk capacity is 235L, typical for a high-performance convertible."
@@ -58,8 +58,8 @@ seat_material_comments = "Handcrafted leather seats with diamond-quilted stitchi
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and insulated roof ensure a quiet cabin."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports voice commands via Bentley's infotainment system."
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports voice commands via Bentley's infotainment system."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for infotainment and select vehicle systems."
@@ -130,8 +130,8 @@ drive_type_comments = "Bentley's advanced AWD system with torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "Three-chamber air suspension with adaptive damping."
 
-passibility = "Low"
-passibility_comments = "Not designed for off-road use."
+passability = "Low"
+passability_comments = "Not designed for off-road use."
 
 seat_layout = "4-seat"
 seat_layout_comments = "2+2 seating configuration (rear seats are compact)."
@@ -148,8 +148,8 @@ off_road_capability_comments = "Not intended for off-road conditions."
 cargo_capability = "No"
 cargo_capability_comments = "Limited trunk space due to convertible design."
 
-clod_resistance = "High"
-clod_resistance_comments = "Engine and systems perform reliably in cold climates."
+cold_resistance = "High"
+cold_resistance_comments = "Engine and systems perform reliably in cold climates."
 
 heat_resistance = "High"
 heat_resistance_comments = "Robust cooling systems for high-performance driving."

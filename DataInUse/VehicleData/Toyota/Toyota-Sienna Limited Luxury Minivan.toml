@@ -22,9 +22,9 @@ brand_comments = "Toyota is a Japanese automotive manufacturer known for reliabi
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "The Sienna features Toyota's Hybrid Synergy Drive system with a 2.5L 4-cylinder engine and electric motors."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The Sienna offers 5.7 cubic meters of passenger space with three rows of seating."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The Sienna offers 5.7 cubic meters of passenger space with three rows of seating."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium perforated leather-trimmed seats with heating 
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials provide a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Toyota's Voice Recognition system with 'Hey Toyota' wake word support."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Toyota's Voice Recognition system with 'Hey Toyota' wake word support."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Available E-Four electronic all-wheel drive system with r
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut and rear multi-link independent suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Good urban maneuverability for its size but limited by length in tight spaces."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Good urban maneuverability for its size but limited by length in tight spaces."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use despite available 
 cargo_capability = "Yes"
 cargo_capability_comments = "Excellent cargo versatility with Stow 'n Go third-row seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Hybrid system performs well in cold weather with battery heating system."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Hybrid system performs well in cold weather with battery heating system."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

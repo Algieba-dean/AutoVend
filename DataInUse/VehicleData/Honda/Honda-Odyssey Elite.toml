@@ -22,9 +22,9 @@ brand_comments = "Honda is a Japanese multinational conglomerate known for relia
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Odyssey Elite uses a 3.5L V6 gasoline engine with a 10-speed automatic transmission, no hybrid option is available in this trim."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "With 163.6 cubic feet of passenger volume, the Odyssey offers one of the most spacious interiors in its class (approximately 5.8 cubic meters)."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "With 163.6 cubic feet of passenger volume, the Odyssey offers one of the most spacious interiors in its class (approximately 5.8 cubic meters)."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium perforated leather seats with heating and vent
 noise_insulation = "High"
 noise_insulation_comments = "Features acoustic windshield glass, additional insulation, and active noise cancellation for a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "HondaLink system supports Apple Siri Eyes Free and Android voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "HondaLink system supports Apple Siri Eyes Free and Android voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive configuration with traction control for
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut and rear multi-link independent suspension for comfortable ride."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "170mm ground clearance is sufficient for urban driving but not for serious off-roading."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "170mm ground clearance is sufficient for urban driving but not for serious off-roading."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "8-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use - front-wheel driv
 cargo_capability = "Yes"
 cargo_capability_comments = "Exceptional cargo flexibility with Magic Slide second row seats and fold-flat third row."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold weather with standard engine block heater prep (dealer-installed)."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold weather with standard engine block heater prep (dealer-installed)."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

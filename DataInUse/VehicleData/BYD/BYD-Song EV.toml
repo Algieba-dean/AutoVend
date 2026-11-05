@@ -22,9 +22,9 @@ brand_comments = "BYD (Build Your Dreams) is a leading Chinese automaker special
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The BYD-Song EV is a pure electric vehicle powered by BYD's Blade Battery technology."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 4.8 cubic meters of passenger space, providing ample legroom and headroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 4.8 cubic meters of passenger space, providing ample legroom and headroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium synthetic leather upholstery with heating and 
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and sound-deadening materials reduce cabin noise to 62 dB at 100 km/h."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports voice commands via BYD's DiLink system for navigation, climate, and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports voice commands via BYD's DiLink system for navigation, climate, and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Dual-motor AWD system with torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear multi-link setup."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Suitable for urban roads and light off-road terrain."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Suitable for urban roads and light off-road terrain."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "AWD and 170mm ground clearance handle light off-
 cargo_capability = "Yes"
 cargo_capability_comments = "534L trunk, expandable to 1,650L with seats folded."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Blade Battery maintains 80% capacity at -20°C; heat pump included."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Blade Battery maintains 80% capacity at -20°C; heat pump included."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

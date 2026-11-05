@@ -19,8 +19,8 @@ brand_comments = "Rolls-Royce Motor Cars is a British luxury automobile manufact
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Phantom Series II is powered by a 6.75L twin-turbocharged V12 gasoline engine."
 
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The Phantom offers an expansive interior with approximately 5.8 cubic meters of passenger space."
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The Phantom offers an expansive interior with approximately 5.8 cubic meters of passenger space."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "The trunk capacity is 548 liters, designed to accommodate luxury luggage sets."
@@ -58,8 +58,8 @@ seat_material_comments = "Hand-stitched leather upholstery with options includin
 noise_insulation = "High"
 noise_insulation_comments = "The Phantom is the quietest car in production, with 130kg of sound insulation and double-glazed windows."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Features the latest Rolls-Royce infotainment system with natural voice control."
+voice_interaction = "Yes"
+voice_interaction_comments = "Features the latest Rolls-Royce infotainment system with natural voice control."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for infotainment and select vehicle systems."
@@ -130,8 +130,8 @@ drive_type_comments = "Rear-wheel drive configuration with rear-wheel steering."
 suspension = "Independent Suspension"
 suspension_comments = "Double-wishbone front and multi-link rear suspension with air springs."
 
-passibility = "Medium"
-passibility_comments = "While not an off-roader, the adaptive suspension provides excellent ride quality over imperfect surfaces."
+passability = "Medium"
+passability_comments = "While not an off-roader, the adaptive suspension provides excellent ride quality over imperfect surfaces."
 
 seat_layout = "4-seat"
 seat_layout_comments = "Typically configured as four individual seats, with occasional lounge seating option."
@@ -148,8 +148,8 @@ off_road_capability_comments = "Not designed for off-road use, though ground cle
 cargo_capability = "Yes"
 cargo_capability_comments = "Generous trunk space for luggage, though not designed for heavy cargo."
 
-clod_resistance = "High"
-clod_resistance_comments = "Engineered for global operation with proven reliability in extreme cold conditions."
+cold_resistance = "High"
+cold_resistance_comments = "Engineered for global operation with proven reliability in extreme cold conditions."
 
 heat_resistance = "High"
 heat_resistance_comments = "Robust cooling systems ensure performance in hot climates up to 50°C."

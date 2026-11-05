@@ -22,9 +22,9 @@ brand_comments = "Geely is a Chinese automotive manufacturer known for affordabl
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Geely-Geometry C is a pure electric vehicle with no combustion engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering ample room for five adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering ample room for five adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "The seats are upholstered in synthetic leather for a p
 noise_insulation = "High"
 noise_insulation_comments = "The cabin is well-insulated with sound-deadening materials for a quiet ride."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice commands for navigation, media, and climate control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice commands for navigation, media, and climate control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "The Geely-Geometry C is front-wheel drive for efficiency 
 suspension = "Independent Suspension"
 suspension_comments = "The vehicle features MacPherson strut front suspension and multi-link rear suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The compact SUV offers decent ground clearance for urban and light off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The compact SUV offers decent ground clearance for urban and light off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The vehicle is designed primarily for urban and 
 cargo_capability = "Yes"
 cargo_capability_comments = "The 430L trunk and foldable rear seats provide good cargo versatility."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The battery system includes thermal management for reliable operation in cold weather."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The battery system includes thermal management for reliable operation in cold weather."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

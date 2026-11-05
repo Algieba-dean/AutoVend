@@ -20,8 +20,8 @@ brand_comments = "Manufactured by Ford, a global automotive brand."
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "Equipped with a turbocharged 1.0L EcoBoost gasoline engine (mild hybrid available in some markets)."
 
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger cabin volume is approximately 4.1 cubic meters, optimized for urban use."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Passenger cabin volume is approximately 4.1 cubic meters, optimized for urban use."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "456L boot capacity (expandable to 1,216L with rear seats folded). Features a 'Megabox' deep storage compartment."
@@ -62,8 +62,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Acoustic windshield and improved door seals reduce road noise."
 
 # Tech features
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 3 system supports voice commands for navigation/media."
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 3 system supports voice commands for navigation/media."
 
 ota_updates = "Yes"
 ota_updates_comments = "Ford Power-Up software enables over-the-air updates for SYNC system."
@@ -136,8 +136,8 @@ drive_type_comments = "Front-wheel drive only (no AWD option available)."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts, rear torsion beam with sport-tuned dampers."
 
-passibility = "Medium"
-passibility_comments = "170mm ground clearance with short overhangs for light off-road use."
+passability = "Medium"
+passability_comments = "170mm ground clearance with short overhangs for light off-road use."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 2+3 seating configuration."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Designed primarily for paved roads despite SUV s
 cargo_capability = "Yes"
 cargo_capability_comments = "Flexible cargo space with adjustable load floor."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Cold weather package available with heated seats/steering wheel."
+cold_resistance = "Medium"
+cold_resistance_comments = "Cold weather package available with heated seats/steering wheel."
 
 heat_resistance = "High"
 heat_resistance_comments = "Tested in extreme conditions up to 50°C ambient temperature."

@@ -22,9 +22,9 @@ brand_comments = "Jaguar is a British luxury vehicle brand known for its high-pe
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Jaguar-XJ EV HSE is a fully electric vehicle with no internal combustion engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space is approximately 4.8 cubic meters, offering ample room for all occupants."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The passenger space is approximately 4.8 cubic meters, offering ample room for all occupants."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium Windsor leather seats with optional perforated
 noise_insulation = "High"
 noise_insulation_comments = "Advanced acoustic glass and sound-deadening materials ensure a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports voice commands via Jaguar's Pivi Pro infotainment system."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports voice commands via Jaguar's Pivi Pro infotainment system."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "AWD system ensures optimal traction in all conditions."
 suspension = "Independent Suspension"
 suspension_comments = "Adaptive air suspension for a smooth and controlled ride."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Balances comfort and handling for urban and highway driving."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Balances comfort and handling for urban and highway driving."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Designed primarily for on-road performance and c
 cargo_capability = "Yes"
 cargo_capability_comments = "Generous trunk space and optional roof racks for additional storage."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Advanced battery thermal management ensures reliable performance in cold climates."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Advanced battery thermal management ensures reliable performance in cold climates."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

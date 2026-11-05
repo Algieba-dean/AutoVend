@@ -31,10 +31,10 @@ class MatchScore(BaseModel):
     """匹配度评分"""
 
     overall_score: float = Field(..., description="总体匹配度 (0-1)")
-    semantic_score: float = Field(..., description="语义相似度 (0-1)")
-    price_score: float = Field(..., description="价格匹配度 (0-1)")
-    category_score: float = Field(..., description="类别匹配度 (0-1)")
-    feature_score: float = Field(..., description="配置匹配度 (0-1)")
+    semantic_score: float = Field(default=0.0, description="语义相似度 (0-1)")
+    price_score: float = Field(default=0.0, description="价格匹配度 (0-1)")
+    category_score: float = Field(default=0.0, description="类别匹配度 (0-1)")
+    feature_score: float = Field(default=0.0, description="配置匹配度 (0-1)")
 
     # 匹配详情
     matched_features: List[str] = Field(default_factory=list, description="匹配的特征")

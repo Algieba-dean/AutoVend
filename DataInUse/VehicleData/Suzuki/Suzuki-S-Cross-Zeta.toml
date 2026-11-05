@@ -20,8 +20,8 @@ brand_comments = "Manufactured by Suzuki, a Japanese automaker known for compact
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "Equipped with a 1.4L Boosterjet mild-hybrid gasoline engine paired with a 48V electric motor."
 
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Interior volume is approximately 4.2 cubic meters, offering ample space for 5 adults."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Interior volume is approximately 4.2 cubic meters, offering ample space for 5 adults."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "Boot capacity is 430L (VDA), expandable to 1,200L with rear seats folded."
@@ -62,8 +62,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Decent cabin insulation with noticeable engine noise under hard acceleration."
 
 # Tech and ADAS
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports basic voice commands via Suzuki’s infotainment system."
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports basic voice commands via Suzuki’s infotainment system."
 
 ota_updates = "No"
 ota_updates_comments = "No over-the-air update capability for the infotainment system."
@@ -136,8 +136,8 @@ drive_type_comments = "Suzuki’s ALLGRIP 4WD system available as an option."
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front / torsion beam rear suspension."
 
-passibility = "Medium"
-passibility_comments = "Capable on light off-road terrain but not for serious rock crawling."
+passability = "Medium"
+passability_comments = "Capable on light off-road terrain but not for serious rock crawling."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 2+3 seating configuration."
@@ -154,8 +154,8 @@ off_road_capability_comments = "ALLGRIP system provides decent traction on unpav
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rails support up to 75kg dynamic load."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Reliable cold starts down to -20°C with hybrid assist."
+cold_resistance = "Medium"
+cold_resistance_comments = "Reliable cold starts down to -20°C with hybrid assist."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling system tested in desert conditions (up to 50°C)."

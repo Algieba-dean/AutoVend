@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The CTS-V features a supercharged V8 gasoline engine."
 
 # Space and dimensions
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious interior with 99.5 cubic feet (2.82 cubic meters) of passenger volume."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Spacious interior with 99.5 cubic feet (2.82 cubic meters) of passenger volume."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Trunk capacity is 13.7 cubic feet (388L), slightly below 500L but categorized here due to luxury sedan standards."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Active noise cancellation and acoustic laminated glass."
 
 # Tech and autonomy
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Cadillac User Experience (CUE) with voice recognition."
+voice_interaction = "Yes"
+voice_interaction_comments = "Cadillac User Experience (CUE) with voice recognition."
 
 ota_updates = "No"
 ota_updates_comments = "No over-the-air updates; requires dealer visits for software upgrades."
@@ -135,8 +135,8 @@ drive_type_comments = "Standard RWD; AWD not available for the CTS-V."
 suspension = "Independent Suspension"
 suspension_comments = "Magnetic Ride Control 4.0 with adaptive damping."
 
-passibility = "Low"
-passibility_comments = "Low ground clearance limits off-road capability."
+passability = "Low"
+passability_comments = "Low ground clearance limits off-road capability."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Four-door sedan with seating for five."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Not designed for off-road use due to low suspens
 cargo_capability = "Yes"
 cargo_capability_comments = "Trunk space is adequate for luggage but not oversized items."
 
-clod_resistance = "High"
-clod_resistance_comments = "Performs well in cold climates with heated seats and steering wheel."
+cold_resistance = "High"
+cold_resistance_comments = "Performs well in cold climates with heated seats and steering wheel."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling and ventilated seats handle high temperatures."

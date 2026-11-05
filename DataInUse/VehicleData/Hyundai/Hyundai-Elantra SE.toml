@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "Equipped with a 2.0L MPI 4-cylinder gasoline engine (no hybrid/electric option in SE trim)."
 
 # Space and dimensions
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "EPA passenger volume: 99.4 cu ft (2.81 m³). Total interior volume is approximately 5.1 m³."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "EPA passenger volume: 99.4 cu ft (2.81 m³). Total interior volume is approximately 5.1 m³."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "14.2 cu ft (402 L) trunk capacity, expandable with 60/40 split-folding rear seats."
@@ -62,8 +62,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Active noise cancellation not available in SE trim."
 
 # Tech features
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Bluetooth hands-free with voice recognition for basic functions."
+voice_interaction = "Yes"
+voice_interaction_comments = "Bluetooth hands-free with voice recognition for basic functions."
 
 ota_updates = "No"
 ota_updates_comments = "SE trim lacks over-the-air update capability (available in Limited trim)."
@@ -136,8 +136,8 @@ drive_type_comments = "Front-wheel drive only in SE trim."
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front, torsion beam rear suspension."
 
-passibility = "Medium"
-passibility_comments = "Typical sedan ground clearance (135mm)."
+passability = "Medium"
+passability_comments = "Typical sedan ground clearance (135mm)."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 5-passenger seating."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Not designed for off-road use."
 cargo_capability = "Yes"
 cargo_capability_comments = "402L trunk with folding seats."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Standard cold-weather package available (block heater, battery warmer)."
+cold_resistance = "Medium"
+cold_resistance_comments = "Standard cold-weather package available (block heater, battery warmer)."
 
 heat_resistance = "High"
 heat_resistance_comments = "Proven reliability in hot climates with efficient AC system."

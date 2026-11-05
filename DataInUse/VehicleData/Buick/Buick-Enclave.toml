@@ -15,8 +15,8 @@ brand_comments = "Buick is a General Motors brand known for comfortable, premium
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Enclave is powered exclusively by a V6 gasoline engine with no hybrid or electric variants currently available."
 
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "Total passenger volume is approximately 5.8 cubic meters (153 cubic feet) with three rows of seating."
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "Total passenger volume is approximately 5.8 cubic meters (153 cubic feet) with three rows of seating."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Cargo capacity is 584L (20.6 cu ft) behind the third row, 1,266L (44.5 cu ft) behind the second row, and 2,487L (97.6 cu ft) with both rear rows folded."
@@ -54,8 +54,8 @@ seat_material_comments = "Leather-appointed seats standard on all trims, with pr
 noise_insulation = "High"
 noise_insulation_comments = "Features Buick's QuietTuning technology with acoustic glass and extensive sound-deadening materials."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Standard Buick Infotainment System with voice recognition for navigation, media, and climate controls."
+voice_interaction = "Yes"
+voice_interaction_comments = "Standard Buick Infotainment System with voice recognition for navigation, media, and climate controls."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for the infotainment system via Buick's connected services."
@@ -126,8 +126,8 @@ drive_type_comments = "Front-wheel drive standard with available twin-clutch all
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front and five-link rear suspension with available continuous damping control."
 
-passibility = "Medium"
-passibility_comments = "Capable for light off-road use but primarily designed for paved roads."
+passability = "Medium"
+passability_comments = "Capable for light off-road use but primarily designed for paved roads."
 
 seat_layout = "7-seat"
 seat_layout_comments = "Standard 2-2-3 seating configuration with available second-row captain's chairs (6-seat layout)."
@@ -144,8 +144,8 @@ off_road_capability_comments = "Not designed for serious off-road use, though AW
 cargo_capability = "Yes"
 cargo_capability_comments = "Excellent cargo capacity with flexible seating configurations."
 
-clod_resistance = "High"
-clod_resistance_comments = "Proven cold-weather performance with available heated seats, steering wheel, and remote start."
+cold_resistance = "High"
+cold_resistance_comments = "Proven cold-weather performance with available heated seats, steering wheel, and remote start."
 
 heat_resistance = "High"
 heat_resistance_comments = "Effective climate control system with available ventilated seats for hot weather."

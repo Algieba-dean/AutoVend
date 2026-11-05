@@ -18,8 +18,8 @@ brand_comments = "Manufactured by the French automaker Peugeot, part of Stellant
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "Pure electric powertrain with no combustion engine, featuring a 98kWh battery pack."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Generous interior space measuring approximately 4.8 cubic meters with flexible seating arrangements."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Generous interior space measuring approximately 4.8 cubic meters with flexible seating arrangements."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Boot capacity of 511 liters (VDA) in 5-seat configuration, expandable to 1,815 liters with rear seats folded."
@@ -57,8 +57,8 @@ seat_material_comments = "Premium leather upholstery available in multiple color
 noise_insulation = "High"
 noise_insulation_comments = "Excellent NVH control with acoustic windshield and extensive soundproofing."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "PEUGEOT i-Cockpit® with voice recognition for navigation and media control."
+voice_interaction = "Yes"
+voice_interaction_comments = "PEUGEOT i-Cockpit® with voice recognition for navigation and media control."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for infotainment and vehicle systems."
@@ -129,8 +129,8 @@ drive_type_comments = "Single motor front-wheel drive configuration."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear multi-link independent suspension."
 
-passibility = "Medium"
-passibility_comments = "Competent for light off-road but primarily designed for paved surfaces."
+passability = "Medium"
+passability_comments = "Competent for light off-road but primarily designed for paved surfaces."
 
 seat_layout = "7-seat"
 seat_layout_comments = "Three-row seating configuration with 2+3+2 arrangement."
@@ -147,8 +147,8 @@ off_road_capability_comments = "Not designed for serious off-road use despite SU
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with configurable seating and large trunk."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management maintains performance in cold weather down to -20°C."
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management maintains performance in cold weather down to -20°C."
 
 heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling system protects battery in high temperature conditions."

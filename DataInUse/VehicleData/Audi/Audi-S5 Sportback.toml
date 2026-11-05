@@ -22,9 +22,9 @@ brand_comments = "Audi, a premium German automaker, is known for its Quattro all
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The S5 Sportback is powered by a turbocharged 3.0L V6 gasoline engine with mild-hybrid technology (MHEV) for efficiency."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, with ample legroom and headroom for four adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, with ample legroom and headroom for four adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Valcona leather sport seats with optional dia
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and sound-deadening materials ensure a quiet cabin (62 dB at 120 km/h)."
 
-# voice_interfaction, candidate values: "Yes", "No"
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Audi MMI touch response supports natural-language voice commands for navigation/media."
+# voice_interaction, candidate values: "Yes", "No"
+voice_interaction = "Yes"
+voice_interaction_comments = "Audi MMI touch response supports natural-language voice commands for navigation/media."
 
 # ota_updates, candidate values: "Yes", "No"
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Quattro all-wheel drive with rear sport differential (40:
 suspension = "Independent Suspension"
 suspension_comments = "Five-link front and rear suspension with adaptive dampers (optional)."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Quattro AWD aids traction but low ground clearan
 cargo_capability = "Yes"
 cargo_capability_comments = "Liftback design allows bulky item loading (max cargo length: 2.1m with seats down)."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Tested to -30°C with heated components (mirrors, seats, windshield washer nozzles)."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Tested to -30°C with heated components (mirrors, seats, windshield washer nozzles)."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

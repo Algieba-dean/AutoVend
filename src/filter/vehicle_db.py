@@ -511,23 +511,22 @@ class VehicleDB:
             powertrain_type=row.get("powertrain_type"),
             wheelbase=row.get("wheelbase"),
             chassis_height=row.get("chassis_height"),
-            passenger_sapce_volume=row.get("passenger_space_volume") or row.get("passenger_sapce_volume"),
+            passenger_space_volume=row.get("passenger_space_volume"),
             trunk_volume=row.get("trunk_volume"),
         )
         ambiguous = AmbiguousLabels(
             size=row.get("size"),
             family_friendliness=row.get("family_friendliness"),
             comfort_level=row.get("comfort_level"),
-            passibility=row.get("passability") or row.get("passibility"),
             power=row.get("power"),
             handling=row.get("handling"),
         )
         key_details = KeyDetails(key_details=row.get("key_details") or "")
         return Vehicle(
             car_model=row.get("car_model", car_model),
-            PriciseLabels=precise,
-            AmbiguousLabels=ambiguous,
-            KeyDetails=key_details,
+            precise_labels=precise,
+            ambiguous_labels=ambiguous,
+            key_details=key_details,
             raw_data=row,
         )
 

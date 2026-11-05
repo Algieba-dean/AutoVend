@@ -22,9 +22,9 @@ brand_comments = "Rolls-Royce is a British luxury automobile manufacturer known 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Ghost Series II is powered by a 6.75L twin-turbocharged V12 gasoline engine, delivering effortless performance."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The Ghost Series II offers an expansive interior with approximately 5.8 cubic meters of passenger space, providing unparalleled comfort."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The Ghost Series II offers an expansive interior with approximately 5.8 cubic meters of passenger space, providing unparalleled comfort."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "The seats are upholstered in the finest hand-stitched 
 noise_insulation = "High"
 noise_insulation_comments = "The Ghost Series II features extensive sound-deadening materials, creating a near-silent cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice commands for navigation, media, and climate control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice commands for navigation, media, and climate control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "The Ghost Series II features all-wheel drive for enhanced
 suspension = "Independent Suspension"
 suspension_comments = "The vehicle uses a sophisticated air suspension system for a supremely smooth ride."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Low"
-passibility_comments = "The Ghost Series II is designed for luxury and comfort, not off-road capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Low"
+passability_comments = "The Ghost Series II is designed for luxury and comfort, not off-road capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The vehicle is not designed for off-road use, fo
 cargo_capability = "Yes"
 cargo_capability_comments = "The spacious trunk and optional luggage sets make it suitable for carrying cargo."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The Ghost Series II performs reliably in cold climates, with features like heated seats and a robust engine."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The Ghost Series II performs reliably in cold climates, with features like heated seats and a robust engine."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

@@ -19,8 +19,8 @@ brand_comments = "Mercedes-Benz is a German luxury automotive brand known for hi
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The AMG GT 63 is powered by a high-performance 4.0L V8 biturbo gasoline engine."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The AMG GT 63 offers approximately 4.8 cubic meters of passenger volume, providing generous space for four adults with 993mm of rear legroom and 940mm of rear headroom. The cabin combines sports car aesthetics with practical space, featuring contoured AMG performance seats that maintain comfort during spirited driving while offering adequate room for passengers."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The AMG GT 63 offers approximately 4.8 cubic meters of passenger volume, providing generous space for four adults with 993mm of rear legroom and 940mm of rear headroom. The cabin combines sports car aesthetics with practical space, featuring contoured AMG performance seats that maintain comfort during spirited driving while offering adequate room for passengers."
 passenger_sapce_comments = "The interior offers generous space with approximately 4.8 cubic meters of passenger volume."
 
 trunk_volume = "400~500L"
@@ -59,8 +59,8 @@ seat_material_comments = "AMG performance seats with Nappa leather upholstery an
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials provide a quiet cabin."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MBUX (Mercedes-Benz User Experience) supports natural language voice commands."
+voice_interaction = "Yes"
+voice_interaction_comments = "MBUX (Mercedes-Benz User Experience) supports natural language voice commands."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for infotainment and vehicle systems are supported."
@@ -131,8 +131,8 @@ drive_type_comments = "AMG Performance 4MATIC+ all-wheel drive system."
 suspension = "Independent Suspension"
 suspension_comments = "AMG RIDE CONTROL+ air suspension with adaptive damping."
 
-passibility = "Medium"
-passibility_comments = "Sport-tuned suspension prioritizes handling over rough terrain capability."
+passability = "Medium"
+passability_comments = "Sport-tuned suspension prioritizes handling over rough terrain capability."
 
 seat_layout = "4-seat"
 seat_layout_comments = "2+2 seating configuration with individual rear seats."
@@ -149,8 +149,8 @@ off_road_capability_comments = "Not designed for off-road use due to low ground 
 cargo_capability = "Yes"
 cargo_capability_comments = "Practical trunk space and folding rear seats for additional cargo capacity."
 
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with heated components and all-wheel drive."
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with heated components and all-wheel drive."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine and cooling systems designed for high-performance operation in hot conditions."

@@ -22,9 +22,9 @@ brand_comments = "Audi is a German luxury automotive manufacturer known for its 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The S4 3.0 TFSI features a turbocharged 3.0L V6 gasoline engine with direct injection."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers approximately 3.8 cubic meters of passenger space with premium materials throughout."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The interior offers approximately 3.8 cubic meters of passenger space with premium materials throughout."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Nappa leather seats with S embossing and opti
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials provide a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MMI Navigation Plus with natural voice control system."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MMI Navigation Plus with natural voice control system."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Quattro permanent all-wheel drive with self-locking cente
 suspension = "Independent Suspension"
 suspension_comments = "Five-link front suspension and five-link rear suspension with adaptive damping available."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Sport-tuned suspension prioritizes handling over rough terrain capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Sport-tuned suspension prioritizes handling over rough terrain capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use despite all-wheel 
 cargo_capability = "Yes"
 cargo_capability_comments = "Fold-down rear seats and practical trunk space for a sports sedan."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with all-wheel drive and winter package available."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with all-wheel drive and winter package available."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

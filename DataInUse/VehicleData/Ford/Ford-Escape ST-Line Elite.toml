@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "Equipped with a turbocharged 2.0L EcoBoost gasoline engine (no hybrid/electric variant for the ST-Line Elite trim)."
 
 # Space and dimensions
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger volume is approximately 4.8 cubic meters (103.9 cu ft) with ample headroom and legroom."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Passenger volume is approximately 4.8 cubic meters (103.9 cu ft) with ample headroom and legroom."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Cargo capacity is 1,487L (52.5 cu ft) with rear seats folded, 553L (19.5 cu ft) behind rear seats."
@@ -62,8 +62,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Acoustic laminated windshield and sound-deadening materials reduce cabin noise."
 
 # Tech and automation
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 4 infotainment supports voice commands for navigation, media, and climate control."
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 4 infotainment supports voice commands for navigation, media, and climate control."
 
 ota_updates = "Yes"
 ota_updates_comments = "Ford Power-Up software enables over-the-air updates for SYNC 4 and ECU modules."
@@ -135,8 +135,8 @@ drive_type_comments = "Intelligent AWD with torque vectoring (FWD standard, AWD 
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts, rear multi-link suspension (ST-Line has sport-tuned dampers)."
 
-passibility = "Medium"
-passibility_comments = "Snow/Wet/Grass modes with 20.9° approach and 22.2° departure angles."
+passability = "Medium"
+passability_comments = "Snow/Wet/Grass modes with 20.9° approach and 22.2° departure angles."
 
 seat_layout = "5-seat"
 seat_layout_comments = "2-row seating with 40/20/40 split-folding rear seats."
@@ -154,8 +154,8 @@ off_road_capability_comments = "AWD provides light off-road traction but lacks l
 cargo_capability = "Yes"
 cargo_capability_comments = "1,487L max cargo volume with rear seats folded."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Tested to -40°C with block heater prep kit (optional)."
+cold_resistance = "Medium"
+cold_resistance_comments = "Tested to -40°C with block heater prep kit (optional)."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling system validated for 50°C ambient temperatures."

@@ -22,9 +22,9 @@ brand_comments = "Porsche is a German luxury and high-performance automotive man
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Panamera 4S is powered by a turbocharged gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Panamera 4S offers a spacious interior with approximately 4.8 cubic meters of passenger space."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Panamera 4S offers a spacious interior with approximately 4.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard seats are leather, with optional premium leat
 noise_insulation = "High"
 noise_insulation_comments = "The Panamera 4S features excellent noise insulation for a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The Porsche Communication Management (PCM) system supports voice interaction."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The Porsche Communication Management (PCM) system supports voice interaction."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "The Panamera 4S features Porsche Traction Management (PTM
 suspension = "Independent Suspension"
 suspension_comments = "The vehicle uses a sophisticated independent suspension system for superior handling."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Panamera 4S offers a balance of sporty handling and ride comfort."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Panamera 4S offers a balance of sporty handling and ride comfort."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The Panamera 4S is not designed for off-road use
 cargo_capability = "Yes"
 cargo_capability_comments = "The trunk and foldable rear seats provide ample cargo space for a sports sedan."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The car performs well in cold conditions, with features like heated seats and a robust engine."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The car performs well in cold conditions, with features like heated seats and a robust engine."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

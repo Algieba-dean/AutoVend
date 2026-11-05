@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Ertiga Petrol is powered by a 1.5L naturally aspirated gasoline engine."
 
 # Space and dimensions
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Ertiga offers 4.8 cubic meters of passenger space with flexible seating arrangements."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Ertiga offers 4.8 cubic meters of passenger space with flexible seating arrangements."
 
 trunk_volume = "200~300L"
 trunk_volume_comments = "The trunk capacity is 209L with all seats up, expandable to 550L with the third row folded."
@@ -62,8 +62,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Moderate noise insulation with noticeable engine and road noise at higher speeds."
 
 # Infotainment and tech
-voice_interfaction = "No"
-voice_interfaction_comments = "The infotainment system does not support voice commands."
+voice_interaction = "No"
+voice_interaction_comments = "The infotainment system does not support voice commands."
 
 ota_updates = "No"
 ota_updates_comments = "The system does not support over-the-air software updates."
@@ -136,8 +136,8 @@ drive_type_comments = "Front-wheel drive configuration for better fuel efficienc
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear torsion beam setup."
 
-passibility = "Medium"
-passibility_comments = "Suitable for urban roads and light unpaved surfaces."
+passability = "Medium"
+passability_comments = "Suitable for urban roads and light unpaved surfaces."
 
 seat_layout = "7-seat"
 seat_layout_comments = "2+3+2 seating configuration with sliding middle row."
@@ -155,8 +155,8 @@ off_road_capability_comments = "Not designed for off-road use due to limited gro
 cargo_capability = "Yes"
 cargo_capability_comments = "Flexible seating allows for significant cargo space when needed."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs adequately in cold climates down to -10°C."
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs adequately in cold climates down to -10°C."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling system is effective in high temperature environments."

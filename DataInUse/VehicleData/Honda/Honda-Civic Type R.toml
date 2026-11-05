@@ -22,9 +22,9 @@ brand_comments = "Honda is a Japanese multinational conglomerate known for its r
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Civic Type R is powered by a high-performance turbocharged gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Civic Type R offers a passenger space volume of approximately 3.8 cubic meters, providing ample room for four adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Civic Type R offers a passenger space volume of approximately 3.8 cubic meters, providing ample room for four adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "The seats are upholstered in premium leather with red 
 noise_insulation = "Medium"
 noise_insulation_comments = "The cabin has moderate noise insulation, prioritizing engine and exhaust sound for a sporty feel."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice interaction for navigation and media controls."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice interaction for navigation and media controls."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "The Civic Type R features a front-wheel-drive layout with
 suspension = "Independent Suspension"
 suspension_comments = "The car uses an independent MacPherson strut front suspension and multi-link rear suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The car has moderate ground clearance, suitable for urban and highway driving but not off-roading."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The car has moderate ground clearance, suitable for urban and highway driving but not off-roading."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The car is not designed for off-road use due to 
 cargo_capability = "Yes"
 cargo_capability_comments = "The trunk and foldable rear seats provide decent cargo space for a sports car."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The car performs well in cold weather but may require winter tires for optimal traction."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The car performs well in cold weather but may require winter tires for optimal traction."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

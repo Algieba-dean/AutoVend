@@ -18,8 +18,8 @@ brand_comments = "Chinese electric vehicle manufacturer known for advanced auton
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "Pure electric vehicle with dual-motor all-wheel drive system."
 
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "With 5.8 cubic meters of passenger volume, the X9 offers exceptional interior space rivaling premium business jets. The three-row configuration provides generous legroom (up to 1,024mm in second row) and headroom, while the flat floor and theater-style seating ensure comfort for all passengers. The executive second-row seats offer 14-way power adjustment with heating, ventilation and massage functions, making it ideal for business travel or family trips."
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "With 5.8 cubic meters of passenger volume, the X9 offers exceptional interior space rivaling premium business jets. The three-row configuration provides generous legroom (up to 1,024mm in second row) and headroom, while the flat floor and theater-style seating ensure comfort for all passengers. The executive second-row seats offer 14-way power adjustment with heating, ventilation and massage functions, making it ideal for business travel or family trips."
 passenger_sapce_comments = "Spacious interior with 5.8 cubic meters of passenger volume, offering premium comfort."
 
 trunk_volume = "Above 500L"
@@ -58,8 +58,8 @@ seat_material_comments = "Premium Nappa leather seats with heating, ventilation 
 noise_insulation = "High"
 noise_insulation_comments = "Excellent NVH control with double-glazed windows and acoustic foam insulation."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Advanced Xmart OS supports natural voice commands in multiple languages."
+voice_interaction = "Yes"
+voice_interaction_comments = "Advanced Xmart OS supports natural voice commands in multiple languages."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for infotainment, ADAS and vehicle systems."
@@ -131,8 +131,8 @@ drive_type_comments = "Dual motor AWD system with torque vectoring capability."
 suspension = "Independent Suspension"
 suspension_comments = "Front double wishbone and rear multi-link suspension, with optional air suspension."
 
-passibility = "Medium"
-passibility_comments = "Balanced for urban and highway driving, not designed for off-road."
+passability = "Medium"
+passability_comments = "Balanced for urban and highway driving, not designed for off-road."
 
 seat_layout = "7-seat"
 seat_layout_comments = "2+2+3 seating configuration with captain's chairs in second row."
@@ -149,8 +149,8 @@ off_road_capability_comments = "Not designed for off-road use despite AWD system
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with multiple seating configurations."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management maintains 80% range at -20°C."
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management maintains 80% range at -20°C."
 
 heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling system maintains performance in hot climates."

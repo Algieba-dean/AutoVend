@@ -22,9 +22,9 @@ brand_comments = "Volvo is a Swedish luxury automaker known for safety and Scand
 powertrain_type = "Plug-in Hybird Electric Vehicle"
 powertrain_type_comments = "The V90 Recharge combines a 2.0L turbocharged/supercharged gasoline engine with an electric motor and an 18.8 kWh battery."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious interior with approximately 4.8 cubic meters of passenger volume, typical for a luxury wagon."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Spacious interior with approximately 4.8 cubic meters of passenger volume, typical for a luxury wagon."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Nappa leather upholstery with optional ventil
 noise_insulation = "High"
 noise_insulation_comments = "Laminated glass and acoustic damping materials ensure a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Google Assistant integration with natural language commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Google Assistant integration with natural language commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "AWD with rear electric motor and front gasoline engine."
 suspension = "Independent Suspension"
 suspension_comments = "Four-corner air suspension (optional) with adaptive dampers."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Balanced for comfort and dynamic handling, not off-road focused."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Balanced for comfort and dynamic handling, not off-road focused."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use; AWD is for tracti
 cargo_capability = "Yes"
 cargo_capability_comments = "Large wagon trunk and roof rails for additional storage."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management and engine block heater available for cold climates."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management and engine block heater available for cold climates."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

@@ -22,9 +22,9 @@ brand_comments = "Peugeot is a French automotive manufacturer known for its styl
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Peugeot-3008 Active Versatile Compact SUV is equipped with a 1.2L PureTech turbocharged gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space volume is approximately 3.8 cubic meters, providing ample room for five occupants."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space volume is approximately 3.8 cubic meters, providing ample room for five occupants."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard seats are upholstered in high-quality fabric,
 noise_insulation = "High"
 noise_insulation_comments = "The cabin is well-insulated with acoustic glass and sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice commands for navigation, media, and phone functions."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice commands for navigation, media, and phone functions."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-Wheel Drive (FWD) is standard, providing good tract
 suspension = "Independent Suspension"
 suspension_comments = "The vehicle features independent suspension for a comfortable ride."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The vehicle handles well on urban roads and light off-road conditions."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The vehicle handles well on urban roads and light off-road conditions."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Designed primarily for urban and paved roads, wi
 cargo_capability = "Yes"
 cargo_capability_comments = "The spacious trunk and foldable rear seats enhance cargo capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates, with reliable cold-start performance."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates, with reliable cold-start performance."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

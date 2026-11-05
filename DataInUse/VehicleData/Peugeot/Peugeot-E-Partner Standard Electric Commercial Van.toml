@@ -22,9 +22,9 @@ brand_comments = "Peugeot is a French automotive manufacturer known for its comm
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Peugeot-E-Partner is a fully electric vehicle with no internal combustion engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space volume is approximately 4.0 cubic meters, providing ample room for occupants."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space volume is approximately 4.0 cubic meters, providing ample room for occupants."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Durable fabric seats are standard, with optional vinyl
 noise_insulation = "Medium"
 noise_insulation_comments = "Moderate noise insulation suitable for a commercial vehicle."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Basic voice interaction is supported for infotainment functions."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Basic voice interaction is supported for infotainment functions."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive configuration for efficiency and practi
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut independent suspension for improved ride comfort."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Moderate passability suitable for urban and light off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Moderate passability suitable for urban and light off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use; best suited for p
 cargo_capability = "Yes"
 cargo_capability_comments = "Excellent cargo capability with up to 4.4 cubic meters of space."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Battery performance is maintained in cold weather with moderate efficiency loss."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Battery performance is maintained in cold weather with moderate efficiency loss."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "Medium"

@@ -22,9 +22,9 @@ brand_comments = "Buick is a premium American automotive brand under General Mot
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The LaCrosse is powered by a 2.0L turbocharged gasoline engine (LSY) or a 3.6L V6 (LGX) engine, depending on the market."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The LaCrosse offers 104.6 cubic feet (2.96 cubic meters) of passenger volume, with generous legroom and headroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The LaCrosse offers 104.6 cubic feet (2.96 cubic meters) of passenger volume, with generous legroom and headroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard perforated leather seats; Avenir trim feature
 noise_insulation = "High"
 noise_insulation_comments = "QuietTuning technology with acoustic laminated glass and sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Buick Infotainment System with voice recognition for navigation, phone, and audio controls."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Buick Infotainment System with voice recognition for navigation, phone, and audio controls."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Standard FWD; AWD available with 3.6L V6 engine."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear 5-link independent suspension with Continuous Damping Control (CDC) available."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "140mm ground clearance sufficient for normal roads but not designed for off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "140mm ground clearance sufficient for normal roads but not designed for off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use - optimized for pa
 cargo_capability = "Yes"
 cargo_capability_comments = "433L trunk with 60/40 split-folding rear seats for flexible cargo space."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The LaCrosse is engineered for excellent cold-weather performance with features like a high-efficiency heating system, available heated steering wheel and seats (front and rear), and a cold-weather package that includes engine block heater provisions. The vehicle's powertrain and electrical systems are thoroughly tested in extreme cold conditions to ensure reliable operation in temperatures as low as -40°F (-40°C). The standard all-season tires provide good traction in winter conditions, though dedicated winter tires are recommended for severe winter climates."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The LaCrosse is engineered for excellent cold-weather performance with features like a high-efficiency heating system, available heated steering wheel and seats (front and rear), and a cold-weather package that includes engine block heater provisions. The vehicle's powertrain and electrical systems are thoroughly tested in extreme cold conditions to ensure reliable operation in temperatures as low as -40°F (-40°C). The standard all-season tires provide good traction in winter conditions, though dedicated winter tires are recommended for severe winter climates."
 cold_resistance_comments = "Proven performance in cold climates with efficient heating systems and cold-weather package available."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"

@@ -22,9 +22,9 @@ brand_comments = "Ford is an American multinational automaker with a strong heri
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Ranger Lariat comes with a turbocharged 2.3L EcoBoost gasoline engine as standard, with optional diesel in some markets."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers approximately 3.8 cubic meters of passenger space with comfortable seating for five adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers approximately 3.8 cubic meters of passenger space with comfortable seating for five adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Lariat trim features premium leather-trimmed seats wit
 noise_insulation = "High"
 noise_insulation_comments = "Active noise cancellation and extensive sound-deadening materials provide a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 4 system supports natural voice commands for navigation, media, and climate control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 4 system supports natural voice commands for navigation, media, and climate control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "4WD system with selectable drive modes including 2H, 4H, 
 suspension = "Independent Suspension"
 suspension_comments = "Front independent suspension with rear leaf springs for payload capacity."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "High"
-passibility_comments = "Excellent approach (29°), departure (25°), and breakover (22°) angles for off-road capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "High"
+passability_comments = "Excellent approach (29°), departure (25°), and breakover (22°) angles for off-road capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "FX4 Off-Road Package includes skid plates, off-r
 cargo_capability = "Yes"
 cargo_capability_comments = "1,200L bed capacity with 1,860 lbs payload and 7,500 lbs towing capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in extreme cold with block heater available as an option."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in extreme cold with block heater available as an option."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

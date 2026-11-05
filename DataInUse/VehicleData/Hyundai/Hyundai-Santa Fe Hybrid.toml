@@ -20,8 +20,8 @@ powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "The Santa Fe Hybrid combines a 1.6L turbocharged gasoline engine with a 44.2kW electric motor and 1.49kWh lithium-ion battery."
 
 # Dimensions and space
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Total passenger volume is approximately 4.8 cubic meters (169.6 cubic feet)."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Total passenger volume is approximately 4.8 cubic meters (169.6 cubic feet)."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Cargo capacity is 731L behind the rear seats, expandable to 1,625L with seats folded (measured to roof)."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Active noise cancellation and laminated front windows reduce cabin noise to 68 dB at 120 km/h."
 
 # Tech features
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Hyundai's Blue Link system supports natural language commands for navigation/media."
+voice_interaction = "Yes"
+voice_interaction_comments = "Hyundai's Blue Link system supports natural language commands for navigation/media."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for infotainment and hybrid system software."
@@ -136,8 +136,8 @@ drive_type_comments = "HTRAC AWD system available (standard on Calligraphy, opti
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts, rear multi-link setup with amplitude-sensitive dampers."
 
-passibility = "Medium"
-passibility_comments = "185mm clearance and AWD capability suit light off-road use but not serious rock crawling."
+passability = "Medium"
+passability_comments = "185mm clearance and AWD capability suit light off-road use but not serious rock crawling."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 2-row configuration (7-seat available in non-hybrid Santa Fe)."
@@ -154,8 +154,8 @@ off_road_capability_comments = "HTRAC AWD offers Snow/Mud/Sand modes but lacks l
 cargo_capability = "Yes"
 cargo_capability_comments = "1,625L max cargo space with 60/40 split-folding rear seats."
 
-clod_resistance = "High"
-clod_resistance_comments = "Proven operation down to -30°C with battery warming system."
+cold_resistance = "High"
+cold_resistance_comments = "Proven operation down to -30°C with battery warming system."
 
 heat_resistance = "High"
 heat_resistance_comments = "Cooling systems maintain performance up to 50°C ambient."

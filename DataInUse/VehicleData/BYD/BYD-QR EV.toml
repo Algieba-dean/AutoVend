@@ -20,8 +20,8 @@ powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "Pure electric drivetrain with no combustion engine."
 
 # Space and dimensions
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Generous cabin space of 4.8 cubic meters, comparable to luxury sedans."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Generous cabin space of 4.8 cubic meters, comparable to luxury sedans."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "450L trunk capacity, expandable to 1,100L with rear seats folded."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Double-layer acoustic glass reduces cabin noise to 35 dB at 60 km/h."
 
 # Tech and autonomy
-voice_interfaction = "Yes"
-voice_interfaction_comments = "BYD DiLink 5.0 supports natural language commands."
+voice_interaction = "Yes"
+voice_interaction_comments = "BYD DiLink 5.0 supports natural language commands."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for infotainment and battery management."
@@ -135,8 +135,8 @@ drive_type_comments = "Dual-motor AWD with torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "Front double-wishbone, rear multi-link setup."
 
-passibility = "Medium"
-passibility_comments = "Optimized for urban roads and light gravel."
+passability = "Medium"
+passability_comments = "Optimized for urban roads and light gravel."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 2+3 seating configuration."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Not designed for serious off-roading."
 cargo_capability = "Yes"
 cargo_capability_comments = "60:40 split-folding rear seats."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery heating system maintains -30°C to 60°C operation."
+cold_resistance = "High"
+cold_resistance_comments = "Battery heating system maintains -30°C to 60°C operation."
 
 heat_resistance = "High"
 heat_resistance_comments = "Liquid-cooled battery with thermal management."

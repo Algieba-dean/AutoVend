@@ -22,9 +22,9 @@ brand_comments = "Mercedes-Benz is a German luxury automotive brand known for hi
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The CLE-Class Coupe is currently offered with gasoline engines, including a 2.0L turbocharged inline-4 and a 3.0L turbocharged inline-6."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The CLE-Class Coupe offers a spacious interior with approximately 3.8 cubic meters of passenger space."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The CLE-Class Coupe offers a spacious interior with approximately 3.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard leather seats with optional premium Nappa lea
 noise_insulation = "High"
 noise_insulation_comments = "Excellent noise insulation with acoustic glass and sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MBUX infotainment system supports natural voice control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MBUX infotainment system supports natural voice control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "4MATIC all-wheel drive is standard on the CLE 450 and opt
 suspension = "Independent Suspension"
 suspension_comments = "Multi-link independent suspension at all four corners for superior handling."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Balanced for sporty driving while maintaining comfort."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Balanced for sporty driving while maintaining comfort."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Designed for on-road performance, not off-road u
 cargo_capability = "Yes"
 cargo_capability_comments = "420L trunk and folding rear seats for additional cargo space."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Engine and systems are tested for reliable performance in cold climates."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Engine and systems are tested for reliable performance in cold climates."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

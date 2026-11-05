@@ -22,9 +22,9 @@ brand_comments = "Bentley Motors Limited is a British luxury automaker known for
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Arnage was exclusively offered with gasoline engines, including a 6.75L V8."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The Arnage offers expansive interior space with approximately 5.8 cubic meters of passenger volume."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The Arnage offers expansive interior space with approximately 5.8 cubic meters of passenger volume."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium hand-stitched leather upholstery with extensiv
 noise_insulation = "High"
 noise_insulation_comments = "Exceptional sound deadening with double-glazed windows for silent cruising."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "No"
-voice_interfaction_comments = "The Arnage predates modern voice control systems, focusing on traditional controls."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "No"
+voice_interaction_comments = "The Arnage predates modern voice control systems, focusing on traditional controls."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Traditional rear-wheel drive layout for optimal weight di
 suspension = "Independent Suspension"
 suspension_comments = "Four-wheel independent air suspension with continuous damping control."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Good for paved roads but not designed for rough terrain."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Good for paved roads but not designed for rough terrain."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use despite its substa
 cargo_capability = "Yes"
 cargo_capability_comments = "Ample trunk space and rear seat pass-through for longer items."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Excellent cold-start performance with robust engine design."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Excellent cold-start performance with robust engine design."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

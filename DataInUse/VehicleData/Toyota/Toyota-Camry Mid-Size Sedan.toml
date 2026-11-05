@@ -18,8 +18,8 @@ brand_comments = "Toyota is a Japanese automotive manufacturer known for reliabi
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Camry offers gasoline engine options, with hybrid variants available as separate models."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Camry provides 103.2 cubic feet (2.92 cubic meters) of passenger volume with generous legroom (front: 42.1 inches, rear: 38.0 inches)."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Camry provides 103.2 cubic feet (2.92 cubic meters) of passenger volume with generous legroom (front: 42.1 inches, rear: 38.0 inches)."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "The exact trunk capacity is 427L (15.1 cubic feet), with a wide opening for easy loading."
@@ -57,8 +57,8 @@ seat_material_comments = "Leather-trimmed seats standard on XLE and XSE trims, S
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass windshield and extensive sound-deadening materials provide a quiet cabin."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Toyota's Entune 3.0 system supports voice commands for navigation, audio, and phone functions."
+voice_interaction = "Yes"
+voice_interaction_comments = "Toyota's Entune 3.0 system supports voice commands for navigation, audio, and phone functions."
 
 ota_updates = "No"
 ota_updates_comments = "The infotainment system does not support over-the-air updates."
@@ -129,8 +129,8 @@ drive_type_comments = "Front-wheel drive standard, with AWD available on 2.5L mo
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front suspension and multi-link rear suspension."
 
-passibility = "Medium"
-passibility_comments = "Good road handling but not designed for off-road use."
+passability = "Medium"
+passability_comments = "Good road handling but not designed for off-road use."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 5-passenger seating with 2 front and 3 rear seats."
@@ -147,8 +147,8 @@ off_road_capability_comments = "Not designed for off-road use, optimized for pav
 cargo_capability = "Yes"
 cargo_capability_comments = "Generous trunk space and 60/40 split-folding rear seats for cargo flexibility."
 
-clod_resistance = "High"
-clod_resistance_comments = "Proven reliability in cold climates with available engine block heater."
+cold_resistance = "High"
+cold_resistance_comments = "Proven reliability in cold climates with available engine block heater."
 
 heat_resistance = "High"
 heat_resistance_comments = "Effective cooling systems maintain performance in hot conditions."

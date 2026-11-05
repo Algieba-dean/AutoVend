@@ -22,9 +22,9 @@ brand_comments = "Hyundai's N performance division developed the Ioniq 5 N as th
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Ioniq 5 N is a pure electric vehicle with dual-motor all-wheel drive system."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers approximately 4.8 cubic meters of passenger space with generous legroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The interior offers approximately 4.8 cubic meters of passenger space with generous legroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "N Light sport seats with leather/suede combination and
 noise_insulation = "High"
 noise_insulation_comments = "Features acoustic glass and enhanced insulation, though some road noise is present for sporty character."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Hyundai's Blue Link system supports natural language voice commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Hyundai's Blue Link system supports natural language voice commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Dual-motor AWD with electronic torque vectoring and N Tor
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut and rear multi-link with N-tuned dampers and e-LSD."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Performance-oriented setup prioritizes handling over comfort."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Performance-oriented setup prioritizes handling over comfort."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Performance-oriented setup not designed for off-
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with flat-folding rear seats and front trunk (frunk)."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Features battery heating system and heat pump for cold weather performance."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Features battery heating system and heat pump for cold weather performance."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

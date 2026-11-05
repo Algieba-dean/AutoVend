@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The LX trim features a 2.0L naturally aspirated gasoline engine."
 
 # Space and dimensions
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Civic Sedan offers 3.9 cubic meters of passenger space with ample legroom."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Civic Sedan offers 3.9 cubic meters of passenger space with ample legroom."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "Trunk capacity is 428L (15.1 cu ft), expandable with 60/40 split-folding rear seats."
@@ -62,8 +62,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Active noise cancellation and acoustic glass reduce cabin noise."
 
 # Tech and connectivity
-voice_interfaction = "Yes"
-voice_interfaction_comments = "HondaLink system supports Apple CarPlay/Android Auto with voice commands."
+voice_interaction = "Yes"
+voice_interaction_comments = "HondaLink system supports Apple CarPlay/Android Auto with voice commands."
 
 ota_updates = "No"
 ota_updates_comments = "Infotainment system does not support over-the-air updates."
@@ -136,8 +136,8 @@ drive_type_comments = "Front-wheel drive layout with MacPherson strut front susp
 suspension = "Independent Suspension"
 suspension_comments = "Front: MacPherson strut; Rear: Multi-link independent suspension."
 
-passibility = "Medium"
-passibility_comments = "Typical sedan ground clearance (134mm)."
+passability = "Medium"
+passability_comments = "Typical sedan ground clearance (134mm)."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 5-passenger seating."
@@ -155,8 +155,8 @@ off_road_capability_comments = "Not designed for off-road use (sedan configurati
 cargo_capability = "Yes"
 cargo_capability_comments = "428L trunk + foldable rear seats for larger items."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "The Honda Civic Sedan LX demonstrates medium cold weather resistance with reliable cold-start performance down to -20°C (-4°F) when properly maintained. It includes standard cold-weather features like an engine block heater (optional in some markets) and effective cabin heating, though extreme winter conditions may require winter tires for optimal traction."
+cold_resistance = "Medium"
+cold_resistance_comments = "The Honda Civic Sedan LX demonstrates medium cold weather resistance with reliable cold-start performance down to -20°C (-4°F) when properly maintained. It includes standard cold-weather features like an engine block heater (optional in some markets) and effective cabin heating, though extreme winter conditions may require winter tires for optimal traction."
 cold_resistance_comments = "Proven reliability in cold climates with proper maintenance."
 
 heat_resistance = "High"

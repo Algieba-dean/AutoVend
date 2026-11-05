@@ -22,9 +22,9 @@ brand_comments = "Volvo, a Swedish automaker known for safety and Scandinavian d
 powertrain_type = "Plug-in Hybird Electric Vehicle"
 powertrain_type_comments = "The V60 Recharge is a PHEV with a 2.0L turbocharged engine + electric motor (combined 455 hp)."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious interior with 3.8 cubic meters of passenger volume, offering ample legroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Spacious interior with 3.8 cubic meters of passenger volume, offering ample legroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Nappa leather or optional wool blend (Charcoa
 noise_insulation = "High"
 noise_insulation_comments = "Laminated side windows and acoustic foam reduce road noise."
 
-# voice_interfaction, candidate values: "Yes", "No"
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Google Assistant integration via Volvo Cars app."
+# voice_interaction, candidate values: "Yes", "No"
+voice_interaction = "Yes"
+voice_interaction_comments = "Google Assistant integration via Volvo Cars app."
 
 # ota_updates, candidate values: "Yes", "No"
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "AWD standard on Recharge models (eAWD for rear axle)."
 suspension = "Independent Suspension"
 suspension_comments = "Front strut + rear multi-link with optional air suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Wagon design prioritizes on-road comfort over off-road capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Wagon design prioritizes on-road comfort over off-road capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use (140 mm ground cle
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rails + 1,441L max cargo volume."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Tested in Arctic conditions; battery pre-conditioning available."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Tested in Arctic conditions; battery pre-conditioning available."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "Medium"

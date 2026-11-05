@@ -22,9 +22,9 @@ brand_comments = "BMW is a German luxury automaker known for performance-oriente
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The BMW-X3 is primarily offered with gasoline engines (B48/B58), though diesel and PHEV variants exist in select markets."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The X3 provides 3.8 cubic meters of well-appointed passenger space with premium ergonomics. Front occupants enjoy 1,018mm of headroom and 1,004mm of rear legroom, while the rear seats offer 40/20/40 split-folding capability. The cabin features BMW's driver-oriented cockpit design with 8-way power front seats (14-way optional), and the panoramic moonroof option enhances the sense of space. The rear seats recline up to 15 degrees for added comfort on long journeys."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The X3 provides 3.8 cubic meters of well-appointed passenger space with premium ergonomics. Front occupants enjoy 1,018mm of headroom and 1,004mm of rear legroom, while the rear seats offer 40/20/40 split-folding capability. The cabin features BMW's driver-oriented cockpit design with 8-way power front seats (14-way optional), and the panoramic moonroof option enhances the sense of space. The rear seats recline up to 15 degrees for added comfort on long journeys."
 passenger_space_volume_comments = "The X3 offers 3.8 cubic meters of passenger space with 1,018mm front headroom and 1,004mm rear legroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
@@ -75,9 +75,9 @@ seat_material_comments = "Standard SensaTec leatherette, optional Vernasca or Me
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and underbody panels reduce cabin noise to 63dB at 120km/h."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -171,9 +171,9 @@ drive_type_comments = "xDrive system with 40:60 rear-biased torque split (adjust
 suspension = "Independent Suspension"
 suspension_comments = "Double-joint spring strut front, five-link rear with optional adaptive dampers."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "204mm ground clearance with hill descent control (off-road package available)."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "204mm ground clearance with hill descent control (off-road package available)."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -195,9 +195,9 @@ off_road_capability_comments = "xDrive system with off-road mode (hill descent c
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rails standard (max payload 650kg), tow hitch optional (2,400kg)."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Tested to -40°C with heated components (mirrors, washer jets, steering wheel)."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Tested to -40°C with heated components (mirrors, washer jets, steering wheel)."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

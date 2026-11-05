@@ -22,9 +22,9 @@ brand_comments = "Hyundai is a South Korean automotive manufacturer known for it
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Hyundai-Sonata SEL is equipped with a 2.5L 4-cylinder gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Hyundai-Sonata SEL offers a spacious interior with approximately 4.8 cubic meters of passenger space."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Hyundai-Sonata SEL offers a spacious interior with approximately 4.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "The seats are upholstered in premium leather for added
 noise_insulation = "High"
 noise_insulation_comments = "The Hyundai-Sonata SEL features advanced noise insulation for a quiet cabin experience."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice interaction for hands-free control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice interaction for hands-free control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "The Hyundai-Sonata SEL is front-wheel drive for better fu
 suspension = "Independent Suspension"
 suspension_comments = "The car features a multi-link rear suspension for improved ride comfort."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Hyundai-Sonata SEL handles well on paved roads but is not designed for off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Hyundai-Sonata SEL handles well on paved roads but is not designed for off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The Hyundai-Sonata SEL is not designed for off-r
 cargo_capability = "Yes"
 cargo_capability_comments = "The spacious trunk and foldable rear seats enhance cargo-carrying capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The car performs well in cold weather but may require additional warm-up time in extreme conditions."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The car performs well in cold weather but may require additional warm-up time in extreme conditions."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

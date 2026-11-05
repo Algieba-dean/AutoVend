@@ -22,9 +22,9 @@ brand_comments = "Honda is a Japanese multinational conglomerate known for its r
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Honda-Odyssey EX is powered by a 3.5L V6 gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The Odyssey EX offers a spacious interior with approximately 5.8 cubic meters of passenger space."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The Odyssey EX offers a spacious interior with approximately 5.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Leather-trimmed seats are standard for comfort and dur
 noise_insulation = "High"
 noise_insulation_comments = "The cabin is well-insulated with acoustic glass and sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The HondaLink infotainment system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The HondaLink infotainment system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive is standard for better fuel efficiency 
 suspension = "Independent Suspension"
 suspension_comments = "The Odyssey EX features an independent front and rear suspension for a smooth ride."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Odyssey EX is designed for urban and highway driving, with moderate ground clearance."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Odyssey EX is designed for urban and highway driving, with moderate ground clearance."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The Odyssey EX is not designed for off-road use 
 cargo_capability = "Yes"
 cargo_capability_comments = "The Odyssey EX offers versatile cargo space with foldable rear seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The Odyssey EX performs well in cold weather but may require winter tires for optimal traction."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The Odyssey EX performs well in cold weather but may require winter tires for optimal traction."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

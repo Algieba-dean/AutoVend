@@ -22,9 +22,9 @@ brand_comments = "Porsche is a German luxury and high-performance sports car man
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Porsche-718 Cayman S is powered by a turbocharged gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space is compact, typical of a two-seat sports car, with approximately 2.8 cubic meters."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The passenger space is compact, typical of a two-seat sports car, with approximately 2.8 cubic meters."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "200~300L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard leather seats with optional Alcantara or full
 noise_insulation = "Medium"
 noise_insulation_comments = "Moderate noise insulation to balance sporty engine sounds and cabin comfort."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Porsche Communication Management (PCM) supports voice commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Porsche Communication Management (PCM) supports voice commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Rear-wheel drive with optional limited-slip differential.
 suspension = "Independent Suspension"
 suspension_comments = "Front and rear independent MacPherson strut suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Low"
-passibility_comments = "Low ground clearance limits off-road capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Low"
+passability_comments = "Low ground clearance limits off-road capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use due to low ground 
 cargo_capability = "Yes"
 cargo_capability_comments = "Limited but practical cargo space for a sports car."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates with proper tires."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates with proper tires."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

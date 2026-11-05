@@ -22,9 +22,9 @@ brand_comments = "Mazda is known for its 'Jinba Ittai' (horse and rider as one) 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The MX-5 Miata RF is powered by a naturally aspirated Skyactiv-G gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The MX-5 Miata RF is a compact two-seater with a passenger volume of approximately 2.8 cubic meters."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The MX-5 Miata RF is a compact two-seater with a passenger volume of approximately 2.8 cubic meters."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "200~300L"
@@ -74,9 +74,9 @@ seat_material_comments = "Available in Nappa leather with heated seats option."
 noise_insulation = "Medium"
 noise_insulation_comments = "Improved noise insulation compared to soft-top version, but still sporty-focused."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Mazda Connect system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Mazda Connect system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Classic rear-wheel drive layout for balanced handling."
 suspension = "Independent Suspension"
 suspension_comments = "Front double-wishbone and rear multi-link suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Good for normal roads but not designed for rough terrain."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Good for normal roads but not designed for rough terrain."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use due to low ground 
 cargo_capability = "No"
 cargo_capability_comments = "Very limited cargo space due to sports car design."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold weather with proper tires, though not optimized for extreme cold."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold weather with proper tires, though not optimized for extreme cold."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

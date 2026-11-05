@@ -21,8 +21,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The standard Elantra uses a 2.0L MPI 4-cylinder gasoline engine, with an available 1.6L turbocharged option."
 
 # Dimensions and capacity
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "EPA passenger volume is 99.4 cubic feet (2.81 cubic meters), with 42.3 inches of front legroom."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "EPA passenger volume is 99.4 cubic feet (2.81 cubic meters), with 42.3 inches of front legroom."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "14.2 cubic feet (402 liters) of trunk space, with 60/40 split-folding rear seats."
@@ -64,8 +64,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Acoustic windshield and added insulation for reduced road noise."
 
 # Tech features
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Hyundai Blue Link with natural language voice recognition."
+voice_interaction = "Yes"
+voice_interaction_comments = "Hyundai Blue Link with natural language voice recognition."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for navigation and infotainment systems."
@@ -139,8 +139,8 @@ drive_type_comments = "Front-wheel drive standard, no AWD option available."
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front, multi-link rear suspension."
 
-passibility = "Medium"
-passibility_comments = "Typical sedan ground clearance with optimized approach/departure angles."
+passability = "Medium"
+passability_comments = "Typical sedan ground clearance with optimized approach/departure angles."
 
 # Seating and utility
 seat_layout = "5-seat"
@@ -158,8 +158,8 @@ off_road_capability_comments = "Not designed for off-road use, typical sedan cap
 cargo_capability = "Yes"
 cargo_capability_comments = "Good trunk space for class with folding rear seats."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Proven reliability in cold climates with available heated features."
+cold_resistance = "Medium"
+cold_resistance_comments = "Proven reliability in cold climates with available heated features."
 
 heat_resistance = "High"
 heat_resistance_comments = "Effective cooling systems for hot weather operation."

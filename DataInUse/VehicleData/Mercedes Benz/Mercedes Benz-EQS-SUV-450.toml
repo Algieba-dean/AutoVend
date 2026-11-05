@@ -22,9 +22,9 @@ brand_comments = "Mercedes-Benz is a German luxury automotive brand known for hi
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The EQS-SUV-450 is a fully electric vehicle with no internal combustion engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The EQS-SUV-450 offers a spacious interior with approximately 5.8 cubic meters of passenger space."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The EQS-SUV-450 offers a spacious interior with approximately 5.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium Nappa leather upholstery with optional ventila
 noise_insulation = "High"
 noise_insulation_comments = "Excellent noise insulation with acoustic glass and sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MBUX Voice Assistant supports natural language commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MBUX Voice Assistant supports natural language commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "4MATIC all-wheel drive system with torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "AIRMATIC air suspension with adaptive damping system."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Good ground clearance but not designed for serious off-roading."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Good ground clearance but not designed for serious off-roading."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Primarily designed for on-road use despite SUV c
 cargo_capability = "Yes"
 cargo_capability_comments = "Spacious cargo area with multiple storage compartments."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The EQS-SUV-450 features a sophisticated heat pump system and battery thermal management that maintains optimal performance in cold climates down to -25°C (-13°F), with only minimal range reduction compared to conventional EVs."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The EQS-SUV-450 features a sophisticated heat pump system and battery thermal management that maintains optimal performance in cold climates down to -25°C (-13°F), with only minimal range reduction compared to conventional EVs."
 cold_resistance_comments = "Heat pump system maintains battery efficiency in cold weather down to -25°C."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"

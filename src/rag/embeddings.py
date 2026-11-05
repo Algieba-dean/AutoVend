@@ -25,6 +25,12 @@ class EmbeddingInferenceError(RuntimeError):
     pass
 
 
+class EmbeddingDegradedError(RuntimeError):
+    """Raised when embedding model is degraded/offline and cannot infer valid vector representations."""
+
+    pass
+
+
 class _DummySentenceTransformer:
     """离线沙箱或无网络环境下的显式降级占位模型，标记系统降级至稀疏检索."""
 
@@ -39,11 +45,10 @@ class _DummySentenceTransformer:
         return self.dimension
 
     def _generate_vector(self, text: str, normalize: bool = True) -> np.ndarray:
-        # 显式恒等单位向量标识降级状态，严禁使用 SHA256 伪随机数伪造正交空间
-        vec = np.zeros(self.dimension, dtype=np.float32)
-        if normalize:
-            vec[0] = 1.0
-        return vec
+        raise EmbeddingDegradedError(
+            "Embedding model is degraded/offline: dense vector inference is disabled to prevent "
+            "silent cosine distance poisoning. Pipeline must switch to pure BM25 sparse retrieval."
+        )
 
     def encode(
         self,
@@ -54,23 +59,10 @@ class _DummySentenceTransformer:
         show_progress_bar: bool = False,
         **kwargs: Any,
     ) -> Any:
-        if isinstance(sentences, str):
-            vec = self._generate_vector(sentences, normalize=normalize_embeddings)
-            return vec if convert_to_numpy else vec.tolist()
-
-        if hasattr(sentences, "__iter__"):
-            items = list(sentences)
-            if not items:
-                empty = np.empty((0, self.dimension), dtype=np.float32)
-                return empty if convert_to_numpy else []
-            vectors = [
-                self._generate_vector(s, normalize=normalize_embeddings) for s in items
-            ]
-            arr = np.array(vectors, dtype=np.float32)
-            return arr if convert_to_numpy else arr.tolist()
-
-        vec = self._generate_vector(str(sentences), normalize=normalize_embeddings)
-        return vec if convert_to_numpy else vec.tolist()
+        raise EmbeddingDegradedError(
+            "Embedding model is degraded/offline: dense vector inference is disabled to prevent "
+            "silent cosine distance poisoning. Pipeline must switch to pure BM25 sparse retrieval."
+        )
 
     def clear_cache(self) -> None:
         pass

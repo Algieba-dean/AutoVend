@@ -22,9 +22,9 @@ brand_comments = "The Polo GOAL is part of Volkswagen's global small car lineup,
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Polo GOAL is currently offered with turbocharged gasoline engines in most markets."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers 3.1 cubic meters of passenger space, typical for its class."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The interior offers 3.1 cubic meters of passenger space, typical for its class."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard cloth seats with optional leather upholstery 
 noise_insulation = "Medium"
 noise_insulation_comments = "Features improved sound deadening compared to previous generations."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports basic voice commands for infotainment functions."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports basic voice commands for infotainment functions."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive configuration with optional XDS electro
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear torsion beam setup."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Good urban maneuverability with 10.6m turning circle."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Good urban maneuverability with 10.6m turning circle."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use, optimized for pav
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with folding rear seats and roof rack options."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates with optional cold weather package."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates with optional cold weather package."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

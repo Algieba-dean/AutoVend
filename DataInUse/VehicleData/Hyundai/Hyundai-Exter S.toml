@@ -22,9 +22,9 @@ brand_comments = "Hyundai is a South Korean automotive manufacturer known for va
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Exter S comes with a 1.2L Kappa petrol engine with manual and AMT transmission options."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers approximately 3.1 cubic meters of passenger space with good headroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers approximately 3.1 cubic meters of passenger space with good headroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium fabric upholstery with optional leatherette on
 noise_insulation = "Medium"
 noise_insulation_comments = "Decent cabin insulation with noticeable engine noise at higher RPMs."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports voice commands for basic functions through the 8-inch touchscreen."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports voice commands for basic functions through the 8-inch touchscreen."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive configuration suitable for urban drivin
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts with rear torsion beam axle."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Good for city driving with some capability on rough roads."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Good for city driving with some capability on rough roads."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Only suitable for light off-road use due to FWD 
 cargo_capability = "Yes"
 cargo_capability_comments = "391L boot space with folding rear seats for larger items."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in moderate cold conditions but may need warm-up in extreme cold."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in moderate cold conditions but may need warm-up in extreme cold."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

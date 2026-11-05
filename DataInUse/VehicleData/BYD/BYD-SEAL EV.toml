@@ -22,9 +22,9 @@ brand_comments = "BYD (Build Your Dreams) is a leading Chinese electric vehicle 
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The BYD-SEAL EV is a pure electric vehicle with no internal combustion engine, powered solely by BYD's proprietary Blade Battery."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, providing ample room for five adults with a focus on driver-centric ergonomics."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, providing ample room for five adults with a focus on driver-centric ergonomics."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard synthetic leather (vegan option available), w
 noise_insulation = "High"
 noise_insulation_comments = "Features acoustic laminated glass and extensive sound-deadening materials for a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "BYD's DiLink system supports natural language voice commands in multiple languages."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "BYD's DiLink system supports natural language voice commands in multiple languages."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Performance model features dual-motor AWD; base models ar
 suspension = "Independent Suspension"
 suspension_comments = "Front double wishbone and rear five-link independent suspension setup."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "140mm ground clearance is suitable for urban use but not intended for rough terrain."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "140mm ground clearance is suitable for urban use but not intended for rough terrain."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use - optimized for on
 cargo_capability = "Yes"
 cargo_capability_comments = "450L trunk + 53L frunk with 60/40 split-folding rear seats for versatility."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The BYD-SEAL EV demonstrates excellent cold weather performance with its Blade Battery maintaining over 80% capacity even in extreme -30°C conditions, thanks to its advanced battery thermal management system that actively warms the battery pack in low temperatures."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The BYD-SEAL EV demonstrates excellent cold weather performance with its Blade Battery maintaining over 80% capacity even in extreme -30°C conditions, thanks to its advanced battery thermal management system that actively warms the battery pack in low temperatures."
 cold_resistance_comments = "Blade Battery maintains >80% capacity at -30°C with intelligent thermal management system."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"

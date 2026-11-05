@@ -135,6 +135,32 @@ class TestFastPathTier0Retrieval:
         assert res2.metadata.get("cache_hit") is True or duration_ms < 1.0
         assert "200km/h" in res2.facts_summary
 
+    def test_colloquial_fast_path_intent_matching(self):
+        """Test that colloquial phrasing avoids P99 latency cliff and hits Tier 0 directly."""
+        # Colloquial acceleration questions
+        res1 = self.engine.search_tier0("SU7 Max多久能到一百码")
+        assert res1 is not None
+        assert res1.tier == 0
+        assert res1.is_fast_path is True
+        assert "2.78秒" in res1.facts_summary
+
+        res2 = self.engine.search_tier0("SU7 Max起步猛不猛")
+        assert res2 is not None
+        assert res2.tier == 0
+        assert "2.78秒" in res2.facts_summary
+
+        # Colloquial price question
+        res3 = self.engine.search_tier0("问界M7这车多少钱能拿下来")
+        assert res3 is not None
+        assert res3.tier == 0
+        assert "24.98" in res3.facts_summary
+
+        # Colloquial range question
+        res4 = self.engine.search_tier0("理想L7充满电能跑多远")
+        assert res4 is not None
+        assert res4.tier == 0
+        assert "225" in res4.facts_summary or "纯电" in res4.facts_summary
+
     def test_rag_service_fast_path_integration(self):
         """Test that RAGService.search_vehicles routes direct spec query to Tier 0."""
         service = RAGService()

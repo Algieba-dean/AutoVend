@@ -22,9 +22,9 @@ brand_comments = "Cadillac is General Motors' luxury vehicle division, known for
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The XT6 Premium Luxury is powered by a 3.6L V6 gasoline engine with a 9-speed automatic transmission."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The XT6 offers 4.8 cubic meters of passenger space, with ample legroom in all three rows."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The XT6 offers 4.8 cubic meters of passenger space, with ample legroom in all three rows."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard semi-aniline leather seats with perforated in
 noise_insulation = "High"
 noise_insulation_comments = "Active Noise Cancellation and acoustic glass provide a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Cadillac User Experience (CUE) supports natural-language voice commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Cadillac User Experience (CUE) supports natural-language voice commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Standard Twin-Clutch AWD with Disconnect technology."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear five-link independent suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Competent for light off-road use but optimized for paved roads."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Competent for light off-road use but optimized for paved roads."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "AWD system prioritizes on-road traction over off
 cargo_capability = "Yes"
 cargo_capability_comments = "1,852L max cargo space with seats folded."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Tested for reliable operation in temperatures as low as -40°C."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Tested for reliable operation in temperatures as low as -40°C."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

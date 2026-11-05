@@ -22,9 +22,9 @@ brand_comments = "BYD (Build Your Dreams) is a Chinese automaker specializing in
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The BYD-F3 EV is a pure electric vehicle powered by a lithium-ion battery pack."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering comfortable seating for five adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering comfortable seating for five adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard fabric seats are durable and comfortable for 
 noise_insulation = "Medium"
 noise_insulation_comments = "Moderate noise insulation reduces road and wind noise effectively."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "No"
-voice_interfaction_comments = "The infotainment system does not support voice interaction."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "No"
+voice_interaction_comments = "The infotainment system does not support voice interaction."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "The BYD-F3 EV uses front-wheel drive for efficiency and s
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut and rear multi-link independent suspension provide a comfortable ride."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The car handles urban roads well but is not designed for off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The car handles urban roads well but is not designed for off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use due to low ground 
 cargo_capability = "Yes"
 cargo_capability_comments = "The 360L trunk and foldable rear seats offer practical cargo space."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The battery performs adequately in cold weather but with reduced range."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The battery performs adequately in cold weather but with reduced range."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

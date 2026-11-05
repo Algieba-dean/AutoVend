@@ -22,9 +22,9 @@ brand_comments = "Manufactured by Ford, a legacy American automaker known for tr
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "The Maverick XL features a standard 2.5L hybrid powertrain, with an optional 2.0L EcoBoost gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger volume is approximately 3.8 cubic meters, with ample legroom for a compact truck."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Passenger volume is approximately 3.8 cubic meters, with ample legroom for a compact truck."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard cloth seats; leather is optional on higher tr
 noise_insulation = "Medium"
 noise_insulation_comments = "Active noise cancellation on hybrid models reduces engine drone."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 3 system supports voice commands for navigation/media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 3 system supports voice commands for navigation/media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "FWD standard; AWD optional with EcoBoost engine."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts; rear twist-beam (FWD) or multi-link (AWD)."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Handles urban roads well; limited off-road capability without FX4 package."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Handles urban roads well; limited off-road capability without FX4 package."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "FX4 package adds off-road tuning; base model is 
 cargo_capability = "Yes"
 cargo_capability_comments = "1,500L bed + 2,000lb payload capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Hybrid battery performs well in cold weather with thermal management."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Hybrid battery performs well in cold weather with thermal management."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

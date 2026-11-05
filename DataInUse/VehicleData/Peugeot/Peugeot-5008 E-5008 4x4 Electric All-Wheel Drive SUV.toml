@@ -18,8 +18,8 @@ brand_comments = "Peugeot is a French automotive manufacturer known for its styl
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The E-5008 is a pure electric vehicle with dual-motor all-wheel drive system."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 4.8 cubic meters of passenger space with three rows of seating."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 4.8 cubic meters of passenger space with three rows of seating."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Boot capacity is 511 liters (VDA) with all seats up, expanding to 1,815 liters with rear seats folded."
@@ -57,8 +57,8 @@ seat_material_comments = "Premium Nappa leather upholstery available in multiple
 noise_insulation = "High"
 noise_insulation_comments = "Excellent NVH control with acoustic laminated glass and sound-deadening materials."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Peugeot i-Cockpit with voice recognition for navigation and infotainment."
+voice_interaction = "Yes"
+voice_interaction_comments = "Peugeot i-Cockpit with voice recognition for navigation and infotainment."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for infotainment and vehicle systems."
@@ -129,8 +129,8 @@ drive_type_comments = "Dual-motor AWD system with torque vectoring capability."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear multi-link independent suspension."
 
-passibility = "Medium"
-passibility_comments = "Competent for light off-road use but primarily designed for paved roads."
+passability = "Medium"
+passability_comments = "Competent for light off-road use but primarily designed for paved roads."
 
 seat_layout = "7-seat"
 seat_layout_comments = "Three-row seating configuration with 2+3+2 arrangement."
@@ -147,8 +147,8 @@ off_road_capability_comments = "Capable on light trails but not designed for ser
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with configurable seating and large trunk."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management maintains performance in cold weather down to -20°C."
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management maintains performance in cold weather down to -20°C."
 
 heat_resistance = "High"
 heat_resistance_comments = "Cooling system protects battery in temperatures up to 50°C."

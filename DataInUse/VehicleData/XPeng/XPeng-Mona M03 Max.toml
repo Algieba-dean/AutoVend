@@ -18,8 +18,8 @@ brand_comments = "XPeng is a leading Chinese electric vehicle manufacturer known
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The XPeng-Mona M03 Max is a pure electric vehicle with no internal combustion engine."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 4.8 cubic meters of passenger space, providing ample room for five adults."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 4.8 cubic meters of passenger space, providing ample room for five adults."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "The trunk capacity is 450L, expandable to 1,200L with rear seats folded."
@@ -57,8 +57,8 @@ seat_material_comments = "Premium synthetic leather seats with heating and venti
 noise_insulation = "High"
 noise_insulation_comments = "Advanced noise-canceling materials and acoustic glass provide a quiet cabin experience."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The Xmart OS supports natural language voice commands for infotainment and vehicle controls."
+voice_interaction = "Yes"
+voice_interaction_comments = "The Xmart OS supports natural language voice commands for infotainment and vehicle controls."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for software, navigation, and autonomous driving features."
@@ -129,8 +129,8 @@ drive_type_comments = "Dual-motor AWD system provides excellent traction in all 
 suspension = "Independent Suspension"
 suspension_comments = "Front double-wishbone and rear multi-link suspension for superior handling."
 
-passibility = "Medium"
-passibility_comments = "140mm ground clearance is suitable for urban driving but not off-road."
+passability = "Medium"
+passability_comments = "140mm ground clearance is suitable for urban driving but not off-road."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard configuration seats five adults comfortably."
@@ -147,8 +147,8 @@ off_road_capability_comments = "Not designed for off-road use due to low ground 
 cargo_capability = "Yes"
 cargo_capability_comments = "Spacious trunk and foldable rear seats provide good cargo capacity."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management maintains performance in temperatures as low as -30°C."
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management maintains performance in temperatures as low as -30°C."
 
 heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling system protects battery in temperatures up to 50°C."

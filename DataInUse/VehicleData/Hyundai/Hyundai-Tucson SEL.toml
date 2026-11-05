@@ -22,9 +22,9 @@ brand_comments = "Hyundai is a South Korean automotive manufacturer known for it
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The SEL trim comes with a 2.5L naturally aspirated gasoline engine as standard."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Tucson offers 3.8 cubic meters of passenger space with ample legroom in both rows."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Tucson offers 3.8 cubic meters of passenger space with ample legroom in both rows."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "SEL trim comes with premium cloth seats; leather is op
 noise_insulation = "Medium"
 noise_insulation_comments = "Features acoustic windshield and additional insulation in key areas."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Hyundai's Blue Link system supports natural language voice commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Hyundai's Blue Link system supports natural language voice commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "FWD standard; HTRAC AWD is available as an option."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear multi-link suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Competent for light off-road use with available AWD."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Competent for light off-road use with available AWD."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Primarily designed for paved roads, though AWD m
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rails and generous cargo space support hauling needs."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold weather with standard engine block heater."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold weather with standard engine block heater."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

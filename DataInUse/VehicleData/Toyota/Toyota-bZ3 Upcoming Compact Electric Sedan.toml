@@ -18,8 +18,8 @@ brand_comments = "The Toyota-bZ3 is part of Toyota's bZ (Beyond Zero) series, fo
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Toyota-bZ3 is a pure electric vehicle with no internal combustion engine."
 
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space is approximately 4.0 cubic meters, offering ample room for five occupants."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space is approximately 4.0 cubic meters, offering ample room for five occupants."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "The exact trunk capacity is 450L, providing practical storage for daily use."
@@ -57,8 +57,8 @@ seat_material_comments = "The seats are upholstered in synthetic leather for com
 noise_insulation = "High"
 noise_insulation_comments = "The cabin features advanced noise insulation for a quiet ride."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice interaction for hands-free control."
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice interaction for hands-free control."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air (OTA) updates are supported for software and navigation."
@@ -129,8 +129,8 @@ drive_type_comments = "The Toyota-bZ3 is rear-wheel drive for balanced handling.
 suspension = "Independent Suspension"
 suspension_comments = "The suspension system is fully independent for a comfortable ride."
 
-passibility = "Medium"
-passibility_comments = "The Toyota-bZ3 is designed for urban and highway driving, with moderate ground clearance."
+passability = "Medium"
+passability_comments = "The Toyota-bZ3 is designed for urban and highway driving, with moderate ground clearance."
 
 seat_layout = "5-seat"
 seat_layout_comments = "The Toyota-bZ3 accommodates five passengers with a 2+3 seating arrangement."
@@ -147,8 +147,8 @@ off_road_capability_comments = "The Toyota-bZ3 is not designed for off-road use.
 cargo_capability = "Yes"
 cargo_capability_comments = "The Toyota-bZ3 offers practical cargo space for daily needs."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "The battery system includes thermal management for reliable performance in cold weather."
+cold_resistance = "Medium"
+cold_resistance_comments = "The battery system includes thermal management for reliable performance in cold weather."
 
 heat_resistance = "High"
 heat_resistance_comments = "The Toyota-bZ3 is designed to operate efficiently in hot climates with battery cooling."

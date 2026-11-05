@@ -22,9 +22,9 @@ brand_comments = "Audi is a German luxury automaker known for its Quattro all-wh
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The A6 Avant is primarily offered with turbocharged gasoline engines (e.g., 2.0L TFSI or 3.0L TFSI), though diesel and mild-hybrid variants exist in some markets."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 4.8 cubic meters of space, with ample legroom (front: 1,050mm, rear: 950mm)."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 4.8 cubic meters of space, with ample legroom (front: 1,050mm, rear: 950mm)."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Valcona leather upholstery (optional Nappa le
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and sound-deadening materials reduce cabin noise to 64 dB at 120 km/h."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MMI Touch Response supports natural-language voice commands (e.g., 'Navigate to Berlin')."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MMI Touch Response supports natural-language voice commands (e.g., 'Navigate to Berlin')."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Quattro all-wheel drive is standard in most markets."
 suspension = "Independent Suspension"
 suspension_comments = "Five-link front and rear suspension (optional adaptive air suspension)."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Balanced for comfort and dynamic handling (not off-road focused)."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Balanced for comfort and dynamic handling (not off-road focused)."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Quattro AWD aids traction but not designed for o
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rails and tow hitch (up to 2,100 kg braked towing) available."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Tested for reliable operation in temperatures as low as -30°C."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Tested for reliable operation in temperatures as low as -30°C."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

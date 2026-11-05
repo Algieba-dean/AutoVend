@@ -22,9 +22,9 @@ brand_comments = "Audi is a German luxury automotive manufacturer known for its 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Audi A6 is primarily offered with turbocharged gasoline engines (mild-hybrid system included). Diesel and PHEV variants exist but are less common in North America."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The A6 offers 102.6 cu ft (2.9 cubic meters) of passenger volume with generous legroom (41.3 inches rear)."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The A6 offers 102.6 cu ft (2.9 cubic meters) of passenger volume with generous legroom (41.3 inches rear)."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Milano leather upholstery (upgradable to Valc
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass windshield + active noise cancellation results in 62 dB at 120 km/h."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MMI touch response system supports natural language voice commands for navigation/media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MMI touch response system supports natural language voice commands for navigation/media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Quattro ultra AWD standard in North America (can decouple
 suspension = "Independent Suspension"
 suspension_comments = "Five-link front and rear suspension with optional adaptive air suspension ($1,950)."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Approach/departure angles of 12.5° limit off-road capability despite AWD."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Approach/departure angles of 12.5° limit off-road capability despite AWD."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Quattro AWD excels on snow/poor roads but lacks 
 cargo_capability = "Yes"
 cargo_capability_comments = "530L trunk + 40/20/40 split seats accommodate large items."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven operation at -40°C with heated components and cold-weather package option."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven operation at -40°C with heated components and cold-weather package option."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

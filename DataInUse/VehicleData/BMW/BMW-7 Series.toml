@@ -20,8 +20,8 @@ brand_comments = "Bayerische Motoren Werke AG, German luxury automaker."
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "3.0L turbocharged inline-6 (B58 engine) with 48V mild hybrid system."
 
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "Generous 5.8 cubic meters (205 cubic feet) of EPA-measured passenger volume. Long-wheelbase version offers 42.5\" rear legroom in Executive Lounge configuration - limousine-class accommodations."
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "Generous 5.8 cubic meters (205 cubic feet) of EPA-measured passenger volume. Long-wheelbase version offers 42.5\" rear legroom in Executive Lounge configuration - limousine-class accommodations."
 passenger_sapce_comments = "Spacious cabin with 5.8 cubic meters of passenger volume (EPA measurement)."
 
 trunk_volume = "Above 500L"
@@ -63,8 +63,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and active noise cancellation (option)."
 
 # Tech features
-voice_interfaction = "Yes"
-voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+voice_interaction = "Yes"
+voice_interaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
 
 ota_updates = "Yes"
 ota_updates_comments = "Remote Software Upgrade capability via BMW Operating System 8."
@@ -145,8 +145,8 @@ drive_type_comments = "xDrive AWD system standard on most markets."
 suspension = "Independent Suspension"
 suspension_comments = "Integral Active Steering with adaptive air suspension."
 
-passibility = "Medium"
-passibility_comments = "Air suspension can raise by 20mm for rough roads."
+passability = "Medium"
+passability_comments = "Air suspension can raise by 20mm for rough roads."
 
 seat_layout = "5-seat"
 seat_layout_comments = "4+1 seating, optional 4-seat Executive Lounge configuration."
@@ -167,8 +167,8 @@ cargo_capability = "Yes"
 cargo_capability_comments = "535L trunk fits 4 golf bags, expandable to 1,860L via 40/20/40 split-folding rear seats. Power trunk operation and optional hands-free opening enhance convenience."
 cargo_comments = "Split-folding rear seats and generous trunk space."
 
-clod_resistance = "High"
-clod_resistance_comments = "Tested to -40°C with heated components throughout."
+cold_resistance = "High"
+cold_resistance_comments = "Tested to -40°C with heated components throughout."
 
 heat_resistance = "High"
 heat_resistance_comments = "Cooled seats and solar-reflective glass options."

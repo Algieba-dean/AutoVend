@@ -20,8 +20,8 @@ powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "Dual-motor all-electric powertrain with no combustion engine."
 
 # Space and dimensions
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious cabin with 4.9 cubic meters of passenger volume (EPA standard)."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Spacious cabin with 4.9 cubic meters of passenger volume (EPA standard)."
 
 trunk_volume = "300~400L"
 trunk_volume_comments = "Trunk capacity is 366L (rear) + 81L (frunk), totaling 447L."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and sound-deadening materials for a quiet cabin."
 
 # Tech and autonomy
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MMI touch response with natural language voice control."
+voice_interaction = "Yes"
+voice_interaction_comments = "MMI touch response with natural language voice control."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for infotainment and battery management."
@@ -136,8 +136,8 @@ drive_type_comments = "Quattro all-wheel drive with torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "Adaptive air suspension with three-chamber setup."
 
-passibility = "Low"
-passibility_comments = "Sport-tuned suspension prioritizes handling over rough terrain."
+passability = "Low"
+passability_comments = "Sport-tuned suspension prioritizes handling over rough terrain."
 
 seat_layout = "4-seat"
 seat_layout_comments = "2+2 configuration with sculpted rear buckets."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Not designed for off-road use (low ground cleara
 cargo_capability = "Yes"
 cargo_capability_comments = "447L total storage (frunk + trunk), rear seats fold."
 
-clod_resistance = "High"
-clod_resistance_comments = "Heat pump system maintains battery efficiency down to -28°C."
+cold_resistance = "High"
+cold_resistance_comments = "Heat pump system maintains battery efficiency down to -28°C."
 
 heat_resistance = "High"
 heat_resistance_comments = "Battery thermal management sustains performance in +50°C."

@@ -22,9 +22,9 @@ brand_comments = "Audi is a German luxury automotive manufacturer known for its 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Audi Q2 is primarily available with turbocharged gasoline engines, with diesel options in select markets."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Q2 offers 3.8 cubic meters of passenger space, providing ample room for five occupants."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Q2 offers 3.8 cubic meters of passenger space, providing ample room for five occupants."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Leather upholstery is available as an option, with sta
 noise_insulation = "Medium"
 noise_insulation_comments = "Effective noise insulation for a quiet cabin, though not as refined as larger Audi models."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports voice commands via the MMI infotainment system for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports voice commands via the MMI infotainment system for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive is standard, with Quattro all-wheel dri
 suspension = "Independent Suspension"
 suspension_comments = "Features a MacPherson strut front suspension and multi-link rear suspension for comfort and handling."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Q2 handles urban environments well but is not designed for serious off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Q2 handles urban environments well but is not designed for serious off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Primarily designed for urban use, with limited o
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with foldable rear seats for larger items."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates with standard winter driving aids."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates with standard winter driving aids."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "Medium"

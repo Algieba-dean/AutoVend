@@ -22,9 +22,9 @@ brand_comments = "Geely is a Chinese automotive manufacturer known for its premi
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Cowboy is a pure electric vehicle with no combustion engine, part of Geely's SEA (Sustainable Experience Architecture) platform."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers 4.8 cubic meters of passenger space with premium legroom in both rows."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The interior offers 4.8 cubic meters of passenger space with premium legroom in both rows."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium Nappa leather upholstery with heating/ventilat
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic laminated glass and extensive sound-deadening materials result in 38dB at 60km/h."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Natural language processing supports both Chinese and English commands for all vehicle functions."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Natural language processing supports both Chinese and English commands for all vehicle functions."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Dual motor AWD with torque vectoring capability."
 suspension = "Independent Suspension"
 suspension_comments = "Front multi-link and rear five-link setup with adaptive dampers."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "180mm ground clearance with approach/departure angles of 22°/25° respectively."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "180mm ground clearance with approach/departure angles of 22°/25° respectively."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Snow/sand/gravel modes available but not designe
 cargo_capability = "Yes"
 cargo_capability_comments = "1,628L maximum cargo space with roof rails for additional storage."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management maintains >90% capacity at -20°C."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management maintains >90% capacity at -20°C."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

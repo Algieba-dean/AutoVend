@@ -22,9 +22,9 @@ brand_comments = "Mazda is a Japanese automaker known for its sporty and driver-
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The MX-5 Miata is powered by a naturally aspirated gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The MX-5 Miata is a compact two-seater with limited passenger space, optimized for driver engagement."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The MX-5 Miata is a compact two-seater with limited passenger space, optimized for driver engagement."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "200~300L"
@@ -74,9 +74,9 @@ seat_material_comments = "Leather-trimmed seats are available as an option, with
 noise_insulation = "Medium"
 noise_insulation_comments = "The convertible design results in moderate noise insulation, with more road noise than a hardtop."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The Mazda Connect infotainment system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The Mazda Connect infotainment system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "The MX-5 Miata features rear-wheel drive for balanced wei
 suspension = "Independent Suspension"
 suspension_comments = "The MX-5 Miata uses a double-wishbone front and multi-link rear suspension for precise handling."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The low ground clearance limits off-road capability, but it handles rough pavement well."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The low ground clearance limits off-road capability, but it handles rough pavement well."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The low ground clearance and sporty suspension m
 cargo_capability = "No"
 cargo_capability_comments = "With only 130L of trunk space, the MX-5 Miata has limited cargo capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The MX-5 Miata offers moderate cold weather performance with standard features like heated seats available on higher trims, but its lightweight construction and convertible nature make it less ideal for extreme winter conditions compared to heavier, enclosed vehicles. The rear-wheel drive layout may also require winter tires in snowy climates."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The MX-5 Miata offers moderate cold weather performance with standard features like heated seats available on higher trims, but its lightweight construction and convertible nature make it less ideal for extreme winter conditions compared to heavier, enclosed vehicles. The rear-wheel drive layout may also require winter tires in snowy climates."
 cold_resistance_comments = "The MX-5 Miata performs well in cold weather but lacks dedicated cold-weather features."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"

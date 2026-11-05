@@ -22,9 +22,9 @@ brand_comments = "Porsche is a German luxury and high-performance sports car man
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The base 718 Boxster features a turbocharged 2.0L flat-four gasoline engine (boxer configuration)."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The two-seat cabin offers approximately 2.8 cubic meters of passenger space, optimized for driver-focused ergonomics."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The two-seat cabin offers approximately 2.8 cubic meters of passenger space, optimized for driver-focused ergonomics."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "200~300L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard partial leather seats, with full leather and 
 noise_insulation = "Medium"
 noise_insulation_comments = "Convertible design allows more ambient noise than coupes, but includes acoustic soft top for improved insulation."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Porsche Communication Management (PCM) supports natural voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Porsche Communication Management (PCM) supports natural voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Traditional rear-engine, rear-wheel-drive layout for bala
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear multi-link suspension with Porsche Active Suspension Management (PASM) optional."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Low"
-passibility_comments = "Low ground clearance and sport-tuned suspension prioritize handling over rough terrain capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Low"
+passability_comments = "Low ground clearance and sport-tuned suspension prioritize handling over rough terrain capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Purely road-focused with no off-road pretensions
 cargo_capability = "No"
 cargo_capability_comments = "Limited to small luggage items in front/rear trunks - not designed for significant cargo."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs adequately in cold weather with proper tires, though rear-engine layout provides good traction."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs adequately in cold weather with proper tires, though rear-engine layout provides good traction."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

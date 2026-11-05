@@ -22,9 +22,9 @@ brand_comments = "Audi is a German luxury automotive manufacturer known for its 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Audi Q7 is available with a 3.0L turbocharged V6 gasoline engine (55 TFSI) producing 335 horsepower."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Q7 offers a spacious interior with approximately 4.8 cubic meters of passenger space, accommodating up to 7 passengers."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Q7 offers a spacious interior with approximately 4.8 cubic meters of passenger space, accommodating up to 7 passengers."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard seats are leather-trimmed (Valcona leather), 
 noise_insulation = "High"
 noise_insulation_comments = "The Q7 features acoustic glass and extensive sound-deadening materials for a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The MMI infotainment system supports natural voice control for navigation, media, and climate."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The MMI infotainment system supports natural voice control for navigation, media, and climate."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Quattro all-wheel drive is standard on all Q7 models."
 suspension = "Independent Suspension"
 suspension_comments = "The Q7 features a five-link front and rear independent suspension with optional air suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "With Quattro AWD and optional air suspension, the Q7 handles moderate off-road terrain but is not a hardcore off-roader."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "With Quattro AWD and optional air suspension, the Q7 handles moderate off-road terrain but is not a hardcore off-roader."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "With Quattro AWD and adjustable air suspension, 
 cargo_capability = "Yes"
 cargo_capability_comments = "The Q7 offers up to 1,971L of cargo space with seats folded, suitable for large items."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The Q7 performs well in cold climates, with heated seats, a heated steering wheel, and reliable cold-start performance."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The Q7 performs well in cold climates, with heated seats, a heated steering wheel, and reliable cold-start performance."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

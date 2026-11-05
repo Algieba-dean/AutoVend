@@ -22,9 +22,9 @@ brand_comments = "Hyundai is a South Korean automotive manufacturer known for it
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Hyundai Kona Electric is a pure electric vehicle with no internal combustion engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Kona offers 3.8 cubic meters of passenger space, providing comfortable seating for five."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Kona offers 3.8 cubic meters of passenger space, providing comfortable seating for five."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Leather seats are available on higher trims, with fabr
 noise_insulation = "Medium"
 noise_insulation_comments = "The Kona has decent noise insulation, with some road noise noticeable at highway speeds."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The Kona's infotainment system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The Kona's infotainment system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "The Kona Electric is front-wheel drive, with no AWD optio
 suspension = "Independent Suspension"
 suspension_comments = "The Kona features independent suspension at all four corners for improved ride comfort."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Kona can handle light off-road conditions but isn't designed for serious off-roading."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Kona can handle light off-road conditions but isn't designed for serious off-roading."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The Kona has minimal off-road capability, being 
 cargo_capability = "Yes"
 cargo_capability_comments = "The Kona offers decent cargo space for its class, especially with rear seats folded."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The Kona Electric's battery management system helps maintain range in cold weather."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The Kona Electric's battery management system helps maintain range in cold weather."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

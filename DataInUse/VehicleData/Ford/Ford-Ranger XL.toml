@@ -22,9 +22,9 @@ brand_comments = "Ford is a globally recognized American automaker known for rug
 powertrain_type = "Diesel Engine"
 powertrain_type_comments = "The Ranger XL is powered by a 2.0L turbocharged diesel engine in most markets, offering strong torque for towing and off-road use."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers approximately 4.2 cubic meters of space, accommodating five adults comfortably."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers approximately 4.2 cubic meters of space, accommodating five adults comfortably."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Durable cloth upholstery standard in the XL trim; leat
 noise_insulation = "Medium"
 noise_insulation_comments = "Decent cabin quietness for a pickup, though diesel engine noise is noticeable under acceleration."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "No"
-voice_interfaction_comments = "The base XL trim lacks voice control; higher trims with SYNC 4 support it."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "No"
+voice_interaction_comments = "The base XL trim lacks voice control; higher trims with SYNC 4 support it."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "4x4 is standard in most markets; RWD is base in some regi
 suspension = "Independent Suspension"
 suspension_comments = "Front: Independent double-wishbone; Rear: Leaf springs (workhorse setup)."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "High"
-passibility_comments = "Approach angle: 29°, departure angle: 25°, wading depth: 800mm."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "High"
+passability_comments = "Approach angle: 29°, departure angle: 25°, wading depth: 800mm."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "4x4 with Terrain Management System (sand, mud, r
 cargo_capability = "Yes"
 cargo_capability_comments = "Max payload: 1,860 lbs (844 kg); towing: 7,700 lbs (3,493 kg)."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Diesel engine performs reliably in sub-zero temperatures with proper winterization."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Diesel engine performs reliably in sub-zero temperatures with proper winterization."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

@@ -22,9 +22,9 @@ brand_comments = "Buick is a premium American automotive brand under General Mot
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Buick-Encore GX is powered by a turbocharged gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space volume is approximately 3.8 cubic meters."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space volume is approximately 3.8 cubic meters."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Leather-appointed seating surfaces are available on hi
 noise_insulation = "High"
 noise_insulation_comments = "Features Buick's QuietTuning technology with acoustic laminated glass."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports Buick Infotainment System with voice recognition."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports Buick Infotainment System with voice recognition."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Available AWD system with disconnecting rear axle for eff
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear compound crank suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Capable in light off-road conditions but primarily designed for paved roads."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Capable in light off-road conditions but primarily designed for paved roads."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for serious off-road use despite av
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with 60/40 split-folding rear seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates but not specifically optimized for extreme cold."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates but not specifically optimized for extreme cold."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "Medium"

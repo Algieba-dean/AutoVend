@@ -22,9 +22,9 @@ brand_comments = "Bentley is a British luxury automotive brand known for handcra
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Bentley-S3 is powered by a 6.75L twin-turbocharged V8 gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The Bentley-S3 offers a spacious interior with approximately 5.8 cubic meters of passenger space."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The Bentley-S3 offers a spacious interior with approximately 5.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "The seats are upholstered in premium, hand-stitched le
 noise_insulation = "High"
 noise_insulation_comments = "Advanced noise insulation materials ensure a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "The Bentley-S3 features all-wheel drive for enhanced trac
 suspension = "Independent Suspension"
 suspension_comments = "The vehicle is equipped with an advanced independent suspension system for a smooth ride."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Bentley-S3 is designed for luxury and comfort rather than off-road capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Bentley-S3 is designed for luxury and comfort rather than off-road capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The Bentley-S3 is not designed for off-road use.
 cargo_capability = "Yes"
 cargo_capability_comments = "The spacious trunk and interior provide ample cargo space."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The Bentley-S3 performs well in cold climates with features like heated seats and a robust engine."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The Bentley-S3 performs well in cold climates with features like heated seats and a robust engine."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

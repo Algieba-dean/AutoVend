@@ -22,9 +22,9 @@ brand_comments = "The E-Class is part of Mercedes-Benz's core luxury vehicle lin
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The base E 350 model features a 2.0L turbocharged gasoline engine, with other gasoline and hybrid options available."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The E-Class offers 4.8 cubic meters of passenger space with generous legroom in both rows."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The E-Class offers 4.8 cubic meters of passenger space with generous legroom in both rows."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard MB-Tex upholstery with genuine leather option
 noise_insulation = "High"
 noise_insulation_comments = "Features acoustic glass and extensive sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MBUX system includes 'Hey Mercedes' natural language voice control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MBUX system includes 'Hey Mercedes' natural language voice control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Standard RWD with 4MATIC AWD available."
 suspension = "Independent Suspension"
 suspension_comments = "Multi-link suspension front and rear, with optional AIRMATIC air suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Balanced for comfort and handling with available adaptive damping."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Balanced for comfort and handling with available adaptive damping."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Designed for paved roads, though 4MATIC models o
 cargo_capability = "Yes"
 cargo_capability_comments = "540L trunk with 40/20/40 split-folding rear seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with heated components."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with heated components."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

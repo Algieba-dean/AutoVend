@@ -20,8 +20,8 @@ brand_comments = "Volvo is a Swedish luxury automotive brand known for safety an
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The EX30 Ultra is a fully electric model with no combustion engine."
 
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger space is optimized for urban use, with 4.1 cubic meters of interior volume."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Passenger space is optimized for urban use, with 4.1 cubic meters of interior volume."
 
 trunk_volume = "300~400L"
 trunk_volume_comments = "Trunk capacity is 318L (VDA), expandable to 904L with rear seats folded."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and optimized aerodynamics result in 62 dB at 120 km/h."
 
 # Tech and connectivity
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Google Built-in with natural voice control for navigation/media/climate."
+voice_interaction = "Yes"
+voice_interaction_comments = "Google Built-in with natural voice control for navigation/media/climate."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for infotainment, battery management, and ADAS."
@@ -136,8 +136,8 @@ drive_type_comments = "Dual-motor setup with torque vectoring capability."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts, rear multi-link setup."
 
-passibility = "Medium"
-passibility_comments = "Optimized for urban roads with some gravel/light off-road capability."
+passability = "Medium"
+passability_comments = "Optimized for urban roads with some gravel/light off-road capability."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 2+3 seating with optional 40/20/40 split rear seats."
@@ -155,8 +155,8 @@ off_road_capability_comments = "Not designed for serious off-roading - urban-foc
 cargo_capability = "Yes"
 cargo_capability_comments = "318L trunk + underfloor storage, max 904L with seats folded."
 
-clod_resistance = "High"
-clod_resistance_comments = "Heat pump + battery preconditioning maintains >80% range at -10°C."
+cold_resistance = "High"
+cold_resistance_comments = "Heat pump + battery preconditioning maintains >80% range at -10°C."
 
 heat_resistance = "Medium"
 heat_resistance_comments = "Active battery cooling maintains performance in hot climates."

@@ -15,8 +15,8 @@ brand_comments = "Manufactured by Ford Motor Company, a leading American automak
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "The Lariat trim offers a standard 2.5L hybrid powertrain with an optional 2.0L EcoBoost gasoline engine."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger volume is approximately 4.9 cubic meters (173.6 cubic feet)."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Passenger volume is approximately 4.9 cubic meters (173.6 cubic feet)."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Bed volume is 1,337L (33.3 cubic feet) with the tailgate down; interior cabin storage is flexible."
@@ -54,8 +54,8 @@ seat_material_comments = "Lariat features standard ActiveX faux leather seats wi
 noise_insulation = "Medium"
 noise_insulation_comments = "Active noise cancellation on hybrid models; laminated windshield."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 3 system supports voice commands for navigation, phone, and audio."
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 3 system supports voice commands for navigation, phone, and audio."
 
 ota_updates = "Yes"
 ota_updates_comments = "Ford Power-Up software updates delivered over-the-air."
@@ -126,8 +126,8 @@ drive_type_comments = "AWD optional with 2.0L EcoBoost; FWD standard on hybrid."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts; rear twist-beam (FWD) or multi-link (AWD)."
 
-passibility = "Medium"
-passibility_comments = "FX4 package adds skid plates and all-terrain tires for off-road use."
+passability = "Medium"
+passability_comments = "FX4 package adds skid plates and all-terrain tires for off-road use."
 
 seat_layout = "5-seat"
 seat_layout_comments = "SuperCrew cab configuration with 5-passenger seating."
@@ -144,8 +144,8 @@ off_road_capability_comments = "FX4 package enhances capability with trail contr
 cargo_capability = "Yes"
 cargo_capability_comments = "1,500 lb payload capacity; 4,000 lb towing with 2.0L EcoBoost."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Hybrid battery performs well in cold weather with thermal management."
+cold_resistance = "Medium"
+cold_resistance_comments = "Hybrid battery performs well in cold weather with thermal management."
 
 heat_resistance = "High"
 heat_resistance_comments = "Tested for durability in extreme heat conditions."

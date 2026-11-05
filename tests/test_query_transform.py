@@ -69,3 +69,32 @@ def test_transform_all_pipeline():
     assert "multi_queries" in res
     assert "sub_queries" in res
     assert len(res["sub_queries"]) == 2
+
+
+def test_comparative_query_entity_isolation():
+    """Test that comparative queries isolate entities and never collapse into self-comparison."""
+    engine = QueryTransformationEngine()
+
+    # Case 1: Single car in history, comparison query with two pronouns
+    # MUST NOT replace both with Xiaomi SU7
+    history_single = "User: 我刚看了小米SU7\nAssistant: 小米SU7性能很出色"
+    query1 = "刚才提到的那款车和它相比，哪个续航更长？"
+    rewritten1 = engine.rewrite_query(query1, history_single)
+    # The comparison intent must NOT be collapsed into "小米SU7...和小米SU7相比"
+    assert "小米SU7那款车和小米SU7相比" not in rewritten1
+    assert "相比" in rewritten1
+
+    # Case 2: Query already mentions Model Y explicitly, history mentions Model Y and 小米SU7
+    # MUST NOT replace pronoun with Model Y (causing Model Y vs Model Y)
+    history_two = "User: 特斯拉Model Y 怎么样？\nAssistant: Model Y空间很大。\nUser: 那小米SU7呢？"
+    query2 = "特斯拉Model Y和它相比，哪个加速更快？"
+    rewritten2 = engine.rewrite_query(query2, history_two)
+    assert "特斯拉Model Y和特斯拉Model Y相比" not in rewritten2
+    assert "小米SU7" in rewritten2
+
+    # Case 3: Two distinct cars in history, two distinct pronouns
+    history_distinct = "User: 上次看的蔚来ES6不错\nUser: 刚才看的小米SU7也很强"
+    query3 = "上一款和刚才提到的那台相比，哪个后备箱更大？"
+    rewritten3 = engine.rewrite_query(query3, history_distinct)
+    assert "蔚来ES6" in rewritten3
+    assert "小米SU7" in rewritten3

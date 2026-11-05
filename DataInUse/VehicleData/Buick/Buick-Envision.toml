@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Envision is powered by a turbocharged gasoline engine; no hybrid or electric variant is currently offered."
 
 # Space and dimensions
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger volume is approximately 5.0 cubic meters, offering ample legroom and headroom."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Passenger volume is approximately 5.0 cubic meters, offering ample legroom and headroom."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Cargo capacity is 527L (18.6 cu ft) behind the rear seats, expandable to 1,581L (55.8 cu ft) with seats folded."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Active Noise Cancellation and acoustic glass provide a quiet ride."
 
 # Tech and autonomy
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports Buick Infotainment System with Google Assistant and Amazon Alexa."
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports Buick Infotainment System with Google Assistant and Amazon Alexa."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for infotainment and select modules."
@@ -135,8 +135,8 @@ drive_type_comments = "AWD optional on all trims; FWD standard."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts, rear 5-link independent suspension."
 
-passibility = "Medium"
-passibility_comments = "Competent for light off-road use but optimized for paved roads."
+passability = "Medium"
+passability_comments = "Competent for light off-road use but optimized for paved roads."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 5-passenger seating; no third-row option."
@@ -154,8 +154,8 @@ off_road_capability_comments = "AWD provides traction but lacks dedicated off-ro
 cargo_capability = "Yes"
 cargo_capability_comments = "1,581L max cargo space with seats folded."
 
-clod_resistance = "High"
-clod_resistance_comments = "Tested for reliable cold starts down to -30°C."
+cold_resistance = "High"
+cold_resistance_comments = "Tested for reliable cold starts down to -30°C."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling and cabin materials rated for extreme heat."

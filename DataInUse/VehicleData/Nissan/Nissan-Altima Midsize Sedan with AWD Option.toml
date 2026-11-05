@@ -22,9 +22,9 @@ brand_comments = "Nissan is a Japanese automaker known for reliable and innovati
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Nissan-Altima with AWD is powered by a 2.5L 4-cylinder gasoline engine, with no hybrid or electric option for this configuration."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Altima offers 3.8 cubic meters of passenger space, providing ample room for five adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Altima offers 3.8 cubic meters of passenger space, providing ample room for five adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Available with premium leather-appointed seating surfa
 noise_insulation = "High"
 noise_insulation_comments = "Active Noise Cancellation and acoustic laminated windshield provide a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "NissanConnect with Google built-in supports natural language voice commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "NissanConnect with Google built-in supports natural language voice commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Intelligent All-Wheel Drive with torque vectoring capabil
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut and rear multi-link independent suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Competent for paved roads and light snow, but not designed for off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Competent for paved roads and light snow, but not designed for off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "AWD system is optimized for road conditions, not
 cargo_capability = "Yes"
 cargo_capability_comments = "Good cargo capacity with 60/40 split-folding rear seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates with available remote start and heated features."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates with available remote start and heated features."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

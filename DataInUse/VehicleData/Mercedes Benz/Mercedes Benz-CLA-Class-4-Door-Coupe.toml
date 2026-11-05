@@ -22,9 +22,9 @@ brand_comments = "Mercedes-Benz is a German luxury automotive brand known for pr
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The CLA-Class is currently offered with turbocharged gasoline engines, though some markets may have diesel variants."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The CLA offers approximately 3.8 cubic meters of passenger space, with 1,037 mm of front headroom and 944 mm of rear headroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The CLA offers approximately 3.8 cubic meters of passenger space, with 1,037 mm of front headroom and 944 mm of rear headroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard MB-Tex leatherette upholstery with optional g
 noise_insulation = "High"
 noise_insulation_comments = "Features acoustic glass and extensive sound-deadening materials for a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MBUX system includes 'Hey Mercedes' natural language voice control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MBUX system includes 'Hey Mercedes' natural language voice control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "4MATIC all-wheel drive is standard on most models, with f
 suspension = "Independent Suspension"
 suspension_comments = "Four-link front suspension and multi-link rear suspension, with AMG models getting sport-tuned setups."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Sporty suspension setup prioritizes handling over rough road comfort, though better than pure sports cars."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Sporty suspension setup prioritizes handling over rough road comfort, though better than pure sports cars."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use due to low ground 
 cargo_capability = "Yes"
 cargo_capability_comments = "460L trunk with 40/20/40 split-folding rear seats provides good utility for a coupe-style vehicle."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "German-engineered for cold weather operation, with proven reliability in sub-zero temperatures."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "German-engineered for cold weather operation, with proven reliability in sub-zero temperatures."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

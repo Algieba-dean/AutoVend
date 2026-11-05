@@ -22,9 +22,9 @@ brand_comments = "Toyota is a Japanese automotive manufacturer known for reliabi
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The TRD Pro comes with a 3.5L V6 gasoline engine with no hybrid or electric option."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers approximately 3.8 cubic meters of passenger space with comfortable seating for 5 adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The interior offers approximately 3.8 cubic meters of passenger space with comfortable seating for 5 adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "SofTex®-trimmed heated front seats with TRD Pro embro
 noise_insulation = "Medium"
 noise_insulation_comments = "Improved cabin insulation compared to base models but still noticeable road noise from aggressive tires."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Toyota's Entune system supports voice commands for navigation and audio."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Toyota's Entune system supports voice commands for navigation and audio."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Part-time 4WD with automatic limited-slip differential an
 suspension = "Independent Suspension"
 suspension_comments = "Front independent double-wishbone suspension with TRD-tuned Fox internal bypass shocks."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "High"
-passibility_comments = "Exceptional off-road capability with 280mm ground clearance and 32° approach angle."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "High"
+passability_comments = "Exceptional off-road capability with 280mm ground clearance and 32° approach angle."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "TRD Pro-specific features include multi-terrain 
 cargo_capability = "Yes"
 cargo_capability_comments = "5-foot composite bed with 1,200 lb payload capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in extreme cold with block heater option available."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in extreme cold with block heater option available."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

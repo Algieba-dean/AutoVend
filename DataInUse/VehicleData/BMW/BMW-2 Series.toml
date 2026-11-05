@@ -22,9 +22,9 @@ brand_comments = "BMW is a German luxury automaker known for performance-oriente
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The 2 Series offers turbocharged gasoline engines (e.g., B48 2.0L and B58 3.0L inline-6). No hybrid or electric variant is currently available."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "Interior volume is approximately 2.8 cubic meters, with a focus on driver-centric ergonomics."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "Interior volume is approximately 2.8 cubic meters, with a focus on driver-centric ergonomics."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Sensatec synthetic leather standard; Vernasca leather 
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass windshield and sound-deadening materials reduce cabin noise."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "xDrive AWD standard on M240i; 220i is RWD in most markets
 suspension = "Independent Suspension"
 suspension_comments = "Double-joint spring strut front, five-link rear suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "140mm ground clearance limits off-road capability but handles rough roads well."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "140mm ground clearance limits off-road capability but handles rough roads well."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Sport-tuned suspension prioritizes on-road perfo
 cargo_capability = "Yes"
 cargo_capability_comments = "390L trunk fits 2 golf bags; ski pass-through available."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Tested to -30°C with heated components (mirrors, washer jets)."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Tested to -30°C with heated components (mirrors, washer jets)."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

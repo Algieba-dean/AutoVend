@@ -15,8 +15,8 @@ brand_comments = "Manufactured by General Motors under the Chevrolet brand."
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "Equinox offers a 1.5L turbocharged gasoline engine (LTG) as standard, with a 2.0L turbo option available."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger volume measures exactly 5.02 cubic meters (177.5 cu ft)."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Passenger volume measures exactly 5.02 cubic meters (177.5 cu ft)."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Cargo capacity is 637L (22.5 cu ft) behind rear seats, expandable to 1,869L (66 cu ft) with seats folded."
@@ -54,8 +54,8 @@ seat_material_comments = "Leatherette upholstery standard on LT and above; genui
 noise_insulation = "Medium"
 noise_insulation_comments = "Active noise cancellation on Premier trim."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Chevrolet Infotainment 3 Plus system with Google Assistant integration."
+voice_interaction = "Yes"
+voice_interaction_comments = "Chevrolet Infotainment 3 Plus system with Google Assistant integration."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for infotainment system."
@@ -126,8 +126,8 @@ drive_type_comments = "FWD standard; AWD available with torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front, 4-link independent rear suspension."
 
-passibility = "Medium"
-passibility_comments = "Competent for light off-road use with AWD."
+passability = "Medium"
+passability_comments = "Competent for light off-road use with AWD."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 5-passenger seating (2 front, 3 rear)."
@@ -144,8 +144,8 @@ off_road_capability_comments = "Primarily designed for paved roads despite AWD a
 cargo_capability = "Yes"
 cargo_capability_comments = "60/40 split-folding rear seats enhance cargo versatility."
 
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with available heated features."
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with available heated features."
 
 heat_resistance = "Medium"
 heat_resistance_comments = "Standard air conditioning with available ventilated seats."

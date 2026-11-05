@@ -22,9 +22,9 @@ brand_comments = "The Corvette Z06 is a flagship performance model under Chevrol
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Z06 is powered by a naturally aspirated 5.5L V8 gasoline engine (LT6), optimized for high-revving performance."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The Z06 offers a compact cabin with approximately 2.8 cubic meters of passenger space, prioritizing driver-focused ergonomics."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The Z06 offers a compact cabin with approximately 2.8 cubic meters of passenger space, prioritizing driver-focused ergonomics."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "200~300L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Nappa leather seats with optional GT2 competi
 noise_insulation = "Medium"
 noise_insulation_comments = "Balanced for track use; cabin noise is noticeable at high RPMs but subdued in touring mode."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Chevrolet Infotainment 3 System supports voice commands for navigation/media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Chevrolet Infotainment 3 System supports voice commands for navigation/media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "RWD with electronic limited-slip differential (eLSD) for 
 suspension = "Independent Suspension"
 suspension_comments = "Front and rear double-wishbone suspension with Magnetic Ride Control 4.0."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Low"
-passibility_comments = "Low ground clearance and stiff suspension limit rough-terrain capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Low"
+passability_comments = "Low ground clearance and stiff suspension limit rough-terrain capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use; minimal ground cl
 cargo_capability = "Yes"
 cargo_capability_comments = "Limited to trunk space (357L) but sufficient for weekend trips."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates but lacks dedicated winter features."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates but lacks dedicated winter features."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

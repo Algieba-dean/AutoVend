@@ -15,8 +15,8 @@ brand_comments = "Honda is a Japanese multinational manufacturer known for relia
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Civic Si is powered by a turbocharged gasoline engine with no hybrid or electric option."
 
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering ample room for five occupants."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space is approximately 3.8 cubic meters, offering ample room for five occupants."
 
 trunk_volume = "300~400L"
 trunk_volume_comments = "The trunk capacity is 315L, expandable to 1,200L with rear seats folded."
@@ -54,8 +54,8 @@ seat_material_comments = "Sport seats are upholstered in leather with red stitch
 noise_insulation = "Medium"
 noise_insulation_comments = "Sound insulation is balanced for sporty engine note without excessive cabin noise."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports voice commands via Honda's infotainment system."
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports voice commands via Honda's infotainment system."
 
 ota_updates = "No"
 ota_updates_comments = "Does not support over-the-air updates for the infotainment system."
@@ -126,8 +126,8 @@ drive_type_comments = "Front-wheel drive with a limited-slip differential for pe
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear multi-link independent suspension."
 
-passibility = "Medium"
-passibility_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
+passability = "Medium"
+passability_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 2+3 seating configuration."
@@ -144,8 +144,8 @@ off_road_capability_comments = "Not designed for off-road use due to low ground 
 cargo_capability = "Yes"
 cargo_capability_comments = "Foldable rear seats expand trunk space for larger items."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates but lacks dedicated winter features."
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates but lacks dedicated winter features."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling and cabin AC are optimized for hot conditions."

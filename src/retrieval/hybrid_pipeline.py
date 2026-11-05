@@ -214,8 +214,12 @@ class HybridPipeline:
         result: HybridPipelineResult,
     ) -> None:
         """对粗筛候选做稠密召回，可选与 BM25 稀疏召回做 RRF 融合"""
-        if self.retriever is None:
-            self.logger.warning("未配置 retriever，降级执行纯 BM25 稀疏检索")
+        is_degraded = (
+            self.retriever is None
+            or getattr(getattr(self.retriever, "embedding_model", None), "is_degraded", False)
+        )
+        if is_degraded:
+            self.logger.warning("未配置 retriever 或嵌入模型处于降级状态，降级执行纯 BM25 稀疏检索")
             if self.sparse_index is not None:
                 from src.retrieval.query_expander import QueryExpander
 
@@ -494,12 +498,16 @@ def build_default_pipeline(
 
     retriever = None
     try:
-        retriever = VehicleRetriever(
-            BGEEmbeddingModel(),
-            ChromaVectorStore(),
-            similarity_threshold=similarity_threshold,
-            price_tolerance=price_tolerance,
-        )
+        emb = BGEEmbeddingModel()
+        if getattr(emb, "is_degraded", False):
+            get_logger(__name__).warning("BGEEmbeddingModel 处于降级状态，强制切入纯 BM25 稀疏检索")
+        else:
+            retriever = VehicleRetriever(
+                emb,
+                ChromaVectorStore(),
+                similarity_threshold=similarity_threshold,
+                price_tolerance=price_tolerance,
+            )
     except Exception as exc:
         get_logger(__name__).warning(f"稠密向量检索初始化失败，降级为无向量检索/纯规则与稀疏检索: {exc}")
 

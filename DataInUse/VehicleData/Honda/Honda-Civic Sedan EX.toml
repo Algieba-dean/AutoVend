@@ -23,8 +23,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Civic EX is powered by a 2.0L naturally aspirated gasoline engine."
 
 # Passenger Space Volume
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Civic EX offers 97.8 cu ft (2.77 cubic meters) of passenger volume, providing ample space for five occupants."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Civic EX offers 97.8 cu ft (2.77 cubic meters) of passenger volume, providing ample space for five occupants."
 
 # Trunk Volume
 trunk_volume = "300~400L"
@@ -75,8 +75,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Active Noise Cancellation reduces cabin noise, but road noise is still noticeable at highway speeds."
 
 # Voice Interaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "HondaLink infotainment supports Apple CarPlay/Android Auto with voice commands."
+voice_interaction = "Yes"
+voice_interaction_comments = "HondaLink infotainment supports Apple CarPlay/Android Auto with voice commands."
 
 # OTA Updates
 ota_updates = "No"
@@ -171,8 +171,8 @@ suspension = "Independent Suspension"
 suspension_comments = "Front: MacPherson strut; Rear: Multi-link independent suspension."
 
 # Passibility
-passibility = "Medium"
-passibility_comments = "Handles urban roads well but not designed for off-road use."
+passability = "Medium"
+passability_comments = "Handles urban roads well but not designed for off-road use."
 
 # Seat Layout
 seat_layout = "5-seat"
@@ -195,8 +195,8 @@ cargo_capability = "Yes"
 cargo_capability_comments = "419L trunk with folding rear seats for larger items."
 
 # Cold Resistance
-clod_resistance = "Medium"
-clod_resistance_comments = "Reliable cold starts down to -20°C with proper winter preparation."
+cold_resistance = "Medium"
+cold_resistance_comments = "Reliable cold starts down to -20°C with proper winter preparation."
 
 # Heat Resistance
 heat_resistance = "High"

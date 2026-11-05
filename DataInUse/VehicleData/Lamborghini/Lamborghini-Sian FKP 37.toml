@@ -22,9 +22,9 @@ brand_comments = "Lamborghini is an Italian luxury sports car manufacturer known
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "The Sian FKP 37 features a V12 gasoline engine paired with a supercapacitor-based hybrid system."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The Sian FKP 37 offers approximately 2.8 cubic meters of passenger space, which is compact but carefully designed for optimal driving ergonomics. The cockpit-style interior features deeply bolstered sport seats that maximize space efficiency while providing exceptional support during high-performance driving. Though limited in volume compared to conventional cars, every centimeter is optimized for the driver's needs, with controls placed within easy reach and excellent outward visibility despite the low-slung design. The space prioritizes the driving experience over passenger comfort, typical of Lamborghini's supercar philosophy."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The Sian FKP 37 offers approximately 2.8 cubic meters of passenger space, which is compact but carefully designed for optimal driving ergonomics. The cockpit-style interior features deeply bolstered sport seats that maximize space efficiency while providing exceptional support during high-performance driving. Though limited in volume compared to conventional cars, every centimeter is optimized for the driver's needs, with controls placed within easy reach and excellent outward visibility despite the low-slung design. The space prioritizes the driving experience over passenger comfort, typical of Lamborghini's supercar philosophy."
 passenger_space_volume_comments = "The Sian FKP 37 offers a compact passenger space optimized for performance, with exact volume around 2.8 cubic meters."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
@@ -75,9 +75,9 @@ seat_material_comments = "The seats are upholstered in premium Lamborghini leath
 noise_insulation = "Medium"
 noise_insulation_comments = "The cabin is designed to balance engine sound and road noise for a sporty yet comfortable experience."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The infotainment system supports voice commands for navigation and media control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The infotainment system supports voice commands for navigation and media control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -171,9 +171,9 @@ drive_type_comments = "The Sian FKP 37 features Lamborghini's advanced AWD syste
 suspension = "Independent Suspension"
 suspension_comments = "The car uses a push-rod suspension system for superior handling and ride quality."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Low"
-passibility_comments = "The low ground clearance and sporty setup limit off-road capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Low"
+passability_comments = "The low ground clearance and sporty setup limit off-road capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"
@@ -195,9 +195,9 @@ off_road_capability_comments = "The low ground clearance and performance tires l
 cargo_capability = "No"
 cargo_capability_comments = "The small trunk and two-seat layout limit cargo capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The car performs well in cold conditions but is not optimized for extreme cold."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The car performs well in cold conditions but is not optimized for extreme cold."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

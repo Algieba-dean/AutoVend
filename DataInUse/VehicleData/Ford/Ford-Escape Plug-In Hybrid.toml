@@ -22,9 +22,9 @@ brand_comments = "Ford is a well-established American automaker known for its SU
 powertrain_type = "Plug-in Hybird Electric Vehicle"
 powertrain_type_comments = "Combines a 2.5L Atkinson-cycle gasoline engine with an electric motor and a 14.4 kWh battery for up to 37 miles of electric-only range."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Offers 3.8 cubic meters of passenger space, providing ample room for five occupants."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Offers 3.8 cubic meters of passenger space, providing ample room for five occupants."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Available with leather-trimmed seats (standard on high
 noise_insulation = "High"
 noise_insulation_comments = "Active noise cancellation and acoustic glass for a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Ford's SYNC 4 system supports voice commands for navigation, media, and climate."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Ford's SYNC 4 system supports voice commands for navigation, media, and climate."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Standard AWD with intelligent torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear multi-link independent suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Suitable for light off-road use but optimized for urban driving."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Suitable for light off-road use but optimized for urban driving."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for serious off-roading but handles
 cargo_capability = "Yes"
 cargo_capability_comments = "Flexible cargo space with fold-flat rear seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Battery heating system maintains performance in cold weather."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Battery heating system maintains performance in cold weather."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

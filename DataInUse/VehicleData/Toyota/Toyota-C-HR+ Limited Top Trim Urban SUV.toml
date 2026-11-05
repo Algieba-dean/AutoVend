@@ -22,9 +22,9 @@ brand_comments = "Toyota is a globally recognized Japanese automaker known for r
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "The C-HR+ Limited Top Trim features a 1.8L 4-cylinder hybrid powertrain (2ZR-FXE) paired with an electric motor."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Passenger volume is approximately 3.8 cubic meters, with a focus on front-seat comfort."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Passenger volume is approximately 3.8 cubic meters, with a focus on front-seat comfort."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "SofTex synthetic leather upholstery with contrast stit
 noise_insulation = "Medium"
 noise_insulation_comments = "Acoustic windshield and added insulation reduce road noise."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Toyota's Voice Recognition supports navigation and media commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Toyota's Voice Recognition supports navigation and media commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "FWD standard; AWD not available on hybrid models."
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson struts (front) / Double wishbone (rear)."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "170mm ground clearance suits urban obstacles."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "170mm ground clearance suits urban obstacles."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for serious off-roading."
 cargo_capability = "Yes"
 cargo_capability_comments = "371L trunk suitable for groceries or small luggage."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Hybrid battery performance maintained to -30°C."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Hybrid battery performance maintained to -30°C."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

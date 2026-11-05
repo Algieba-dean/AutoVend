@@ -36,25 +36,9 @@ class PreciseLabels(BaseModel):
     powertrain_type: Optional[str] = None
     powertrain_type_comments: Optional[str] = None
 
-    # 尺寸和空间 (修复 passenger_sapce_volume 错别字)
-    passenger_space_volume: Optional[str] = Field(
-        None, validation_alias=AliasChoices("passenger_space_volume", "passenger_sapce_volume")
-    )
-    passenger_sapce_volume: Optional[str] = Field(
-        None, validation_alias=AliasChoices("passenger_sapce_volume", "passenger_space_volume")
-    )
-    passenger_space_volume_comments: Optional[str] = Field(
-        None,
-        validation_alias=AliasChoices(
-            "passenger_space_volume_comments", "passenger_sapce_volume_comments"
-        ),
-    )
-    passenger_sapce_volume_comments: Optional[str] = Field(
-        None,
-        validation_alias=AliasChoices(
-            "passenger_sapce_volume_comments", "passenger_space_volume_comments"
-        ),
-    )
+    # 尺寸和空间
+    passenger_space_volume: Optional[str] = None
+    passenger_space_volume_comments: Optional[str] = None
 
     trunk_volume: Optional[str] = None
     trunk_volume_comments: Optional[str] = None
@@ -94,25 +78,9 @@ class PreciseLabels(BaseModel):
     noise_insulation: Optional[str] = None
     noise_insulation_comments: Optional[str] = None
 
-    # 智能化配置 (修复 voice_interfaction 错别字)
-    voice_interaction: Optional[str] = Field(
-        None, validation_alias=AliasChoices("voice_interaction", "voice_interfaction")
-    )
-    voice_interfaction: Optional[str] = Field(
-        None, validation_alias=AliasChoices("voice_interfaction", "voice_interaction")
-    )
-    voice_interaction_comments: Optional[str] = Field(
-        None,
-        validation_alias=AliasChoices(
-            "voice_interaction_comments", "voice_interfaction_comments"
-        ),
-    )
-    voice_interfaction_comments: Optional[str] = Field(
-        None,
-        validation_alias=AliasChoices(
-            "voice_interfaction_comments", "voice_interaction_comments"
-        ),
-    )
+    # 智能化配置
+    voice_interaction: Optional[str] = None
+    voice_interaction_comments: Optional[str] = None
 
     ota_updates: Optional[str] = None
     ota_updates_comments: Optional[str] = None
@@ -185,18 +153,8 @@ class PreciseLabels(BaseModel):
     suspension: Optional[str] = None
     suspension_comments: Optional[str] = None
 
-    passability: Optional[str] = Field(
-        None, validation_alias=AliasChoices("passability", "passibility")
-    )
-    passibility: Optional[str] = Field(
-        None, validation_alias=AliasChoices("passibility", "passability")
-    )
-    passability_comments: Optional[str] = Field(
-        None, validation_alias=AliasChoices("passability_comments", "passibility_comments")
-    )
-    passibility_comments: Optional[str] = Field(
-        None, validation_alias=AliasChoices("passibility_comments", "passability_comments")
-    )
+    passability: Optional[str] = None
+    passability_comments: Optional[str] = None
 
     # 实用性
     seat_layout: Optional[str] = None
@@ -214,19 +172,9 @@ class PreciseLabels(BaseModel):
     cargo_capability: Optional[str] = None
     cargo_capability_comments: Optional[str] = None
 
-    # 环境适应性 (修复 clod_resistance 错别字)
-    cold_resistance: Optional[str] = Field(
-        None, validation_alias=AliasChoices("cold_resistance", "clod_resistance")
-    )
-    clod_resistance: Optional[str] = Field(
-        None, validation_alias=AliasChoices("clod_resistance", "cold_resistance")
-    )
-    cold_resistance_comments: Optional[str] = Field(
-        None, validation_alias=AliasChoices("cold_resistance_comments", "clod_resistance_comments")
-    )
-    clod_resistance_comments: Optional[str] = Field(
-        None, validation_alias=AliasChoices("clod_resistance_comments", "cold_resistance_comments")
-    )
+    # 环境适应性
+    cold_resistance: Optional[str] = None
+    cold_resistance_comments: Optional[str] = None
 
     heat_resistance: Optional[str] = None
     heat_resistance_comments: Optional[str] = None
@@ -443,34 +391,76 @@ class Vehicle(BaseModel):
 
         return " ".join(parts)
 
-    def get_price_range(self) -> Optional[tuple]:
-        """提取价格区间"""
-        if not self.precise_labels.price:
+    def get_price_range(self) -> Optional[Tuple[int, int]]:
+        """
+        提取车辆价格区间 (元)。
+        支持多种主流价格表示格式：
+        - 中划线区间: '21.59-29.99万', '20-30万元', '21.59–29.99万'
+        - 中文'到'/'至'区间: '20万到30万', '15万至25万'
+        - 波浪号区间: '30,000~40,000', '21.59~29.99万'
+        - 上限/下限描述: 'Below 10,000', '10万以下', 'Above 100,000', '50万以上'
+        - 单一固定价格: '25万', '250000'
+        """
+        if not self.precise_labels or not self.precise_labels.price:
             return None
 
-        price_str = self.precise_labels.price
-        # 简单的价格解析逻辑，可以根据实际情况调整
-        if "~" in price_str:
-            try:
-                parts = price_str.split("~")
-                if len(parts) == 2:
-                    # 移除非数字字符
-                    min_price = "".join(filter(str.isdigit, parts[0].strip()))
-                    max_price = "".join(filter(str.isdigit, parts[1].strip()))
-                    if min_price and max_price:
-                        return (int(min_price), int(max_price))
-            except (ValueError, IndexError):
-                pass
+        price_str = str(self.precise_labels.price).strip()
+        if not price_str:
+            return None
 
-        return None
+        is_wan = "万" in price_str or "w" in price_str.lower()
+        clean_str = price_str.replace(",", "").replace("，", "")
 
-    def matches_price_range(self, target_price: int, tolerance: float = 0.2) -> bool:
-        """检查是否匹配目标价格范围"""
+        # Check 'Below X' / 'X以下' / 'X以内'
+        if any(w in clean_str.lower() for w in ["below", "以下", "以内"]):
+            nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", clean_str)]
+            if nums:
+                limit = nums[0] * 10000 if (is_wan or nums[0] < 1000) else nums[0]
+                return (0, int(round(limit)))
+
+        # Check 'Above X' / 'X以上' / 'X起'
+        if any(w in clean_str.lower() for w in ["above", "以上", "起"]):
+            nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", clean_str)]
+            if nums:
+                val = nums[0] * 10000 if (is_wan or nums[0] < 1000) else nums[0]
+                upper = val * 5 if val > 0 else 1000000
+                return (int(round(val)), int(round(upper)))
+
+        # Extract numeric components
+        nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", clean_str)]
+        if not nums:
+            return None
+
+        if len(nums) == 1:
+            val = nums[0] * 10000 if (is_wan or nums[0] < 1000) else nums[0]
+            ival = int(round(val))
+            return (ival, ival)
+
+        p_min_raw = min(nums[0], nums[1])
+        p_max_raw = max(nums[0], nums[1])
+
+        # If either number is small (< 1000) or '万' is present, convert from 万元 to 元
+        if is_wan or p_min_raw < 1000 or p_max_raw < 1000:
+            p_min = p_min_raw * 10000 if p_min_raw < 1000 else p_min_raw
+            p_max = p_max_raw * 10000 if p_max_raw < 1000 else p_max_raw
+        else:
+            p_min = p_min_raw
+            p_max = p_max_raw
+
+        return (int(round(p_min)), int(round(p_max)))
+
+    def matches_price_range(self, target_price: float, tolerance: float = 0.2) -> bool:
+        """
+        检查是否匹配目标价格范围。
+        若车辆无有效价格区间，则无法通过价格过滤（返回 False，避免静默全部放行）。
+        """
         price_range = self.get_price_range()
         if not price_range:
-            return True  # 如果没有价格信息，默认匹配
+            return False  # 修复静默失效兜底：无价格信息不可默认全部放行
 
         min_price, max_price = price_range
-        price_tolerance = int(target_price * tolerance)
+        # 兼容 target_price 以万元为单位（例如 25 或 25.0）
+        norm_target = target_price * 10000 if target_price < 1000 else target_price
+        price_tolerance = norm_target * tolerance
 
-        return (min_price - price_tolerance) <= target_price <= (max_price + price_tolerance)
+        return (min_price - price_tolerance) <= norm_target <= (max_price + price_tolerance)

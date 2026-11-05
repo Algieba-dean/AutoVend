@@ -22,9 +22,9 @@ brand_comments = "Renault's Alpine performance division developed this high-perf
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "Pure electric powertrain with no combustion engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "Compact interior space optimized for sporty driving with 3.1 cubic meters of passenger volume."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "Compact interior space optimized for sporty driving with 3.1 cubic meters of passenger volume."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Performance seats with premium leather and Alpine bran
 noise_insulation = "Medium"
 noise_insulation_comments = "Balanced sound insulation to maintain sporty character while reducing road noise."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Renault's OpenR Link system with natural voice commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Renault's OpenR Link system with natural voice commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Dual-motor AWD system with torque vectoring."
 suspension = "Independent Suspension"
 suspension_comments = "Four-wheel independent suspension with sport tuning."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Sport-tuned suspension prioritizes handling over comfort."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Sport-tuned suspension prioritizes handling over comfort."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Performance-oriented with minimal off-road capab
 cargo_capability = "Yes"
 cargo_capability_comments = "Practical hatchback design with fold-flat rear seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Battery thermal management maintains performance in cold weather."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Battery thermal management maintains performance in cold weather."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

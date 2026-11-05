@@ -17,8 +17,8 @@ brand_comments = "Manufactured by Toyota Motor Corporation, a leading Japanese a
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "Features Toyota's Hybrid Synergy Drive system combining a gasoline engine with electric motors."
 
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "Offers 3.8 cubic meters of passenger space with a coupe-like roofline."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "Offers 3.8 cubic meters of passenger space with a coupe-like roofline."
 
 trunk_volume = "300~400L"
 trunk_volume_comments = "Boot capacity is 377 liters (VDA), expandable to 1,102 liters with rear seats folded."
@@ -56,8 +56,8 @@ seat_material_comments = "SofTex synthetic leather upholstery with contrast stit
 noise_insulation = "Medium"
 noise_insulation_comments = "Acoustic windshield and additional insulation materials reduce road noise."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Toyota's voice recognition system for infotainment controls."
+voice_interaction = "Yes"
+voice_interaction_comments = "Toyota's voice recognition system for infotainment controls."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for multimedia system via Toyota Connected Services."
@@ -128,8 +128,8 @@ drive_type_comments = "Front-wheel drive configuration standard (AWD not availab
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front and double wishbone rear suspension."
 
-passibility = "Medium"
-passibility_comments = "Capable on light off-road surfaces but primarily designed for urban use."
+passability = "Medium"
+passability_comments = "Capable on light off-road surfaces but primarily designed for urban use."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard 2+3 seating configuration."
@@ -146,8 +146,8 @@ off_road_capability_comments = "Not designed for serious off-road use despite SU
 cargo_capability = "Yes"
 cargo_capability_comments = "Practical cargo space with 60/40 split folding rear seats."
 
-clod_resistance = "Medium"
-clod_resistance_comments = "The Toyota C-HR+ hybrid system demonstrates good cold weather performance down to approximately -20°C, with battery heating systems and engine management optimized for winter conditions. However, like all hybrids, fuel efficiency may decrease by 15-20% in extreme cold due to increased engine runtime for cabin heating and battery temperature management."
+cold_resistance = "Medium"
+cold_resistance_comments = "The Toyota C-HR+ hybrid system demonstrates good cold weather performance down to approximately -20°C, with battery heating systems and engine management optimized for winter conditions. However, like all hybrids, fuel efficiency may decrease by 15-20% in extreme cold due to increased engine runtime for cabin heating and battery temperature management."
 cold_resistance_comments = "Hybrid system performs well in cold climates down to -20°C."
 
 heat_resistance = "High"

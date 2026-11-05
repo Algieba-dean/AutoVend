@@ -20,8 +20,8 @@ brand_comments = "XPeng is a Chinese electric vehicle manufacturer known for adv
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The X9 740 Ultra-Long-Range is a pure electric vehicle with no combustion engine."
 
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious interior with 5.8 cubic meters of passenger volume, optimized for 7-seat comfort."
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "Spacious interior with 5.8 cubic meters of passenger volume, optimized for 7-seat comfort."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Trunk capacity is 550L (expands to 1,800L with rear seats folded)."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Double-layer acoustic glass and active noise cancellation."
 
 # Tech and autonomy
-voice_interfaction = "Yes"
-voice_interfaction_comments = "XPeng's Xmart OS supports natural language voice commands."
+voice_interaction = "Yes"
+voice_interaction_comments = "XPeng's Xmart OS supports natural language voice commands."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for infotainment and ADAS features."
@@ -136,8 +136,8 @@ drive_type_comments = "Front-wheel drive configuration for efficiency."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut, rear multi-link setup with CDC dampers."
 
-passibility = "Medium"
-passibility_comments = "170mm ground clearance suits urban/light rough terrain."
+passability = "Medium"
+passability_comments = "170mm ground clearance suits urban/light rough terrain."
 
 seat_layout = "7-seat"
 seat_layout_comments = "2+2+3 configuration with captain's chairs in second row."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Not designed for serious off-road use."
 cargo_capability = "Yes"
 cargo_capability_comments = "Max cargo volume of 1,800L with seats folded."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery heating system maintains -30°C to 55°C operation."
+cold_resistance = "High"
+cold_resistance_comments = "Battery heating system maintains -30°C to 55°C operation."
 
 heat_resistance = "High"
 heat_resistance_comments = "Liquid-cooled battery with thermal management up to 55°C."

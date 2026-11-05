@@ -22,9 +22,9 @@ brand_comments = "Porsche is a German luxury and high-performance automotive bra
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Macan S features a turbocharged 2.9L V6 gasoline engine with no hybrid or electric variant."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Macan S offers 3.8 cubic meters of passenger space, providing ample room for five occupants."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Macan S offers 3.8 cubic meters of passenger space, providing ample room for five occupants."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard 8-way power-adjustable leather seats; optiona
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and sound-deadening materials provide a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Porsche Communication Management (PCM) supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Porsche Communication Management (PCM) supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Porsche Traction Management (PTM) with active all-wheel d
 suspension = "Independent Suspension"
 suspension_comments = "Front double-wishbone and rear multi-link suspension; optional air suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Capable on light off-road terrain but optimized for on-road performance."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Capable on light off-road terrain but optimized for on-road performance."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "All-wheel drive and adjustable ride height provi
 cargo_capability = "Yes"
 cargo_capability_comments = "488L trunk capacity with 60/40 split-folding rear seats."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with heated seats and all-wheel drive."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with heated seats and all-wheel drive."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

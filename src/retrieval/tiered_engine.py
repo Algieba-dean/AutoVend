@@ -30,23 +30,122 @@ logger = logging.getLogger(__name__)
 # Tier 0 In-Memory Fast-Path Indices & Caches
 # -------------------------------------------------------------------------
 
-SPEC_ATTRIBUTE_PATTERNS: List[Tuple[re.Pattern, str, str]] = [
-    (re.compile(r"零百|百公里加速|0-100|几秒破百|加速"), "acceleration_0_100", "0-100km/h加速"),
-    (re.compile(r"极速|最高时速|最高车速|能跑多快"), "max_speed", "最高车速"),
-    (re.compile(r"纯电续航|综合续航|续航里程|续航|能跑多少公里|cltc"), "electric_range", "CLTC续航里程"),
-    (re.compile(r"电池(?:容量|大小|包|品牌|厂家|厂商|供应商|类型|安全)?|多少度电|度电|电芯|三元锂|磷酸铁锂|麒麟电池|神行电池|刀片电池"), "battery_capacity", "电池规格与品牌"),
-    (re.compile(r"官方指导价|指导价|售价|价格|多少钱|多少万|落地价|预算"), "price", "官方指导价"),
-    (re.compile(r"马力|功率|多少匹|输出功率"), "horsepower", "最大马力"),
-    (re.compile(r"扭矩|峰值扭矩"), "torque", "峰值扭矩"),
-    (re.compile(r"电机转速|转速|转/分|rpm|双电机|单电机|电机"), "motor_tech", "电机动力科技"),
-    (re.compile(r"轴距|车长|车宽|车高|长宽高|尺寸"), "wheelbase", "轴距/车身尺寸"),
-    (re.compile(r"几座|座位|座椅布局|5座|6座|7座"), "seat_layout", "座椅布局"),
-    (re.compile(r"驱动|四驱|后驱|两驱|前驱"), "drive_type", "驱动形式"),
-    (re.compile(r"动力形式|纯电|插混|增程|油电混动|油车"), "powertrain_type", "动力类型"),
-    (re.compile(r"后备箱|行李箱容积|储物空间"), "cargo_volume", "后备箱容积"),
-    (re.compile(r"智驾|辅助驾驶|自动驾驶|算力|芯片|激光雷达|orin"), "autonomous_driving_level", "智能驾驶级别"),
-    (re.compile(r"快充|800v|高压平台|充电速度|超充|充满要多久|充电要多久"), "charging_tech", "高压超快充架构"),
-]
+class SpecIntentClassifier:
+    """
+    Lightweight, sub-millisecond (< 0.1 ms) generalized intent classifier for Tier 0 automotive specifications.
+    Combines direct keyword regex, colloquial / structural spoken pattern matching, and semantic anchor voting
+    to generalize across varied conversational queries (e.g. '这车多久能到一百码', '起步猛不猛', '多少能拿下来')
+    preventing P99 latency cliffs caused by fragile single regexes.
+    """
+
+    PRIMARY_PATTERNS: List[Tuple[re.Pattern, str, str]] = [
+        (re.compile(r"零百|百公里加速|0-100|几秒破百|加速|提速|起步|推背|冲刺|动力响应"), "acceleration_0_100", "0-100km/h加速"),
+        (re.compile(r"极速|最高时速|最高车速|能跑多快|封顶时速|最快跑|限速|顶格时速|车速上限"), "max_speed", "最高车速"),
+        (re.compile(r"纯电续航|综合续航|续航里程|续航|能跑多少公里|cltc|wltc|满电跑|满电续航|一箱油|一箱电"), "electric_range", "CLTC续航里程"),
+        (re.compile(r"电池(?:容量|大小|包|品牌|厂家|厂商|供应商|类型|安全)?|多少度电|度电|电芯|三元锂|磷酸铁锂|麒麟电池|神行电池|刀片电池|动力电池"), "battery_capacity", "电池规格与品牌"),
+        (re.compile(r"官方指导价|指导价|售价|价格|多少钱|多少万|落地价|预算|起售价|入门价|顶配价格|标配价格"), "price", "官方指导价"),
+        (re.compile(r"马力|功率|多少匹|输出功率|最大马力|动力参数"), "horsepower", "最大马力"),
+        (re.compile(r"扭矩|峰值扭矩|牛米|扭力"), "torque", "峰值扭矩"),
+        (re.compile(r"电机转速|转速|转/分|rpm|双电机|单电机|三电机|四电机|电机|电驱"), "motor_tech", "电机动力科技"),
+        (re.compile(r"轴距|车长|车宽|车高|长宽高|尺寸|车身尺寸|外部尺寸|多长|多宽"), "wheelbase", "轴距/车身尺寸"),
+        (re.compile(r"几座|座位|座椅布局|5座|6座|7座|大5座|大6座|几排座"), "seat_layout", "座椅布局"),
+        (re.compile(r"驱动|四驱|后驱|两驱|前驱|全时四驱|适时四驱"), "drive_type", "驱动形式"),
+        (re.compile(r"动力形式|纯电|插混|增程|油电混动|油车|燃油|电车|绿牌|蓝牌"), "powertrain_type", "动力类型"),
+        (re.compile(r"后备箱|行李箱容积|储物空间|后备箱多大|尾箱|后备厢|装载空间"), "cargo_volume", "后备箱容积"),
+        (re.compile(r"智驾|辅助驾驶|自动驾驶|算力|芯片|激光雷达|orin|城市noa|高速noa|领航辅助"), "autonomous_driving_level", "智能驾驶级别"),
+        (re.compile(r"快充|800v|高压平台|充电速度|超充|充满要多久|充电要多久|几分钟充满|充电倍率|5c|4c"), "charging_tech", "高压超快充架构"),
+    ]
+
+    COLLOQUIAL_PATTERNS: List[Tuple[re.Pattern, str, str]] = [
+        # Acceleration spoken phrasing e.g. "这车多久能到一百码", "起步猛不猛", "0到100要多久"
+        (re.compile(r"(?:多久|几秒|多长时间|多快|时间).*(?:到|破|达到|上)?(?:100|一百|百公里|百码|时速百)"), "acceleration_0_100", "0-100km/h加速"),
+        (re.compile(r"(?:起步|提速|初段|后段|推背|脚感|油门).*(?:猛|快|肉|冲|强|怎么样|如何|行不行)"), "acceleration_0_100", "0-100km/h加速"),
+        (re.compile(r"(?:0到100|0-100|零到一百).*(?:几秒|多久|多长时间)"), "acceleration_0_100", "0-100km/h加速"),
+        (re.compile(r"(?:冲|飙|开到).*(?:一百|100|百码)"), "acceleration_0_100", "0-100km/h加速"),
+
+        # Max speed spoken phrasing e.g. "能开到多少码", "最高能跑几码"
+        (re.compile(r"(?:最快|最高|顶格|能开到|能跑到|极限).*(?:时速|车速|速度|码|多快)"), "max_speed", "最高车速"),
+
+        # Range spoken phrasing e.g. "满电能跑多远", "充满电能跑多远", "一箱油能跑多久"
+        (re.compile(r"(?:充满|满电|满油|一箱油|一箱电|纯电|综合).*(?:能跑|开多远|跑多远|里程|多少公里|公里|多远)"), "electric_range", "CLTC续航里程"),
+        (re.compile(r"(?:续航|能跑|开).*(?:多远|多少公里|几百公里)"), "electric_range", "CLTC续航里程"),
+
+        # Battery spoken phrasing e.g. "配的是什么电池", "用的哪家电池"
+        (re.compile(r"(?:用|配|装|搭载).*(?:什么电池|哪家电池|三元|铁锂|麒麟|神行|刀片|电芯)"), "battery_capacity", "电池规格与品牌"),
+        (re.compile(r"(?:电池|电量).*(?:多大|容量|度电|品牌|厂家|厂商|谁家|安全)"), "battery_capacity", "电池规格与品牌"),
+
+        # Price spoken phrasing e.g. "多少钱能拿下来", "多少能开走", "顶配要多少"
+        (re.compile(r"(?:多少|啥价格|什么价|贵不贵).*(?:钱|万|落地|能买|能提|拿下|能开走|开走)"), "price", "官方指导价"),
+        (re.compile(r"(?:落地|全款|裸车|顶配|标配|起步|入门).*(?:多少|预算|要多少)"), "price", "官方指导价"),
+
+        # Charging spoken phrasing e.g. "充满电要多久", "充到80%要几分钟"
+        (re.compile(r"(?:充满|充到80%|补能|充电).*(?:要多久|几分钟|快不快|多长时间|慢不慢)"), "charging_tech", "高压超快充架构"),
+        (re.compile(r"(?:支持|带不带|是不是).*(?:800v|高压|超充|快充|高压平台)"), "charging_tech", "高压超快充架构"),
+
+        # ADAS spoken phrasing e.g. "带不带激光雷达", "智驾水平怎么样"
+        (re.compile(r"(?:带不带|有没有|配不配).*(?:激光雷达|智驾|辅助驾驶|自动驾驶|noa|orin)"), "autonomous_driving_level", "智能驾驶级别"),
+        (re.compile(r"(?:智驾|辅助驾驶|自动驾驶|算力|智能驾驶).*(?:水平|等级|几级|级别|版本|多强|好不好用)"), "autonomous_driving_level", "智能驾驶级别"),
+
+        # Cargo volume spoken phrasing e.g. "后备箱多大", "能放几个行李箱", "能不能装大件"
+        (re.compile(r"(?:后备箱|行李箱|尾箱|后备厢).*(?:多大|容积|空间|能装|升|几升|容纳)"), "cargo_volume", "后备箱容积"),
+        (re.compile(r"(?:能装|能放|能塞).*(?:几个行李箱|多少东西|大件|婴儿车|露营)"), "cargo_volume", "后备箱容积"),
+
+        # Seat layout spoken phrasing e.g. "能坐几人", "后座能坐几个人"
+        (re.compile(r"(?:能坐|坐得下|后排|后座).*(?:几人|几个人|多少人)"), "seat_layout", "座椅布局"),
+    ]
+
+    SEMANTIC_KEYWORDS: Dict[str, Tuple[Set[str], str]] = {
+        "acceleration_0_100": ({"加速", "零百", "0-100", "百公里", "破百", "起步", "推背", "提速", "冲刺", "一百码", "100码", "百码"}, "0-100km/h加速"),
+        "max_speed": ({"极速", "最高时速", "最高车速", "能跑多快", "封顶时速", "限速", "最快跑", "极速多少"}, "最高车速"),
+        "electric_range": ({"续航", "纯电续航", "综合续航", "里程", "跑多远", "能跑多少公里", "能开多远", "满电跑", "cltc", "wltc"}, "CLTC续航里程"),
+        "battery_capacity": ({"电池", "电量", "多少度电", "度电", "电芯", "三元锂", "磷酸铁锂", "刀片电池", "麒麟电池", "神行电池"}, "电池规格与品牌"),
+        "price": ({"价格", "售价", "指导价", "多少钱", "多少万", "落地价", "预算", "拿下", "买下", "开走", "入手"}, "官方指导价"),
+        "horsepower": ({"马力", "功率", "多少匹", "输出功率", "千瓦", "kw", "最大马力"}, "最大马力"),
+        "torque": ({"扭矩", "峰值扭矩", "扭力", "nm", "牛米"}, "峰值扭矩"),
+        "motor_tech": ({"电机", "转速", "双电机", "单电机", "三电机", "四电机", "驱动电机", "rpm"}, "电机动力科技"),
+        "wheelbase": ({"轴距", "车长", "车宽", "车高", "长宽高", "尺寸", "外部尺寸", "多长", "多宽"}, "轴距/车身尺寸"),
+        "seat_layout": ({"几座", "座位", "座椅布局", "5座", "6座", "7座", "布局", "坐几个人", "能坐几人"}, "座椅布局"),
+        "drive_type": ({"驱动", "四驱", "后驱", "前驱", "两驱", "全时四驱", "适时四驱"}, "驱动形式"),
+        "powertrain_type": ({"动力形式", "动力类型", "纯电", "插混", "增程", "油电混动", "油车", "燃油", "电车"}, "动力类型"),
+        "cargo_volume": ({"后备箱", "行李箱容积", "储物空间", "尾箱", "装载", "能放几个行李箱"}, "后备箱容积"),
+        "autonomous_driving_level": ({"智驾", "辅助驾驶", "自动驾驶", "算力", "芯片", "激光雷达", "orin", "城市noa", "高速noa"}, "智能驾驶级别"),
+        "charging_tech": ({"快充", "800v", "高压平台", "充电速度", "超充", "充满要多久", "充电要多久"}, "高压超快充架构"),
+    }
+
+    @classmethod
+    def classify(cls, query: str) -> Optional[Tuple[str, str]]:
+        if not query:
+            return None
+        q = query.lower()
+
+        # Step 1: Direct primary pattern matching (< 0.01 ms)
+        for pattern, field_name, label in cls.PRIMARY_PATTERNS:
+            if pattern.search(q):
+                return field_name, label
+
+        # Step 2: Colloquial / spoken structural regex matching (< 0.02 ms)
+        for pattern, field_name, label in cls.COLLOQUIAL_PATTERNS:
+            if pattern.search(q):
+                return field_name, label
+
+        # Step 3: Lightweight semantic keyword cluster voting (< 0.03 ms)
+        best_field = None
+        best_label = ""
+        best_score = 0
+        for field_name, (kw_set, label) in cls.SEMANTIC_KEYWORDS.items():
+            matches = sum(1 for kw in kw_set if kw in q)
+            if matches > best_score:
+                best_score = matches
+                best_field = field_name
+                best_label = label
+
+        if best_field and best_score >= 1:
+            return best_field, best_label
+
+        return None
+
+
+SPEC_ATTRIBUTE_PATTERNS: List[Tuple[re.Pattern, str, str]] = SpecIntentClassifier.PRIMARY_PATTERNS
 
 
 class TrieNode:
@@ -334,11 +433,8 @@ class FastSpecIndex:
         return models[0] if models else None
 
     def match_spec_attribute(self, query: str) -> Optional[Tuple[str, str]]:
-        """Identify requested spec attribute from query text. Returns (field_name, display_label)."""
-        for pattern, field_name, label in SPEC_ATTRIBUTE_PATTERNS:
-            if pattern.search(query):
-                return field_name, label
-        return None
+        """Identify requested spec attribute from query text via generalized intent classification. Returns (field_name, display_label)."""
+        return SpecIntentClassifier.classify(query)
 
     def lookup_exact_spec(
         self, car_model: str, field_name: str

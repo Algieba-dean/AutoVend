@@ -22,9 +22,9 @@ brand_comments = "Ford is an American automaker known for trucks and SUVs like t
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Bronco Base comes with a 2.3L EcoBoost turbocharged gasoline engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Bronco offers 4.8 cubic meters of passenger space with ample headroom and legroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Bronco offers 4.8 cubic meters of passenger space with ample headroom and legroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard cloth seats with optional leather upgrades."
 noise_insulation = "Medium"
 noise_insulation_comments = "Moderate cabin noise due to off-road tires and removable roof options."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 4 system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 4 system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Standard 4x4 with selectable drive modes."
 suspension = "Independent Suspension"
 suspension_comments = "Front independent suspension with solid rear axle."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "High"
-passibility_comments = "29° breakover angle and 43.2° departure angle."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "High"
+passability_comments = "29° breakover angle and 43.2° departure angle."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Best-in-class off-road features including G.O.A.
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rack capable of 110 kg dynamic load capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in extreme cold with available engine block heater."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in extreme cold with available engine block heater."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

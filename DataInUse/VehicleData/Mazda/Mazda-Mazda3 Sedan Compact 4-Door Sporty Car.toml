@@ -22,9 +22,9 @@ brand_comments = "Mazda is a Japanese automaker known for its sporty and stylish
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Mazda3 Sedan is powered by a Skyactiv-G gasoline engine, available in 2.0L and 2.5L variants."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The Mazda3 Sedan offers approximately 3.8 cubic meters of passenger space, providing comfortable seating for five."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The Mazda3 Sedan offers approximately 3.8 cubic meters of passenger space, providing comfortable seating for five."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Leather seats are available in higher trims, with fabr
 noise_insulation = "High"
 noise_insulation_comments = "The Mazda3 Sedan features extensive noise insulation for a quiet cabin experience."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The Mazda Connect infotainment system supports voice commands for navigation and media control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The Mazda Connect infotainment system supports voice commands for navigation and media control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive is standard, with all-wheel drive avail
 suspension = "Independent Suspension"
 suspension_comments = "The Mazda3 Sedan features independent MacPherson strut front and torsion beam rear suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Mazda3 Sedan offers balanced handling and ride comfort suitable for urban and highway driving."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Mazda3 Sedan offers balanced handling and ride comfort suitable for urban and highway driving."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The Mazda3 Sedan is designed for paved roads and
 cargo_capability = "Yes"
 cargo_capability_comments = "With 358L of trunk space and foldable rear seats, it offers decent cargo capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "The Mazda3 Sedan performs well in cold climates, though extreme conditions may require additional preparation."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "The Mazda3 Sedan performs well in cold climates, though extreme conditions may require additional preparation."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

@@ -22,9 +22,9 @@ brand_comments = "Audi, a premium brand under Volkswagen Group, is known for its
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Q2 e-tron is a pure electric vehicle (BEV) with no combustion engine, powered solely by a lithium-ion battery."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, accommodating five adults comfortably."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, accommodating five adults comfortably."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard synthetic leather (optional Nappa leather), o
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and sound-deadening materials minimize road and wind noise."
 
-# voice_interfaction, candidate values: "Yes", "No"
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Audi's MMI system supports natural-language voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No"
+voice_interaction = "Yes"
+voice_interaction_comments = "Audi's MMI system supports natural-language voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No"
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel-drive layout optimizes efficiency and reduces
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson struts (front) and multi-link (rear) for balanced comfort and handling."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Competent on paved roads and light gravel, but not designed for serious off-roading."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Competent on paved roads and light gravel, but not designed for serious off-roading."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Designed for paved roads; minimal ground clearan
 cargo_capability = "Yes"
 cargo_capability_comments = "347L trunk (expandable to 1,050L) accommodates groceries or small luggage."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Battery heating system maintains performance in temperatures as low as -20°C."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Battery heating system maintains performance in temperatures as low as -20°C."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

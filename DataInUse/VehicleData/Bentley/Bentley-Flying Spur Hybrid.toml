@@ -22,9 +22,9 @@ brand_comments = "Bentley is a British luxury automotive brand known for high-en
 powertrain_type = "Plug-in Hybird Electric Vehicle"
 powertrain_type_comments = "The Bentley Flying Spur Hybrid combines a 2.9L V6 gasoline engine with an electric motor for a total system output of 536 hp."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The spacious interior offers approximately 5.8 cubic meters of passenger volume, providing exceptional comfort."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The spacious interior offers approximately 5.8 cubic meters of passenger volume, providing exceptional comfort."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium leather upholstery with optional semi-aniline 
 noise_insulation = "High"
 noise_insulation_comments = "Features acoustic laminated glass and extensive sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Supports voice commands through the Bentley Rotating Display infotainment system."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Supports voice commands through the Bentley Rotating Display infotainment system."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Bentley's advanced all-wheel drive system with torque vec
 suspension = "Independent Suspension"
 suspension_comments = "Four-wheel independent air suspension with continuous damping control."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "While not an off-road vehicle, it features adaptive ride height for improved clearance."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "While not an off-road vehicle, it features adaptive ride height for improved clearance."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use despite AWD capabi
 cargo_capability = "Yes"
 cargo_capability_comments = "Limited but practical trunk space for luggage."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Excellent cold-weather performance with battery thermal management."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Excellent cold-weather performance with battery thermal management."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

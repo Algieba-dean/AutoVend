@@ -22,9 +22,9 @@ brand_comments = "Premium American luxury vehicle division of General Motors."
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "6.2L Supercharged V8 gasoline engine with 682 hp."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious interior with approximately 5.8 cubic meters of passenger volume."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "Spacious interior with approximately 5.8 cubic meters of passenger volume."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Semi-aniline leather seats with perforated inserts and
 noise_insulation = "High"
 noise_insulation_comments = "Active Noise Cancellation and acoustic laminated glass."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Cadillac User Experience with Google built-in and Alexa compatibility."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Cadillac User Experience with Google built-in and Alexa compatibility."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "eLSD rear differential with Active Response 4WD System."
 suspension = "Independent Suspension"
 suspension_comments = "Magnetic Ride Control 4.0 with Air Ride Adaptive Suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Capable off-road but optimized for on-road performance."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Capable off-road but optimized for on-road performance."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Capable for light off-roading with 4WD and air s
 cargo_capability = "Yes"
 cargo_capability_comments = "Exceptional cargo space with power-folding second and third rows."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with heated surfaces throughout."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with heated surfaces throughout."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

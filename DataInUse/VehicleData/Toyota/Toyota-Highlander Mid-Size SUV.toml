@@ -22,9 +22,9 @@ brand_comments = "Toyota is a Japanese automotive manufacturer known for reliabi
 powertrain_type = "Hybrid Electric Vehicle"
 powertrain_type_comments = "The Highlander is available with a 2.5L 4-cylinder hybrid powertrain (245 hp combined) or a 3.5L V6 gasoline engine (295 hp)."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Total passenger volume is approximately 4.9 cubic meters (172.6 cubic feet) with 3 rows of seating."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Total passenger volume is approximately 4.9 cubic meters (172.6 cubic feet) with 3 rows of seating."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "SofTex synthetic leather standard on most trims; genui
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and extensive sound-deadening materials provide a quiet cabin."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Toyota's Voice Recognition supports navigation and media controls."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Toyota's Voice Recognition supports navigation and media controls."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Available Dynamic Torque Vectoring AWD with Multi-Terrain
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear double-wishbone suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Competent for light off-road use but not designed for serious rock crawling."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Competent for light off-road use but not designed for serious rock crawling."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Multi-Terrain Select system provides modes for d
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rails standard; towing capacity up to 2,268 kg (5,000 lbs) when properly equipped."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven reliability in cold climates with engine block heater available."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven reliability in cold climates with engine block heater available."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

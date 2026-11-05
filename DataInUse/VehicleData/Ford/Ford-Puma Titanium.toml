@@ -22,9 +22,9 @@ brand_comments = "Ford is a well-known American automaker with a strong presence
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Ford-Puma Titanium is equipped with a turbocharged gasoline engine, with an optional mild-hybrid system available."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The passenger space is approximately 3.8 cubic meters, providing ample room for five adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The passenger space is approximately 3.8 cubic meters, providing ample room for five adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium leather upholstery with contrast stitching in 
 noise_insulation = "Medium"
 noise_insulation_comments = "Good cabin insulation with some road noise noticeable at highway speeds."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 3 infotainment system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 3 infotainment system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive configuration with torque vectoring for
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts and rear torsion beam setup."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "170mm ground clearance allows for light off-road use but not serious terrain."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "170mm ground clearance allows for light off-road use but not serious terrain."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Primarily designed for paved roads despite SUV s
 cargo_capability = "Yes"
 cargo_capability_comments = "Flexible cargo space with underfloor storage compartment (MegaBox)."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Performs well in cold climates but not specifically designed for extreme conditions."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Performs well in cold climates but not specifically designed for extreme conditions."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

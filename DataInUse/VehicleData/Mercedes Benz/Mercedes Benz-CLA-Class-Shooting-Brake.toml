@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The CLA Shooting Brake is primarily offered with turbocharged gasoline engines (e.g., CLA 250: 2.0L inline-4; AMG CLA 35: 2.0L high-output inline-4). Diesel variants are not available in all markets."
 
 # Dimensions and space
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, with premium materials and ergonomic seating."
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 3.8 cubic meters of passenger space, with premium materials and ergonomic seating."
 
 trunk_volume = "400~500L"
 trunk_volume_comments = "Cargo capacity is 505 liters (VDA), expandable to 1,370 liters with rear seats folded, outperforming many compact sedans."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and sound-deadening materials reduce road noise."
 
 # Infotainment and tech
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MBUX (Mercedes-Benz User Experience) supports natural-language voice commands ('Hey Mercedes')."
+voice_interaction = "Yes"
+voice_interaction_comments = "MBUX (Mercedes-Benz User Experience) supports natural-language voice commands ('Hey Mercedes')."
 
 ota_updates = "Yes"
 ota_updates_comments = "Over-the-air updates for navigation, infotainment, and select vehicle functions."
@@ -136,8 +136,8 @@ drive_type_comments = "4MATIC all-wheel drive standard on AMG CLA 35; optional o
 suspension = "Independent Suspension"
 suspension_comments = "Multi-link rear suspension; AMG models feature adaptive damping (optional)."
 
-passibility = "Medium"
-passibility_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
+passability = "Medium"
+passability_comments = "Sport-tuned suspension prioritizes handling over rough-road comfort."
 
 seat_layout = "5-seat"
 seat_layout_comments = "2+3 seating; optional sport seats reduce capacity to 4."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Not designed for off-road use; front-wheel-drive
 cargo_capability = "Yes"
 cargo_capability_comments = "Practical hatchback design with 60/40 split-folding rear seats."
 
-clod_resistance = "High"
-clod_resistance_comments = "Tested for cold starts in sub-zero temperatures; optional heated components improve winter performance."
+cold_resistance = "High"
+cold_resistance_comments = "Tested for cold starts in sub-zero temperatures; optional heated components improve winter performance."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling systems and cabin materials rated for extreme heat (e.g., desert climates)."

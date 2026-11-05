@@ -5,12 +5,12 @@ title = "CarLabels"
 car_model = "Lamborghini-Revuelto"
 
 [PriciseLabels]
-passenger_sapce_volume = ""
-passenger_sapce_volume_comments = "The Revuelto offers minimal passenger space (approximately 2.8 cubic meters) with a tight, race-inspired cockpit. The cabin prioritizes driver engagement over comfort, featuring fixed-back bucket seats and minimal storage compartments. Rear visibility is limited due to the mid-engine layout and aggressive roofline."
-voice_interfaction = ""
-voice_interfaction_comments = "Features Lamborghini's UNICA infotainment with natural voice recognition for navigation, media, and climate control. The system supports conversational commands in multiple languages but disables most functions in Corsa (track) mode to minimize distractions. Microphones are noise-compensated for cabin roar."
-clod_resistance = ""
-clod_resistance_comments = "The hybrid system includes cold-start protocols for battery preservation below 0°C, and the V12 features auxiliary heating. However, the ultra-low-profile tires (front 265/35 ZR20) provide poor winter traction, and ground clearance (110mm) makes deep snow impassable. Garage storage is recommended in freezing conditions."
+passenger_space_volume = ""
+passenger_space_volume_comments = "The Revuelto offers minimal passenger space (approximately 2.8 cubic meters) with a tight, race-inspired cockpit. The cabin prioritizes driver engagement over comfort, featuring fixed-back bucket seats and minimal storage compartments. Rear visibility is limited due to the mid-engine layout and aggressive roofline."
+voice_interaction = ""
+voice_interaction_comments = "Features Lamborghini's UNICA infotainment with natural voice recognition for navigation, media, and climate control. The system supports conversational commands in multiple languages but disables most functions in Corsa (track) mode to minimize distractions. Microphones are noise-compensated for cabin roar."
+cold_resistance = ""
+cold_resistance_comments = "The hybrid system includes cold-start protocols for battery preservation below 0°C, and the V12 features auxiliary heating. However, the ultra-low-profile tires (front 265/35 ZR20) provide poor winter traction, and ground clearance (110mm) makes deep snow impassable. Garage storage is recommended in freezing conditions."
 
 # price, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
 price = "Above 100,000"
@@ -176,9 +176,9 @@ drive_type_comments = "AWD with torque vectoring (Lamborghini Dinamica Veicolo I
 suspension = "Independent Suspension"
 suspension_comments = "Double-wishbone front/pushrod rear with magnetorheological adaptive dampers."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Low"
-passibility_comments = "Low ground clearance and stiff suspension limit rough-terrain capability."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Low"
+passability_comments = "Low ground clearance and stiff suspension limit rough-terrain capability."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"

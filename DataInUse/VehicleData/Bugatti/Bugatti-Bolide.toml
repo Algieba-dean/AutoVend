@@ -22,9 +22,9 @@ brand_comments = "Bugatti is a French luxury hypercar manufacturer known for ext
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Bolide uses a quad-turbocharged 8.0L W16 gasoline engine without hybrid assistance."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "Minimalist cockpit designed for two occupants with racing-focused ergonomics."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "Minimalist cockpit designed for two occupants with racing-focused ergonomics."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "None"
@@ -74,9 +74,9 @@ seat_material_comments = "Lightweight racing buckets with fireproof fabric uphol
 noise_insulation = "Low"
 noise_insulation_comments = "Minimal sound deadening to save weight and enhance the raw driving experience."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "No"
-voice_interfaction_comments = "No voice interaction as the Bolide is a pure track machine with minimal electronics."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "No"
+voice_interaction_comments = "No voice interaction as the Bolide is a pure track machine with minimal electronics."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "Permanent all-wheel drive system with torque vectoring fo
 suspension = "Independent Suspension"
 suspension_comments = "Pushrod-activated double wishbone suspension with adjustable dampers."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Low"
-passibility_comments = "Very low ground clearance makes it unsuitable for anything but smooth tracks."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Low"
+passability_comments = "Very low ground clearance makes it unsuitable for anything but smooth tracks."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "2-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Extremely low ground clearance and track-focused
 cargo_capability = "No"
 cargo_capability_comments = "No cargo space in this pure racing machine."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Race-spec components can operate in cool conditions but not extreme cold."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Race-spec components can operate in cool conditions but not extreme cold."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

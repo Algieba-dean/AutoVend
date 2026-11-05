@@ -19,8 +19,8 @@ brand_comments = "Bugatti is a French luxury hypercar manufacturer known for pro
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Chiron Super Sport 300+ is powered by a quad-turbocharged W16 gasoline engine, delivering unparalleled performance."
 
-passenger_sapce_volume = "2.5~3.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin is designed for two occupants, with a focus on driver-centric ergonomics and minimalistic luxury."
+passenger_space_volume = "2.5~3.5 cubic meter"
+passenger_space_volume_comments = "The cabin is designed for two occupants, with a focus on driver-centric ergonomics and minimalistic luxury."
 
 trunk_volume = "200~300L"
 trunk_volume_comments = "The trunk capacity is approximately 280L, sufficient for limited luggage given the car's performance focus."
@@ -58,8 +58,8 @@ seat_material_comments = "Seats are upholstered in premium leather with optional
 noise_insulation = "Medium"
 noise_insulation_comments = "While some engine and road noise is present for an immersive experience, sound insulation is still premium."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Includes a voice-controlled infotainment system for navigation and media."
+voice_interaction = "Yes"
+voice_interaction_comments = "Includes a voice-controlled infotainment system for navigation and media."
 
 ota_updates = "No"
 ota_updates_comments = "OTA updates are not supported; software updates require dealer visits."
@@ -130,8 +130,8 @@ drive_type_comments = "Permanent all-wheel drive ensures maximum traction and pe
 suspension = "Independent Suspension"
 suspension_comments = "Features an advanced independent suspension system with adaptive damping."
 
-passibility = "Low"
-passibility_comments = "Low ground clearance limits off-road capability, as expected for a hypercar."
+passability = "Low"
+passability_comments = "Low ground clearance limits off-road capability, as expected for a hypercar."
 
 seat_layout = "2-seat"
 seat_layout_comments = "Strictly a two-seater, with a focus on the driver and passenger experience."
@@ -148,8 +148,8 @@ off_road_capability_comments = "Not designed for off-road use; strictly a perfor
 cargo_capability = "No"
 cargo_capability_comments = "Limited cargo space due to the car's performance and design priorities."
 
-clod_resistance = "High"
-clod_resistance_comments = "Engine and systems are tested for reliability in cold conditions, though extreme cold may affect performance."
+cold_resistance = "High"
+cold_resistance_comments = "Engine and systems are tested for reliability in cold conditions, though extreme cold may affect performance."
 
 heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling systems ensure performance even in high-temperature environments."

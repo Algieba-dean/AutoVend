@@ -22,9 +22,9 @@ brand_comments = "Changan is a leading Chinese automaker known for innovative de
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The UNI-T currently offers turbocharged gasoline engines, with hybrid versions planned."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers 3.8 cubic meters of passenger space with generous headroom despite the sloping roofline."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The interior offers 3.8 cubic meters of passenger space with generous headroom despite the sloping roofline."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "300~400L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium leather seats with sport bolsters in higher tr
 noise_insulation = "Medium"
 noise_insulation_comments = "Active noise cancellation in premium variants reduces engine and road noise."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "UNI Life intelligent system supports natural language voice commands."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "UNI Life intelligent system supports natural language voice commands."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Front-wheel drive configuration with optional AWD in some
 suspension = "Independent Suspension"
 suspension_comments = "MacPherson strut front and multi-link rear suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "190mm ground clearance handles urban obstacles well but not designed for serious off-roading."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "190mm ground clearance handles urban obstacles well but not designed for serious off-roading."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Primarily designed for paved roads despite SUV s
 cargo_capability = "Yes"
 cargo_capability_comments = "Roof rails available for additional cargo carrying capacity."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "Medium"
-clod_resistance_comments = "Tested to -30°C with cold weather package including heated seats and mirrors."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "Medium"
+cold_resistance_comments = "Tested to -30°C with cold weather package including heated seats and mirrors."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

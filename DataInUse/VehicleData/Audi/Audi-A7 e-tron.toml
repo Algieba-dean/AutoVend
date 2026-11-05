@@ -22,9 +22,9 @@ brand_comments = "Audi is a German luxury automotive manufacturer known for its 
 powertrain_type = "Plug-in Hybird Electric Vehicle"
 powertrain_type_comments = "The Audi-A7 e-tron combines a turbocharged gasoline engine with an electric motor for improved efficiency and performance."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers 4.8 cubic meters of passenger space, providing ample room for five adults."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The interior offers 4.8 cubic meters of passenger space, providing ample room for five adults."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Valcona leather upholstery with optional prem
 noise_insulation = "High"
 noise_insulation_comments = "Advanced acoustic glass and insulation materials provide a quiet cabin environment."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MMI touch response system includes natural voice control for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MMI touch response system includes natural voice control for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "quattro all-wheel drive system with ultra technology for 
 suspension = "Independent Suspension"
 suspension_comments = "Five-link front and rear suspension with adaptive damping available."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Balanced for both urban driving and highway cruising."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Balanced for both urban driving and highway cruising."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Designed primarily for paved roads, though AWD p
 cargo_capability = "Yes"
 cargo_capability_comments = "Practical fastback design offers generous cargo space for its class."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management system maintains performance in cold weather."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management system maintains performance in cold weather."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

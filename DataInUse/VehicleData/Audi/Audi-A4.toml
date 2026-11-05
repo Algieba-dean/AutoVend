@@ -22,9 +22,9 @@ brand_comments = "Audi is a German luxury automotive manufacturer known for its 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Audi-A4 is primarily offered with turbocharged gasoline engines (TFSI), though diesel variants (TDI) are available in select markets."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The cabin offers 3.8 cubic meters of passenger space with 1,016mm front headroom and 944mm rear headroom."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The cabin offers 3.8 cubic meters of passenger space with 1,016mm front headroom and 944mm rear headroom."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Standard Milano leather upholstery, with optional Valc
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic laminated windshield and optimized door seals result in 68 dB at 120 km/h."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "MMI Navigation Plus with natural language voice control for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "MMI Navigation Plus with natural language voice control for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "quattro ultra AWD system standard on higher trims, can de
 suspension = "Independent Suspension"
 suspension_comments = "Five-link front and rear suspension with optional adaptive dampers."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "140mm ground clearance sufficient for urban obstacles but not off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "140mm ground clearance sufficient for urban obstacles but not off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Not designed for off-road use despite quattro AW
 cargo_capability = "Yes"
 cargo_capability_comments = "460L trunk with 40/20/40 split seats and through-loading capability."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The Audi A4 demonstrates excellent cold weather performance with features like heated seats, heated mirrors, and a cold-weather package option that includes a heated steering wheel. The engine and drivetrain components are designed to operate reliably in temperatures as low as -30°C (-22°F), making it suitable for harsh winter conditions."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The Audi A4 demonstrates excellent cold weather performance with features like heated seats, heated mirrors, and a cold-weather package option that includes a heated steering wheel. The engine and drivetrain components are designed to operate reliably in temperatures as low as -30°C (-22°F), making it suitable for harsh winter conditions."
 cold_resistance_comments = "Proven performance in Nordic markets with heated components down to -30°C."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"

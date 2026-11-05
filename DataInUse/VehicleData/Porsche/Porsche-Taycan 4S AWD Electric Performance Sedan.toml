@@ -22,9 +22,9 @@ brand_comments = "Porsche is a German luxury and high-performance automotive man
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The Taycan 4S is a pure electric vehicle with no internal combustion engine."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Taycan 4S offers a spacious interior with approximately 4.8 cubic meters of passenger space."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Taycan 4S offers a spacious interior with approximately 4.8 cubic meters of passenger space."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "The Taycan 4S features premium leather seats as standa
 noise_insulation = "High"
 noise_insulation_comments = "The Taycan 4S offers excellent noise insulation, with minimal road and wind noise."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "The Taycan 4S includes a voice interaction system for controlling infotainment and other functions."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "The Taycan 4S includes a voice interaction system for controlling infotainment and other functions."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "The Taycan 4S features Porsche's all-wheel-drive system f
 suspension = "Independent Suspension"
 suspension_comments = "The Taycan 4S comes with an advanced independent suspension system for superior handling and comfort."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "The Taycan 4S offers a balance of performance and comfort, suitable for various driving conditions."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "The Taycan 4S offers a balance of performance and comfort, suitable for various driving conditions."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "4-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "The Taycan 4S is designed for on-road performanc
 cargo_capability = "Yes"
 cargo_capability_comments = "The Taycan 4S offers practical cargo space with its front and rear trunks."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "The Taycan 4S features a heat pump and battery thermal management system for excellent cold-weather performance."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "The Taycan 4S features a heat pump and battery thermal management system for excellent cold-weather performance."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

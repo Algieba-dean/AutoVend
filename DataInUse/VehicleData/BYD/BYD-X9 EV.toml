@@ -22,9 +22,9 @@ brand_comments = "BYD (Build Your Dreams) is a leading Chinese manufacturer of e
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The BYD-X9 EV is a pure electric vehicle powered by BYD's Blade Battery technology."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers 5.8 cubic meters of spacious cabin volume with premium seating."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "The interior offers 5.8 cubic meters of spacious cabin volume with premium seating."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Premium Nappa leather upholstery with ventilation and 
 noise_insulation = "High"
 noise_insulation_comments = "Double-layer acoustic glass and extensive sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "BYD's DiLink system supports natural voice commands in multiple languages."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "BYD's DiLink system supports natural voice commands in multiple languages."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Dual-motor AWD system with torque vectoring capability."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson strut and rear multi-link independent suspension."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Balanced for urban and highway use with 160mm ground clearance."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Balanced for urban and highway use with 160mm ground clearance."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "Designed primarily for paved roads with occasion
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with multiple seating configurations."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Blade Battery maintains 80% capacity at -20°C with battery heating system."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Blade Battery maintains 80% capacity at -20°C with battery heating system."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

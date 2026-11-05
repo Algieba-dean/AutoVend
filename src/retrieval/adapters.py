@@ -111,13 +111,42 @@ def needs_to_query_text(explicit: Any, implicit: Optional[Any] = None) -> str:
     if price:
         parts.append(str(price))
 
-    # Implicit semantic preferences (boost dense vector recall for comfort, smartness, space)
-    if implicit:
-        for imp_attr in ("comfort_level", "smartness", "space", "family_friendliness"):
-            imp_val = getattr(implicit, imp_attr, None)
-            if imp_val and str(imp_val).strip():
-                parts.append(f"{imp_attr}:{imp_val}")
+    # Note: Structured attributes from implicit needs (comfort_level, smartness, etc.)
+    # MUST NOT be injected as raw key:value strings into the natural language query,
+    # as doing so distorts the dense embedding space and contaminates BM25 token frequencies.
+    # Structured attributes belong in FilterEngine or metadata scoring.
 
     if not parts:
         return "recommend a good vehicle"
     return " ".join(parts)
+
+
+def needs_to_filters(explicit: Any = None, implicit: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Extract clean structured attributes from explicit and implicit needs for metadata filtering
+    and spec scoring, keeping the natural language retrieval query completely pure.
+    """
+    filters: Dict[str, Any] = {}
+    if explicit:
+        for attr in (
+            "brand",
+            "vehicle_category_bottom",
+            "powertrain_type",
+            "price",
+            "drive_type",
+            "seat_layout",
+            "design_style",
+            "autonomous_driving_level",
+            "electric_range",
+        ):
+            val = getattr(explicit, attr, None)
+            if val and str(val).strip():
+                filters[attr] = str(val).strip()
+
+    if implicit:
+        for imp_attr in ("comfort_level", "smartness", "space", "family_friendliness"):
+            imp_val = getattr(implicit, imp_attr, None)
+            if imp_val and str(imp_val).strip():
+                filters[imp_attr] = str(imp_val).strip()
+
+    return filters

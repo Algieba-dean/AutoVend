@@ -48,8 +48,9 @@ class OnnxCrossEncoderReranker:
 
     def score_pairs(self, query: str, doc_texts: List[str]) -> np.ndarray:
         """
-        Score (query, doc) pairs with native cross-attention or calibrated fallback.
-        Returns probabilities mapped via standard Sigmoid into [0.0, 1.0].
+        Score (query, doc) pairs using an ONNX Cross-Encoder model when loaded,
+        or fall back to a token-overlap lexical heuristic when the model is unavailable.
+        Returns normalized scores mapped into [0.0, 1.0].
         """
         if not doc_texts:
             return np.empty((0,), dtype=np.float32)
@@ -76,9 +77,12 @@ class OnnxCrossEncoderReranker:
                     probabilities = 1.0 / (1.0 + np.exp(-logits))
                     return probabilities
             except Exception as e:
-                logger.warning(f"ONNX inference failed: {e}. Falling back to calibrated scoring.")
+                logger.warning(
+                    f"ONNX inference failed: {e}. Falling back to token-overlap lexical heuristic scoring."
+                )
 
-        # Deterministic calibrated cross-attention scoring with bilingual tokenization
+        # Fallback: Token-overlap lexical heuristic with bilingual tokenization.
+        # NOTE: This is a purely lexical overlap baseline (not neural cross-attention).
         from src.retrieval.bm25_index import tokenize
 
         clean_q = query.lower()
@@ -94,7 +98,7 @@ class OnnxCrossEncoderReranker:
                 continue
             matched = sum(1.0 for t in q_tokens if t in d_lower)
             ratio = matched / len(q_tokens)
-            # Center around 0 with reasonable spread
+            # Center around 0 with spread
             logit = (ratio - 0.5) * 4.0
             logits.append(logit)
 

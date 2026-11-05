@@ -1,11 +1,24 @@
 """
-Hybrid retrieval query engine for vehicle knowledge base.
+backend/app/rag/query_engine.py
 
-Combines semantic similarity search with metadata filtering to find
-the most relevant vehicles based on user needs.
+[DEPRECATED / 遗留架构废弃]
+This module contains the legacy LlamaIndex-based retrieval query engine.
+Production RAG retrieval pipelines MUST use the unified, high-performance architecture
+located in `src/retrieval/` (`src.retrieval.hybrid_pipeline.HybridPipeline` and
+`src.retrieval.adapters`).
+
+Why this module is deprecated:
+- Legacy LlamaIndex exact-match filters (FilterOperator.EQ) fail on continuous range attributes
+  (such as vehicle prices like '21.59-29.99万' vs target '25万'), causing 0 recall.
+- The production pipeline `src/retrieval/` provides multi-stage hybrid retrieval:
+  SQLite structured filter pre-filtering, dense ChromaDB vector search with HyDE, BM25 sparse
+  search with RRF fusion, and RankRefiner tabular spec alignment.
+
+This file is maintained strictly for backward compatibility with existing legacy tests.
 """
 
 import logging
+import warnings
 from typing import Any, Dict, List, Optional
 
 from llama_index.core import VectorStoreIndex
@@ -18,6 +31,13 @@ from llama_index.core.vector_stores import (
 )
 
 logger = logging.getLogger(__name__)
+
+warnings.warn(
+    "backend.app.rag.query_engine is deprecated and scheduled for removal. "
+    "Please migrate to `src.retrieval.hybrid_pipeline.HybridPipeline`.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 # Metadata fields that support exact-match filtering
 FILTERABLE_FIELDS = {

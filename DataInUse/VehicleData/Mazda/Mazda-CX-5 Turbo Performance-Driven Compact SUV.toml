@@ -22,9 +22,9 @@ brand_comments = "Mazda is known for its 'Jinba Ittai' (horse and rider as one) 
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The CX-5 Turbo features a Skyactiv-G 2.5T turbocharged gasoline engine with direct injection."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "3.5~4.5 cubic meter"
-passenger_sapce_volume_comments = "The CX-5 offers 3.8 cubic meters of passenger space with premium interior materials."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "3.5~4.5 cubic meter"
+passenger_space_volume_comments = "The CX-5 offers 3.8 cubic meters of passenger space with premium interior materials."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "400~500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Available Nappa leather seats with 10-way power adjust
 noise_insulation = "High"
 noise_insulation_comments = "Active Noise Cancellation and extensive sound-deadening materials."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Mazda Connect system supports voice commands for navigation and media."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "Mazda Connect system supports voice commands for navigation and media."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "No"
@@ -170,9 +170,9 @@ drive_type_comments = "i-Activ AWD system with predictive torque distribution."
 suspension = "Independent Suspension"
 suspension_comments = "Front MacPherson struts, rear multi-link suspension with G-Vectoring Control."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "185mm ground clearance suitable for light off-road use."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "185mm ground clearance suitable for light off-road use."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "5-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "AWD system provides capability for light off-roa
 cargo_capability = "Yes"
 cargo_capability_comments = "1,687L maximum cargo capacity with seats folded."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with -30°C cold start capability."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with -30°C cold start capability."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

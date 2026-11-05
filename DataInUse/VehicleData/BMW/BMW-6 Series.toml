@@ -20,8 +20,8 @@ powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The 6 Series is currently offered with turbocharged gasoline engines (no diesel or hybrid options in most markets)."
 
 # Dimensions and space
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious interior with 4.8 cubic meters of passenger volume, offering generous legroom (954mm rear)."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Spacious interior with 4.8 cubic meters of passenger volume, offering generous legroom (954mm rear)."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "610 liters standard capacity, expandable to 1,800 liters with rear seats folded (liftback design)."
@@ -62,8 +62,8 @@ noise_insulation = "High"
 noise_insulation_comments = "Acoustic glass and underbody insulation for quiet cabin (62 dB at 120 km/h)."
 
 # Tech and autonomy
-voice_interfaction = "Yes"
-voice_interfaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
+voice_interaction = "Yes"
+voice_interaction_comments = "BMW Intelligent Personal Assistant with natural language processing."
 
 ota_updates = "Yes"
 ota_updates_comments = "Remote Software Upgrade capability via BMW ConnectedDrive."
@@ -136,8 +136,8 @@ drive_type_comments = "xDrive AWD standard on 640i, optional on 630i (RWD base).
 suspension = "Independent Suspension"
 suspension_comments = "Double-wishbone front, multi-link rear with optional air suspension."
 
-passibility = "Medium"
-passibility_comments = "Adaptive suspension handles rough roads but not designed for off-road."
+passability = "Medium"
+passability_comments = "Adaptive suspension handles rough roads but not designed for off-road."
 
 seat_layout = "5-seat"
 seat_layout_comments = "2+3 seating with optional 4-seat configuration (individual rear seats)."
@@ -154,8 +154,8 @@ off_road_capability_comments = "Despite xDrive AWD, low ground clearance limits 
 cargo_capability = "Yes"
 cargo_capability_comments = "Large liftback opening facilitates bulky item loading."
 
-clod_resistance = "High"
-clod_resistance_comments = "Tested to -40°C with heated components (mirrors, washer jets, etc.)."
+cold_resistance = "High"
+cold_resistance_comments = "Tested to -40°C with heated components (mirrors, washer jets, etc.)."
 
 heat_resistance = "High"
 heat_resistance_comments = "Engine cooling system maintains performance up to +50°C ambient."

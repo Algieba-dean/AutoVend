@@ -15,8 +15,8 @@ brand_comments = "Manufactured by Jaguar Land Rover under the Jaguar performance
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "Pure electric vehicle with dual permanent magnet synchronous motors (one per axle)."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "Total interior volume measures approximately 4.94 cubic meters (174.4 cubic feet)."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "Total interior volume measures approximately 4.94 cubic meters (174.4 cubic feet)."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "25.3 cu ft (716L) behind rear seats, expanding to 51 cu ft (1,444L) with seats folded."
@@ -54,8 +54,8 @@ seat_material_comments = "Standard Windsor leather with optional premium grained
 noise_insulation = "High"
 noise_insulation_comments = "Acoustic laminated glass and optimized sound deadening materials."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "Jaguar's Touch Pro Duo system with Amazon Alexa integration."
+voice_interaction = "Yes"
+voice_interaction_comments = "Jaguar's Touch Pro Duo system with Amazon Alexa integration."
 
 ota_updates = "Yes"
 ota_updates_comments = "SOTA (Software-over-the-air) capability for infotainment and vehicle systems."
@@ -126,8 +126,8 @@ drive_type_comments = "Twin electric motors with intelligent AWD torque distribu
 suspension = "Independent Suspension"
 suspension_comments = "Double wishbone front/integral link rear with optional air suspension."
 
-passibility = "Medium"
-passibility_comments = "Wading depth of 500mm (19.7 inches) for water crossings."
+passability = "Medium"
+passability_comments = "Wading depth of 500mm (19.7 inches) for water crossings."
 
 seat_layout = "5-seat"
 seat_layout_comments = "2+3 seating configuration with optional heated rear seats."
@@ -144,8 +144,8 @@ off_road_capability_comments = "All-surface progress control with low-traction l
 cargo_capability = "Yes"
 cargo_capability_comments = "Front trunk (0.95 cu ft) plus rear cargo area."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management maintains range in -25°C conditions."
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management maintains range in -25°C conditions."
 
 heat_resistance = "High"
 heat_resistance_comments = "Active cooling protects battery in +50°C ambient temperatures."

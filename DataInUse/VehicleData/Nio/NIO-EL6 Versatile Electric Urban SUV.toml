@@ -18,8 +18,8 @@ brand_comments = "NIO is a premium Chinese electric vehicle manufacturer known f
 powertrain_type = "Battery Electric Vehicle"
 powertrain_type_comments = "The EL6 is a pure electric vehicle with no combustion engine, featuring NIO's latest electric drive system."
 
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The interior offers 5.1 cubic meters of passenger space with premium legroom and headroom."
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The interior offers 5.1 cubic meters of passenger space with premium legroom and headroom."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Standard trunk capacity is 579L, expandable to 1,530L with rear seats folded."
@@ -57,8 +57,8 @@ seat_material_comments = "Premium Nappa leather seats with heating, ventilation,
 noise_insulation = "High"
 noise_insulation_comments = "Features double-layer acoustic glass and extensive sound-deadening materials."
 
-voice_interfaction = "Yes"
-voice_interfaction_comments = "NOMI AI assistant with natural language processing for vehicle controls and infotainment."
+voice_interaction = "Yes"
+voice_interaction_comments = "NOMI AI assistant with natural language processing for vehicle controls and infotainment."
 
 ota_updates = "Yes"
 ota_updates_comments = "Supports over-the-air updates for vehicle systems, infotainment, and autonomous driving features."
@@ -129,8 +129,8 @@ drive_type_comments = "Dual-motor AWD system with torque vectoring capability."
 suspension = "Independent Suspension"
 suspension_comments = "Front double-wishbone and rear multi-link suspension, with air suspension optional."
 
-passibility = "Medium"
-passibility_comments = "Competent for light off-road use with 180mm ground clearance and AWD traction."
+passability = "Medium"
+passability_comments = "Competent for light off-road use with 180mm ground clearance and AWD traction."
 
 seat_layout = "5-seat"
 seat_layout_comments = "Standard configuration with premium seating for five adults."
@@ -147,8 +147,8 @@ off_road_capability_comments = "Capable of light off-road use but not designed f
 cargo_capability = "Yes"
 cargo_capability_comments = "Versatile cargo space with 579L trunk and roof rack compatibility."
 
-clod_resistance = "High"
-clod_resistance_comments = "Battery thermal management maintains 80% range at -20°C, with heat pump system."
+cold_resistance = "High"
+cold_resistance_comments = "Battery thermal management maintains 80% range at -20°C, with heat pump system."
 
 heat_resistance = "High"
 heat_resistance_comments = "Advanced cooling system maintains performance in temperatures up to 50°C."

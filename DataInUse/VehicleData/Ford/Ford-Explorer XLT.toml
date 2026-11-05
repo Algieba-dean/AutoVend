@@ -22,9 +22,9 @@ brand_comments = "Ford is an American automaker known for its trucks and SUVs."
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The Explorer XLT comes with a standard 2.3L EcoBoost gasoline engine, with an optional 3.0L EcoBoost V6."
 
-# passenger_sapce_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
-passenger_sapce_volume = "4.5~5.5 cubic meter"
-passenger_sapce_volume_comments = "The Explorer XLT offers approximately 4.8 cubic meters of passenger space with three rows of seating."
+# passenger_space_volume, candidate values: "2.5~3.5 cubic meter", "3.5~4.5 cubic meter", "4.5~5.5 cubic meter", "Above 5.5 cubic meter"
+passenger_space_volume = "4.5~5.5 cubic meter"
+passenger_space_volume_comments = "The Explorer XLT offers approximately 4.8 cubic meters of passenger space with three rows of seating."
 
 # trunk_volume, candidate values: "200~300L", "300~400L", "400~500L", "Above 500L"
 trunk_volume = "Above 500L"
@@ -74,9 +74,9 @@ seat_material_comments = "Cloth upholstery is standard; leather is available as 
 noise_insulation = "Medium"
 noise_insulation_comments = "Active noise cancellation and acoustic glass reduce cabin noise."
 
-# voice_interfaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 4 system supports voice commands for navigation, media, and climate control."
+# voice_interaction, candidate values: "Yes", "No", does the infotainment system of the car support voice interfaction
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 4 system supports voice commands for navigation, media, and climate control."
 
 # ota_updates, candidate values: "Yes", "No", does the infotainment system of the car support ota updates
 ota_updates = "Yes"
@@ -170,9 +170,9 @@ drive_type_comments = "Standard FWD with optional Intelligent 4WD system."
 suspension = "Independent Suspension"
 suspension_comments = "Front and rear independent suspension with stabilizer bars."
 
-# passibility, candidate values: "Low", "Medium", "High"
-passibility = "Medium"
-passibility_comments = "Capable of light off-road use but primarily designed for paved roads."
+# passability, candidate values: "Low", "Medium", "High"
+passability = "Medium"
+passability_comments = "Capable of light off-road use but primarily designed for paved roads."
 
 # seat_layout, candidate values: "2-seat", "4-seat", "5-seat", "6-seat", "7-seat"
 seat_layout = "7-seat"
@@ -194,9 +194,9 @@ off_road_capability_comments = "4WD models offer decent capability for light tra
 cargo_capability = "Yes"
 cargo_capability_comments = "Maximum cargo capacity of 2,486L with seats folded."
 
-# clod_resistance, candidate values: "High", "Medium", "Low"
-clod_resistance = "High"
-clod_resistance_comments = "Proven performance in cold climates with available heated features."
+# cold_resistance, candidate values: "High", "Medium", "Low"
+cold_resistance = "High"
+cold_resistance_comments = "Proven performance in cold climates with available heated features."
 
 # heat_resistance, candidate values: "High", "Medium", "Low"
 heat_resistance = "High"

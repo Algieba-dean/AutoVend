@@ -20,8 +20,8 @@ brand_comments = "Ford is the manufacturer of the F-150 Tremor, a flagship off-r
 powertrain_type = "Gasoline Engine"
 powertrain_type_comments = "The F-150 Tremor is powered by a turbocharged gasoline engine (EcoBoost)."
 
-passenger_sapce_volume = "Above 5.5 cubic meter"
-passenger_sapce_volume_comments = "Spacious cabin with approximately 5.8 cubic meters of passenger volume (crew cab configuration)."
+passenger_space_volume = "Above 5.5 cubic meter"
+passenger_space_volume_comments = "Spacious cabin with approximately 5.8 cubic meters of passenger volume (crew cab configuration)."
 
 trunk_volume = "Above 500L"
 trunk_volume_comments = "Bed volume is 1,852L (5.5-ft bed), with additional under-seat storage in the cabin."
@@ -61,8 +61,8 @@ noise_insulation = "Medium"
 noise_insulation_comments = "Enhanced cabin insulation but slightly noisier due to off-road tires."
 
 # Tech and autonomy
-voice_interfaction = "Yes"
-voice_interfaction_comments = "SYNC 4 system with voice control for navigation, media, and climate."
+voice_interaction = "Yes"
+voice_interaction_comments = "SYNC 4 system with voice control for navigation, media, and climate."
 
 ota_updates = "Yes"
 ota_updates_comments = "Ford Power-Up over-the-air updates for software improvements."
@@ -135,8 +135,8 @@ drive_type_comments = "Standard 4WD with Tremor off-road tuning."
 suspension = "Independent Suspension"
 suspension_comments = "Front independent suspension; rear solid axle with off-road dampers."
 
-passibility = "High"
-passibility_comments = "Approach angle: 27.6°, departure angle: 24.3°, water fording: 33 inches."
+passability = "High"
+passability_comments = "Approach angle: 27.6°, departure angle: 24.3°, water fording: 33 inches."
 
 seat_layout = "5-seat"
 seat_layout_comments = "SuperCrew cab configuration with 5 seats."
@@ -153,8 +153,8 @@ off_road_capability_comments = "Tremor package includes off-road tires, skid pla
 cargo_capability = "Yes"
 cargo_capability_comments = "Max payload: 1,705 lbs; towing: 11,200 lbs (when properly equipped)."
 
-clod_resistance = "High"
-clod_resistance_comments = "Tested for cold starts at -30°C; optional engine block heater."
+cold_resistance = "High"
+cold_resistance_comments = "Tested for cold starts at -30°C; optional engine block heater."
 
 heat_resistance = "High"
 heat_resistance_comments = "Radiator and cooling system optimized for high-temperature off-roading."
