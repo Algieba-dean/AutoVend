@@ -6,9 +6,9 @@ car_model = "NIO-Onvo L90 Flagship Electric Crossover"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "60,000~100,000"
-prize_comments = "The NIO-Onvo L90 Flagship Electric Crossover is priced between $68,000 and $92,000 USD, depending on battery capacity and optional features."
+# Price and category
+price = "60,000~100,000"
+price_comments = "The NIO-Onvo L90 Flagship Electric Crossover is priced between $68,000 and $92,000 USD, depending on battery capacity and optional features."
 
 vehicle_category_bottom = "Mid-to-Large SUV"
 vehicle_category_bottom_comments = "The L90 is positioned as a premium electric crossover with a spacious interior and advanced technology."

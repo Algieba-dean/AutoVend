@@ -79,7 +79,7 @@ class TestShouldAdvanceFunctions:
         assert not should_advance_to_needs(profile)
 
     def test_advance_to_car_selection_enough_fields(self):
-        needs = VehicleNeeds(explicit=ExplicitNeeds(brand="Tesla", prize="40,000~60,000"))
+        needs = VehicleNeeds(explicit=ExplicitNeeds(brand="Tesla", price="40,000~60,000"))
         assert should_advance_to_car_selection(needs)
 
     def test_advance_to_car_selection_not_enough(self):
@@ -146,7 +146,7 @@ class TestDetermineNextStage:
         # A budget is mandatory: the guard on NEEDS_ANALYSIS -> CAR_SELECTION
         # refuses to recommend vehicles when no price range is known.
         needs = VehicleNeeds(
-            explicit=ExplicitNeeds(prize="30,000 ~ 40,000", brand="Tesla", powertrain_type="BEV")
+            explicit=ExplicitNeeds(price="30,000 ~ 40,000", brand="Tesla", powertrain_type="BEV")
         )
         result = determine_next_stage(
             Stage.NEEDS_ANALYSIS, UserProfile(), needs, [], ReservationInfo()
@@ -230,7 +230,7 @@ class TestResponseGeneratorHelpers:
         needs = VehicleNeeds(explicit=ExplicitNeeds(brand="Tesla"))
         missing = _get_missing_needs_fields(needs)
         assert "brand" not in missing
-        assert "prize" in missing
+        assert "price" in missing
 
     def test_missing_reservation_fields(self):
         res = ReservationInfo(test_driver="John")
@@ -325,7 +325,7 @@ def _mock_llm_for_workflow() -> MagicMock:
         if "profile" in prompt.lower() and "extract" in prompt.lower():
             resp.text = json.dumps({"name": "John", "age": "35"})
         elif "explicit" in prompt.lower() or "vehicle requirements" in prompt.lower():
-            resp.text = json.dumps({"brand": "Tesla", "prize": "40,000~60,000"})
+            resp.text = json.dumps({"brand": "Tesla", "price": "40,000~60,000"})
         elif "implicit" in prompt.lower() or "deduce" in prompt.lower():
             resp.text = json.dumps({"comfort_level": "High"})
         elif "reservation" in prompt.lower() and "extract" in prompt.lower():

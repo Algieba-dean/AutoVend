@@ -13,10 +13,10 @@ this index buildable without torch or a vector store — which is what lets the
 CI evaluation gate run in seconds instead of downloading a 2GB model.
 """
 
-import pickle
+import json
 import re
 from pathlib import Path
-from typing import List, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple
 
 from src.utils.config import config
 from src.utils.logger import get_logger
@@ -61,42 +61,60 @@ class BM25Index:
         from rank_bm25 import BM25Okapi
 
         self.car_models = list(car_models)
-        self._bm25 = BM25Okapi([list(t) for t in corpus_tokens])
+        self.corpus_tokens = [list(t) for t in corpus_tokens]
+        self._bm25 = BM25Okapi(self.corpus_tokens)
 
     def __len__(self) -> int:
         return len(self.car_models)
 
     def search(self, query_text: str, top_k: int = 10) -> List[Tuple[str, float]]:
-        """Return (car_model, score) pairs ranked best first."""
+        """Return (car_model, score) pairs ranked best first, applying query-time field boost for model hits."""
         query_tokens = tokenize(query_text)
         if not query_tokens:
             return []
 
         scores = self._bm25.get_scores(query_tokens)
-        ranked = sorted(zip(self.car_models, scores), key=lambda p: p[1], reverse=True)
-        # A zero score means no query term occurred in the document — keeping
-        # those would pad the result list with arbitrary cars.
-        return [(model, float(score)) for model, score in ranked[:top_k] if score > 0]
+        q_lower = query_text.lower()
+        scored_pairs = []
+        for model, score in zip(self.car_models, scores):
+            if score <= 0:
+                continue
+            boosted = float(score)
+            if model:
+                m_lower = model.lower()
+                # Clean query-time field boost for exact or sub-name vehicle model hit
+                if m_lower in q_lower or ("-" in m_lower and m_lower.split("-", 1)[1] in q_lower):
+                    boosted *= 1.25
+            scored_pairs.append((model, boosted))
 
-    # ── persistence ───────────────────────────────────────────────────
+        ranked = sorted(scored_pairs, key=lambda p: p[1], reverse=True)
+        return ranked[:top_k]
+
+    # ── persistence (OWASP CWE-502 Safe JSON) ─────────────────────────
 
     def save(self, path: Optional[str] = None) -> Path:
         target = Path(path or config.bm25_index_path)
         target.parent.mkdir(parents=True, exist_ok=True)
-        with target.open("wb") as fh:
-            pickle.dump({"car_models": self.car_models, "bm25": self._bm25}, fh)
-        logger.info(f"BM25 索引已保存: {target} ({len(self)} 条)")
+        payload = {
+            "version": 1,
+            "format": "safe_json",
+            "car_models": self.car_models,
+            "corpus_tokens": self.corpus_tokens,
+        }
+        with target.open("w", encoding="utf-8") as fh:
+            json.dump(payload, fh, ensure_ascii=False)
+        logger.info(f"BM25 索引已安全保存 (Safe JSON): {target} ({len(self)} 条)")
         return target
 
     @classmethod
     def load(cls, path: Optional[str] = None) -> "BM25Index":
         target = Path(path or config.bm25_index_path)
-        with target.open("rb") as fh:
-            payload = pickle.load(fh)
-        index = cls.__new__(cls)
-        index.car_models = payload["car_models"]
-        index._bm25 = payload["bm25"]
-        logger.info(f"BM25 索引已加载: {target} ({len(index)} 条)")
+        with target.open("r", encoding="utf-8") as fh:
+            payload = json.load(fh)
+        if not isinstance(payload, dict) or "car_models" not in payload or "corpus_tokens" not in payload:
+            raise ValueError(f"Invalid BM25 index payload structure in {target}")
+        index = cls(payload["car_models"], payload["corpus_tokens"])
+        logger.info(f"BM25 索引已安全加载: {target} ({len(index)} 条)")
         return index
 
     @classmethod
@@ -142,15 +160,33 @@ class BM25Index:
 def _document_text(record: dict) -> str:
     """
     Flatten one catalogue row into a lexical document.
-
-    The car_model is repeated so that a query naming a model outranks cars that
-    merely share its labels — the exact-match case BM25 exists to cover.
     """
     car_model = record.get("car_model") or ""
-    parts = [car_model, car_model]
+    parts = [car_model] if car_model else []
     for column, value in record.items():
         if column == "car_model" or column in _LOW_SIGNAL_COLUMNS:
             continue
         if value and str(value).strip() and str(value).lower() not in ("none", "no"):
             parts.append(str(value))
     return " ".join(parts)
+
+
+class SQLiteFTS5Index:
+    """
+    Production-grade Sparse Lexical Retrieval using SQLite FTS5 with native bm25() scoring.
+    Zero resident memory overhead, ACID compliant, no pickle vulnerability (CWE-502).
+    """
+
+    def __init__(self, db: Optional[Any] = None):
+        from src.filter.vehicle_db import VehicleDB
+
+        self.db = db or VehicleDB()
+
+    def __len__(self) -> int:
+        return self.db.count()
+
+    def search(self, query_text: str, top_k: int = 10) -> List[Tuple[str, float]]:
+        """Return (car_model, score) pairs ranked best first using SQLite FTS5 BM25."""
+        results = self.db.search_fts5(query_text, top_k=top_k)
+        return [(m, score) for m, _, score in results]
+

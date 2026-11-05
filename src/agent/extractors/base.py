@@ -41,7 +41,14 @@ def parse_llm_json(response_text: str) -> dict:
     elif "```" in text:
         text = text.split("```")[1].split("```")[0].strip()
 
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+        if start != -1 and end > start:
+            return json.loads(text[start : end + 1])
+        raise
 
 
 def merge_model(

@@ -162,7 +162,7 @@ def _get_missing_profile_fields(profile: UserProfile) -> str:
 def _get_missing_needs_fields(needs: VehicleNeeds) -> str:
     """Get key unfilled explicit needs fields."""
     explicit = needs.explicit.model_dump()
-    key_fields = ["prize", "brand", "powertrain_type", "vehicle_category_bottom", "design_style"]
+    key_fields = ["price", "brand", "powertrain_type", "vehicle_category_bottom", "design_style"]
     missing = [k for k in key_fields if not explicit.get(k)]
     return ", ".join(missing) if missing else "None (key needs identified)"
 

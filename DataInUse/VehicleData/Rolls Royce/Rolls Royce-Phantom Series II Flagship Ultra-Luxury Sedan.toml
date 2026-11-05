@@ -7,8 +7,8 @@ car_model_comments = "The Rolls-Royce Phantom Series II is the pinnacle of ultra
 
 [PriciseLabels]
 
-prize = "Above 100,000"
-prize_comments = "The Rolls-Royce Phantom Series II starts at approximately $460,000 USD and can exceed $600,000 USD with bespoke options."
+price = "Above 100,000"
+price_comments = "The Rolls-Royce Phantom Series II starts at approximately $460,000 USD and can exceed $600,000 USD with bespoke options."
 
 vehicle_category_bottom = "D-Segment Sedan"
 vehicle_category_bottom_comments = "The Phantom is a full-size luxury sedan with exceptional interior space and comfort."

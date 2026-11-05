@@ -3,8 +3,8 @@ title = "CarLabels"
 car_model = "Jaguar-Type 02"
 
 [PriciseLabels]
-prize = "60,000~100,000"
-prize_comments = "The Jaguar I-PACE (Type 02) starts at $69,900 USD for the base trim and can exceed $90,000 USD for fully loaded configurations."
+price = "60,000~100,000"
+price_comments = "The Jaguar I-PACE (Type 02) starts at $69,900 USD for the base trim and can exceed $90,000 USD for fully loaded configurations."
 
 vehicle_category_bottom = "Mid-Size SUV"
 vehicle_category_bottom_comments = "The I-PACE is classified as a premium mid-size electric SUV with sporty characteristics."

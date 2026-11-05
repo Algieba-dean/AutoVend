@@ -4,6 +4,7 @@ ChromaDB向量存储
 基于ChromaDB的向量数据库实现，提供高效的向量存储和检索功能。
 """
 
+import hashlib
 import time
 import uuid
 from pathlib import Path
@@ -15,6 +16,13 @@ from chromadb.config import Settings
 from src.models.vehicle import Vehicle
 from src.utils.config import config
 from src.utils.logger import get_logger, log_performance
+
+
+def generate_vehicle_doc_id(car_model: str, trim: str = "") -> str:
+    """Generate deterministic, idempotent document ID for vector stores."""
+    raw_key = f"{car_model.strip().lower()}::{trim.strip().lower()}"
+    digest = hashlib.md5(raw_key.encode("utf-8")).hexdigest()[:16]
+    return f"veh_{digest}"
 
 
 class ChromaVectorStore:
@@ -172,8 +180,8 @@ class ChromaVectorStore:
         metadatas = []
 
         for vehicle in vehicles:
-            # 生成唯一ID
-            doc_id = str(uuid.uuid4())
+            # 基于车型名称生成确定性ID，确保幂等更新与关系型数据库主键对齐
+            doc_id = generate_vehicle_doc_id(vehicle.car_model or str(uuid.uuid4()))
             ids.append(doc_id)
 
             # 文档内容（用于检索）
@@ -184,7 +192,7 @@ class ChromaVectorStore:
                 "car_model": vehicle.car_model,
                 "brand": vehicle.precise_labels.brand or "",
                 "category": vehicle.precise_labels.vehicle_category_bottom or "",
-                "price": vehicle.precise_labels.prize or "",
+                "price": vehicle.precise_labels.price or "",
                 "powertrain_type": vehicle.precise_labels.powertrain_type or "",
                 "size": vehicle.ambiguous_labels.size or "",
                 "family_friendliness": vehicle.ambiguous_labels.family_friendliness or "",
@@ -199,10 +207,15 @@ class ChromaVectorStore:
 
             metadatas.append(metadata)
 
-        # 添加到ChromaDB
-        self.collection.add(
-            ids=ids, documents=documents, metadatas=metadatas, embeddings=embeddings
-        )
+        # 幂等写入ChromaDB (优先使用upsert防止重复插入与幽灵数据膨胀)
+        if hasattr(self.collection, "upsert"):
+            self.collection.upsert(
+                ids=ids, documents=documents, metadatas=metadatas, embeddings=embeddings
+            )
+        else:
+            self.collection.add(
+                ids=ids, documents=documents, metadatas=metadatas, embeddings=embeddings
+            )
 
     @log_performance
     def query(
@@ -311,7 +324,7 @@ class ChromaVectorStore:
                 "car_model": vehicle.car_model,
                 "brand": vehicle.precise_labels.brand or "",
                 "category": vehicle.precise_labels.vehicle_category_bottom or "",
-                "price": vehicle.precise_labels.prize or "",
+                "price": vehicle.precise_labels.price or "",
                 "powertrain_type": vehicle.precise_labels.powertrain_type or "",
                 "size": vehicle.ambiguous_labels.size or "",
                 "family_friendliness": vehicle.ambiguous_labels.family_friendliness or "",

@@ -104,10 +104,12 @@ class VerificationEvidenceLedger:
         return is_valid
 
 
-    def verify_date_time(self, date_str: str, time_str: str) -> bool:
+    def verify_date_time(self, date_str: Any, time_str: Any) -> bool:
         """Verify reservation date and time are provided and plausible."""
-        valid_date = bool(date_str and len(date_str.strip()) >= 2)
-        valid_time = bool(time_str and len(time_str.strip()) >= 2)
+        d_val = str(date_str).strip() if date_str is not None else ""
+        t_val = str(time_str).strip() if time_str is not None else ""
+        valid_date = bool(d_val and len(d_val) >= 2)
+        valid_time = bool(t_val and len(t_val) >= 2)
         is_valid = valid_date and valid_time
 
         self.evidences.append(
@@ -145,9 +147,9 @@ class VerificationEvidenceLedger:
         from src.agent.schemas import Stage
 
         # Auto-audit state attributes into evidence ledger
-        if getattr(state, "needs", None) and state.needs.explicit.prize:
+        if getattr(state, "needs", None) and state.needs.explicit.price:
             if not any(e.evidence_type == "BUDGET_VERIFIED" and e.verified for e in self.evidences):
-                self.verify_budget(state.needs.explicit.prize)
+                self.verify_budget(state.needs.explicit.price)
 
         if getattr(state, "matched_cars", None):
             candidate_names = [c.get("car_model", "") for c in state.matched_cars if c.get("car_model")]

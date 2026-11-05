@@ -6,9 +6,9 @@ car_model = "Audi e-tron GT RS"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "Above 100,000"
-prize_comments = "The Audi e-tron GT RS starts at approximately $142,400 USD (MSRP) before options or taxes."
+# Price and category
+price = "Above 100,000"
+price_comments = "The Audi e-tron GT RS starts at approximately $142,400 USD (MSRP) before options or taxes."
 
 vehicle_category_bottom = "Four-door Hardtop Sports Car"
 vehicle_category_bottom_comments = "High-performance electric grand tourer with a sleek four-door coupe design."

@@ -6,9 +6,9 @@ car_model = "Hyundai-Santa Fe Hybrid"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "40,000~60,000"
-prize_comments = "The Hyundai Santa Fe Hybrid is priced between $42,000 and $58,000 USD depending on trim (SE, SEL, Limited, or Calligraphy)."
+# Price and category
+price = "40,000~60,000"
+price_comments = "The Hyundai Santa Fe Hybrid is priced between $42,000 and $58,000 USD depending on trim (SE, SEL, Limited, or Calligraphy)."
 
 vehicle_category_bottom = "Mid-Size SUV"
 vehicle_category_bottom_comments = "The Santa Fe Hybrid is a 5-seater mid-size SUV (7-seater optional in some markets) with a focus on family practicality and hybrid efficiency."

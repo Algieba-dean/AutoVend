@@ -43,23 +43,23 @@ class ConstraintConflict(BaseModel):
         )
 
 
-def _parse_budget_max_k_yuan(prize_str: str) -> Optional[float]:
+def _parse_budget_max_k_yuan(price_str: str) -> Optional[float]:
     """
     Parse budget string into upper bound value in 10k RMB (万元).
     Examples: '20万以内' -> 20.0, '15-20万' -> 20.0, '30万左右' -> 35.0
     Returns None if budget cannot be parsed as a numeric bound.
     """
-    if not prize_str:
+    if not price_str:
         return None
 
     # Check numbers followed by 万
-    matches = re.findall(r"(\d+(?:\.\d+)?)\s*万", prize_str)
+    matches = re.findall(r"(\d+(?:\.\d+)?)\s*万", price_str)
     if matches:
         nums = [float(m) for m in matches]
         return max(nums)
 
     # Check raw numbers
-    matches_raw = re.findall(r"(\d+)", prize_str)
+    matches_raw = re.findall(r"(\d+)", price_str)
     if matches_raw:
         nums = [float(m) for m in matches_raw]
         val = max(nums)
@@ -102,7 +102,7 @@ LARGE_VEHICLE_MIN_PRICE: Dict[str, float] = {
 def check_budget_vs_brand_or_class(state: SessionState) -> Optional[ConstraintConflict]:
     """Check if budget ceiling conflicts with requested luxury brand or high-tier category (HARD)."""
     explicit = state.needs.explicit
-    budget_k = _parse_budget_max_k_yuan(explicit.prize)
+    budget_k = _parse_budget_max_k_yuan(explicit.price)
     if budget_k is None:
         return None
 
@@ -115,7 +115,7 @@ def check_budget_vs_brand_or_class(state: SessionState) -> Optional[ConstraintCo
             return ConstraintConflict(
                 conflict_type="BUDGET_VS_BRAND",
                 severity="HARD",
-                conflicting_fields=["explicit.prize", "explicit.brand"],
+                conflicting_fields=["explicit.price", "explicit.brand"],
                 description=f"客户预算上限为 {budget_k:.0f} 万元，但想要看 {explicit.brand} 品牌（起售价通常在 {min_price:.0f} 万以上）",
                 suggested_options=[
                     f"适当提升预算至 {min_price:.0f} 万元以上以支持 {explicit.brand}",
@@ -139,7 +139,7 @@ def check_budget_vs_brand_or_class(state: SessionState) -> Optional[ConstraintCo
             return ConstraintConflict(
                 conflict_type="BUDGET_VS_CATEGORY",
                 severity="HARD",
-                conflicting_fields=["explicit.prize", "explicit.vehicle_category_bottom"],
+                conflicting_fields=["explicit.price", "explicit.vehicle_category_bottom"],
                 description=f"客户预算上限为 {budget_k:.0f} 万元，但希望选购 {explicit.vehicle_category_bottom}（市场均价通常在 {min_price:.0f} 万以上）",
                 suggested_options=[
                     "调整至中型/紧凑型车型（如中型SUV/MPV）",
@@ -291,7 +291,7 @@ def check_powertrain_vs_usage(state: SessionState) -> Optional[ConstraintConflic
 def check_budget_vs_tech_features(state: SessionState) -> Optional[ConstraintConflict]:
     """Check if budget under 16万 conflicts with demanding high-tier LiDAR / NOA smart driving (HARD)."""
     explicit = state.needs.explicit
-    budget_k = _parse_budget_max_k_yuan(explicit.prize)
+    budget_k = _parse_budget_max_k_yuan(explicit.price)
     if budget_k is None:
         return None
 
@@ -307,7 +307,7 @@ def check_budget_vs_tech_features(state: SessionState) -> Optional[ConstraintCon
         return ConstraintConflict(
             conflict_type="BUDGET_VS_TECH",
             severity="HARD",
-            conflicting_fields=["needs.explicit.prize", "needs.explicit.design_style"],
+            conflicting_fields=["needs.explicit.price", "needs.explicit.design_style"],
             description=f"客户预算上限为 {budget_k:.0f} 万元，但明确要求搭载激光雷达或城市高阶NOA系统（当前量产车门槛通常在 18 万以上）",
             suggested_options=[
                 "将购车预算微调至 18-20 万元区间，选择搭载高阶激光雷达智驾的成熟新势力车型",

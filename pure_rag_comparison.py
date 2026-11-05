@@ -317,7 +317,7 @@ class PureRAGComparison:
         
         # Check price tier match
         elif any(price in query_lower for price in ['luxury', 'affordable']):
-            price_str = (vehicle.precise_labels.prize or '').lower()
+            price_str = (vehicle.precise_labels.price or '').lower()
             if 'luxury' in query_lower and ('above' in price_str or '100,000' in price_str):
                 match = True
                 match_reason = f"Luxury price match: {price_str}"

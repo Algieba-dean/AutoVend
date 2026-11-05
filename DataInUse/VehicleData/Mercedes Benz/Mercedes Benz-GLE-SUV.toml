@@ -6,9 +6,9 @@ car_model = "Mercedes-Benz GLE SUV"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "60,000~100,000"
-prize_comments = "The Mercedes-Benz GLE SUV starts at $62,150 USD for the GLE 350 and goes up to $97,800 USD for the AMG GLE 63 S, depending on trim and options."
+# Price and category
+price = "60,000~100,000"
+price_comments = "The Mercedes-Benz GLE SUV starts at $62,150 USD for the GLE 350 and goes up to $97,800 USD for the AMG GLE 63 S, depending on trim and options."
 
 vehicle_category_bottom = "Mid-to-Large SUV"
 vehicle_category_bottom_comments = "The GLE is a luxury mid-to-large SUV with premium features and spacious interiors."

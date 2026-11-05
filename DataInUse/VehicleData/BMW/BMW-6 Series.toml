@@ -6,9 +6,9 @@ car_model = "BMW-6 Series"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "60,000~100,000"
-prize_comments = "The BMW 6 Series Gran Turismo starts at around $70,000 USD for the base 630i model and can exceed $90,000 USD for the M Sport or fully optioned variants."
+# Price and category
+price = "60,000~100,000"
+price_comments = "The BMW 6 Series Gran Turismo starts at around $70,000 USD for the base 630i model and can exceed $90,000 USD for the M Sport or fully optioned variants."
 
 vehicle_category_bottom = "D-Segment Sedan"
 vehicle_category_bottom_comments = "The 6 Series Gran Turismo combines sedan-like luxury with a liftback design, targeting the premium executive segment."

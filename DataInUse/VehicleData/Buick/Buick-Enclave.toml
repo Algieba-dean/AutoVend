@@ -3,8 +3,8 @@ title = "CarLabels"
 car_model = "Buick-Enclave"
 
 [PriciseLabels]
-prize = "40,000~60,000"
-prize_comments = "The Buick Enclave is priced between $43,000 and $58,000 USD depending on the trim level (Preferred, Essence, Avenir) and options."
+price = "40,000~60,000"
+price_comments = "The Buick Enclave is priced between $43,000 and $58,000 USD depending on the trim level (Preferred, Essence, Avenir) and options."
 
 vehicle_category_bottom = "Mid-to-Large SUV"
 vehicle_category_bottom_comments = "The Enclave is a 3-row SUV with premium positioning in Buick's lineup, competing with vehicles like the Honda Pilot and Ford Explorer."

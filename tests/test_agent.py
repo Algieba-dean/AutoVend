@@ -213,11 +213,11 @@ class TestNeedsExtractor:
         assert result.powertrain_type == "EV"
 
     def test_extract_merge_existing(self):
-        llm = _mock_llm('{"prize": "200000"}')
+        llm = _mock_llm('{"price": "200000"}')
         existing = ExplicitNeeds(brand="Tesla")
         result = extract_explicit_needs(llm, "text", existing)
         assert result.brand == "Tesla"
-        assert result.prize == "200000"
+        assert result.price == "200000"
 
 
 class TestImplicitDeductor:
@@ -335,7 +335,7 @@ class TestDetermineNextStage:
         assert result == Stage.NEEDS_ANALYSIS
 
     def test_needs_advances_with_enough_fields(self):
-        needs = VehicleNeeds(explicit=ExplicitNeeds(brand="BMW", prize="200000"))
+        needs = VehicleNeeds(explicit=ExplicitNeeds(brand="BMW", price="200000"))
         result = determine_next_stage(
             Stage.NEEDS_ANALYSIS, UserProfile(), needs, [], ReservationInfo()
         )
@@ -459,7 +459,7 @@ class TestResponseGenerator:
 
     def test_missing_needs_fields(self):
         result = _get_missing_needs_fields(VehicleNeeds())
-        assert "prize" in result
+        assert "price" in result
 
     def test_missing_reservation_fields(self):
         result = _get_missing_reservation_fields(ReservationInfo())

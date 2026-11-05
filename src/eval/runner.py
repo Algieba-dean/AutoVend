@@ -32,7 +32,6 @@ RESULTS_DIR = PROJECT_ROOT / "evaluation" / "results"
 
 #: Metrics printed in the summary table. The full set is kept in the JSON.
 HEADLINE_METRICS = (
-    "capped_recall@3",
     "recall@3",
     "precision@3",
     "hit_rate@3",
@@ -184,7 +183,7 @@ def format_comparison(report: Dict) -> str:
     header = " | ".join(f"`{s['system']}`" for s in systems)
     lines += [
         "",
-        "## By tag — capped_recall@3",
+        "## By tag — recall@3",
         "",
         f"| Tag | n | {header} |",
         "|---" * (len(systems) + 2) + "|",
@@ -192,19 +191,23 @@ def format_comparison(report: Dict) -> str:
     all_tags = sorted({t for s in systems for t in s["by_tag"] if not t.startswith("_")})
     for tag in all_tags:
         n = systems[0]["by_tag"].get(tag, {}).get("n_queries", 0)
-        cells = [f"{s['by_tag'].get(tag, {}).get('capped_recall@3', 0.0):.3f}" for s in systems]
+        cells = [f"{s['by_tag'].get(tag, {}).get('recall@3', 0.0):.3f}" for s in systems]
         lines.append(f"| {tag} | {n} | " + " | ".join(cells) + " |")
 
     return "\n".join(lines) + "\n"
 
 
-def save_report(report: Dict, tag: str = "eval") -> Path:
+def save_report(report: Dict, tag: str = "eval") -> Optional[Path]:
     """Persist the full report as JSON. Filenames are content-stable, not timestamped."""
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    systems = "-".join(s["system"] for s in report["systems"])
-    path = RESULTS_DIR / f"{tag}_{systems}.json"
-    path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    return path
+    try:
+        RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+        systems = "-".join(s["system"] for s in report["systems"])
+        path = RESULTS_DIR / f"{tag}_{systems}.json"
+        path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        return path
+    except Exception as exc:
+        logger.warning(f"Could not persist report to {RESULTS_DIR}: {exc}")
+        return None
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -220,6 +223,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--top-k", type=int, default=EVAL_TOP_K)
     parser.add_argument("--markdown", type=Path, default=None, help="Write a comparison table here")
     parser.add_argument("--tag", default="eval", help="Prefix for the results filename")
+    parser.add_argument(
+        "--json-out",
+        type=Path,
+        default=None,
+        help="Write structured metrics contract JSON here.",
+    )
     args = parser.parse_args(argv)
 
     report = run(args.systems, args.golden, args.top_k)
@@ -228,12 +237,20 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     print(table)
 
     json_path = save_report(report, args.tag)
-    print(f"Full report: {json_path}")
+    if json_path:
+        print(f"Full report: {json_path}")
 
     if args.markdown:
         args.markdown.parent.mkdir(parents=True, exist_ok=True)
         args.markdown.write_text(table, encoding="utf-8")
         print(f"Markdown:    {args.markdown}")
+
+    if args.json_out:
+        from src.eval.metrics_contract import build_metrics_contract_from_runner
+
+        contract = build_metrics_contract_from_runner(report)
+        contract.write_json(args.json_out)
+        print(f"Contract:    {args.json_out}")
 
     return 0
 

@@ -126,7 +126,7 @@ def search_command(args) -> None:
             logger.info(
                 f"   车型: {result.vehicle.precise_labels.vehicle_category_bottom or '未知'}"
             )
-            logger.info(f"   价格: {result.vehicle.precise_labels.prize or '未知'}")
+            logger.info(f"   价格: {result.vehicle.precise_labels.price or '未知'}")
             logger.info(f"   说明: {result.explanation}")
 
             if result.score.matched_features:

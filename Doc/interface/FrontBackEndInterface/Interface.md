@@ -360,7 +360,7 @@ This document defines the API interface between the frontend and backend of Auto
           "vehicle_category_bottom": "Compact SUV",
           "driving_range": "Above 800km",
           "brand": "Tesla",
-          "prize": "40,000~60,000"
+          "price": "40,000~60,000"
         },
         "implicit": {
           "energy_consumption_level": "Low",
@@ -455,7 +455,7 @@ All car need fields can appear in either explicit or implicit categories dependi
 
 | Field | Type | Required | Description | Candidate Values |
 |-------|------|----------|-------------|-----------------|
-| prize | String | No | Price range | "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000" |
+| price | String | No | Price range | "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000" |
 | vehicle_category_bottom | String | No | Vehicle type/category | "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car" |
 | brand | String | No | Car manufacturer | "Volkswagen", "Audi", "Porsche", "Bentley", "Bugatti", "Lamborghini", "BMW", "Mercedes-Benz", "Peugeot", "Renault", "Jaguar", "Land Rover", "Rolls-Royce", "Volvo", "Chevrolet", "Buick", "Cadillac", "Ford", "Tesla", "Toyota", "Honda", "Nissan", "Suzuki", "Mazda", "Hyundai", "BYD", "Geely", "Changan", "Great Wall Motor", "Nio", "XiaoMi", "XPeng" |
 | powertrain_type | String | No | Engine/motor type | "Gasoline Engine", "Diesel Engine", "Hybrid Electric Vehicle", "Plug-in Hybird Electric Vehicle", "Range-Extended Electric Vehicle", "Battery Electric Vehicle" |

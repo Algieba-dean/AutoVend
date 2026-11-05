@@ -19,32 +19,30 @@ from src.utils.logger import get_logger, log_performance
 import hashlib
 
 
+class EmbeddingInferenceError(RuntimeError):
+    """Raised when embedding model fails to infer vector representations."""
+
+    pass
+
+
 class _DummySentenceTransformer:
-    """离线沙箱或无网络环境下的轻量级降级嵌入模型。"""
+    """离线沙箱或无网络环境下的显式降级占位模型，标记系统降级至稀疏检索."""
 
     def __init__(self, dimension: int = 1024):
         self.dimension = dimension
         self.max_seq_length = 512
         self.device = torch.device("cpu")
+        self.degrade_level = "DEGRADED_SPARSE_ONLY"
+        self.is_degraded = True
 
     def get_sentence_embedding_dimension(self) -> int:
         return self.dimension
 
     def _generate_vector(self, text: str, normalize: bool = True) -> np.ndarray:
-        if not text:
-            vec = np.zeros(self.dimension, dtype=np.float32)
-            if normalize:
-                vec[0] = 1.0
-            return vec
-        # 针对输入文本哈希生成确定性的伪随机高维单位向量，保持几何分布与正交性
-        h = hashlib.sha256(str(text).encode("utf-8", errors="ignore")).digest()
-        seed = int.from_bytes(h[:4], "big")
-        rng = np.random.RandomState(seed)
-        vec = rng.standard_normal(self.dimension).astype(np.float32)
+        # 显式恒等单位向量标识降级状态，严禁使用 SHA256 伪随机数伪造正交空间
+        vec = np.zeros(self.dimension, dtype=np.float32)
         if normalize:
-            norm = float(np.linalg.norm(vec))
-            if norm > 0:
-                vec = vec / norm
+            vec[0] = 1.0
         return vec
 
     def encode(
@@ -81,6 +79,9 @@ class _DummySentenceTransformer:
 class BGEEmbeddingModel(BaseEmbedding):
     """BGE-M3嵌入模型"""
 
+    is_degraded: bool = False
+    degrade_level: str = "NORMAL"
+
     def __init__(
         self,
         model_name: Optional[str] = None,
@@ -111,6 +112,8 @@ class BGEEmbeddingModel(BaseEmbedding):
 
         self._model = None
         self._dimension = None
+        self.is_degraded: bool = False
+        self.degrade_level: str = "NORMAL"
 
         # 统计信息
         self._stats = {"total_embeddings": 0, "total_time": 0.0, "avg_time_per_embedding": 0.0}
@@ -169,6 +172,8 @@ class BGEEmbeddingModel(BaseEmbedding):
                         f"无法从远程加载模型 ({net_err})，降级为离线 Dummy 嵌入模型"
                     )
                     self._model = _DummySentenceTransformer(dimension=1024)
+                    self.is_degraded = True
+                    self.degrade_level = "DEGRADED_SPARSE_ONLY"
 
             # 设置模型参数
             if hasattr(self._model, "max_seq_length"):
@@ -180,6 +185,8 @@ class BGEEmbeddingModel(BaseEmbedding):
         except Exception as e:
             self._logger.warning(f"加载BGE-M3模型异常 ({e})，启用降级 Dummy 嵌入模型")
             self._model = _DummySentenceTransformer(dimension=1024)
+            self.is_degraded = True
+            self.degrade_level = "DEGRADED_SPARSE_ONLY"
             self._dimension = 1024
 
     def _get_query_embedding(self, query: str) -> List[float]:

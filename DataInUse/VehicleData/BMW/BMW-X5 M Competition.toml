@@ -5,8 +5,8 @@ title = "CarLabels"
 car_model = "BMW-X5 M Competition"
 
 [PriciseLabels]
-prize = "Above 100,000"
-prize_comments = "The BMW-X5 M Competition starts at $119,800 USD (2023 model) before options and destination fees."
+price = "Above 100,000"
+price_comments = "The BMW-X5 M Competition starts at $119,800 USD (2023 model) before options and destination fees."
 
 vehicle_category_bottom = "Mid-to-Large SUV"
 vehicle_category_bottom_comments = "The X5 M Competition is a high-performance variant of BMW's mid-to-large luxury SUV segment."

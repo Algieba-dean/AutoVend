@@ -4,16 +4,43 @@
 负责构建和管理车辆向量索引，提供增量更新和验证功能。
 """
 
+import json
+import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from src.models.vehicle import Vehicle
 from src.rag.data_loader import VehicleDataLoader
-from src.rag.embeddings import BGEEmbeddingModel
+from src.rag.embeddings import BGEEmbeddingModel, EmbeddingInferenceError
 from src.rag.vector_store import ChromaVectorStore
 from src.utils.config import config
 from src.utils.logger import get_logger, log_performance
+
+
+class IndexDLQ:
+    """Persistent Dead Letter Queue for failed indexing and vector embedding batches."""
+
+    def __init__(self, dlq_dir: Optional[str] = None):
+        self.dlq_dir = Path(dlq_dir or "data/dlq")
+        self.dlq_dir.mkdir(parents=True, exist_ok=True)
+        self.dlq_file = self.dlq_dir / "index_builder_dlq.jsonl"
+        self._lock = threading.Lock()
+
+    def record_failure(self, task_type: str, payload: Dict[str, Any], error_msg: str) -> None:
+        """Record failed batch item to persistent DLQ jsonl storage."""
+        with self._lock:
+            entry = {
+                "timestamp": time.time(),
+                "task_type": task_type,
+                "payload": payload,
+                "error_msg": str(error_msg),
+            }
+            try:
+                with open(self.dlq_file, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            except Exception:
+                pass
 
 
 class IndexBuilder:
@@ -25,6 +52,7 @@ class IndexBuilder:
         persist_directory: Optional[str] = None,
         collection_name: Optional[str] = None,
         batch_size: int = 100,
+        dlq_engine: Optional[IndexDLQ] = None,
     ):
         """
         初始化索引构建器
@@ -34,11 +62,13 @@ class IndexBuilder:
             persist_directory: 持久化目录
             collection_name: 集合名称
             batch_size: 批处理大小
+            dlq_engine: 死信队列管理器
         """
         self.data_dir = data_dir or config.vehicle_data_dir
         self.persist_directory = persist_directory or config.chroma_persist_dir
         self.collection_name = collection_name or config.chroma_collection_name
         self.batch_size = batch_size
+        self.dlq_engine = dlq_engine or IndexDLQ()
 
         self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
@@ -112,10 +142,14 @@ class IndexBuilder:
 
         # 生成嵌入向量
         self.logger.info("生成嵌入向量...")
-        embeddings = self._generate_embeddings(vehicles)
+        try:
+            embeddings = self._generate_embeddings(vehicles)
+        except EmbeddingInferenceError as e:
+            self.logger.error(f"嵌入向量生成致命失败: {e}")
+            return self._get_build_result("embedding_failed")
 
         if len(embeddings) != len(vehicles):
-            self.logger.error("嵌入向量生成失败")
+            self.logger.error("嵌入向量生成失败，数量不匹配")
             return self._get_build_result("embedding_failed")
 
         # 存储到向量数据库
@@ -208,10 +242,16 @@ class IndexBuilder:
                 )
 
             except Exception as e:
-                self.logger.error(f"批次 {i // self.batch_size} 嵌入生成失败: {e}")
+                self.logger.critical(f"批次 {i // self.batch_size} 嵌入生成失败: {e}. 触发 DLQ 记录。")
                 self.build_stats["failed_vehicles"] += len(batch_vehicles)
-                # 添加空嵌入以保持索引对齐
-                embeddings.extend([[0.0] * self.embedding_model.embed_dimension] * len(batch_texts))
+                self.dlq_engine.record_failure(
+                    task_type="VECTOR_EMBEDDING",
+                    payload={"batch_index": i, "texts": batch_texts},
+                    error_msg=str(e),
+                )
+                raise EmbeddingInferenceError(
+                    f"Embedding generation aborted at batch {i}: {e}"
+                ) from e
 
         embedding_time = time.time() - start_time
         self.build_stats["embedding_time"] = embedding_time

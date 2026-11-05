@@ -6,9 +6,9 @@ car_model = "BYD-QR EV"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "30,000~40,000"
-prize_comments = "The BYD-QR EV is priced between $35,000 and $38,000 USD, competitive in the mid-range EV segment."
+# Price and category
+price = "30,000~40,000"
+price_comments = "The BYD-QR EV is priced between $35,000 and $38,000 USD, competitive in the mid-range EV segment."
 
 vehicle_category_bottom = "C-Segment Sedan"
 vehicle_category_bottom_comments = "A midsize electric sedan with premium features and spacious interior."

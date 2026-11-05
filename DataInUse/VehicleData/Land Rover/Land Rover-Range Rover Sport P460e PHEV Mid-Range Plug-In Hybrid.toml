@@ -6,9 +6,9 @@ car_model = "Land Rover-Range Rover Sport P460e PHEV Mid-Range Plug-In Hybrid"
 
 [PriciseLabels]
 
-# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
-prize = "60,000~100,000"
-prize_comments = "The Land Rover-Range Rover Sport P460e PHEV Mid-Range Plug-In Hybrid is priced between $78,000 and $92,000 USD depending on the trim level and options."
+# price, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+price = "60,000~100,000"
+price_comments = "The Land Rover-Range Rover Sport P460e PHEV Mid-Range Plug-In Hybrid is priced between $78,000 and $92,000 USD depending on the trim level and options."
 
 # vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
 vehicle_category_bottom = "All-terrain SUV"

@@ -50,7 +50,7 @@ HAPPY_PATH_STEPS = [
         "current": Stage.NEEDS_ANALYSIS,
         "profile": UserProfile(name="Alice"),
         "needs": VehicleNeeds(
-            explicit=ExplicitNeeds(prize="30,000 ~ 40,000", brand="Tesla", powertrain_type="EV")
+            explicit=ExplicitNeeds(price="30,000 ~ 40,000", brand="Tesla", powertrain_type="EV")
         ),
         "cars": [],
         "reservation": ReservationInfo(),
@@ -161,7 +161,7 @@ EDGE_CASE_STEPS = [
         "description": "Farewell is terminal — stays forever",
         "current": Stage.FAREWELL,
         "profile": UserProfile(name="Alice"),
-        "needs": VehicleNeeds(explicit=ExplicitNeeds(brand="BMW", prize="500000")),
+        "needs": VehicleNeeds(explicit=ExplicitNeeds(brand="BMW", price="500000")),
         "cars": [{"car_model": "X5"}],
         "reservation": ReservationInfo(
             test_driver="Alice",
@@ -187,7 +187,7 @@ EDGE_CASE_STEPS = [
         "description": "Needs advances with exactly 2 fields (boundary)",
         "current": Stage.NEEDS_ANALYSIS,
         "profile": UserProfile(),
-        "needs": VehicleNeeds(explicit=ExplicitNeeds(prize="100000", brand="Audi")),
+        "needs": VehicleNeeds(explicit=ExplicitNeeds(price="100000", brand="Audi")),
         "cars": [],
         "reservation": ReservationInfo(),
         "expected": Stage.CAR_SELECTION,

@@ -27,7 +27,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from backend.app.models.schemas import (
@@ -41,6 +41,7 @@ from backend.app.models.schemas import (
 from backend.app.models.storage import FileStorage
 from src.agent.sales_agent import SalesAgent
 from src.agent.schemas import SessionState, Stage, UserProfile
+from src.agent.storage.distributed_session import get_distributed_session_store
 from src.mlops import (
     alert_manager,
     deployment_router,
@@ -309,24 +310,27 @@ def _retrieve_cars(state: SessionState, user_query: str = "") -> list:
     without stage locking.
     """
     if user_query:
-        from src.retrieval.tiered_engine import TieredRetrievalEngine
+        try:
+            from src.retrieval.tiered_engine import TieredRetrievalEngine
 
-        t0 = TieredRetrievalEngine.get_instance().search_tier0(user_query)
-        if t0 is not None and t0.results:
-            fast_cars = []
-            for r in t0.results:
-                meta = dict(r.metadata) if r.metadata else {}
-                car_entry = {
-                    **meta,
-                    "car_model": r.car_model or meta.get("car_model", ""),
-                    "score": getattr(r, "score", 1.0),
-                    "metadata": meta,
-                    "text_snippet": r.text_snippet or t0.facts_summary or "",
-                }
-                if car_entry["car_model"]:
-                    fast_cars.append(car_entry)
-            if fast_cars:
-                return fast_cars
+            t0 = TieredRetrievalEngine.get_instance().search_tier0(user_query)
+            if t0 is not None and t0.results:
+                fast_cars = []
+                for r in t0.results:
+                    meta = dict(r.metadata) if r.metadata else {}
+                    car_entry = {
+                        **meta,
+                        "car_model": r.car_model or meta.get("car_model", ""),
+                        "score": getattr(r, "score", 1.0),
+                        "metadata": meta,
+                        "text_snippet": r.text_snippet or t0.facts_summary or "",
+                    }
+                    if car_entry["car_model"]:
+                        fast_cars.append(car_entry)
+                if fast_cars:
+                    return fast_cars
+        except Exception as te:
+            logger.debug(f"Tier 0 lookup skipped or failed: {te}")
 
     if _pipeline is None:
         return state.matched_cars
@@ -398,267 +402,86 @@ async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
     """Send a message and receive AI response."""
     turn_start_time = time.time()
     agent = _get_agent()
-
-    # Get or auto-create session
-    state = _sessions.get(request.session_id) or _restore_session(request.session_id, agent)
-    if state is None:
-        profile = request.profile or UserProfile()
-        state = SessionState(session_id=request.session_id, profile=profile)
-        _sessions[request.session_id] = state
-
-    stage_val = state.stage.value if state else "welcome"
-    span = otel_tracer.start_span(
-        f"agent.turn.{stage_val}",
-        attributes={
-            "session.id": request.session_id,
-            "agent.stage": stage_val,
-            "message.length": len(request.message),
-        },
-    )
+    session_id = request.session_id
+    session_store = get_distributed_session_store()
 
     try:
-        # Gate 1 — classify with anchor vectors. Microseconds, no model.
-        decision = _classify(request.message, request.session_id)
+        async with session_store.lock_session(session_id):
+            # Get or auto-create session from distributed store
+            state = await session_store.get(session_id)
+            if state is None:
+                state = get_or_restore_session(session_id, agent, profile=request.profile)
+            if state is None:
+                profile = request.profile or UserProfile()
+                state = SessionState(session_id=session_id, profile=profile)
+                _sessions[session_id] = state
+            await session_store.save(session_id, state)
 
-        # Gate 2 — mask PII before the text reaches memory, prompts or a cloud API.
-        safe_message, pii_found = _mask(request.message, request.session_id)
-
-        skip_extraction = (
-            decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
-        )
-
-        if skip_extraction:
-            state = agent.remember(state, safe_message)
-            logger.info(
-                f"[{request.session_id}] semantic fast-path: {decision.intent} "
-                f"(score={decision.score:.3f}) — extraction skipped"
-            )
-        else:
-            state = agent.observe(state, safe_message)
-
-        # Interrupt: the customer contradicted a constraint they had already given.
-        # Roll back along a legal backward edge before retrieval runs.
-        if decision is not None and decision.intent == INTERRUPT_INTENT:
-            state = _rollback_on_constraint_change(state, decision)
-
-        # Vehicle retrieval (backend concern — results passed back to the agent)
-        retrieved_cars = _retrieve_cars(state, user_query=request.message)
-
-        result = agent.respond(state, retrieved_cars)
-
-        # Restore real values before anything is stored or shown.
-        _unmask_state(result.session_state, request.session_id)
-        result = result.model_copy(
-            update={"response_text": _unmask(result.response_text, request.session_id)}
-        )
-
-        # Update stored session state
-        _sessions[request.session_id] = result.session_state
-        background_tasks.add_task(
-            _persist_session,
-            request.session_id,
-            _session_payload(result.session_state, agent),
-        )
-
-        # Record MLOps telemetry & observability
-        duration_s = time.time() - turn_start_time
-        curr_stage = result.session_state.stage.value
-        span.end(status_code="OK")
-        prometheus_exporter.inc_counter("autovend_requests_total", labels={"stage": curr_stage})
-        prometheus_exporter.observe_histogram(
-            "autovend_latency_seconds", duration_s, labels={"stage": curr_stage}
-        )
-        deployment_router.record_turn_metric(
-            request.session_id, variant="baseline", success=True, latency_s=duration_s
-        )
-        semantic_drift_detector.record_production_query(
-            intent=curr_stage,
-            retrieval_hit=bool(retrieved_cars),
-            retrieval_top1_score=0.85 if retrieved_cars else 0.0,
-        )
-
-        # Build API response
-        now = datetime.now(timezone.utc).isoformat()
-        user_msg = ChatMessage(
-            message_id=f"msg_{datetime.now().timestamp()}",
-            sender_type="user",
-            sender_id=request.session_id,
-            content=request.message,
-            timestamp=now,
-            status="delivered",
-        )
-        assistant_msg = ChatMessage(
-            message_id=f"msg_{datetime.now().timestamp()}",
-            sender_type="system",
-            sender_id="AutoVend",
-            content=result.response_text,
-            timestamp=now,
-            status="delivered",
-        )
-
-        return ChatResponse(
-            message=user_msg,
-            response=assistant_msg,
-            stage=StageInfo(
-                previous_stage=result.session_state.previous_stage,
-                current_stage=result.session_state.stage.value,
-            ),
-            profile=result.session_state.profile,
-            needs=result.session_state.needs,
-            matched_car_models=result.session_state.matched_cars,
-            reservation_info=result.session_state.reservation,
-        )
-    except Exception as exc:
-        duration_s = time.time() - turn_start_time
-        curr_stage = state.stage.value if state else "unknown"
-        span.end(status_code="ERROR", status_message=str(exc))
-        prometheus_exporter.inc_counter("autovend_errors_total", labels={"stage": curr_stage})
-        deployment_router.record_turn_metric(
-            request.session_id, variant="baseline", success=False, latency_s=duration_s
-        )
-        dlq_replay_engine.enqueue_failed_task(
-            task_type="agent_turn",
-            payload={
-                "session_id": request.session_id,
-                "message": request.message,
-                "stage": curr_stage,
-            },
-            error_message=str(exc),
-            error_category="agent_exception",
-        )
-        alert_manager.evaluate_metrics({"error_rate": 1.0, "p95_latency_s": duration_s})
-        raise
-
-
-@router.post("/stream")
-async def send_message_stream(request: ChatRequest):
-    """
-    Send a message and stream SSE events (metadata, token deltas, done).
-    Includes sliding buffer for cross-chunk PII placeholder unmasking,
-    durable session persistence, and MLOps telemetry.
-    """
-    import asyncio
-    import json
-
-    turn_start_time = time.time()
-    agent = _get_agent()
-    state = get_or_restore_session(request.session_id, agent, profile=request.profile)
-
-    stage_val = state.stage.value if state else "welcome"
-    span = otel_tracer.start_span(
-        f"agent.turn.stream.{stage_val}",
-        attributes={
-            "session.id": request.session_id,
-            "agent.stage": stage_val,
-            "message.length": len(request.message),
-        },
-    )
-
-    async def sse_event_generator():
-        nonlocal state
-        loop = asyncio.get_running_loop()
-
-        def prepare():
-            nonlocal state
-            decision = _classify(request.message, request.session_id)
-            safe_message, pii_found = _mask(request.message, request.session_id)
-
-            skip_extraction = (
-                decision is not None
-                and decision.intent in EXTRACTION_SKIP_INTENTS
-                and not pii_found
+            stage_val = state.stage.value if state else "welcome"
+            span = otel_tracer.start_span(
+                f"agent.turn.{stage_val}",
+                attributes={
+                    "session.id": session_id,
+                    "agent.stage": stage_val,
+                    "message.length": len(request.message),
+                },
             )
 
-            if skip_extraction:
-                state = agent.remember(state, safe_message)
-            else:
-                state = agent.observe(state, safe_message)
-
-            if decision is not None and decision.intent == INTERRUPT_INTENT:
-                state = _rollback_on_constraint_change(state, decision)
-
-        await loop.run_in_executor(None, prepare)
-        retrieved_cars = _retrieve_cars(state, user_query=request.message)
-
-        import queue
-
-        q = queue.Queue()
-
-        def generate():
             try:
-                for event_type, data in agent.respond_stream(state, retrieved_cars):
-                    q.put((event_type, data))
-            finally:
-                q.put(None)
+                # Gate 1 — classify with anchor vectors. Microseconds, no model.
+                decision = _classify(request.message, session_id)
 
-        loop.run_in_executor(None, generate)
+                # Gate 2 — mask PII before the text reaches memory, prompts or a cloud API.
+                safe_message, pii_found = _mask(request.message, session_id)
 
-        # Sliding buffer for cross-chunk PII placeholders (e.g. "<CN_PERSON_1>" split across chunks)
-        pii_chunk_buffer = ""
-
-        while True:
-            item = await loop.run_in_executor(None, q.get)
-            if item is None:
-                if pii_chunk_buffer:
-                    flushed = _unmask(pii_chunk_buffer, request.session_id)
-                    pii_chunk_buffer = ""
-                    yield f"event: token\ndata: {json.dumps({'delta': flushed}, ensure_ascii=False)}\n\n"
-                break
-            event_type, data = item
-            if event_type == "metadata":
-                updated_state = data["session_state"]
-                stage_changed = data["stage_changed"]
-                _unmask_state(updated_state, request.session_id)
-                _sessions[request.session_id] = updated_state
-
-                meta_payload = {
-                    "stage": {
-                        "previous_stage": updated_state.previous_stage,
-                        "current_stage": updated_state.stage.value,
-                        "stage_changed": stage_changed,
-                    },
-                    "profile": updated_state.profile.model_dump(),
-                    "needs": updated_state.needs.model_dump(),
-                    "matched_car_models": updated_state.matched_cars,
-                    "reservation_info": updated_state.reservation.model_dump(),
-                }
-                yield f"event: metadata\ndata: {json.dumps(meta_payload, ensure_ascii=False)}\n\n"
-            elif event_type == "delta":
-                combined = pii_chunk_buffer + data
-                pii_chunk_buffer = ""
-                open_idx = combined.rfind("<")
-                close_idx = combined.rfind(">")
-                # If there is an unclosed '<' near the end, hold it until '>' arrives
-                if open_idx != -1 and open_idx > close_idx and (len(combined) - open_idx) <= 24:
-                    emit_part = combined[:open_idx]
-                    pii_chunk_buffer = combined[open_idx:]
-                else:
-                    emit_part = combined
-
-                if emit_part:
-                    unmasked_delta = _unmask(emit_part, request.session_id)
-                    token_payload = {"delta": unmasked_delta}
-                    yield f"event: token\ndata: {json.dumps(token_payload, ensure_ascii=False)}\n\n"
-            elif event_type == "done":
-                if pii_chunk_buffer:
-                    flushed = _unmask(pii_chunk_buffer, request.session_id)
-                    pii_chunk_buffer = ""
-                    yield f"event: token\ndata: {json.dumps({'delta': flushed}, ensure_ascii=False)}\n\n"
-                unmasked_text = _unmask(data, request.session_id)
-                final_state = _sessions.get(request.session_id, state)
-                await _persist_session(request.session_id, _session_payload(final_state, agent))
-
-                duration_s = time.time() - turn_start_time
-                curr_stage = final_state.stage.value if final_state else "unknown"
-                span.end(status_code="OK")
-                prometheus_exporter.inc_counter(
-                    "autovend_requests_total", labels={"stage": curr_stage}
+                skip_extraction = (
+                    decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
                 )
+
+                if skip_extraction:
+                    state = agent.remember(state, safe_message)
+                    logger.info(
+                        f"[{session_id}] semantic fast-path: {decision.intent} "
+                        f"(score={decision.score:.3f}) — extraction skipped"
+                    )
+                else:
+                    state = agent.observe(state, safe_message)
+
+                # Interrupt: the customer contradicted a constraint they had already given.
+                # Roll back along a legal backward edge before retrieval runs.
+                if decision is not None and decision.intent == INTERRUPT_INTENT:
+                    state = _rollback_on_constraint_change(state, decision)
+
+                # Vehicle retrieval (backend concern — results passed back to the agent)
+                retrieved_cars = _retrieve_cars(state, user_query=request.message)
+
+                result = agent.respond(state, retrieved_cars)
+
+                # Restore real values before anything is stored or shown.
+                _unmask_state(result.session_state, session_id)
+                result = result.model_copy(
+                    update={"response_text": _unmask(result.response_text, session_id)}
+                )
+
+                # Update stored session state with OCC version bump
+                _sessions[session_id] = result.session_state
+                await session_store.save(session_id, result.session_state)
+                background_tasks.add_task(
+                    _persist_session,
+                    session_id,
+                    _session_payload(result.session_state, agent),
+                )
+
+                # Record MLOps telemetry & observability
+                duration_s = time.time() - turn_start_time
+                curr_stage = result.session_state.stage.value
+                span.end(status_code="OK")
+                prometheus_exporter.inc_counter("autovend_requests_total", labels={"stage": curr_stage})
                 prometheus_exporter.observe_histogram(
                     "autovend_latency_seconds", duration_s, labels={"stage": curr_stage}
                 )
                 deployment_router.record_turn_metric(
-                    request.session_id, variant="baseline", success=True, latency_s=duration_s
+                    session_id, variant="baseline", success=True, latency_s=duration_s
                 )
                 semantic_drift_detector.record_production_query(
                     intent=curr_stage,
@@ -666,10 +489,233 @@ async def send_message_stream(request: ChatRequest):
                     retrieval_top1_score=0.85 if retrieved_cars else 0.0,
                 )
 
-                done_payload = {"response_text": unmasked_text}
-                yield f"event: done\ndata: {json.dumps(done_payload, ensure_ascii=False)}\n\n"
+                # Build API response
+                now = datetime.now(timezone.utc).isoformat()
+                user_msg = ChatMessage(
+                    message_id=f"msg_{datetime.now().timestamp()}",
+                    sender_type="user",
+                    sender_id=session_id,
+                    content=request.message,
+                    timestamp=now,
+                    status="delivered",
+                )
+                assistant_msg = ChatMessage(
+                    message_id=f"msg_{datetime.now().timestamp()}",
+                    sender_type="system",
+                    sender_id="AutoVend",
+                    content=result.response_text,
+                    timestamp=now,
+                    status="delivered",
+                )
 
-    return StreamingResponse(sse_event_generator(), media_type="text/event-stream")
+                return ChatResponse(
+                    message=user_msg,
+                    response=assistant_msg,
+                    stage=StageInfo(
+                        previous_stage=result.session_state.previous_stage,
+                        current_stage=result.session_state.stage.value,
+                    ),
+                    profile=result.session_state.profile,
+                    needs=result.session_state.needs,
+                    matched_car_models=result.session_state.matched_cars,
+                    reservation_info=result.session_state.reservation,
+                )
+            except Exception as exc:
+                duration_s = time.time() - turn_start_time
+                curr_stage = state.stage.value if state else "unknown"
+                span.end(status_code="ERROR", status_message=str(exc))
+                prometheus_exporter.inc_counter("autovend_errors_total", labels={"stage": curr_stage})
+                deployment_router.record_turn_metric(
+                    session_id, variant="baseline", success=False, latency_s=duration_s
+                )
+                dlq_replay_engine.enqueue_failed_task(
+                    task_type="agent_turn",
+                    payload={
+                        "session_id": session_id,
+                        "message": request.message,
+                        "stage": curr_stage,
+                    },
+                    error_message=str(exc),
+                    error_category="agent_exception",
+                )
+                alert_manager.evaluate_metrics({"error_rate": 1.0, "p95_latency_s": duration_s})
+                raise
+    except SessionLockTimeoutError as e:
+        raise HTTPException(status_code=429, detail=e.detail)
+
+
+@router.post("/stream")
+async def send_message_stream(request: ChatRequest, raw_request: Request):
+    """
+    Send a message and stream SSE events (metadata, token deltas, done).
+    Battle 1 & 2: Pure asynchronous streaming bridge without threadpool starvation,
+    with client disconnect detection, cancellation propagation, distributed lease lock held
+    across the entire stream lifetime, and OCC state persistence.
+    """
+    import json
+
+    turn_start_time = time.time()
+    agent = _get_agent()
+    session_id = request.session_id
+    session_store = get_distributed_session_store()
+
+    # Battle 2: Distributed re-entrant lease lock
+    lock_ctx = session_store.lock_session(session_id)
+    try:
+        await lock_ctx.__aenter__()
+    except SessionLockTimeoutError as e:
+        raise HTTPException(status_code=429, detail=e.detail)
+
+    lock_released = False
+
+    async def release_lock():
+        nonlocal lock_released
+        if not lock_released:
+            lock_released = True
+            await lock_ctx.__aexit__(None, None, None)
+
+    try:
+        state = await session_store.get(session_id)
+        if state is None:
+            state = get_or_restore_session(session_id, agent, profile=request.profile)
+        if state is None:
+            profile = request.profile or UserProfile()
+            state = SessionState(session_id=session_id, profile=profile)
+            _sessions[session_id] = state
+        await session_store.save(session_id, state)
+
+        stage_val = state.stage.value if state else "welcome"
+        span = otel_tracer.start_span(
+            f"agent.turn.stream.{stage_val}",
+            attributes={
+                "session.id": session_id,
+                "agent.stage": stage_val,
+                "message.length": len(request.message),
+            },
+        )
+
+        # Gate 1 & 2: Semantic classification and PII masking
+        decision = _classify(request.message, session_id)
+        safe_message, pii_found = _mask(request.message, session_id)
+
+        skip_extraction = (
+            decision is not None
+            and decision.intent in EXTRACTION_SKIP_INTENTS
+            and not pii_found
+        )
+
+        if skip_extraction:
+            state = agent.remember(state, safe_message)
+        else:
+            state = agent.observe(state, safe_message)
+
+        if decision is not None and decision.intent == INTERRUPT_INTENT:
+            state = _rollback_on_constraint_change(state, decision)
+
+        retrieved_cars = _retrieve_cars(state, user_query=request.message)
+
+        async def sse_event_publisher():
+            pii_chunk_buffer = ""
+            last_emitted_state = state
+            try:
+                # Battle 1: Native async generator streaming with zero threadpool blocking
+                async for event_type, data in agent.respond_stream(state, retrieved_cars):
+                    # Client disconnect cancellation propagation
+                    if raw_request is not None and await raw_request.is_disconnected():
+                        logger.warning(
+                            f"Client disconnected for session {session_id}, cleanly halting streaming."
+                        )
+                        break
+
+                    if event_type == "metadata":
+                        updated_state = data["session_state"]
+                        stage_changed = data.get("stage_changed", False)
+                        _unmask_state(updated_state, session_id)
+                        _sessions[session_id] = updated_state
+                        last_emitted_state = updated_state
+
+                        meta_payload = {
+                            "stage": {
+                                "previous_stage": updated_state.previous_stage,
+                                "current_stage": updated_state.stage.value,
+                                "stage_changed": stage_changed,
+                            },
+                            "profile": updated_state.profile.model_dump(mode="json"),
+                            "needs": updated_state.needs.model_dump(mode="json"),
+                            "matched_car_models": updated_state.matched_cars,
+                            "reservation_info": updated_state.reservation.model_dump(mode="json"),
+                        }
+                        yield f"event: metadata\ndata: {json.dumps(meta_payload, ensure_ascii=False)}\n\n"
+
+                    elif event_type == "delta":
+                        combined = pii_chunk_buffer + data
+                        pii_chunk_buffer = ""
+                        open_idx = combined.rfind("<")
+                        close_idx = combined.rfind(">")
+                        if open_idx != -1 and open_idx > close_idx and (len(combined) - open_idx) <= 24:
+                            emit_part = combined[:open_idx]
+                            pii_chunk_buffer = combined[open_idx:]
+                        else:
+                            emit_part = combined
+
+                        if emit_part:
+                            unmasked_delta = _unmask(emit_part, session_id)
+                            token_payload = {"delta": unmasked_delta}
+                            yield f"event: token\ndata: {json.dumps(token_payload, ensure_ascii=False)}\n\n"
+
+                    elif event_type == "done":
+                        if pii_chunk_buffer:
+                            flushed = _unmask(pii_chunk_buffer, session_id)
+                            pii_chunk_buffer = ""
+                            yield f"event: token\ndata: {json.dumps({'delta': flushed}, ensure_ascii=False)}\n\n"
+
+                        unmasked_text = _unmask(data, session_id)
+                        done_payload = {"response_text": unmasked_text}
+                        yield f"event: done\ndata: {json.dumps(done_payload, ensure_ascii=False)}\n\n"
+
+            except asyncio.CancelledError:
+                logger.info(f"Streaming task cleanly cancelled for session {session_id}")
+            finally:
+                # 无论正常结束还是客户端中断断连，统一异步持久化状态到存储层并安全释放租约锁
+                try:
+                    final_state = _sessions.get(session_id, last_emitted_state)
+                    await session_store.save(session_id, final_state)
+                    await _persist_session(session_id, _session_payload(final_state, agent))
+
+                    duration_s = time.time() - turn_start_time
+                    curr_stage = final_state.stage.value if final_state else "unknown"
+                    span.end(status_code="OK")
+                    prometheus_exporter.inc_counter(
+                        "autovend_requests_total", labels={"stage": curr_stage}
+                    )
+                    prometheus_exporter.observe_histogram(
+                        "autovend_latency_seconds", duration_s, labels={"stage": curr_stage}
+                    )
+                    deployment_router.record_turn_metric(
+                        session_id, variant="baseline", success=True, latency_s=duration_s
+                    )
+                    semantic_drift_detector.record_production_query(
+                        intent=curr_stage,
+                        retrieval_hit=bool(retrieved_cars),
+                        retrieval_top1_score=0.85 if retrieved_cars else 0.0,
+                    )
+                except Exception as save_err:
+                    logger.error(f"Error persisting session {session_id} on stream completion: {save_err}")
+                finally:
+                    await release_lock()
+
+        return StreamingResponse(
+            sse_event_publisher(),
+            media_type="text/event-stream",
+            headers={
+                "X-Accel-Buffering": "no",
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+            },
+        )
+    except Exception:
+        await release_lock()
+        raise
 
 
 @router.get("/sessions")
@@ -681,10 +727,10 @@ async def list_sessions():
             {
                 "session_id": sid,
                 "stage": state.stage.value,
-                "profile": state.profile.model_dump(),
-                "needs": state.needs.model_dump(),
+                "profile": state.profile.model_dump(mode="json"),
+                "needs": state.needs.model_dump(mode="json"),
                 "matched_cars_count": len(state.matched_cars),
-                "reservation": state.reservation.model_dump(),
+                "reservation": state.reservation.model_dump(mode="json"),
             }
         )
     return {"sessions": sessions_list, "total": len(sessions_list)}

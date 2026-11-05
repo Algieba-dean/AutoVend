@@ -6,9 +6,9 @@ car_model = "Toyota-GR Supra 3.0 Turbocharged Performance Model"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "40,000~60,000"
-prize_comments = "The Toyota GR Supra 3.0 Turbocharged Performance Model starts at $52,000 USD (2024 base MSRP), with higher trims reaching ~$58,000 USD."
+# Price and category
+price = "40,000~60,000"
+price_comments = "The Toyota GR Supra 3.0 Turbocharged Performance Model starts at $52,000 USD (2024 base MSRP), with higher trims reaching ~$58,000 USD."
 
 vehicle_category_bottom = "Two-door Hardtop Sports Car"
 vehicle_category_bottom_comments = "The GR Supra is a pure two-door sports coupe with a fixed roof, emphasizing performance and driving dynamics."

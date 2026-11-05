@@ -85,7 +85,7 @@ raw_text = parser.parse_file(Path("data/raw/理想L7配置表_扫描件.pdf"))
 [理想L7]
 car_model = "理想L7"
 brand = "理想"
-prize = "30,000-50,000"
+price = "30,000-50,000"
 powertrain_type = "range-extended"
 vehicle_category_bottom = "mid-size suv"
 seat_layout = "5-seat"

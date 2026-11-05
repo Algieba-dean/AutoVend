@@ -70,7 +70,7 @@ if not query_parts:
 **缺陷**:
 - 不包含用户原始自然语言表述（语义信息丢失）
 - 不考虑隐式需求（family_friendliness、comfort_level 等）
-- 不考虑价格范围（prize 仅用于 metadata filter，不参与语义搜索）
+- 不考虑价格范围（price 仅用于 metadata filter，不参与语义搜索）
 - 空查询时 fallback 为 "recommend a good vehicle"，语义匹配效果差
 
 **建议**:
@@ -104,13 +104,13 @@ if state.stage not in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
 filters: Dict[str, Any] = {}
 if explicit.brand:
     filters["brand"] = explicit.brand
-if explicit.prize:
-    filters["prize"] = explicit.prize
+if explicit.price:
+    filters["price"] = explicit.price
 ```
 
 **问题**: 
-- 仅使用 brand 和 prize 两个 filter
-- `prize` 使用精确匹配 (`EQ`)，但价格是范围字段（如"15-20万"），精确匹配几乎不可能命中
+- 仅使用 brand 和 price 两个 filter
+- `price` 使用精确匹配 (`EQ`)，但价格是范围字段（如"15-20万"），精确匹配几乎不可能命中
 - 未使用 powertrain_type、seat_layout 等高区分度字段
 
 **建议**:

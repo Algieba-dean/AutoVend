@@ -788,7 +788,7 @@ class DatasetRegistry:
                     version="v1.0",
                     file_path=cars_file,
                     sample_count=20,
-                    schema_fields=["car_model", "brand", "prize", "powertrain_type"],
+                    schema_fields=["car_model", "brand", "price", "powertrain_type"],
                     description="Automotive vehicle catalog inventory dataset",
                 )
 

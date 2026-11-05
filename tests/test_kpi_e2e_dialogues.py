@@ -42,7 +42,7 @@ class DialogueScore:
     profile_fields_filled: int = 0
     profile_fields_total: int = 10  # total profile fields
     needs_fields_filled: int = 0
-    needs_key_fields_total: int = 5  # prize, brand, powertrain, category, design
+    needs_key_fields_total: int = 5  # price, brand, powertrain, category, design
     latencies_ms: list = field(default_factory=list)
 
     @property
@@ -134,7 +134,7 @@ DIALOGUE_SCENARIOS = [
         "needs_resp": {
             "powertrain_type": "纯电动",
             "vehicle_category_bottom": "紧凑型SUV",
-            "prize": "15-25万",
+            "price": "15-25万",
             "brand": "比亚迪",
             "design_style": "运动",
         },
@@ -174,7 +174,7 @@ DIALOGUE_SCENARIOS = [
         "needs_resp": {
             "seat_layout": "7座",
             "vehicle_category_bottom": "中大型SUV",
-            "prize": "25-35万",
+            "price": "25-35万",
             "powertrain_type": "插电混动",
             "drive_type": "全轮驱动",
         },
@@ -215,7 +215,7 @@ DIALOGUE_SCENARIOS = [
             "design_style": "运动",
             "acceleration_0_100": "4秒以内",
             "drive_type": "后轮驱动",
-            "prize": "50万以上",
+            "price": "50万以上",
         },
         "implicit_resp": {
             "brand_grade": "High",
@@ -255,7 +255,7 @@ DIALOGUE_SCENARIOS = [
             "parking_conditions": "路边",
         },
         "needs_resp": {
-            "prize": "8万以下",
+            "price": "8万以下",
             "vehicle_category_bottom": "微型车",
             "fuel_consumption": "低",
             "seat_layout": "5座",
@@ -288,7 +288,7 @@ DIALOGUE_SCENARIOS = [
         "needs_resp": {
             "design_style": "舒适",
             "vehicle_category_bottom": "中型轿车",
-            "prize": "20-30万",
+            "price": "20-30万",
             "powertrain_type": "汽油",
             "seat_layout": "5座",
         },
@@ -355,7 +355,7 @@ class TestMultiTurnDialogues:
         # Evaluate needs completeness (key fields only)
         explicit_dict = state.needs.explicit.model_dump()
         key_fields = [
-            "prize",
+            "price",
             "brand",
             "powertrain_type",
             "vehicle_category_bottom",

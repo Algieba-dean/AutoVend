@@ -312,7 +312,7 @@ class QueryParser:
                 min_val = float(m.group(1)) * 1000
                 max_val = float(m.group(2)) * 1000
                 result.add(
-                    "prize",
+                    "price",
                     {
                         "op": "between",
                         "min": self._price_to_bucket(min_val),
@@ -328,7 +328,7 @@ class QueryParser:
             val = float(m.group(1)) * 1000
             lo = self._price_to_bucket(val * 0.8)
             hi = self._price_to_bucket(val * 1.2)
-            result.add("prize", {"op": "between", "min": lo, "max": hi})
+            result.add("price", {"op": "between", "min": lo, "max": hi})
             result.add_keyword(m.group(0))
             return text[: m.start()] + text[m.end() :]
 
@@ -337,7 +337,7 @@ class QueryParser:
         if m:
             val = float(m.group(1)) * 1000
             result.add(
-                "prize",
+                "price",
                 {
                     "op": "lte",
                     "value": self._price_to_bucket(val),
@@ -351,7 +351,7 @@ class QueryParser:
         if m:
             val = float(m.group(1)) * 1000
             result.add(
-                "prize",
+                "price",
                 {
                     "op": "gte",
                     "value": self._price_to_bucket(val),
@@ -366,7 +366,7 @@ class QueryParser:
             val = float(m.group(1)) * 1000
             lo = self._price_to_bucket(val * 0.8)
             hi = self._price_to_bucket(val * 1.2)
-            result.add("prize", {"op": "between", "min": lo, "max": hi})
+            result.add("price", {"op": "between", "min": lo, "max": hi})
             result.add_keyword(m.group(0))
             return text[: m.start()] + text[m.end() :]
 
@@ -379,7 +379,7 @@ class QueryParser:
                 min_val = float(v1) * (1000 if "k" in pattern else 1)
                 max_val = float(v2) * (1000 if "k" in pattern else 1)
                 result.add(
-                    "prize",
+                    "price",
                     {
                         "op": "between",
                         "min": self._price_to_bucket(min_val),
@@ -393,11 +393,11 @@ class QueryParser:
 
     def _price_to_bucket(self, price: float) -> str:
         """将数值价格映射到最近的 registry 候选值"""
-        label = self.registry.get_label("prize")
+        label = self.registry.get_label("price")
         if not label:
             return str(int(price))
 
-        # prize candidates 是有序的区间字符串
+        # price candidates 是有序的区间字符串
         # 解析每个候选值的数值范围并找到最接近的
         for candidate in label.candidates:
             nums = re.findall(r"[\d,]+", candidate)

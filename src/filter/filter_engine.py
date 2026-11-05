@@ -65,7 +65,7 @@ class FilterEngine:
     CORE_LABELS = {
         "brand",
         "vehicle_category_bottom",
-        "prize",
+        "price",
         "powertrain_type",
     }
 

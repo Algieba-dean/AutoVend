@@ -6,9 +6,9 @@ car_model = "Buick-Envision"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "30,000~40,000"
-prize_comments = "The Buick Envision is priced between $32,000 and $39,000 USD depending on the trim level (Preferred, Essence, Avenir)."
+# Price and category
+price = "30,000~40,000"
+price_comments = "The Buick Envision is priced between $32,000 and $39,000 USD depending on the trim level (Preferred, Essence, Avenir)."
 
 vehicle_category_bottom = "Mid-Size SUV"
 vehicle_category_bottom_comments = "The Envision is classified as a mid-size luxury SUV with a focus on comfort and premium features."

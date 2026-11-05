@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 METADATA_FIELDS = [
     "brand",
     "price",
-    "prize",
     "powertrain_type",
     "vehicle_category_bottom",
     "design_style",
@@ -87,12 +86,6 @@ def _extract_metadata(data: dict) -> dict:
         for field in METADATA_FIELDS:
             if field in section and section[field] and field not in metadata:
                 metadata[field] = section[field]
-
-    # Normalize price and prize across metadata for dual compatibility
-    if "price" in metadata and "prize" not in metadata:
-        metadata["prize"] = metadata["price"]
-    elif "prize" in metadata and "price" not in metadata:
-        metadata["price"] = metadata["prize"]
 
     return metadata
 

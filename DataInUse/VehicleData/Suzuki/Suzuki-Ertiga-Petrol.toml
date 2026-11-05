@@ -6,9 +6,9 @@ car_model = "Suzuki-Ertiga-Petrol"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "10,000~20,000"
-prize_comments = "The Suzuki Ertiga Petrol is priced between $15,000 and $18,000 USD depending on the trim level and market."
+# Price and category
+price = "10,000~20,000"
+price_comments = "The Suzuki Ertiga Petrol is priced between $15,000 and $18,000 USD depending on the trim level and market."
 
 vehicle_category_bottom = "Compact MPV"
 vehicle_category_bottom_comments = "The Ertiga is a 7-seater compact MPV designed for family use with efficient space utilization."

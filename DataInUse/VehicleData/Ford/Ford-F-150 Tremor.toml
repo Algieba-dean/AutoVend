@@ -6,9 +6,9 @@ car_model = "Ford-F-150 Tremor"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "40,000~60,000"
-prize_comments = "The Ford F-150 Tremor is priced between $45,000 and $58,000 USD depending on trim and options."
+# Price and category
+price = "40,000~60,000"
+price_comments = "The Ford F-150 Tremor is priced between $45,000 and $58,000 USD depending on trim and options."
 
 vehicle_category_bottom = "Off-road SUV"
 vehicle_category_bottom_comments = "The Tremor is a high-performance off-road variant of the F-150, designed for rugged terrain."

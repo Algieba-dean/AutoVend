@@ -291,7 +291,7 @@ def score_task_completion(
     score += 25.0 * (filled / len(profile_fields))
 
     # Needs completeness (key fields)
-    needs_fields = ["prize", "brand", "powertrain_type", "vehicle_category_bottom", "design_style"]
+    needs_fields = ["price", "brand", "powertrain_type", "vehicle_category_bottom", "design_style"]
     filled = sum(1 for f in needs_fields if needs_explicit.get(f))
     score += 25.0 * (filled / len(needs_fields))
 

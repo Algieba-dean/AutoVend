@@ -121,7 +121,7 @@ QueryParser / FilterEngine，避免自己给自己打分）。复现：
 uv run python -m src.eval.runner --systems filter bm25 dense hybrid fusion
 ```
 
-| 系统 | capped_recall@3 | hit_rate@3 | MRR |
+| 系统 | precision@3 | hit_rate@3 | MRR |
 |---|---|---|---|
 | `filter` 仅结构化过滤 | 0.434 | 0.466 | 0.446 |
 | `bm25` 纯词法 | 0.707 | 0.802 | 0.777 |

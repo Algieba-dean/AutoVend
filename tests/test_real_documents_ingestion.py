@@ -458,10 +458,13 @@ def test_parent_child_retrieval_real_queries():
 # ── 11. Incremental Pipeline Integration on Real Documents ────────────────────
 
 
-def test_incremental_pipeline_real_corpus():
+def test_incremental_pipeline_real_corpus(tmp_path):
     """Validate IncrementalIngestionPipeline successfully processes real documents."""
+    from src.filter.vehicle_db import VehicleDB
+
+    test_db = VehicleDB(db_path=str(tmp_path / "test_real_inc.db"))
     retriever = ParentChildRetriever()
-    pipeline = IncrementalIngestionPipeline(parent_child_retriever=retriever)
+    pipeline = IncrementalIngestionPipeline(db=test_db, parent_child_retriever=retriever)
 
     # Ingest real files
     doc_path = CORPUS_DIR / "HEV_Powertrain_System_Requirements.docx"

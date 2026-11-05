@@ -198,7 +198,7 @@ class TestMultiIndexInvalidation:
     def test_atomic_invalidation_and_eviction(self, tmp_path):
         db = VehicleDB(db_path=str(tmp_path / "freshness_test.db"))
         # Seed a vehicle in DB
-        db.upsert_vehicle({"car_model": "淘汰老车A", "brand": "测试品牌", "prize": "15万"})
+        db.upsert_vehicle({"car_model": "淘汰老车A", "brand": "测试品牌", "price": "15万"})
         assert db.get_by_model("淘汰老车A") is not None
 
         mock_vs = MockVectorStore()
@@ -246,7 +246,7 @@ class TestMultiIndexInvalidation:
 
     def test_invalidation_with_superseded_mapping(self, tmp_path):
         db = VehicleDB(db_path=str(tmp_path / "freshness_test.db"))
-        db.upsert_vehicle({"car_model": "改款前车型X", "brand": "测试品牌", "prize": "20万"})
+        db.upsert_vehicle({"car_model": "改款前车型X", "brand": "测试品牌", "price": "20万"})
 
         engine = DataFreshnessEngine(db=db)
         report = engine.invalidate_and_evict(
@@ -319,11 +319,11 @@ class TestRecommendationFilteringGuard:
         engine = DataFreshnessEngine(db=db)
 
         candidates = [
-            {"car_model": "小米SU7", "prize": "21.59万"},
-            {"car_model": "高合HiPhi X", "prize": "57.00万"},     # Tombstone
-            {"car_model": "2023款比亚迪汉EV", "prize": "20.98万"}, # Superseded
-            {"car_model": "老款问界M7", "prize": "24.98万"},       # Superseded
-            {"car_model": "威马EX5", "prize": "14.98万"},          # Tombstone
+            {"car_model": "小米SU7", "price": "21.59万"},
+            {"car_model": "高合HiPhi X", "price": "57.00万"},     # Tombstone
+            {"car_model": "2023款比亚迪汉EV", "price": "20.98万"}, # Superseded
+            {"car_model": "老款问界M7", "price": "24.98万"},       # Superseded
+            {"car_model": "威马EX5", "price": "14.98万"},          # Tombstone
         ]
 
         # Mode A: allow_superseded=False (Production default: strict replacement)
@@ -347,8 +347,8 @@ class TestRecommendationFilteringGuard:
         engine = DataFreshnessEngine(db=db)
 
         candidates = [
-            {"car_model": "2023款比亚迪汉EV", "prize": "20.98万"},
-            {"car_model": "高合HiPhi X", "prize": "57.00万"},
+            {"car_model": "2023款比亚迪汉EV", "price": "20.98万"},
+            {"car_model": "高合HiPhi X", "price": "57.00万"},
         ]
 
         # Mode B: allow_superseded=True (Advisory notes retained, tombstone still stripped)
@@ -383,13 +383,13 @@ class TestPipelineWithFreshnessEngine:
         )
 
         # Batch 1: Create Model A and Model B
-        v_a = {"car_model": "Model_Alpha", "brand": "AlphaBrand", "prize": "25万"}
-        v_b = {"car_model": "Model_Beta", "brand": "BetaBrand", "prize": "35万"}
+        v_a = {"car_model": "Model_Alpha", "brand": "AlphaBrand", "price": "25万"}
+        v_b = {"car_model": "Model_Beta", "brand": "BetaBrand", "price": "35万"}
         summary1 = pipeline.ingest_batch([v_a, v_b])
         assert summary1.created_count == 2
 
         # Batch 2: Update Model A price, Delete Model B via snapshot reconciliation (full_sync=True)
-        v_a_new = {"car_model": "Model_Alpha", "brand": "AlphaBrand", "prize": "22万"}
+        v_a_new = {"car_model": "Model_Alpha", "brand": "AlphaBrand", "price": "22万"}
         summary2 = pipeline.ingest_batch([v_a_new], full_sync=True)
         assert summary2.updated_count == 1
         assert summary2.deleted_count == 1

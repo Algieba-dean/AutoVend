@@ -93,7 +93,7 @@ class TestAdvancedConstraintReconciliation:
     def test_hard_vs_soft_conflict_classification(self):
         # Hard conflict: Budget vs Luxury brand
         state_hard = SessionState()
-        state_hard.needs.explicit.prize = "15万"
+        state_hard.needs.explicit.price = "15万"
         state_hard.needs.explicit.brand = "保时捷"
 
         conflicts_hard = reconcile_constraints(state_hard)
@@ -104,7 +104,7 @@ class TestAdvancedConstraintReconciliation:
 
         # Hard conflict: Budget vs LiDAR/NOA
         state_tech = SessionState()
-        state_tech.needs.explicit.prize = "12万"
+        state_tech.needs.explicit.price = "12万"
         state_tech.needs.explicit.design_style = "激光雷达 城市NOA高阶智驾"
         conflicts_tech = reconcile_constraints(state_tech)
         assert any(c.conflict_type == "BUDGET_VS_TECH" and c.severity == "HARD" for c in conflicts_tech)

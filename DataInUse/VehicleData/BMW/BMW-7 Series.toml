@@ -6,9 +6,9 @@ car_model = "BMW-7 Series"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "90,000~120,000"
-prize_comments = "The BMW 7 Series starts at $93,300 USD for the 740i (gasoline) and goes up to $118,000 USD for the 760i xDrive, excluding options."
+# Price and category
+price = "90,000~120,000"
+price_comments = "The BMW 7 Series starts at $93,300 USD for the 740i (gasoline) and goes up to $118,000 USD for the 760i xDrive, excluding options."
 
 vehicle_category_bottom = "D-Segment Sedan"
 vehicle_category_bottom_comments = "Flagship luxury sedan with executive-class dimensions."

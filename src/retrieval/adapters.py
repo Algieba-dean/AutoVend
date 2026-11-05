@@ -60,7 +60,7 @@ def _search_result_to_car(result: Any) -> Dict[str, Any]:
         for k, v in {
             "car_model": vehicle.car_model,
             "brand": precise.brand,
-            "price": precise.prize,
+            "price": precise.price,
             "category": precise.vehicle_category_bottom,
             "powertrain_type": precise.powertrain_type,
             "size": ambiguous.size,
@@ -107,9 +107,9 @@ def needs_to_query_text(explicit: Any, implicit: Optional[Any] = None) -> str:
     if brand:
         parts.append(str(brand))
 
-    prize = getattr(explicit, "prize", None) if explicit else None
-    if prize:
-        parts.append(str(prize))
+    price = getattr(explicit, "price", None) if explicit else None
+    if price:
+        parts.append(str(price))
 
     # Implicit semantic preferences (boost dense vector recall for comfort, smartness, space)
     if implicit:

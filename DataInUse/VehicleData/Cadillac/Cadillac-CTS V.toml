@@ -6,9 +6,9 @@ car_model = "Cadillac-CTS V"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "60,000~100,000"
-prize_comments = "The Cadillac CTS-V is priced between $85,000 and $95,000 USD (new) depending on options and trim."
+# Price and category
+price = "60,000~100,000"
+price_comments = "The Cadillac CTS-V is priced between $85,000 and $95,000 USD (new) depending on options and trim."
 
 vehicle_category_bottom = "Four-door Hardtop Sports Car"
 vehicle_category_bottom_comments = "The CTS-V is a high-performance luxury sedan with sports car capabilities."

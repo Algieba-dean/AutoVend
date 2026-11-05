@@ -68,78 +68,78 @@ class TestParserPriceChinese:
     def test_range_X_to_Y_wan(self, parser):
         """'20万到30万' → between"""
         r = parser.parse("20万到30万的车")
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
 
     def test_range_X_dash_Y_wan(self, parser):
         """'20-30万' → between"""
         r = parser.parse("20-30万SUV")
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
 
     def test_range_X_tilde_Y_wan(self, parser):
         """'20~30万' → between"""
         r = parser.parse("20~30万的车")
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
 
     def test_range_Xw_dash_Yw(self, parser):
         """'10w-20w' → between"""
         r = parser.parse("10w-20w SUV")
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
 
     def test_under(self, parser):
         """'15万以内' → lte"""
         r = parser.parse("15万以内的车")
-        assert r.conditions["prize"]["op"] == "lte"
+        assert r.conditions["price"]["op"] == "lte"
 
     def test_under_yixia(self, parser):
         """'20万以下' → lte"""
         r = parser.parse("20万以下")
-        assert r.conditions["prize"]["op"] == "lte"
+        assert r.conditions["price"]["op"] == "lte"
 
     def test_above(self, parser):
         """'50万以上' → gte"""
         r = parser.parse("50万以上的豪华车")
-        assert r.conditions["prize"]["op"] == "gte"
+        assert r.conditions["price"]["op"] == "gte"
 
     def test_above_qi(self, parser):
         """'30万起' → gte"""
         r = parser.parse("30万起的车")
-        assert r.conditions["prize"]["op"] == "gte"
+        assert r.conditions["price"]["op"] == "gte"
 
     def test_budget(self, parser):
         """'预算25万' → between (±20%)"""
         r = parser.parse("预算25万买SUV")
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
 
     def test_zuoyou(self, parser):
         """'30万左右' → between"""
         r = parser.parse("30万左右的轿车")
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
 
     def test_single_wan(self, parser):
         """单独 '15万' → between (±20%)"""
         r = parser.parse("15万的车")
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
 
     def test_decimal_price(self, parser):
         """'8.5万' 小数"""
         r = parser.parse("8.5万以内的车")
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
 
     def test_low_price_below_10k(self, parser):
         """低价位 5万 → below 10,000"""
         r = parser.parse("5万以内")
-        assert r.conditions["prize"]["op"] == "lte"
+        assert r.conditions["price"]["op"] == "lte"
         assert (
-            "below 10,000" in r.conditions["prize"]["value"]
-            or "10,000" in r.conditions["prize"]["value"]
+            "below 10,000" in r.conditions["price"]["value"]
+            or "10,000" in r.conditions["price"]["value"]
         )
 
     def test_high_price_above_100k(self, parser):
         """高价位 100万以上 → gte, bucket 含 60,000~100,000 或 above 100,000"""
         r = parser.parse("100万以上")
-        assert r.conditions["prize"]["op"] == "gte"
+        assert r.conditions["price"]["op"] == "gte"
         # 100万=100,000 落入 '60,000 ~ 100,000' 或 'above 100,000'
-        val = r.conditions["prize"]["value"]
+        val = r.conditions["price"]["value"]
         assert "100,000" in val
 
 
@@ -149,19 +149,19 @@ class TestParserPriceEnglish:
     def test_range_Xk_to_Yk(self, parser):
         """'$20k-$30k' → between"""
         r = parser.parse("$20k-$30k SUV")
-        assert r.conditions.get("prize", {}).get("op") == "between"
+        assert r.conditions.get("price", {}).get("op") == "between"
 
     @pytest.mark.xfail(reason="英文 under/above $Xk 单独使用尚未被正则匹配")
     def test_under_budget(self, parser):
         """'under $15k' — 当前正则不支持独立 under $Xk"""
         r = parser.parse("under $15k")
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
 
     @pytest.mark.xfail(reason="英文 above $Xk 单独使用尚未被正则匹配")
     def test_above_over(self, parser):
         """'above $50k' — 当前正则不支持独立 above $Xk"""
         r = parser.parse("above $50k sedan")
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
 
 
 # ======================================================================
@@ -505,7 +505,7 @@ class TestParserComplex:
     def test_full_chinese(self, parser):
         """20万以内的国产纯电SUV，七座，四驱"""
         r = parser.parse("20万以内的国产纯电SUV，七座，四驱")
-        assert r.conditions["prize"]["op"] == "lte"
+        assert r.conditions["price"]["op"] == "lte"
         assert r.conditions["brand_country"] == "china"
         assert r.conditions["powertrain_type"] == "battery electric vehicle"
         assert r.conditions["vehicle_category_top"] == "suv"
@@ -517,7 +517,7 @@ class TestParserComplex:
         """奔驰30-50万的轿车"""
         r = parser.parse("奔驰30-50万的轿车")
         assert r.conditions["brand"] == "mercedes-benz"
-        assert r.conditions["prize"]["op"] == "between"
+        assert r.conditions["price"]["op"] == "between"
         assert r.conditions["vehicle_category_top"] == "sedan"
 
     def test_region_plus_powertrain_plus_perf(self, parser):
@@ -542,7 +542,7 @@ class TestParserComplex:
         assert r.conditions.get("brand") == "byd"
         assert r.conditions.get("powertrain_type") == "battery electric vehicle"
         assert r.conditions.get("vehicle_category_top") == "suv"
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
 
     def test_perf_plus_features(self, parser):
         """大空间 长续航 有自动泊车的纯电SUV"""
@@ -557,7 +557,7 @@ class TestParserComplex:
         """紧凑型suv 20万以内 四驱"""
         r = parser.parse("紧凑型suv 20万以内 四驱")
         assert r.conditions.get("vehicle_category_bottom") == "compact suv"
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
         assert r.conditions.get("drive_type") == "all-wheel drive"
 
 
@@ -589,7 +589,7 @@ class TestParserEdgeCases:
     def test_punctuation_heavy(self, parser):
         r = parser.parse("我想买SUV！！！价格20万以内？？？")
         assert r.conditions.get("vehicle_category_top") == "suv"
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
 
     def test_repeated_keywords(self, parser):
         """重复关键词不应导致异常"""
@@ -700,13 +700,13 @@ class TestEngineRange:
 
     # --- 价格 ---
     def test_price_exact_bucket(self, engine):
-        r = engine.filter({"prize": "20,000 ~ 30,000"})
+        r = engine.filter({"price": "20,000 ~ 30,000"})
         assert r.total_candidates > 0
 
     def test_price_between(self, engine):
         r = engine.filter(
             {
-                "prize": {
+                "price": {
                     "op": "between",
                     "min": "10,000 ~ 20,000",
                     "max": "30,000 ~ 40,000",
@@ -716,11 +716,11 @@ class TestEngineRange:
         assert r.total_candidates > 0
 
     def test_price_lte(self, engine):
-        r = engine.filter({"prize": {"op": "lte", "value": "20,000 ~ 30,000"}})
+        r = engine.filter({"price": {"op": "lte", "value": "20,000 ~ 30,000"}})
         assert r.total_candidates > 0
 
     def test_price_gte(self, engine):
-        r = engine.filter({"prize": {"op": "gte", "value": "60,000 ~ 100,000"}})
+        r = engine.filter({"price": {"op": "gte", "value": "60,000 ~ 100,000"}})
         assert r.total_candidates > 0
 
     # --- 马力 ---
@@ -771,9 +771,9 @@ class TestEngineRange:
     # --- 别名解析 ---
     def test_price_alias_cheap(self, engine, registry):
         """别名 'cheap' → 'below 10,000'"""
-        label = registry.get_label("prize")
+        label = registry.get_label("price")
         resolved = label.resolve_alias("cheap")
-        r = engine.filter({"prize": resolved})
+        r = engine.filter({"price": resolved})
         # should get some cheap cars
         assert isinstance(r, FilterResult)
 
@@ -952,7 +952,7 @@ class TestEngineCombined:
         r = engine.filter(
             {
                 "vehicle_category_top": "suv",
-                "prize": {
+                "price": {
                     "op": "between",
                     "min": "10,000 ~ 20,000",
                     "max": "30,000 ~ 40,000",
@@ -1003,7 +1003,7 @@ class TestEngineCombined:
     def test_price_plus_features(self, engine):
         r = engine.filter(
             {
-                "prize": {"op": "lte", "value": "30,000 ~ 40,000"},
+                "price": {"op": "lte", "value": "30,000 ~ 40,000"},
                 "seat_layout": "7-seat",
             }
         )
@@ -1028,7 +1028,7 @@ class TestEngineDegrade:
         r = engine.filter(
             {
                 "brand": "bugatti",
-                "prize": {"op": "lte", "value": "below 10,000"},
+                "price": {"op": "lte", "value": "below 10,000"},
                 "seat_layout": "7-seat",
                 "size": "small",
             }
@@ -1066,7 +1066,7 @@ class TestEngineDegrade:
         r = engine.filter(
             {
                 "brand": "rolls-royce",
-                "prize": {"op": "lte", "value": "below 10,000"},
+                "price": {"op": "lte", "value": "below 10,000"},
                 "seat_layout": "7-seat",
                 "drive_type": "rear-wheel drive",
                 "noise_insulation": "high",
@@ -1080,7 +1080,7 @@ class TestEngineDegrade:
         r = engine.filter(
             {
                 "brand": "bugatti",
-                "prize": {"op": "lte", "value": "below 10,000"},
+                "price": {"op": "lte", "value": "below 10,000"},
             },
             enable_degrade=False,
         )
@@ -1157,7 +1157,7 @@ class TestExclusionQueries:
     def test_exclude_with_price(self, parser):
         """'20万以内不要SUV' → 价格 + 排除"""
         r = parser.parse("20万以内不要SUV")
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
         assert r.conditions.get("vehicle_category_top") != "suv"
 
 
@@ -1238,7 +1238,7 @@ class TestRetrievalQuality:
         {
             "query": "20万以内的国产纯电SUV",
             "expected_keys": {
-                "prize",
+                "price",
                 "brand_country",
                 "powertrain_type",
                 "vehicle_category_top",
@@ -1248,7 +1248,7 @@ class TestRetrievalQuality:
         },
         {
             "query": "奔驰30-50万的四驱轿车",
-            "expected_keys": {"brand", "prize", "drive_type", "vehicle_category_top"},
+            "expected_keys": {"brand", "price", "drive_type", "vehicle_category_top"},
             "min_candidates": 1,
             "max_degrade": 3,
         },
@@ -1258,7 +1258,7 @@ class TestRetrievalQuality:
                 "brand_country",
                 "fuel_consumption",
                 "vehicle_category_bottom",
-                "prize",
+                "price",
             },
             "min_candidates": 1,
             "max_degrade": 3,
@@ -1286,7 +1286,7 @@ class TestRetrievalQuality:
         },
         {
             "query": "10万以内的通勤代步小车",
-            "expected_keys": {"prize", "city_commuting"},
+            "expected_keys": {"price", "city_commuting"},
             "min_candidates": 1,
             "max_degrade": 2,
         },
@@ -1305,7 +1305,7 @@ class TestRetrievalQuality:
             "query": "德系30万以上大马力后驱跑车",
             "expected_keys": {
                 "brand_country",
-                "prize",
+                "price",
                 "horsepower",
                 "drive_type",
                 "vehicle_category_top",

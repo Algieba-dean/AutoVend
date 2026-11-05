@@ -25,9 +25,21 @@ def test_query_expansion():
 
 def test_hyde_document_generation():
     """Test HyDE hypothetical document generation."""
-    engine = QueryTransformationEngine()
-    hyde_doc = engine.generate_hyde_doc("20万左右 纯电SUV")
-    assert "【目标车型规格文档】" in hyde_doc
+    # Without active LLM, returns None to avoid hallucination poisoning
+    engine_no_llm = QueryTransformationEngine()
+    assert engine_no_llm.generate_hyde_doc("20万左右 纯电SUV") is None
+
+    # With active LLM, returns generated hypothetical spec doc
+    class MockLLM:
+        def is_available(self):
+            return True
+
+        def complete(self, prompt):
+            return "【目标车型规格文档】 预算20万纯电SUV车型推荐，具备高压快充与大空间。"
+
+    engine_with_llm = QueryTransformationEngine(llm=MockLLM())
+    hyde_doc = engine_with_llm.generate_hyde_doc("20万左右 纯电SUV")
+    assert hyde_doc is not None
     assert "20万" in hyde_doc or "纯电" in hyde_doc
 
 

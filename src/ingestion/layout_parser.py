@@ -1545,16 +1545,22 @@ class BorderlessTableDetector:
                         page=page_num,
                     )
 
-                    t_block = TableBlock(
-                        page_num=page_num,
-                        bbox=overall_bbox,
-                        rows=table_rows,
-                        cells=table_cells,
-                        extraction_engine="borderless_stream_detector",
-                        confidence=0.90,
-                        footnotes=footnotes,
+                    is_toc = len(table_rows) >= 3 and all(
+                        re.match(r"^\d{1,4}$", [c for c in row if c.strip()][-1])
+                        for row in table_rows
+                        if any(c.strip() for c in row)
                     )
-                    detected_tables.append(t_block)
+                    if not is_toc:
+                        t_block = TableBlock(
+                            page_num=page_num,
+                            bbox=overall_bbox,
+                            rows=table_rows,
+                            cells=table_cells,
+                            extraction_engine="borderless_stream_detector",
+                            confidence=0.90,
+                            footnotes=footnotes,
+                        )
+                        detected_tables.append(t_block)
 
             i = j
 

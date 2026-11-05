@@ -64,7 +64,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.creds.outputs.available == 'true'
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       - name: Cache embedding model
         if: steps.creds.outputs.available == 'true'

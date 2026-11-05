@@ -78,7 +78,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.creds.outputs.available == 'true'
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       - name: Cache embedding model
         if: steps.creds.outputs.available == 'true'
@@ -147,7 +147,19 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
+
+      - name: Check review dataset readiness
+        run: |
+          if [ ! -f "evaluation/review/latest.jsonl" ]; then
+            if [ -f "evaluation/review/baseline.jsonl" ]; then
+              echo "::warning::evaluation/review/latest.jsonl missing, falling back to baseline.jsonl"
+            else
+              echo "::error::Release blocked: Human alignment review dataset (latest.jsonl or baseline.jsonl) is missing!"
+              echo "Run 'uv run python -m src.eval.review_sample --out evaluation/review/latest.jsonl' to seed annotations."
+              exit 1
+            fi
+          fi
 
       # Reads the reviewed sample committed under evaluation/review/. The gate
       # fails on a missing or unreviewed file rather than passing by default:

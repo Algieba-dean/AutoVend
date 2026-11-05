@@ -6,6 +6,7 @@ query intent weighting, and semantic score fusion.
 """
 
 import logging
+import math
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -59,6 +60,26 @@ def parse_budget_limit(budget_str: str) -> Optional[float]:
     if "左右" in budget_str:
         val = val * 1.10
     return val
+
+
+def calculate_gaussian_price_fit(
+    price: float, budget: float, sigma: Optional[float] = None
+) -> float:
+    """
+    Continuous Gaussian decay function for budget compliance (Spec Fit Gate):
+    S_price = 1.0 if price <= budget else exp(-(price - budget)^2 / (2 * sigma^2))
+    - When overrun is 10%, score smoothly decays to ~0.85
+    - When overrun is 50%, score non-linearly drops towards 0.0
+    Guarantees strict monotonicity and continuous differentiability without step cliffs.
+    """
+    if price <= budget:
+        return 1.0
+    if budget <= 0:
+        return 0.0
+    if sigma is None:
+        sigma = 0.175 * budget
+    overrun = price - budget
+    return float(math.exp(-(overrun**2) / (2.0 * (sigma**2))))
 
 
 class RankRefiner:
@@ -125,7 +146,7 @@ class RankRefiner:
                 score += 0.15
 
         # 4. Price & Budget fit
-        target_budget_str = constraints.get("prize") or constraints.get("price") or ""
+        target_budget_str = constraints.get("price") or ""
         if not target_budget_str:
             # Extract from query_text e.g. "20万左右", "25万以内"
             b_match = re.search(r"(\d+(?:\.\d+)?)\s*万(?:以内|左右|上下|预算)?", query_text)
@@ -133,25 +154,27 @@ class RankRefiner:
                 target_budget_str = b_match.group(0)
 
         budget_limit = parse_budget_limit(target_budget_str)
-        veh_price_str = item.price or meta.get("prize") or meta.get("price") or ""
+        veh_price_str = item.price or meta.get("price") or ""
         v_min, v_max = parse_numeric_price_range(veh_price_str)
 
         if budget_limit is not None and v_min is not None:
             if v_min <= budget_limit:
                 # Comfortably within budget
                 score += 0.20
-            elif v_min <= budget_limit * 1.15:
-                # Slightly above budget (<= 15% stretch)
-                score -= 0.05
             else:
-                # Significantly exceeds budget (> 15% overrun)
-                overrun_ratio = (v_min - budget_limit) / budget_limit
-                penalty = min(0.35, overrun_ratio * 0.4)
+                # Continuous Gaussian decay penalty for budget overrun (no discrete cliff step)
+                decay = calculate_gaussian_price_fit(
+                    v_min, budget_limit, sigma=max(2.0, 0.25 * budget_limit)
+                )
+                penalty = (1.0 - decay) * 0.45
                 score -= penalty
 
         # 5. Seating layout fit
         target_seats = constraints.get("seat_layout") or ""
-        is_query_multiseat = any(k in query_lower or k in target_seats for k in ["6座", "7座", "六座", "七座", "大空间", "二胎"])
+        is_query_multiseat = any(
+            k in query_lower or k in target_seats
+            for k in ["6座", "7座", "六座", "七座", "大空间", "二胎"]
+        )
         veh_seats = str(meta.get("seat_layout") or "") + " " + item.text_snippet
         if is_query_multiseat:
             if any(k in veh_seats for k in ["6座", "7座", "六座", "七座"]):
@@ -160,9 +183,14 @@ class RankRefiner:
                 score -= 0.25
 
         # 6. Smart Driving / Tech highlights
-        is_query_smart = any(k in query_lower for k in ["智驾", "自动驾驶", "激光雷达", "高阶", "noa", "orin"])
+        is_query_smart = any(
+            k in query_lower for k in ["智驾", "自动驾驶", "激光雷达", "高阶", "noa", "orin"]
+        )
         if is_query_smart:
-            if any(k in (item.text_snippet + " " + str(meta)).lower() for k in ["激光雷达", "noa", "orin", "高阶智驾"]):
+            if any(
+                k in (item.text_snippet + " " + str(meta)).lower()
+                for k in ["激光雷达", "noa", "orin", "高阶智驾"]
+            ):
                 score += 0.15
 
         # Clamp between 0.0 and 1.0
@@ -175,9 +203,13 @@ class RankRefiner:
         results: List[VehicleSearchResult],
         top_k: int = 5,
         constraints: Optional[Dict[str, Any]] = None,
+        cross_encoder: Optional[Any] = None,
     ) -> List[VehicleSearchResult]:
         """
         Rerank and refine candidate vehicles based on tabular spec alignment and query intent.
+        Standard two-stage rank refinement pipeline:
+        Stage 1: Normalized semantic retrieval scores (Min-Max over candidate window or Sigmoid calibrated).
+        Stage 2: Smooth continuous constraint alignment score (spec fit gate).
         """
         if not results:
             return []
@@ -187,20 +219,43 @@ class RankRefiner:
         # Determine dynamic spec weight based on query intent
         # Higher spec weight for constraint-rich or price-sensitive queries
         spec_weight = 0.40
-        if any(k in query_text for k in ["万", "预算", "座", "纯电", "混动", "增程", "智驾", "省钱"]):
+        if any(
+            k in query_text
+            for k in ["万", "预算", "座", "纯电", "混动", "增程", "智驾", "省钱"]
+        ):
             spec_weight = 0.50
 
-        for item in results:
-            spec_score = cls.calculate_spec_score(item, query_text, constraints)
-            # Normalize original RRF score (typical range 0.01 - 0.15 or 0.0 - 1.0)
-            base_score = min(1.0, max(0.0, item.score))
-            if base_score > 0 and base_score < 0.15:
-                # Scale up RRF rank reciprocal to 0.0-1.0 range
-                base_score = min(1.0, base_score * 6.0)
+        # Calibrated semantic score normalization:
+        # Avoid arbitrary fudge factors (* 6.0, / 0.10) or discontinuous step-function cliff drops.
+        # Dynamically scale by candidate batch maximum when scores originate from RRF reciprocal rank range (<= 0.20),
+        # preserving strict monotonicity within the candidate set.
+        raw_scores = [max(0.0, float(item.score)) for item in results]
+        max_batch_score = max(raw_scores) if raw_scores else 0.0
+        norm_scale = max_batch_score if (0.0 < max_batch_score <= 0.20) else 1.0
 
-            # Combined score
-            final_score = base_score * (1.0 - spec_weight) + spec_score * spec_weight
-            final_score = round(final_score, 4)
+        # Batch score candidates with external cross-encoder if provided
+        ce_scores = None
+        if cross_encoder is not None and hasattr(cross_encoder, "score_pairs"):
+            try:
+                snippets = [item.text_snippet for item in results]
+                ce_arr = cross_encoder.score_pairs(query_text, snippets)
+                if ce_arr is not None and len(ce_arr) == len(results):
+                    ce_scores = ce_arr
+            except Exception as e:
+                logger.debug(f"Cross-encoder batch scoring fallback: {e}")
+
+        for idx, item in enumerate(results):
+            raw_s = raw_scores[idx]
+            semantic_score = min(1.0, max(0.0, raw_s / norm_scale)) if norm_scale > 0 else 0.0
+
+            spec_score = cls.calculate_spec_score(item, query_text, constraints)
+
+            if ce_scores is not None:
+                semantic_score = float(ce_scores[idx])
+
+            # Calibrated convex combination strictly within [0.0, 1.0]
+            final_score = semantic_score * (1.0 - spec_weight) + spec_score * spec_weight
+            final_score = round(max(0.0, min(1.0, final_score)), 4)
 
             item.score = final_score
             item.metadata["spec_alignment_score"] = round(spec_score, 3)
@@ -209,3 +264,9 @@ class RankRefiner:
         # Sort descending by refined score
         scored_items.sort(key=lambda x: x[0], reverse=True)
         return [item for _, item in scored_items[:top_k]]
+
+
+from src.rag_service.onnx_reranker import OnnxCrossEncoderReranker
+
+CrossEncoderReranker = OnnxCrossEncoderReranker
+

@@ -325,7 +325,6 @@ class VehicleTOMLConverter:
 
             price_bucket = PriceBucket(raw_bucket)
             data["price"] = price_bucket
-            data["prize"] = price_bucket  # Backward compatibility for legacy callers
 
         # 4. Powertrain Type with Negation Handling
         def _is_negated(term: str, text: str) -> bool:

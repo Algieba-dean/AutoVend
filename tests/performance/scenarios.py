@@ -39,7 +39,7 @@ NORMAL_SCENARIOS = [
         "needs_resp": {
             "powertrain_type": "纯电动",
             "vehicle_category_bottom": "紧凑型SUV",
-            "prize": "15-25万",
+            "price": "15-25万",
             "brand": "比亚迪",
             "design_style": "运动",
         },
@@ -67,7 +67,7 @@ NORMAL_SCENARIOS = [
         "expected_needs": {
             "powertrain_type": "纯电动",
             "vehicle_category_bottom": "紧凑型SUV",
-            "prize": "15-25万",
+            "price": "15-25万",
             "brand": "比亚迪",
             "design_style": "运动",
         },
@@ -94,7 +94,7 @@ NORMAL_SCENARIOS = [
         "needs_resp": {
             "seat_layout": "7座",
             "vehicle_category_bottom": "中大型SUV",
-            "prize": "25-35万",
+            "price": "25-35万",
             "powertrain_type": "插电混动",
             "drive_type": "全轮驱动",
         },
@@ -120,7 +120,7 @@ NORMAL_SCENARIOS = [
         "expected_needs": {
             "seat_layout": "7座",
             "vehicle_category_bottom": "中大型SUV",
-            "prize": "25-35万",
+            "price": "25-35万",
             "powertrain_type": "插电混动",
         },
         "expected_final_stage": "car_selection_confirmation",
@@ -152,7 +152,7 @@ NORMAL_SCENARIOS = [
             "design_style": "Sporty",
             "acceleration_0_100": "Under 4s",
             "drive_type": "RWD",
-            "prize": "500K+",
+            "price": "500K+",
         },
         "implicit_resp": {
             "brand_grade": "High",
@@ -176,7 +176,7 @@ NORMAL_SCENARIOS = [
         "expected_needs": {
             "brand": "BMW",
             "design_style": "Sporty",
-            "prize": "500K+",
+            "price": "500K+",
         },
         "expected_final_stage": "car_selection_confirmation",
         "turns": [
@@ -205,7 +205,7 @@ NORMAL_SCENARIOS = [
             "parking_conditions": "路边",
         },
         "needs_resp": {
-            "prize": "8万以下",
+            "price": "8万以下",
             "vehicle_category_bottom": "微型车",
             "fuel_consumption": "低",
             "seat_layout": "5座",
@@ -224,7 +224,7 @@ NORMAL_SCENARIOS = [
             "price_sensitivity": "高",
         },
         "expected_needs": {
-            "prize": "8万以下",
+            "price": "8万以下",
             "vehicle_category_bottom": "微型车",
             "powertrain_type": "汽油",
         },
@@ -251,7 +251,7 @@ NORMAL_SCENARIOS = [
         "needs_resp": {
             "design_style": "舒适",
             "vehicle_category_bottom": "中型轿车",
-            "prize": "20-30万",
+            "price": "20-30万",
             "powertrain_type": "汽油",
             "seat_layout": "5座",
         },
@@ -273,7 +273,7 @@ NORMAL_SCENARIOS = [
         "expected_needs": {
             "design_style": "舒适",
             "vehicle_category_bottom": "中型轿车",
-            "prize": "20-30万",
+            "price": "20-30万",
             "powertrain_type": "汽油",
         },
         "expected_final_stage": "car_selection_confirmation",
@@ -303,7 +303,7 @@ NORMAL_SCENARIOS = [
             "powertrain_type": "纯电动",
             "autonomous_driving_level": "L3",
             "vehicle_category_bottom": "中型SUV",
-            "prize": "30-45万",
+            "price": "30-45万",
             "brand": "特斯拉",
             "design_style": "科技",
         },
@@ -330,7 +330,7 @@ NORMAL_SCENARIOS = [
             "powertrain_type": "纯电动",
             "autonomous_driving_level": "L3",
             "vehicle_category_bottom": "中型SUV",
-            "prize": "30-45万",
+            "price": "30-45万",
             "brand": "特斯拉",
         },
         "expected_final_stage": "car_selection_confirmation",
@@ -362,7 +362,7 @@ NORMAL_SCENARIOS = [
         "needs_resp": {
             "vehicle_category_bottom": "MPV",
             "seat_layout": "7座",
-            "prize": "20-30万",
+            "price": "20-30万",
             "powertrain_type": "混动",
             "design_style": "家用",
         },
@@ -382,7 +382,7 @@ NORMAL_SCENARIOS = [
         "expected_needs": {
             "vehicle_category_bottom": "MPV",
             "seat_layout": "7座",
-            "prize": "20-30万",
+            "price": "20-30万",
             "powertrain_type": "混动",
             "design_style": "家用",
         },
@@ -413,7 +413,7 @@ NORMAL_SCENARIOS = [
         "needs_resp": {
             "vehicle_category_bottom": "大型轿车",
             "design_style": "豪华",
-            "prize": "80万以上",
+            "price": "80万以上",
             "brand": "奔驰",
             "seat_layout": "5座",
         },
@@ -438,7 +438,7 @@ NORMAL_SCENARIOS = [
         "expected_needs": {
             "vehicle_category_bottom": "大型轿车",
             "design_style": "豪华",
-            "prize": "80万以上",
+            "price": "80万以上",
             "brand": "奔驰",
         },
         "expected_final_stage": "car_selection_confirmation",
@@ -486,7 +486,7 @@ EDGE_CASE_SCENARIOS = [
             "family_size": "4",
         },
         "needs_resp": {
-            "prize": "30-40万",
+            "price": "30-40万",
             "vehicle_category_bottom": "中型SUV",
             "powertrain_type": "纯电动",
             "brand": "蔚来",
@@ -496,7 +496,7 @@ EDGE_CASE_SCENARIOS = [
         "reservation_resp": {},
         "expected_profile": {"name": "孙先生", "age": "40", "family_size": "4"},
         "expected_needs": {
-            "prize": "30-40万",
+            "price": "30-40万",
             "vehicle_category_bottom": "中型SUV",
             "powertrain_type": "纯电动",
         },
@@ -520,7 +520,7 @@ EDGE_CASE_SCENARIOS = [
             "residence": "武汉",
         },
         "needs_resp": {
-            "prize": "20-30万",
+            "price": "20-30万",
             "vehicle_category_bottom": "紧凑型SUV",
             "powertrain_type": "纯电动",
             "brand": "小鹏",
@@ -530,7 +530,7 @@ EDGE_CASE_SCENARIOS = [
         "reservation_resp": {},
         "expected_profile": {"name": "周先生", "age": "30", "residence": "武汉"},
         "expected_needs": {
-            "prize": "20-30万",
+            "price": "20-30万",
             "vehicle_category_bottom": "紧凑型SUV",
             "brand": "小鹏",
         },
@@ -554,7 +554,7 @@ EDGE_CASE_SCENARIOS = [
             "family_size": "3",
         },
         "needs_resp": {
-            "prize": "20-25万",
+            "price": "20-25万",
             "vehicle_category_bottom": "紧凑型轿车",
             "powertrain_type": "混动",
             "design_style": "优雅",
@@ -563,7 +563,7 @@ EDGE_CASE_SCENARIOS = [
         "reservation_resp": {},
         "expected_profile": {"name": "林先生", "age": "35", "target_driver": "太太"},
         "expected_needs": {
-            "prize": "20-25万",
+            "price": "20-25万",
             "vehicle_category_bottom": "紧凑型轿车",
         },
         "expected_final_stage": "car_selection_confirmation",
@@ -583,13 +583,13 @@ EDGE_CASE_SCENARIOS = [
         "category": "edge_case",
         "profile_resp": {"name": "小刘", "age": "28", "target_driver": "自己"},
         "needs_resp": {
-            "prize": "10万以下",
+            "price": "10万以下",
             "powertrain_type": "汽油",
         },
         "implicit_resp": {"cost_performance": "High"},
         "reservation_resp": {},
         "expected_profile": {"name": "小刘", "age": "28"},
-        "expected_needs": {"prize": "10万以下"},
+        "expected_needs": {"price": "10万以下"},
         "expected_final_stage": "needs_analysis",
         "turns": [
             {"msg": "你好", "expected_stage": Stage.PROFILE_ANALYSIS},
@@ -609,7 +609,7 @@ EDGE_CASE_SCENARIOS = [
             "residence": "Beijing",
         },
         "needs_resp": {
-            "prize": "200-300K",
+            "price": "200-300K",
             "vehicle_category_bottom": "Compact SUV",
             "powertrain_type": "Electric",
             "brand": "Tesla",
@@ -619,7 +619,7 @@ EDGE_CASE_SCENARIOS = [
         "reservation_resp": {},
         "expected_profile": {"name": "Maria", "age": "29", "residence": "Beijing"},
         "expected_needs": {
-            "prize": "200-300K",
+            "price": "200-300K",
             "vehicle_category_bottom": "Compact SUV",
             "brand": "Tesla",
         },
@@ -707,11 +707,11 @@ ADVERSARIAL_SCENARIOS = [
         "persona": "混合有效和无效信息",
         "category": "adversarial",
         "profile_resp": {"name": "测试", "age": "30"},
-        "needs_resp": {"prize": "20万"},
+        "needs_resp": {"price": "20万"},
         "implicit_resp": {},
         "reservation_resp": {},
         "expected_profile": {"name": "测试", "age": "30"},
-        "expected_needs": {"prize": "20万"},
+        "expected_needs": {"price": "20万"},
         "expected_final_stage": "needs_analysis",
         "turns": [
             {"msg": "哈哈哈哈", "expected_stage": Stage.PROFILE_ANALYSIS},
@@ -738,7 +738,7 @@ BILINGUAL_SCENARIOS = [
             "expertise": "中等",
         },
         "needs_resp": {
-            "prize": "30-50万",
+            "price": "30-50万",
             "brand": "Tesla",
             "powertrain_type": "Electric",
             "vehicle_category_bottom": "SUV",
@@ -747,7 +747,7 @@ BILINGUAL_SCENARIOS = [
         "implicit_resp": {"smartness": "High", "driving_range": "High"},
         "reservation_resp": {},
         "expected_profile": {"name": "Kevin陈", "age": "32", "residence": "上海"},
-        "expected_needs": {"prize": "30-50万", "brand": "Tesla", "powertrain_type": "Electric"},
+        "expected_needs": {"price": "30-50万", "brand": "Tesla", "powertrain_type": "Electric"},
         "expected_final_stage": "car_selection_confirmation",
         "turns": [
             {"msg": "Hi你好", "expected_stage": Stage.PROFILE_ANALYSIS},
@@ -766,7 +766,7 @@ BILINGUAL_SCENARIOS = [
             "family_size": "1",
         },
         "needs_resp": {
-            "prize": "15-20万",
+            "price": "15-20万",
             "vehicle_category_bottom": "紧凑型轿车",
             "powertrain_type": "混动",
             "brand": "丰田",
@@ -774,7 +774,7 @@ BILINGUAL_SCENARIOS = [
         "implicit_resp": {"energy_consumption_level": "Low", "safety": "High"},
         "reservation_resp": {},
         "expected_profile": {"name": "Amy", "age": "28"},
-        "expected_needs": {"prize": "15-20万", "powertrain_type": "混动", "brand": "丰田"},
+        "expected_needs": {"price": "15-20万", "powertrain_type": "混动", "brand": "丰田"},
         "expected_needs_analysis": [
             "预算",
             "品牌",
@@ -806,14 +806,14 @@ BILINGUAL_SCENARIOS = [
         "needs_resp": {
             "brand": "BYD",
             "vehicle_category_bottom": "紧凑型SUV",
-            "prize": "15万左右",
+            "price": "15万左右",
             "powertrain_type": "纯电",
             "design_style": "运动",
         },
         "implicit_resp": {"smartness": "High", "energy_consumption_level": "Low"},
         "reservation_resp": {},
         "expected_profile": {"name": "小李", "age": "27"},
-        "expected_needs": {"brand": "BYD", "prize": "15万左右", "powertrain_type": "纯电"},
+        "expected_needs": {"brand": "BYD", "price": "15万左右", "powertrain_type": "纯电"},
         "expected_final_stage": "car_selection_confirmation",
         "turns": [
             {"msg": "嗨", "expected_stage": Stage.PROFILE_ANALYSIS},
@@ -834,7 +834,7 @@ BILINGUAL_SCENARIOS = [
             "residence": "Guangzhou",
         },
         "needs_resp": {
-            "prize": "600K+",
+            "price": "600K+",
             "vehicle_category_bottom": "Full-size SUV",
             "brand": "Mercedes-Benz",
             "design_style": "Luxury",
@@ -849,7 +849,7 @@ BILINGUAL_SCENARIOS = [
             "residence": "Guangzhou",
         },
         "expected_needs": {
-            "prize": "600K+",
+            "price": "600K+",
             "brand": "Mercedes-Benz",
             "design_style": "Luxury",
         },
@@ -885,7 +885,7 @@ FULL_FUNNEL_SCENARIOS = [
             "residence": "南京",
         },
         "needs_resp": {
-            "prize": "25-35万",
+            "price": "25-35万",
             "vehicle_category_bottom": "中型SUV",
             "powertrain_type": "纯电动",
             "brand": "蔚来",
@@ -906,7 +906,7 @@ FULL_FUNNEL_SCENARIOS = [
             "residence": "南京",
         },
         "expected_needs": {
-            "prize": "25-35万",
+            "price": "25-35万",
             "vehicle_category_bottom": "中型SUV",
             "powertrain_type": "纯电动",
             "brand": "蔚来",
@@ -932,7 +932,7 @@ FULL_FUNNEL_SCENARIOS = [
             "expertise": "intermediate",
         },
         "needs_resp": {
-            "prize": "250-400K",
+            "price": "250-400K",
             "vehicle_category_bottom": "Compact SUV",
             "powertrain_type": "Electric",
             "brand": "BMW",
@@ -948,7 +948,7 @@ FULL_FUNNEL_SCENARIOS = [
         },
         "expected_profile": {"name": "Sarah", "age": "31", "residence": "Shanghai"},
         "expected_needs": {
-            "prize": "250-400K",
+            "price": "250-400K",
             "powertrain_type": "Electric",
             "brand": "BMW",
         },

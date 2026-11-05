@@ -6,9 +6,9 @@ car_model = "Hyundai-Elantra"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "20,000~30,000"
-prize_comments = "The Hyundai Elantra has a base MSRP of $20,500 USD for the SE trim, ranging up to $28,000 USD for the Limited trim with optional packages."
+# Price and category
+price = "20,000~30,000"
+price_comments = "The Hyundai Elantra has a base MSRP of $20,500 USD for the SE trim, ranging up to $28,000 USD for the Limited trim with optional packages."
 
 vehicle_category_bottom = "C-Segment Sedan"
 vehicle_category_bottom_comments = "The Elantra competes in the compact sedan segment with dimensions of 184.1 inches in length and 71.9 inches in width."

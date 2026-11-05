@@ -3,8 +3,8 @@ title = "CarLabels"
 car_model = "Ford-Maverick Lariat"
 
 [PriciseLabels]
-prize = "30,000~40,000"
-prize_comments = "The Ford Maverick Lariat is priced between $32,000 and $38,000 USD depending on options and packages."
+price = "30,000~40,000"
+price_comments = "The Ford Maverick Lariat is priced between $32,000 and $38,000 USD depending on options and packages."
 
 vehicle_category_bottom = "Compact Pickup Truck"
 vehicle_category_bottom_comments = "The Maverick Lariat is classified as a compact pickup truck with unibody construction."

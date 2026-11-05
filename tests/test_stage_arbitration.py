@@ -42,8 +42,8 @@ def _full_profile():
     return UserProfile(name="张伟", age="35", family_size="3")
 
 
-def _full_needs(prize="30,000 ~ 40,000"):
-    return VehicleNeeds(explicit=ExplicitNeeds(prize=prize, vehicle_category_bottom="Mid-Size SUV"))
+def _full_needs(price="30,000 ~ 40,000"):
+    return VehicleNeeds(explicit=ExplicitNeeds(price=price, vehicle_category_bottom="Mid-Size SUV"))
 
 
 def _full_reservation():
@@ -139,7 +139,7 @@ class TestGuards:
         assert arbitrate(state, TransitionProposal(target=Stage.CAR_SELECTION)).accepted
 
     def test_budget_alone_is_not_enough(self):
-        needs = VehicleNeeds(explicit=ExplicitNeeds(prize="30,000 ~ 40,000"))
+        needs = VehicleNeeds(explicit=ExplicitNeeds(price="30,000 ~ 40,000"))
         state = _state(Stage.NEEDS_ANALYSIS, profile=_full_profile(), needs=needs)
 
         verdict = arbitrate(state, TransitionProposal(target=Stage.CAR_SELECTION))

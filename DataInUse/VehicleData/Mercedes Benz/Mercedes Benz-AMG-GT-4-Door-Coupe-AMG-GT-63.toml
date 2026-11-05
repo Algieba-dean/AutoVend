@@ -7,8 +7,8 @@ car_model_comments = "The Mercedes-AMG GT 63 4-Door Coupe is a high-performance 
 
 [PriciseLabels]
 
-prize = "Above 100,000"
-prize_comments = "The Mercedes-AMG GT 63 4-Door Coupe starts at approximately $140,000 USD, with higher trims and options exceeding $160,000 USD."
+price = "Above 100,000"
+price_comments = "The Mercedes-AMG GT 63 4-Door Coupe starts at approximately $140,000 USD, with higher trims and options exceeding $160,000 USD."
 
 vehicle_category_bottom = "Four-door Hardtop Sports Car"
 vehicle_category_bottom_comments = "The AMG GT 63 combines sports car performance with the practicality of a four-door coupe."

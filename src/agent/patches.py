@@ -15,7 +15,7 @@ and to what.
 
 That history buys three things the flat state alone cannot give:
 
-1. **Auditing.** "Where did `prize=40到60万` come from?" is answerable.
+1. **Auditing.** "Where did `price=40到60万` come from?" is answerable.
 2. **Precise rollback.** A stage rollback can revert exactly the fields that
    stage introduced, rather than clearing whole sub-objects and losing facts
    the customer gave earlier.

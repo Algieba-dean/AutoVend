@@ -16,7 +16,7 @@ ONLY extract information that is explicitly stated. Do NOT guess or infer.
 Leave fields as empty strings if the user hasn't mentioned them.
 
 Fields to extract:
-- prize: Budget range (e.g., "10,000~20,000", "Below 10,000", "Above 100,000")
+- price: Budget range (e.g., "10,000~20,000", "Below 10,000", "Above 100,000")
 - vehicle_category_bottom: Vehicle type (e.g., "Compact Sedan", "Mid-size SUV", "Pickup Truck")
 - brand: Preferred brand (e.g., "Tesla", "BMW", "BYD")
 - powertrain_type: Engine type (e.g., "Battery Electric Vehicle", "Gasoline Engine", "Plug-in Hybrid")

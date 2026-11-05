@@ -100,7 +100,7 @@ class TestTechGeekBuyerPersona:
             "price_sensitivity": "中",
         }
         needs_data = {
-            "prize": "30万左右",
+            "price": "30万左右",
             "powertrain_type": "纯电动",
             "vehicle_category_bottom": "中大型轿车",
             "brand": "小米",
@@ -193,7 +193,7 @@ class TestFamilyPracticalDadPersona:
         needs_data = {
             "seat_layout": "6座/7座",
             "vehicle_category_bottom": "中大型SUV",
-            "prize": "30万左右",
+            "price": "30万左右",
             "powertrain_type": "插混/增程",
         }
         reservation_data = {
@@ -300,7 +300,7 @@ class TestICEToEVSkepticPersona:
         # 3. Simulate multi-turn dialogue with agent
         agent = _create_mock_agent(
             profile_data={"name": "赵明", "expertise": "老司机 (15年驾龄)"},
-            needs_data={"prize": "25万", "powertrain_type": "纯电"},
+            needs_data={"price": "25万", "powertrain_type": "纯电"},
             reservation_data={
                 "reservation_date": "下周一",
                 "reservation_time": "15:00",
@@ -346,7 +346,7 @@ class TestSpontaneousExplorerPersona:
         sid = "spontaneous_explorer"
 
         profile_data = {"name": "王海", "target_driver": "自己", "price_sensitivity": "中"}
-        needs_data = {"prize": "25-30万", "powertrain_type": "纯电", "vehicle_category_bottom": "轿车"}
+        needs_data = {"price": "25-30万", "powertrain_type": "纯电", "vehicle_category_bottom": "轿车"}
         reservation_data = {
             "reservation_date": "明天",
             "reservation_time": "14:00",
@@ -381,7 +381,7 @@ class TestSpontaneousExplorerPersona:
             )
         )
         assert t2.session_state.stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION, Stage.RESERVATION_4S)
-        assert t2.session_state.needs.explicit.prize in ("25-30万", "25万")
+        assert t2.session_state.needs.explicit.price in ("25-30万", "25万")
 
         # Turn 3: Abrupt jump to technical inquiry on fire safety
         t3 = agent.process(
@@ -459,10 +459,10 @@ class TestCompoundMultiIntentAndNegativeConstraints:
     ]
 
     @pytest.mark.parametrize(
-        "msg,expected_category,expected_prize,expected_date,expected_neg_cat", COMPOUND_CASES
+        "msg,expected_category,expected_price,expected_date,expected_neg_cat", COMPOUND_CASES
     )
     def test_compound_multi_intent_slot_and_directive_extraction(
-        self, msg, expected_category, expected_prize, expected_date, expected_neg_cat
+        self, msg, expected_category, expected_price, expected_date, expected_neg_cat
     ):
         state = SessionState(stage=Stage.CAR_SELECTION)
         res = TopicManager.analyze_user_turn(msg, state.stage, state)
@@ -479,8 +479,8 @@ class TestCompoundMultiIntentAndNegativeConstraints:
         slots = res.extracted_slots_hint
         if expected_category:
             assert expected_category.lower() in slots.get("vehicle_category_bottom", "").lower()
-        if expected_prize:
-            assert expected_prize in slots.get("prize", "")
+        if expected_price:
+            assert expected_price in slots.get("price", "")
         if expected_date:
             assert expected_date in slots.get("reservation_date", "")
         if expected_neg_cat:
@@ -498,7 +498,7 @@ class TestCompoundMultiIntentAndNegativeConstraints:
         '预算30万以内绝对不要SUV，SU7 Max和Model 3到底谁保值，网传刹车踩断真的假的，本周天有空试驾'
         """
         profile_data = {"name": "周先生"}
-        needs_data = {"prize": "30万以内", "vehicle_category_bottom": "轿车"}
+        needs_data = {"price": "30万以内", "vehicle_category_bottom": "轿车"}
         reservation_data = {"reservation_date": "本周天"}
         agent = _create_mock_agent(profile_data, needs_data, reservation_data)
 
@@ -514,7 +514,7 @@ class TestCompoundMultiIntentAndNegativeConstraints:
 
         assert res.session_state is not None
         assert res.response_text != ""
-        assert "30万" in res.session_state.needs.explicit.prize
+        assert "30万" in res.session_state.needs.explicit.price
         assert "本周天" in res.session_state.reservation.reservation_date
 
 

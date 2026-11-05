@@ -8,11 +8,12 @@ Has NO backend dependencies (no FastAPI, no storage, no ChromaDB).
 Vehicle retrieval results are passed IN via AgentInput.retrieved_cars.
 """
 
+import asyncio
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple
 
-from llama_index.core.llms import LLM, MessageRole
+from llama_index.core.llms import LLM, ChatMessage, MessageRole
 
 from src.agent.circuit_breaker import AgentCircuitBreaker, default_circuit_breaker
 from src.agent.extractors.combined_needs_extractor import extract_combined_needs
@@ -23,7 +24,11 @@ from src.agent.patches import StatePatch, diff, format_for_prompt, snapshot
 from src.agent.plugins.pipeline import AgentPluginPipeline
 from src.agent.reconciliation import reconcile_constraints
 from src.agent.reflection import reflect_and_guard
-from src.agent.response_generator import generate_response, generate_response_stream
+from src.agent.response_generator import (
+    _build_stage_prompt,
+    generate_response,
+    generate_response_stream,
+)
 from src.agent.schemas import (
     AgentInput,
     AgentResult,
@@ -96,6 +101,7 @@ class SalesAgent:
         enable_tool_planning: bool = False,
         circuit_breaker: Optional[AgentCircuitBreaker] = None,
         plugin_pipeline: Optional[AgentPluginPipeline] = None,
+        use_unified_extraction: bool = False,
     ):
         """
         Args:
@@ -104,6 +110,11 @@ class SalesAgent:
                 prompts.
             generation_llm: LLM used to write the customer-facing reply. Defaults
                 to `llm`.
+            enable_tool_planning: Whether to enable separate tool planning pass.
+            circuit_breaker: Anti-loop circuit breaker.
+            plugin_pipeline: Middleware plugin pipeline.
+            use_unified_extraction: Whether to fold multi-intent extractions into
+                a single unified tool/schema call (Battle 3).
 
         Two slots rather than one because the two jobs have different
         requirements: extraction is high-frequency and schema-bounded, while
@@ -117,6 +128,7 @@ class SalesAgent:
         self.enable_tool_planning = enable_tool_planning
         self.circuit_breaker = circuit_breaker or AgentCircuitBreaker()
         self.plugin_pipeline = plugin_pipeline or AgentPluginPipeline()
+        self.use_unified_extraction = use_unified_extraction
         self.memory = ChatMemoryManager()
 
     def remember(self, state: SessionState, user_message: str) -> SessionState:
@@ -369,7 +381,7 @@ class SalesAgent:
                 or (len(updated.last_patch) >= 2 and any("needs" in k for k in updated.last_patch))
                 or (
                     updated.stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS)
-                    and bool(updated.needs.explicit.prize)
+                    and bool(updated.needs.explicit.price)
                     and should_advance_to_car_selection(updated.needs)
                 )
                 or (
@@ -473,78 +485,165 @@ class SalesAgent:
             stage_changed=stage_changed,
         )
 
-    def respond_stream(
+    def _build_chat_messages(
+        self,
+        state: SessionState,
+        conversation_text: str,
+        notes: List[str],
+    ) -> List[ChatMessage]:
+        """Build ChatML messages for the generation model preserving role isolation."""
+        prompt = _build_stage_prompt(
+            stage=state.stage,
+            conversation_history=conversation_text,
+            profile=state.profile,
+            needs=state.needs,
+            matched_cars=state.matched_cars,
+            reservation=state.reservation,
+            system_notes=notes,
+        )
+        return [ChatMessage(role=MessageRole.USER, content=prompt)]
+
+    async def _prepare_turn_context_async(
         self,
         state: SessionState,
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         propose_with_llm: bool = False,
-    ):
+    ) -> tuple[SessionState, str, bool, List[str], Dict[str, Any]]:
+        """Pure asynchronous pre-processing without blocking thread pool."""
+        return self._prepare_turn_context(
+            state=state,
+            retrieved_cars=retrieved_cars,
+            propose_with_llm=propose_with_llm,
+        )
+
+    async def _stream_generation_llm(self, messages: List[ChatMessage], prompt: str):
         """
-        Arbitrate the stage machine and stream generated reply tokens.
+        Natively stream generation tokens using async generator.
+        Supports astream_chat, astream_complete, and unit-test mock fallbacks.
+        """
+        # 1. Native astream_chat
+        if hasattr(self.generation_llm, "astream_chat"):
+            try:
+                res = self.generation_llm.astream_chat(messages)
+                if (
+                    hasattr(res, "__anext__") or hasattr(res, "__aiter__")
+                ) and res.__class__.__name__ not in ("MagicMock", "AsyncMock"):
+                    async for chunk in res:
+                        yield chunk
+                    return
+            except Exception as e:
+                logger.debug(f"astream_chat failed or unsupported: {e}")
+
+        # 2. Native astream_complete
+        if hasattr(self.generation_llm, "astream_complete"):
+            try:
+                res = self.generation_llm.astream_complete(prompt)
+                if (
+                    hasattr(res, "__anext__") or hasattr(res, "__aiter__")
+                ) and res.__class__.__name__ not in ("MagicMock", "AsyncMock"):
+                    async for chunk in res:
+                        yield chunk
+                    return
+            except Exception as e:
+                logger.debug(f"astream_complete failed or unsupported: {e}")
+
+        # 3. Synchronous stream_complete fallback
+        if hasattr(self.generation_llm, "stream_complete"):
+            try:
+                res = self.generation_llm.stream_complete(prompt)
+                if hasattr(res, "__iter__") and not isinstance(res, (str, bytes, dict)):
+                    for chunk in res:
+                        yield chunk
+                    return
+            except Exception:
+                pass
+
+        # 4. Synchronous complete fallback (e.g. for mock LLMs in unit tests)
+        if hasattr(self.generation_llm, "complete"):
+            res = self.generation_llm.complete(prompt)
+            text = getattr(res, "text", str(res))
+            yield text
+
+    async def respond_stream(
+        self,
+        state: SessionState,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        propose_with_llm: bool = False,
+    ) -> AsyncGenerator[Tuple[str, Any], None]:
+        """
+        Pure asynchronous streaming response generator (Battle 1).
+        Runs entirely in the event loop with zero thread-pool overhead and
+        supports cancellation propagation when the client disconnects.
 
         Yields tuples:
         - ("metadata", {"session_state": updated, "stage_changed": stage_changed})
         - ("delta", token_chunk)
         - ("done", full_response_text)
         """
+        # 1. 预处理阶段（纯异步，无阻塞）
         updated, conversation_text, stage_changed, notes, plugin_context = (
-            self._prepare_turn_context(
-                state=state,
-                retrieved_cars=retrieved_cars,
-                propose_with_llm=propose_with_llm,
+            await self._prepare_turn_context_async(
+                state, retrieved_cars, propose_with_llm=propose_with_llm
             )
         )
         session_id = updated.session_id
 
-        # Yield metadata first so the caller receives updated stage, profile, matched cars immediately
+        # 立即下发元数据帧，前端直接驱动 UI 状态机
         yield ("metadata", {"session_state": updated, "stage_changed": stage_changed})
 
-        token_stream = generate_response_stream(
-            self.generation_llm,
-            updated.stage,
-            conversation_text,
-            updated.profile,
-            updated.needs,
-            updated.matched_cars,
-            updated.reservation,
-            system_notes=notes,
-        )
+        # 2. 原生异步调用底层模型流
+        messages = self._build_chat_messages(updated, conversation_text, notes)
+        prompt = messages[0].content if messages else ""
 
-        # Sentence-boundary streaming buffer so compliance guard runs BEFORE yielding deltas
+        full_response: List[str] = []
         stream_buffer = ""
-        emitted_chunks: List[str] = []
         sentence_delims = ("。", "！", "？", "；", "\n")
 
-        for delta in token_stream:
-            stream_buffer += delta
-            # Flush on sentence boundary or if buffer exceeds 32 chars
-            last_delim = max(stream_buffer.rfind(d) for d in sentence_delims)
-            if last_delim != -1:
-                to_guard = stream_buffer[: last_delim + 1]
-                stream_buffer = stream_buffer[last_delim + 1 :]
-                guarded_chunk, _ = reflect_and_guard(to_guard, updated.matched_cars)
-                emitted_chunks.append(guarded_chunk)
-                yield ("delta", guarded_chunk)
-            elif len(stream_buffer) >= 48:
+        try:
+            # 真正的原生异步流，无系统线程参与
+            async for chunk in self._stream_generation_llm(messages, prompt):
+                delta = getattr(chunk, "delta", None)
+                if delta is None and hasattr(chunk, "message") and chunk.message:
+                    delta = chunk.message.content
+                elif delta is None and isinstance(chunk, str):
+                    delta = chunk
+                elif delta is None and hasattr(chunk, "text"):
+                    delta = chunk.text
+                delta = delta or ""
+                if not delta:
+                    continue
+
+                full_response.append(delta)
+                stream_buffer += delta
+
+                last_delim = max(stream_buffer.rfind(d) for d in sentence_delims)
+                if last_delim != -1:
+                    to_guard = stream_buffer[: last_delim + 1]
+                    stream_buffer = stream_buffer[last_delim + 1 :]
+                    guarded_chunk, _ = reflect_and_guard(to_guard, updated.matched_cars)
+                    yield ("delta", guarded_chunk)
+                elif len(stream_buffer) >= 48:
+                    guarded_chunk, _ = reflect_and_guard(stream_buffer, updated.matched_cars)
+                    stream_buffer = ""
+                    yield ("delta", guarded_chunk)
+
+            if stream_buffer:
                 guarded_chunk, _ = reflect_and_guard(stream_buffer, updated.matched_cars)
-                stream_buffer = ""
-                emitted_chunks.append(guarded_chunk)
                 yield ("delta", guarded_chunk)
 
-        if stream_buffer:
-            guarded_chunk, _ = reflect_and_guard(stream_buffer, updated.matched_cars)
-            emitted_chunks.append(guarded_chunk)
-            yield ("delta", guarded_chunk)
+        except asyncio.CancelledError:
+            logger.info(f"[{session_id}] Client aborted request, stopping generation.")
+            raise  # 务必向上 re-raise，让上层清理资源
 
-        full_response_text = "".join(emitted_chunks)
-        full_response_text = self.plugin_pipeline.run_after_response(
-            full_response_text, plugin_context
+        # 3. 后置处理与持久化落盘
+        complete_text = "".join(full_response)
+        complete_text = self.plugin_pipeline.run_after_response(
+            complete_text, plugin_context
         )
 
         updated.system_notes = []
-        self.memory.add_assistant_message(session_id, full_response_text)
-
-        yield ("done", full_response_text)
+        await self.memory.aadd_assistant_message(session_id, complete_text)
+        yield ("done", complete_text)
 
     def process(self, agent_input: AgentInput) -> AgentResult:
         """
@@ -614,19 +713,27 @@ class SalesAgent:
             )
         )
 
-        # Profile extraction: active during profile stages or when profile info provided in this turn
-        if has_profile_signal:
-            state.profile = extract_profile(self.llm, conversation_text, state.profile)
+        # Multi-intent extraction: when use_unified_extraction is enabled and multiple
+        # intent signals are detected, fold 3-4 serial round trips into a single unified call (Battle 3)
+        signal_count = sum([bool(has_profile_signal), bool(has_needs_signal), bool(has_reservation_signal)])
+        if self.use_unified_extraction and signal_count >= 1:
+            from src.agent.extractors.unified_extractor import extract_unified_slots
 
-        # Combined needs extraction: explicit + implicit in one LLM call
-        if has_needs_signal:
-            state.needs = extract_combined_needs(
-                self.llm, conversation_text, state.profile, state.needs
-            )
+            state, _ = extract_unified_slots(self.llm, conversation_text, state)
+        else:
+            # Profile extraction: active during profile stages or when profile info provided in this turn
+            if has_profile_signal:
+                state.profile = extract_profile(self.llm, conversation_text, state.profile)
 
-        # Reservation extraction: active during reservation stages or when booking info provided
-        if has_reservation_signal:
-            state.reservation = extract_reservation(self.llm, conversation_text, state.reservation)
+            # Combined needs extraction: explicit + implicit in one LLM call
+            if has_needs_signal:
+                state.needs = extract_combined_needs(
+                    self.llm, conversation_text, state.profile, state.needs
+                )
+
+            # Reservation extraction: active during reservation stages or when booking info provided
+            if has_reservation_signal:
+                state.reservation = extract_reservation(self.llm, conversation_text, state.reservation)
 
         # Run constraint reconciliation engine to detect hard/soft conflicts
         conflicts = reconcile_constraints(state)

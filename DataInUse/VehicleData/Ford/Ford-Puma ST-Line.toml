@@ -6,9 +6,9 @@ car_model = "Ford-Puma ST-Line"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "20,000~30,000"
-prize_comments = "The Ford Puma ST-Line is priced between $25,000 and $28,000 USD depending on optional features and regional pricing."
+# Price and category
+price = "20,000~30,000"
+price_comments = "The Ford Puma ST-Line is priced between $25,000 and $28,000 USD depending on optional features and regional pricing."
 
 vehicle_category_bottom = "Compact SUV"
 vehicle_category_bottom_comments = "The Puma ST-Line is a subcompact crossover SUV (B-Segment) with sporty styling."

@@ -116,9 +116,9 @@ def build_cases(limit: int = 20, seed: int = 42, difficulty: str = "mixed") -> L
     conn = sqlite3.connect(config.vehicle_db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
-        "SELECT car_model, brand, vehicle_category_bottom, prize, powertrain_type, "
+        "SELECT car_model, brand, vehicle_category_bottom, price, powertrain_type, "
         "seat_layout, driving_range, drive_type FROM vehicles "
-        "WHERE brand != '' AND prize != '' ORDER BY car_model LIMIT 400"
+        "WHERE brand != '' AND price != '' ORDER BY car_model LIMIT 400"
     ).fetchall()
     conn.close()
 
@@ -162,7 +162,7 @@ def _render_context(row) -> str:
         ("车型", row["car_model"]),
         ("品牌", row["brand"]),
         ("类别", row["vehicle_category_bottom"]),
-        ("价格区间", row["prize"]),
+        ("价格区间", row["price"]),
         ("动力形式", row["powertrain_type"]),
         ("座位布局", row["seat_layout"]),
         ("续航", row["driving_range"]),
@@ -176,8 +176,8 @@ def _render_answer(row) -> str:
     if row["vehicle_category_bottom"]:
         parts.append(f"{row['vehicle_category_bottom']}")
     parts.append("。")
-    if row["prize"]:
-        parts.append(f"价格区间为 {row['prize']}。")
+    if row["price"]:
+        parts.append(f"价格区间为 {row['price']}。")
     if row["powertrain_type"]:
         parts.append(f"动力形式是 {row['powertrain_type']}。")
     if row["seat_layout"]:

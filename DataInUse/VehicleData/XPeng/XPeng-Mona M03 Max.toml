@@ -6,8 +6,8 @@ car_model = "XPeng-Mona M03 Max"
 
 [PriciseLabels]
 
-prize = "40,000~60,000"
-prize_comments = "The XPeng-Mona M03 Max is priced between $45,000 and $55,000 USD depending on the trim level and options."
+price = "40,000~60,000"
+price_comments = "The XPeng-Mona M03 Max is priced between $45,000 and $55,000 USD depending on the trim level and options."
 
 vehicle_category_bottom = "C-Segment Sedan"
 vehicle_category_bottom_comments = "The XPeng-Mona M03 Max is a mid-size electric sedan with a focus on performance and technology."

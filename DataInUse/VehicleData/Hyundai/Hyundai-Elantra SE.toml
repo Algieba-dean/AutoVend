@@ -6,9 +6,9 @@ car_model = "Hyundai-Elantra SE"
 
 [PriciseLabels]
 
-# Prize and basic info
-prize = "20,000~30,000"
-prize_comments = "The Hyundai Elantra SE starts at $21,245 USD (base MSRP) and can go up to $28,000 USD with optional packages."
+# Price and basic info
+price = "20,000~30,000"
+price_comments = "The Hyundai Elantra SE starts at $21,245 USD (base MSRP) and can go up to $28,000 USD with optional packages."
 
 vehicle_category_bottom = "C-Segment Sedan"
 vehicle_category_bottom_comments = "The Elantra is classified as a compact C-segment sedan with dimensions of 184.1 inches (4,676 mm) in length."

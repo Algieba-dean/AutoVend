@@ -2,7 +2,7 @@
 Grid search over RRF fusion weights.
 
 Sweeps the dense/sparse split from 0.0 to 1.0 against the golden set and
-reports `capped_recall@3` and `MRR` at each point, then evaluates the
+reports `precision@3` and `MRR` at each point, then evaluates the
 intent-routed policy on the same data so the two are directly comparable.
 
 Only the weights vary. Retrieval, the golden set and the scoring code are
@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from src.eval.golden_set import GoldenQuery, load_golden_set
-from src.eval.metrics import capped_recall_at_k, mrr
+from src.eval.metrics import mrr, precision_at_k
 from src.eval.runner import RESULTS_DIR
 from src.retrieval.fusion import (
     FusionWeights,
@@ -123,7 +123,7 @@ def score(
     `weight_of` maps a QueryRankings to FusionWeights, which is what lets the
     same function evaluate a fixed split and the intent-routed policy.
     """
-    recalls: List[float] = []
+    precisions: List[float] = []
     reciprocal_ranks: List[float] = []
 
     for item in rankings:
@@ -133,12 +133,12 @@ def score(
         )
         order = [model for model, _ in fused]
         relevant = item.query.relevant_set
-        recalls.append(capped_recall_at_k(order, relevant, 3))
+        precisions.append(precision_at_k(order, relevant, 3))
         reciprocal_ranks.append(mrr(order, relevant))
 
     n = len(rankings) or 1
     return {
-        "capped_recall@3": round(sum(recalls) / n, 4),
+        "precision@3": round(sum(precisions) / n, 4),
         "mrr": round(sum(reciprocal_ranks) / n, 4),
     }
 
@@ -212,7 +212,7 @@ def sweep_by_subset(
         if not items:
             continue
         grid = sweep(items, step=step, k=k, top_k=top_k)
-        best = _best(grid, "capped_recall@3")
+        best = _best(grid, "precision@3")
         analysis[name] = {"n": len(items), "grid": grid, "best": best}
     return analysis
 
@@ -266,34 +266,34 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     dynamic = score_dynamic(rankings, k=args.k, top_k=args.top_k)
 
     print(f"\nWeight sweep (k={args.k}, step={args.step}):")
-    print(f"{'dense':>7} {'sparse':>7} {'capped_recall@3':>17} {'MRR':>8}")
-    best_recall = _best(grid, "capped_recall@3")
+    print(f"{'dense':>7} {'sparse':>7} {'precision@3':>17} {'MRR':>8}")
+    best_recall = _best(grid, "precision@3")
     for row in grid:
         marker = " ←" if row is best_recall else ""
         print(
             f"{row['dense']:>7.2f} {row['sparse']:>7.2f} "
-            f"{row['capped_recall@3']:>17.4f} {row['mrr']:>8.4f}{marker}"
+            f"{row['precision@3']:>17.4f} {row['mrr']:>8.4f}{marker}"
         )
 
     grain = resolution(len(queries))
-    low, high = plateau(grid, "capped_recall@3", grain)
+    low, high = plateau(grid, "precision@3", grain)
     print(
         f"\nBest static: dense={best_recall['dense']:.2f} sparse={best_recall['sparse']:.2f} "
-        f"→ capped_recall@3 {best_recall['capped_recall@3']:.4f}, MRR {best_recall['mrr']:.4f}"
+        f"→ precision@3 {best_recall['precision@3']:.4f}, MRR {best_recall['mrr']:.4f}"
     )
     print(
         f"Resolution: one query = {grain:.4f}. Everything within that of the best "
         f"is indistinguishable — here dense ∈ [{low:.2f}, {high:.2f}]."
     )
     print(
-        f"Intent-routed: capped_recall@3 {dynamic['capped_recall@3']:.4f}, "
+        f"Intent-routed: precision@3 {dynamic['precision@3']:.4f}, "
         f"MRR {dynamic['mrr']:.4f} "
         f"({dynamic['n_lexical']} lexical / {dynamic['n_semantic']} semantic queries)"
     )
 
-    delta = dynamic["capped_recall@3"] - best_recall["capped_recall@3"]
+    delta = dynamic["precision@3"] - best_recall["precision@3"]
     verdict = "beats" if delta > 0 else ("ties" if delta == 0 else "loses to")
-    print(f"Dynamic routing {verdict} the best static split by {delta:+.4f} capped_recall@3.")
+    print(f"Dynamic routing {verdict} the best static split by {delta:+.4f} precision@3.")
 
     # Whether routing *can* help: do the two subsets want different weights?
     subsets = sweep_by_subset(rankings, args.step, args.k, args.top_k)
@@ -302,7 +302,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         best = data["best"]
         print(
             f"  {name:<9} n={data['n']:<4} best dense={best['dense']:.2f} "
-            f"sparse={best['sparse']:.2f} → {best['capped_recall@3']:.4f}"
+            f"sparse={best['sparse']:.2f} → {best['precision@3']:.4f}"
         )
     if len(subsets) == 2:
         # A peak is only evidence if it clears the subset's own noise floor.
@@ -311,7 +311,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         separated = True
         for name, data in subsets.items():
             grain_s = resolution(data["n"])
-            low_s, high_s = plateau(data["grid"], "capped_recall@3", grain_s)
+            low_s, high_s = plateau(data["grid"], "precision@3", grain_s)
             data["plateau"] = [low_s, high_s]
             data["resolution"] = round(grain_s, 4)
             print(
@@ -350,11 +350,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.sweep_k:
         k_rows = sweep_k(rankings, [1, 5, 10, 20, 60, 100, 300], args.top_k)
         report["k_sweep"] = k_rows
-        print(
-            f"\nDamping constant sweep (equal split):\n{'k':>5} {'capped_recall@3':>17} {'MRR':>8}"
-        )
+        print(f"\nDamping constant sweep (equal split):\n{'k':>5} {'precision@3':>17} {'MRR':>8}")
         for row in k_rows:
-            print(f"{row['k']:>5} {row['capped_recall@3']:>17.4f} {row['mrr']:>8.4f}")
+            print(f"{row['k']:>5} {row['precision@3']:>17.4f} {row['mrr']:>8.4f}")
 
     out = args.out or (RESULTS_DIR / "fusion_weight_search.json")
     out.parent.mkdir(parents=True, exist_ok=True)

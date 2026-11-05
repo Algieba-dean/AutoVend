@@ -109,8 +109,13 @@ def sanitize_tool_args(
                 r"<(script|iframe|object|embed)[^>]*>.*?</\1>", "", v, flags=re.IGNORECASE
             )
             v_clean = re.sub(r"javascript:", "", v_clean, flags=re.IGNORECASE)
+            # Strip SQL injection command patterns (DROP TABLE ..., SELECT ... FROM ...)
+            # while leaving innocent standalone words (e.g. "select configuration", "update profile") intact.
             v_clean = re.sub(
-                r"(\b(SELECT|INSERT|DELETE|UPDATE|DROP|UNION)\b)", "", v_clean, flags=re.IGNORECASE
+                r"(;\s*(DROP|DELETE|TRUNCATE|ALTER)\s+TABLE\b|\bDROP\s+TABLE\s+\w+;?|\bSELECT\s+[\*\w\s,]+\s+FROM\s+\w+;?)",
+                "",
+                v_clean,
+                flags=re.IGNORECASE,
             )
 
             if v_clean != orig:
@@ -194,7 +199,7 @@ def _write_fields(model, values: Dict[str, Any], prefix: str, tool: str) -> List
     Set fields on a Pydantic sub-model, emitting a patch per real change.
 
     Unknown field names are dropped with a warning rather than raising: a model
-    inventing `budget` where the schema says `prize` should cost that one field,
+    inventing `budget` where the schema says `price` should cost that one field,
     not the turn.
     """
     patches: List[StatePatch] = []
@@ -587,7 +592,7 @@ TOOLS: Dict[str, ToolSpec] = {
             name="record_need",
             description="记录客户明确表达的购车需求",
             parameters={
-                "fields": "对象，键为 prize/brand/powertrain_type"
+                "fields": "对象，键为 price/brand/powertrain_type"
                 "/vehicle_category_bottom/design_style/seat_layout 等"
             },
             handler=_record_need,
@@ -932,3 +937,11 @@ def dispatch_transactional(state: SessionState, calls: List[Dict[str, Any]]) -> 
     Convenience wrapper to run a batch of tool calls with transactional rollback guarantee.
     """
     return dispatch_all(state, calls, atomic=True)
+
+
+# Export Unified Schema & register alias for backwards compatibility
+_sys = __import__("sys")
+from src.agent.unified_schema import UpdateSessionSlotsTool, apply_slot_updates
+import src.agent.unified_schema as _unified_schema_module
+
+_sys.modules["src.agent.tools.unified_schema"] = _unified_schema_module

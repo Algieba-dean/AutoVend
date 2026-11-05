@@ -101,7 +101,7 @@ class TestOfflineStructuredJudgeAndNLI:
             response_text=response_good,
             context_text="小鹏G6 800V 20.99万 激光雷达 755km",
             matched_cars=matched_cars,
-            constraints={"prize": "25万以内", "brand": "小鹏"},
+            constraints={"price": "25万以内", "brand": "小鹏"},
             current_stage="car_selection_confirmation",
             case_id="golden_case_01",
         )

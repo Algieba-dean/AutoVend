@@ -52,7 +52,7 @@ GOLDEN_AGENT_CASES: List[AgentGoldenCase] = [
         user_message="预算30万左右，希望能买一辆纯电SUV，续航600公里以上，平时上下班接送小孩",
         expected_stage=Stage.NEEDS_ANALYSIS,
         expected_tools=["record_need"],
-        expected_slots={"prize": "30万左右", "powertrain_type": "纯电", "vehicle_category_bottom": "SUV"},
+        expected_slots={"price": "30万左右", "powertrain_type": "纯电", "vehicle_category_bottom": "SUV"},
     ),
     AgentGoldenCase(
         case_id="TYP_03_CAR_RECOMMENDATION",
@@ -61,7 +61,7 @@ GOLDEN_AGENT_CASES: List[AgentGoldenCase] = [
         stage=Stage.CAR_SELECTION,
         user_message="我对小米SU7比较感兴趣，配置性能都很满意",
         retrieved_cars=[
-            {"car_model": "小米SU7 Max", "prize": "29.99万", "electric_range": "800km", "powertrain_type": "纯电"}
+            {"car_model": "小米SU7 Max", "price": "29.99万", "electric_range": "800km", "powertrain_type": "纯电"}
         ],
         expected_stage=Stage.CAR_SELECTION,
         expected_tools=["select_vehicle"],

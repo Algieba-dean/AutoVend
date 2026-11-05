@@ -6,8 +6,8 @@ car_model = "Toyota-bZ3 Upcoming Compact Electric Sedan"
 
 [PriciseLabels]
 
-prize = "30,000~40,000"
-prize_comments = "The Toyota-bZ3 Upcoming Compact Electric Sedan is priced between $35,000 and $38,000 USD depending on the trim level and options."
+price = "30,000~40,000"
+price_comments = "The Toyota-bZ3 Upcoming Compact Electric Sedan is priced between $35,000 and $38,000 USD depending on the trim level and options."
 
 vehicle_category_bottom = "Compact Sedan"
 vehicle_category_bottom_comments = "The Toyota-bZ3 is a compact electric sedan with a focus on urban mobility and efficiency."

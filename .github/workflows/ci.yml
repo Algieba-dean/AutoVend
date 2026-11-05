@@ -34,7 +34,7 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       - name: Ruff check
         run: uv run ruff check src/ backend/ tests/
@@ -60,7 +60,7 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       # Presidio needs a spaCy pipeline registered even though the Chinese
       # recognizers are pure regex; without it the interceptor fails to build
@@ -110,7 +110,7 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       # src/agent must stay free of FastAPI, ChromaDB and backend imports, or
       # the agent stops being independently testable and reusable.
@@ -151,7 +151,7 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       # BGE-M3 is ~2GB; without this every run re-downloads it.
       - name: Cache embedding model
@@ -216,7 +216,7 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       - name: Run KPI tests and generate report
         run: uv run python tests/kpi_report.py | tee kpi-report.md
@@ -247,7 +247,7 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: uv sync --all-extras --frozen
 
       - name: Run MLOps lifecycle test suite
         run: uv run pytest tests/test_mlops.py -v
@@ -262,8 +262,18 @@ jobs:
       - name: Run semantic drift regression check
         run: |
           uv run python -c "
+          import sys
           from src.mlops import semantic_drift_detector
+          from src.mlops.drift import DriftLevel
+
           report = semantic_drift_detector.generate_drift_report()
-          print('Drift status:', report.overall_level.value)
+          print(f'Overall Drift Level: {report.overall_level.value}')
+
+          if report.overall_level in (DriftLevel.CRITICAL, DriftLevel.WARNING):
+              print('❌ CI Gate Blocked: Semantic drift exceeded safety envelope!', file=sys.stderr)
+              for alert in getattr(report, 'alerts', []):
+                  print(f'  - {alert}', file=sys.stderr)
+              sys.exit(1)
+          print('✅ Semantic drift check passed.')
           "
 

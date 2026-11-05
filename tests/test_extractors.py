@@ -115,23 +115,23 @@ class TestNeedsExtractor:
         llm = _mock_llm(
             {
                 "brand": "Tesla",
-                "prize": "40,000~60,000",
+                "price": "40,000~60,000",
                 "powertrain_type": "Battery Electric Vehicle",
             }
         )
         needs = extract_explicit_needs(llm, "I want a Tesla EV around $50k")
         assert needs.brand == "Tesla"
-        assert needs.prize == "40,000~60,000"
+        assert needs.price == "40,000~60,000"
         assert needs.powertrain_type == "Battery Electric Vehicle"
 
     def test_merge_with_existing(self):
         existing = ExplicitNeeds(brand="Tesla", seat_layout="5-seat")
-        llm = _mock_llm({"prize": "40,000~60,000"})
+        llm = _mock_llm({"price": "40,000~60,000"})
 
         needs = extract_explicit_needs(llm, "Budget around 50k", existing)
         assert needs.brand == "Tesla"  # Preserved
         assert needs.seat_layout == "5-seat"  # Preserved
-        assert needs.prize == "40,000~60,000"  # New
+        assert needs.price == "40,000~60,000"  # New
 
     def test_handles_error_gracefully(self):
         llm = _mock_llm_error()
@@ -143,14 +143,14 @@ class TestNeedsExtractor:
         llm = _mock_llm({})
         needs = extract_explicit_needs(llm, "")
         assert needs.brand == ""
-        assert needs.prize == ""
+        assert needs.price == ""
 
 
 class TestCombinedNeedsExtractor:
     def test_extracts_nested_response(self):
         llm = _mock_llm(
             {
-                "explicit": {"seat_layout": "7座", "prize": "25-35万"},
+                "explicit": {"seat_layout": "7座", "price": "25-35万"},
                 "implicit": {"family_friendliness": "High"},
             }
         )
@@ -158,14 +158,14 @@ class TestCombinedNeedsExtractor:
         needs = extract_combined_needs(llm, "五口之家需要7座车", UserProfile())
 
         assert needs.explicit.seat_layout == "7座"
-        assert needs.explicit.prize == "25-35万"
+        assert needs.explicit.price == "25-35万"
         assert needs.implicit.family_friendliness == "High"
 
     def test_recovers_flat_response(self):
         llm = _mock_llm(
             {
                 "seat_layout": "7座",
-                "prize": "25-35万",
+                "price": "25-35万",
                 "family_friendliness": "High",
             }
         )
@@ -173,7 +173,7 @@ class TestCombinedNeedsExtractor:
         needs = extract_combined_needs(llm, "五口之家需要7座车", UserProfile())
 
         assert needs.explicit.seat_layout == "7座"
-        assert needs.explicit.prize == "25-35万"
+        assert needs.explicit.price == "25-35万"
         assert needs.implicit.family_friendliness == "High"
 
 

@@ -6,9 +6,9 @@ car_model = "Suzuki-S-Cross-Zeta"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "20,000~30,000"
-prize_comments = "The Suzuki S-Cross Zeta is priced between $22,000 and $28,000 USD depending on the market and optional features."
+# Price and category
+price = "20,000~30,000"
+price_comments = "The Suzuki S-Cross Zeta is priced between $22,000 and $28,000 USD depending on the market and optional features."
 
 vehicle_category_bottom = "Compact SUV"
 vehicle_category_bottom_comments = "The S-Cross Zeta is a B-segment crossover SUV with a focus on urban practicality."

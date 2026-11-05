@@ -6,8 +6,8 @@ car_model = "NIO-EL6 Versatile Electric Urban SUV"
 
 [PriciseLabels]
 
-prize = "60,000~100,000"
-prize_comments = "The NIO-EL6 Versatile Electric Urban SUV is priced between $68,000 and $92,000 USD depending on the battery option and trim level."
+price = "60,000~100,000"
+price_comments = "The NIO-EL6 Versatile Electric Urban SUV is priced between $68,000 and $92,000 USD depending on the battery option and trim level."
 
 vehicle_category_bottom = "Mid-Size SUV"
 vehicle_category_bottom_comments = "The EL6 is positioned as a premium mid-size electric SUV with a length of 4,850mm and width of 1,965mm."

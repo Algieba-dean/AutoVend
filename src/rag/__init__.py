@@ -5,15 +5,18 @@ RAG检索系统模块
 """
 
 from .data_loader import VehicleDataLoader
-from .embeddings import BGEEmbeddingModel
-from .index_builder import IndexBuilder
+from .embeddings import BGEEmbeddingModel, EmbeddingInferenceError
+from .index_builder import IndexBuilder, IndexDLQ
 from .retriever import VehicleRetriever
-from .vector_store import ChromaVectorStore
+from .vector_store import ChromaVectorStore, generate_vehicle_doc_id
 
 __all__ = [
     "VehicleDataLoader",
     "BGEEmbeddingModel",
+    "EmbeddingInferenceError",
     "ChromaVectorStore",
     "VehicleRetriever",
     "IndexBuilder",
+    "IndexDLQ",
+    "generate_vehicle_doc_id",
 ]

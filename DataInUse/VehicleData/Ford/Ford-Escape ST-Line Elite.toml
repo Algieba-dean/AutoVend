@@ -6,9 +6,9 @@ car_model = "Ford-Escape ST-Line Elite"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "30,000~40,000"
-prize_comments = "The Ford Escape ST-Line Elite is priced between $34,000 and $38,000 USD, depending on optional features and regional pricing."
+# Price and category
+price = "30,000~40,000"
+price_comments = "The Ford Escape ST-Line Elite is priced between $34,000 and $38,000 USD, depending on optional features and regional pricing."
 
 vehicle_category_bottom = "Compact SUV"
 vehicle_category_bottom_comments = "The Escape ST-Line Elite is a 5-seater compact SUV with sporty styling and urban-focused capabilities."

@@ -20,7 +20,9 @@ Usage:
 """
 
 import argparse
+import json
 import sys
+from pathlib import Path
 from typing import Dict, Optional, Sequence
 
 from src.eval.golden_set import load_golden_set
@@ -37,31 +39,31 @@ TOLERANCE = 0.02
 #: Recorded to 3 decimals; the gate compares against value - TOLERANCE.
 BASELINES: Dict[str, Dict[str, float]] = {
     "fusion": {
-        "capped_recall@3": 0.756,
+        "precision@3": 0.756,
         "hit_rate@3": 0.836,
         "mrr": 0.794,
         "ndcg@10": 0.707,
     },
     "hybrid": {
-        "capped_recall@3": 0.701,
+        "precision@3": 0.701,
         "hit_rate@3": 0.793,
         "mrr": 0.755,
         "ndcg@10": 0.716,
     },
     "dense": {
-        "capped_recall@3": 0.707,
+        "precision@3": 0.707,
         "hit_rate@3": 0.845,
         "mrr": 0.782,
         "ndcg@10": 0.708,
     },
     "bm25": {
-        "capped_recall@3": 0.707,
+        "precision@3": 0.707,
         "hit_rate@3": 0.802,
         "mrr": 0.777,
         "ndcg@10": 0.693,
     },
     "filter": {
-        "capped_recall@3": 0.434,
+        "precision@3": 0.434,
         "hit_rate@3": 0.466,
         "mrr": 0.446,
         "ndcg@10": 0.427,
@@ -129,6 +131,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         action="store_true",
         help="Measure and print refreshed baselines instead of gating.",
     )
+    parser.add_argument(
+        "--json-out",
+        type=Path,
+        default=None,
+        help="Write gate comparison JSON here.",
+    )
     args = parser.parse_args(argv)
 
     if args.update_baseline:
@@ -144,8 +152,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         comparison = check(args.system, args.tolerance)
     except GateFailure as exc:
+        if args.json_out:
+            args.json_out.parent.mkdir(parents=True, exist_ok=True)
+            args.json_out.write_text(
+                json.dumps({"error": str(exc), "passed": False}, indent=2),
+                encoding="utf-8",
+            )
         print(f"FAIL  {exc}", file=sys.stderr)
         return 1
+
+    if args.json_out:
+        args.json_out.parent.mkdir(parents=True, exist_ok=True)
+        args.json_out.write_text(
+            json.dumps({"system": args.system, "passed": True, "comparison": comparison}, indent=2),
+            encoding="utf-8",
+        )
 
     print(f"PASS  retrieval gate — system '{args.system}'")
     width = max(len(m) for m in comparison)

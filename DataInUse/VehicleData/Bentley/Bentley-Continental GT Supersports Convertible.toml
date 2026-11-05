@@ -7,8 +7,8 @@ car_model_comments = "The Bentley Continental GT Supersports Convertible is a hi
 
 [PriciseLabels]
 
-prize = "Above 100,000"
-prize_comments = "The Bentley Continental GT Supersports Convertible starts at approximately $300,000 USD, with higher trims and options exceeding $350,000 USD."
+price = "Above 100,000"
+price_comments = "The Bentley Continental GT Supersports Convertible starts at approximately $300,000 USD, with higher trims and options exceeding $350,000 USD."
 
 vehicle_category_bottom = "Two-door Convertible Sports Car"
 vehicle_category_bottom_comments = "A high-end luxury convertible with a focus on performance and exclusivity."

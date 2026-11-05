@@ -199,7 +199,7 @@ for car in formatted:
 |------|----------|----------|
 | EXT-01 | "我叫张三" | profile.name = "张三" |
 | EXT-02 | "给我老婆买的" | profile.target_driver = "老婆"/"Wife" |
-| EXT-03 | "预算15-20万" | needs.explicit.prize = "15-20万" |
+| EXT-03 | "预算15-20万" | needs.explicit.price = "15-20万" |
 | EXT-04 | "想要特斯拉" | needs.explicit.brand = "Tesla"/"特斯拉" |
 | EXT-05 | "纯电动" | needs.explicit.powertrain_type 包含 "electric" |
 | EXT-06 | "周六下午两点" | reservation.reservation_date, reservation_time 填充 |

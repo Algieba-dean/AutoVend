@@ -6,9 +6,9 @@ car_model = "BMW 8 Series Gran Coupe"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "80,000~120,000"
-prize_comments = "The BMW 8 Series Gran Coupe starts at approximately $85,000 USD for the 840i model and can exceed $120,000 USD for the high-performance M8 variant with options."
+# Price and category
+price = "80,000~120,000"
+price_comments = "The BMW 8 Series Gran Coupe starts at approximately $85,000 USD for the 840i model and can exceed $120,000 USD for the high-performance M8 variant with options."
 
 vehicle_category_bottom = "Four-door Hardtop Sports Car"
 vehicle_category_bottom_comments = "The 8 Series Gran Coupe combines luxury sedan practicality with coupe-like styling and sports car performance."

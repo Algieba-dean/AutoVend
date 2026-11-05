@@ -55,10 +55,9 @@ def test_price_bucket_magnitude_and_field_name():
     text = "车型：比亚迪海豹 指导价：15.98万 纯电中型轿车"
     fields = converter.extract_structured_fields(text)
 
-    # Must have correct field name 'price' (and backward-compatible 'prize')
+    # Must have correct field name 'price'
     assert "price" in fields
     assert fields["price"] == "100,000 ~ 200,000"
-    assert fields["prize"] == "100,000 ~ 200,000"
     assert fields["powertrain_type"] == "bev"
 
 

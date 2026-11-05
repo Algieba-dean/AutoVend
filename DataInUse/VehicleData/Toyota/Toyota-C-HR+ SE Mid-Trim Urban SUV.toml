@@ -5,8 +5,8 @@ title = "CarLabels"
 car_model = "Toyota-C-HR+ SE Mid-Trim Urban SUV"
 
 [PriciseLabels]
-prize = "30,000~40,000"
-prize_comments = "The Toyota C-HR+ SE Mid-Trim Urban SUV is priced between $32,500 and $38,000 USD depending on options and region."
+price = "30,000~40,000"
+price_comments = "The Toyota C-HR+ SE Mid-Trim Urban SUV is priced between $32,500 and $38,000 USD depending on options and region."
 
 vehicle_category_bottom = "Compact SUV"
 vehicle_category_bottom_comments = "The C-HR+ is positioned as a stylish compact crossover SUV with urban-focused dimensions."

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Metadata fields that support exact-match filtering
 FILTERABLE_FIELDS = {
     "brand",
-    "prize",
+    "price",
     "powertrain_type",
     "vehicle_category_bottom",
     "design_style",

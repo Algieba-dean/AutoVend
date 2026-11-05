@@ -49,9 +49,7 @@ class TestBaselines:
         Sanity check on the recorded numbers: the full pipeline must be worth
         more than its own pre-filter stage, or the ranking layers add nothing.
         """
-        assert (
-            BASELINES[PRODUCTION_SYSTEM]["capped_recall@3"] > BASELINES["filter"]["capped_recall@3"]
-        )
+        assert BASELINES[PRODUCTION_SYSTEM]["precision@3"] > BASELINES["filter"]["precision@3"]
 
 
 class TestCheck:
@@ -80,10 +78,10 @@ class TestCheck:
 
     def test_fails_when_a_metric_drops_past_tolerance(self, stub_evaluation):
         regressed = dict(BASELINES[PRODUCTION_SYSTEM])
-        regressed["capped_recall@3"] -= gate.TOLERANCE + 0.01
+        regressed["precision@3"] -= gate.TOLERANCE + 0.01
         stub_evaluation(regressed)
 
-        with pytest.raises(GateFailure, match="capped_recall@3"):
+        with pytest.raises(GateFailure, match="precision@3"):
             check(PRODUCTION_SYSTEM)
 
     def test_failure_message_names_every_regressed_metric(self, stub_evaluation):
@@ -103,12 +101,12 @@ class TestCheck:
             check(PRODUCTION_SYSTEM)
 
     def test_accepts_explicit_baselines(self, stub_evaluation):
-        stub_evaluation({"capped_recall@3": 0.5})
+        stub_evaluation({"precision@3": 0.5})
 
-        check(PRODUCTION_SYSTEM, baselines={"capped_recall@3": 0.4})
+        check(PRODUCTION_SYSTEM, baselines={"precision@3": 0.4})
 
         with pytest.raises(GateFailure):
-            check(PRODUCTION_SYSTEM, baselines={"capped_recall@3": 0.9})
+            check(PRODUCTION_SYSTEM, baselines={"precision@3": 0.9})
 
     def test_unknown_system_raises(self, stub_evaluation):
         stub_evaluation({})
@@ -136,4 +134,4 @@ class TestMain:
         assert gate.main(["--update-baseline"]) == 0
         out = capsys.readouterr().out
         assert f'"{PRODUCTION_SYSTEM}"' in out
-        assert '"capped_recall@3": 0.500,' in out
+        assert '"precision@3": 0.500,' in out

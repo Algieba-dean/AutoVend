@@ -28,7 +28,7 @@ def _make_search_result(car_model: str, score: float, *, snippet: str = "details
             car_model=car_model,
             precise_labels=SimpleNamespace(
                 brand="BMW",
-                prize="30,000~40,000",
+                price="30,000~40,000",
                 vehicle_category_bottom="Mid-Size SUV",
                 powertrain_type=None,
             ),
@@ -113,7 +113,7 @@ class TestNeedsToQueryText:
             design_style="",
             seat_layout="",
             brand="NIO",
-            prize="30,000~40,000",
+            price="30,000~40,000",
         )
 
         # The rule parser matches against the same vocabulary the extractors
@@ -129,7 +129,7 @@ class TestNeedsToQueryText:
             design_style="",
             seat_layout="",
             brand="",
-            prize="",
+            price="",
         )
 
         assert needs_to_query_text(explicit) == "recommend a good vehicle"

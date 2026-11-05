@@ -3,8 +3,8 @@ title = "CarLabels"
 car_model = "Chevrolet-Equinox"
 
 [PriciseLabels]
-prize = "30,000~40,000"
-prize_comments = "The Chevrolet Equinox is priced between $31,800 and $39,300 USD for the 2023 model year, depending on trim (LS, LT, RS, Premier)."
+price = "30,000~40,000"
+price_comments = "The Chevrolet Equinox is priced between $31,800 and $39,300 USD for the 2023 model year, depending on trim (LS, LT, RS, Premier)."
 
 vehicle_category_bottom = "Compact SUV"
 vehicle_category_bottom_comments = "The Equinox is classified as a compact crossover SUV with 5-passenger seating."

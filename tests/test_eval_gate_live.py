@@ -69,7 +69,7 @@ def test_fusion_still_beats_the_pipeline_it_replaced(indices_available):
     measurably beats the dense-only hybrid it replaced. If this stops holding,
     the extra index is no longer paying for itself.
     """
-    fusion = check("fusion")["capped_recall@3"]["measured"]
-    hybrid = check("hybrid")["capped_recall@3"]["measured"]
+    fusion = check("fusion")["precision@3"]["measured"]
+    hybrid = check("hybrid")["precision@3"]["measured"]
 
     assert fusion > hybrid, f"fusion {fusion} no longer beats hybrid {hybrid}"

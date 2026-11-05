@@ -21,8 +21,8 @@ SAMPLE_VEHICLE_DATA = {
     "title": "CarLabels",
     "car_model": "Tesla-Model Y Compact Electric SUV",
     "PriciseLabels": {
-        "prize": "40,000~60,000",
-        "prize_comments": "Priced between $43,990 and $52,490 USD.",
+        "price": "40,000~60,000",
+        "price_comments": "Priced between $43,990 and $52,490 USD.",
         "vehicle_category_bottom": "Compact SUV",
         "vehicle_category_bottom_comments": "Classified as a compact electric crossover SUV.",
         "brand": "Tesla",
@@ -118,7 +118,7 @@ class TestExtractMetadata:
         meta = _extract_metadata(SAMPLE_VEHICLE_DATA)
         assert meta["car_model"] == "Tesla-Model Y Compact Electric SUV"
         assert meta["brand"] == "Tesla"
-        assert meta["prize"] == "40,000~60,000"
+        assert meta["price"] == "40,000~60,000"
         assert meta["powertrain_type"] == "Battery Electric Vehicle"
         assert meta["vehicle_category_bottom"] == "Compact SUV"
         assert meta["design_style"] == "Sporty"
@@ -136,7 +136,7 @@ class TestExtractMetadata:
         assert meta["car_model"] == "TestBrand-TestModel"
         assert meta["brand"] == "TestBrand"
         # Empty fields should not be present
-        assert "prize" not in meta
+        assert "price" not in meta
         assert "powertrain_type" not in meta
 
     def test_empty_data(self):

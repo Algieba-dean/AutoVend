@@ -10,7 +10,7 @@ from src.agent.evidence_ledger import VerificationEvidenceLedger
 
 def test_error_classifier_schema_mismatch():
     """Test ErrorClassifier classifying Pydantic schema validation errors."""
-    err = ValueError("JSON output validation failed for field 'prize'")
+    err = ValueError("JSON output validation failed for field 'price'")
     hint = ErrorClassifier.classify(err)
 
     assert hint.category == AgentErrorCategory.SCHEMA_MISMATCH

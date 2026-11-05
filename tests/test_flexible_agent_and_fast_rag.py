@@ -329,7 +329,7 @@ class TestMultiIntentJointFulfillment:
             profile=UserProfile(name="李华", age="32"),
             needs=VehicleNeeds(
                 explicit=ExplicitNeeds(
-                    prize="25万左右",
+                    price="25万左右",
                     vehicle_category_bottom="中型轿车",
                     powertrain_type="纯电动",
                 )
@@ -361,13 +361,13 @@ class TestMultiIntentJointFulfillment:
         """
         mock_llm = MagicMock()
         mock_llm.complete.return_value = MagicMock(
-            text='{"name": "陈明", "prize": "25万", "powertrain_type": "纯电", "vehicle_category_bottom": "轿车"}'
+            text='{"name": "陈明", "price": "25万", "powertrain_type": "纯电", "vehicle_category_bottom": "轿车"}'
         )
         agent = SalesAgent(llm=mock_llm)
 
         state = SessionState(session_id="multi_sess", stage=Stage.WELCOME)
         state.profile.name = "陈明"
-        state.needs.explicit.prize = "25万"
+        state.needs.explicit.price = "25万"
         state.needs.explicit.vehicle_category_bottom = "轿车"
         state.needs.explicit.powertrain_type = "纯电"
 
@@ -391,7 +391,7 @@ class TestDeterministicGuardrailsPreservation:
         """Evidence ledger blocks transition to CAR_SELECTION if budget format is unverified/absent."""
         ledger = VerificationEvidenceLedger()
         state = SessionState(stage=Stage.NEEDS_ANALYSIS)
-        state.needs.explicit.prize = ""
+        state.needs.explicit.price = ""
 
         allowed, missing = ledger.validate_stage_transition(
             Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION, state
@@ -418,7 +418,7 @@ class TestDeterministicGuardrailsPreservation:
     def test_constraint_reconciliation_detects_conflicts(self):
         """Reconciliation engine flags conflicts between budget and premium requirements."""
         state = SessionState()
-        state.needs.explicit.prize = "12万"
+        state.needs.explicit.price = "12万"
         state.needs.explicit.brand = "保时捷"
 
         conflicts = reconcile_constraints(state)

@@ -77,7 +77,7 @@ depends on the interface, which label/slots we support, we should have such a li
 
 直接取出值，然后所有取出值用“与”逻辑做搜索
 
-- prize
+- price
 
 	- Below 10,000
 

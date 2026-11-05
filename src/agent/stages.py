@@ -166,7 +166,7 @@ def _guard_needs_budget(state: SessionState) -> Optional[str]:
     complete without ever having asked the price range.
     """
     explicit = state.needs.explicit
-    if not explicit.prize:
+    if not explicit.price:
         return "缺少预算信息：客户尚未说明价格区间。请拒绝进入推荐阶段，先向客户询问预算范围。"
     if not should_advance_to_car_selection(state.needs):
         return (
@@ -310,7 +310,7 @@ def should_advance_to_car_selection(needs: VehicleNeeds) -> bool:
     filled_count = sum(
         1
         for v in [
-            explicit.prize,
+            explicit.price,
             explicit.brand,
             explicit.powertrain_type,
             explicit.vehicle_category_bottom,

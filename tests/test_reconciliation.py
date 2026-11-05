@@ -9,7 +9,7 @@ from src.agent.schemas import SessionState
 def test_reconcile_budget_vs_brand():
     """Test budget limit conflict with luxury brand."""
     state = SessionState()
-    state.needs.explicit.prize = "18万以内"
+    state.needs.explicit.price = "18万以内"
     state.needs.explicit.brand = "保时捷"
 
     conflicts = reconcile_constraints(state)
@@ -48,7 +48,7 @@ def test_reconcile_size_vs_parking():
 def test_no_conflicts_when_compatible():
     """Test state without conflicting constraints returns empty list."""
     state = SessionState()
-    state.needs.explicit.prize = "30万以内"
+    state.needs.explicit.price = "30万以内"
     state.needs.explicit.brand = "比亚迪"
     state.profile.family_size = "3口之家"
     state.needs.explicit.seat_layout = "5座"

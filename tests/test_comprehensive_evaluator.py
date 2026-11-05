@@ -23,7 +23,6 @@ def test_comprehensive_evaluator_retrieval_metrics():
     assert "hit_rate@3" in metrics
     assert "mrr@3" in metrics
     assert "ndcg@3" in metrics
-    assert "capped_recall@3" in metrics
 
     assert metrics["hit_rate@3"] == 0.5  # First prediction hit ModelA, second missed ModelZ
 

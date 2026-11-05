@@ -37,7 +37,7 @@ chevrolet, buick, cadillac, ford, tesla, toyota, honda, nissan, suzuki, \
 mazda, hyundai, byd, geely, changan, great wall motor, nio, xiaomi, xpeng
 
 ### Range labels (use value or alias):
-- prize: below 10,000 / 10,000 ~ 20,000 / 20,000 ~ 30,000 / \
+- price: below 10,000 / 10,000 ~ 20,000 / 20,000 ~ 30,000 / \
 30,000 ~ 40,000 / 40,000 ~ 60,000 / 60,000 ~ 100,000 / above 100,000
   aliases: cheap, economy, mid-range low-end, mid-range, \
 mid-range high-end, high-end, luxury

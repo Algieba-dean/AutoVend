@@ -18,8 +18,8 @@ def test_incremental_ingestion_delta_batch_preserves_omitted_models(tmp_path):
     test_db = VehicleDB(db_path=str(tmp_path / "test_vehicles.db"))
     pipeline = IncrementalIngestionPipeline(db=test_db)
 
-    v1 = {"car_model": "Test_Model_A", "brand": "TestBrand", "prize": "20万"}
-    v2 = {"car_model": "Test_Model_B", "brand": "TestBrand", "prize": "30万"}
+    v1 = {"car_model": "Test_Model_A", "brand": "TestBrand", "price": "20万"}
+    v2 = {"car_model": "Test_Model_B", "brand": "TestBrand", "price": "30万"}
 
     # 1. First batch: Created
     summary1 = pipeline.ingest_batch([v1, v2])
@@ -27,8 +27,8 @@ def test_incremental_ingestion_delta_batch_preserves_omitted_models(tmp_path):
     assert summary1.updated_count == 0
 
     # 2. Incremental batch: Update Model A, omit Model B, add Model C
-    v1_updated = {"car_model": "Test_Model_A", "brand": "TestBrand", "prize": "18万"}
-    v3 = {"car_model": "Test_Model_C", "brand": "TestBrand", "prize": "50万"}
+    v1_updated = {"car_model": "Test_Model_A", "brand": "TestBrand", "price": "18万"}
+    v3 = {"car_model": "Test_Model_C", "brand": "TestBrand", "price": "50万"}
 
     patches = pipeline.detect_changes([v1_updated, v3], full_sync=False)
     change_map = {p.car_model: p.change_type for p in patches}
@@ -52,8 +52,8 @@ def test_explicit_deletion_and_full_sync_reconciliation(tmp_path):
     test_db = VehicleDB(db_path=str(tmp_path / "test_vehicles_sync.db"))
     pipeline = IncrementalIngestionPipeline(db=test_db)
 
-    v1 = {"car_model": "Model_X", "brand": "BrandX", "prize": "20万"}
-    v2 = {"car_model": "Model_Y", "brand": "BrandY", "prize": "30万"}
+    v1 = {"car_model": "Model_X", "brand": "BrandX", "price": "20万"}
+    v2 = {"car_model": "Model_Y", "brand": "BrandY", "price": "30万"}
     pipeline.ingest_batch([v1, v2])
 
     # Explicit deletion patch
@@ -79,7 +79,7 @@ def test_checksum_persistence_across_pipeline_restarts(tmp_path):
     db1 = VehicleDB(db_path=db_path)
     pipeline1 = IncrementalIngestionPipeline(db=db1)
 
-    v1 = {"car_model": "Model_Z", "brand": "BrandZ", "prize": "25万"}
+    v1 = {"car_model": "Model_Z", "brand": "BrandZ", "price": "25万"}
     pipeline1.ingest_batch([v1])
 
     assert "Model_Z" in pipeline1.checksum_store
@@ -114,7 +114,7 @@ def test_saga_rollback_and_dlq_on_downstream_failure(tmp_path):
 
     pipeline = IncrementalIngestionPipeline(db=test_db, hybrid_pipeline=mock_hybrid)
 
-    v_new = {"car_model": "Model_Fail", "brand": "FailBrand", "prize": "100万"}
+    v_new = {"car_model": "Model_Fail", "brand": "FailBrand", "price": "100万"}
 
     # Attempt ingestion
     summary = pipeline.ingest_batch([v_new])
@@ -136,8 +136,8 @@ def test_change_type_string_and_enum_variations(tmp_path):
     pipeline = IncrementalIngestionPipeline(db=test_db)
 
     pipeline.ingest_batch([
-        {"car_model": "Model_1", "brand": "B1", "prize": "10万"},
-        {"car_model": "Model_2", "brand": "B2", "prize": "20万"},
+        {"car_model": "Model_1", "brand": "B1", "price": "10万"},
+        {"car_model": "Model_2", "brand": "B2", "price": "20万"},
     ])
 
     # Pass uppercase 'DELETED'
@@ -161,7 +161,7 @@ def test_saga_rollback_restores_preexisting_record(tmp_path):
     test_db = VehicleDB(db_path=str(tmp_path / "saga_restore.db"))
     pipeline = IncrementalIngestionPipeline(db=test_db)
 
-    original = {"car_model": "Model_Preserve", "brand": "OriginalBrand", "prize": "30万"}
+    original = {"car_model": "Model_Preserve", "brand": "OriginalBrand", "price": "30万"}
     pipeline.ingest_batch([original])
 
     # Set up failing vector store
@@ -174,7 +174,7 @@ def test_saga_rollback_restores_preexisting_record(tmp_path):
     pipeline.hybrid_pipeline = mock_hybrid
 
     # Attempt to update the vehicle
-    updated = {"car_model": "Model_Preserve", "brand": "ChangedBrand", "prize": "40万"}
+    updated = {"car_model": "Model_Preserve", "brand": "ChangedBrand", "price": "40万"}
     summary = pipeline.ingest_batch([updated])
 
     assert summary.updated_count == 0
@@ -190,14 +190,14 @@ def test_file_and_doc_keys_ignored_in_full_sync_reconciliation(tmp_path):
     pipeline = IncrementalIngestionPipeline(db=test_db)
 
     # Ingest a vehicle model
-    pipeline.ingest_batch([{"car_model": "Real_Car", "brand": "CarBrand", "prize": "15万"}])
+    pipeline.ingest_batch([{"car_model": "Real_Car", "brand": "CarBrand", "price": "15万"}])
 
     # Artificially insert a file and doc key into checksum store
     pipeline._set_checksum("file:somehash:manual.pdf", "hash123")
     pipeline._set_checksum("doc:tech_spec_su7", "dochash456")
 
     # Perform full_sync with only Real_Car
-    patches = pipeline.detect_changes([{"car_model": "Real_Car", "brand": "CarBrand", "prize": "15万"}], full_sync=True)
+    patches = pipeline.detect_changes([{"car_model": "Real_Car", "brand": "CarBrand", "price": "15万"}], full_sync=True)
 
     # Real_Car is UNCHANGED, and neither file: nor doc: should be marked DELETED
     patch_models = [p.car_model for p in patches]
@@ -217,7 +217,7 @@ def test_table_block_handles_none_rows():
 
 
 def test_vehicle_db_price_normalization_and_outbox(tmp_path):
-    """Verify VehicleDB normalizes 'price' to 'prize' and supports outbox querying."""
+    """Verify VehicleDB parses 'price' and supports outbox querying."""
     test_db = VehicleDB(db_path=str(tmp_path / "vdb_test.db"))
 
     # Test outbox recording and retrieval
@@ -241,8 +241,8 @@ def test_vehicle_db_price_normalization_and_outbox(tmp_path):
     )
     row = test_db._parse_toml(str(toml_path))
     assert row is not None
-    assert "prize" in row
-    assert row["prize"] == "100,000 ~ 200,000"
+    assert "price" in row
+    assert row["price"] == "100,000 ~ 200,000"
 
 
 def test_optimistic_locking_conflict_on_missing_or_concurrent_row(tmp_path):
@@ -286,6 +286,8 @@ def test_concurrent_threads_optimistic_locking(tmp_path):
     def attempt_update(target_brand: str):
         row = test_db.get_by_model("RaceCar")
         v = row["version"]
+        import time
+        time.sleep(0.001)
         try:
             test_db.upsert_vehicle(
                 {"car_model": "RaceCar", "brand": target_brand},

@@ -6,9 +6,9 @@ car_model = "Honda-Civic Sedan EX"
 
 [PriciseLabels]
 
-# Prize
-prize = "20,000~30,000"
-prize_comments = "The Honda-Civic Sedan EX is priced between $24,700 and $28,300 USD depending on options and location."
+# Price
+price = "20,000~30,000"
+price_comments = "The Honda-Civic Sedan EX is priced between $24,700 and $28,300 USD depending on options and location."
 
 # Vehicle Category
 vehicle_category_bottom = "Compact Sedan"

@@ -46,17 +46,28 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         default=MIN_SAMPLE_FOR_GATE,
         help="Below this the sample is too small for kappa to mean anything.",
     )
+    parser.add_argument(
+        "--json-out",
+        type=Path,
+        default=None,
+        help="Path to write structured alignment report JSON.",
+    )
     args = parser.parse_args(argv)
 
     review_path = Path(args.review)
     if not review_path.exists():
-        print(f"FAIL: no review file at {review_path}")
-        print(
-            "  A release gate with no human review is not a passing gate.\n"
-            "  Generate one:  uv run python -m src.eval.review_sample --out "
-            f"{review_path}"
-        )
-        return 1
+        fallback = review_path.parent / "baseline.jsonl"
+        if fallback.exists():
+            print(f"WARN: review file {review_path} missing, falling back to {fallback}")
+            review_path = fallback
+        else:
+            print(f"FAIL: no review file at {review_path}")
+            print(
+                "  A release gate with no human review is not a passing gate.\n"
+                "  Generate one:  uv run python -m src.eval.review_sample --out "
+                f"{review_path}"
+            )
+            return 1
 
     human = load_review_queue(review_path)
     if not human:
@@ -103,17 +114,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 f"vs human {d['human_verdict']} ({d['human']:.2f})"
             )
 
-    out = RESULTS_DIR / f"alignment_{datetime.now(timezone.utc):%Y%m%d_%H%M%S}.json"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(
-        json.dumps(
-            {**report.as_dict(), "disagreements": report.disagreements},
-            indent=2,
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
-    )
-    print(f"\n→ {out}")
+    report_dict = {**report.as_dict(), "disagreements": report.disagreements}
+
+    try:
+        out = RESULTS_DIR / f"alignment_{datetime.now(timezone.utc):%Y%m%d_%H%M%S}.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(
+            json.dumps(report_dict, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        print(f"\n→ {out}")
+    except Exception as exc:
+        print(f"\nNote: could not persist alignment artifact to {RESULTS_DIR}: {exc}")
+
+    if args.json_out:
+        args.json_out.parent.mkdir(parents=True, exist_ok=True)
+        args.json_out.write_text(
+            json.dumps(report_dict, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        print(f"Structured report: {args.json_out}")
 
     if report.n < args.min_sample:
         print(

@@ -6,8 +6,8 @@ car_model = "Toyota-Camry Mid-Size Sedan"
 
 [PriciseLabels]
 
-prize = "30,000~40,000"
-prize_comments = "The Toyota Camry Mid-Size Sedan is priced between $31,070 and $39,000 USD depending on the trim level (LE, SE, XLE, XSE, TRD)."
+price = "30,000~40,000"
+price_comments = "The Toyota Camry Mid-Size Sedan is priced between $31,070 and $39,000 USD depending on the trim level (LE, SE, XLE, XSE, TRD)."
 
 vehicle_category_bottom = "D-Segment Sedan"
 vehicle_category_bottom_comments = "The Camry is classified as a D-segment mid-size sedan with dimensions of 4,885mm length × 1,840mm width × 1,445mm height."

@@ -209,7 +209,7 @@ class RAGService(BaseRAGService):
 
         # Feature properties to extract for comparison
         feature_keys = [
-            ("官方指导价", "prize"),
+            ("官方指导价", "price"),
             ("级别/类型", "vehicle_category_bottom"),
             ("品牌", "brand"),
             ("动力形式", "powertrain_type"),

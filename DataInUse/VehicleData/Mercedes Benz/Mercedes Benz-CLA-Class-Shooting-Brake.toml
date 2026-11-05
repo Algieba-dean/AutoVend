@@ -6,9 +6,9 @@ car_model = "Mercedes-Benz CLA-Class Shooting Brake"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "40,000~60,000"
-prize_comments = "The Mercedes-Benz CLA-Class Shooting Brake starts at approximately $45,000 USD for the base model (CLA 250) and can exceed $60,000 USD for the AMG CLA 35 variant with premium options."
+# Price and category
+price = "40,000~60,000"
+price_comments = "The Mercedes-Benz CLA-Class Shooting Brake starts at approximately $45,000 USD for the base model (CLA 250) and can exceed $60,000 USD for the AMG CLA 35 variant with premium options."
 
 vehicle_category_bottom = "Compact Sedan"
 vehicle_category_bottom_comments = "The CLA Shooting Brake is a compact luxury wagon with sporty styling, blending sedan-like handling with added cargo space."

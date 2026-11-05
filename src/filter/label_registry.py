@@ -3,7 +3,7 @@
 
 从 LabelsTree.json 加载标签定义，分类管理所有标签类型：
 - 树形标签 (tree): vehicle_category, brand
-- 范围标签 (range): prize, horsepower, wheelbase 等有序候选值
+- 范围标签 (range): price, horsepower, wheelbase 等有序候选值
 - 枚举标签 (enum): powertrain_type, design_style, drive_type 等
 - 布尔标签 (boolean): abs, esp, ota_updates 等 Yes/No
 - 等级标签 (grade): noise_insulation, off_road_capability 等有序等级
@@ -126,7 +126,7 @@ class LabelRegistry:
 
     # 有别名的范围标签（name → alias_name）
     RANGE_ALIAS_MAP: Dict[str, str] = {
-        "prize": "prize_alias",
+        "price": "price_alias",
         "passenger_space_volume": "passenger_space_volume_alias",
         "trunk_volume": "trunk_volume_alias",
         "wheelbase": "wheelbase_alias",

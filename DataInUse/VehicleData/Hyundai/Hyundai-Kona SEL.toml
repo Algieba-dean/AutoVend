@@ -8,9 +8,9 @@ car_model = "Hyundai-Kona SEL"
 clod_resistance = ""
 clod_resistance_comments = "The Kona SEL demonstrates excellent cold weather performance with features like available heated front seats, heated steering wheel, and remote start (on higher trims). Its 2.0L engine features cold-start optimization, while the available AWD system provides confident traction in snow and ice. The vehicle's battery management system ensures reliable starts in sub-zero temperatures, and the HVAC system quickly warms the cabin. Hyundai's extensive cold-weather testing in locations like Alaska ensures all components perform reliably in extreme winter conditions."
 
-# prize, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
-prize = "20,000~30,000"
-prize_comments = "The Hyundai Kona SEL is priced between $24,000 and $28,000 USD depending on options and location."
+# price, candidate values: "Below 10,000", "10,000~20,000", "20,000~30,000", "30,000~40,000", "40,000~60,000", "60,000~100,000", "Above 100,000"
+price = "20,000~30,000"
+price_comments = "The Hyundai Kona SEL is priced between $24,000 and $28,000 USD depending on options and location."
 
 # vehicle_category_bottom, candidate values: "Micro Sedan", "Compact Sedan", "B-Segment Sedan", "C-Segment Sedan", "D-Segment Sedan", "Compact SUV", "Mid-Size SUV", "Mid-to-Large SUV", "Off-road SUV", "All-terrain SUV", "Compact MPV", "Mid-Size MPV", "Large MPV", "Mid-Size Business MPV", "Large-Size Busness MPV", "Two-door Convertible Sprots Car", "Four-door Convertible Sprots Car", "Two-door Hardtop Sports Car", "Four-door Hardtop Sports Car"
 vehicle_category_bottom = "Compact SUV"

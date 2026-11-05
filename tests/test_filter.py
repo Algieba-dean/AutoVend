@@ -97,7 +97,7 @@ class TestLabelRegistry:
         assert registry.get_tree_field("bmw") == "brand"
 
     def test_range_label_alias(self, registry):
-        label = registry.get_label("prize")
+        label = registry.get_label("price")
         assert label is not None
         assert label.label_type == LabelType.RANGE
         resolved = label.resolve_alias("cheap")
@@ -119,7 +119,7 @@ class TestLabelRegistry:
         cols = registry.get_all_db_columns()
         assert "brand" in cols
         assert "vehicle_category_bottom" in cols
-        assert "prize" in cols
+        assert "price" in cols
 
     def test_precise_and_ambiguous(self, registry):
         precise = registry.get_precise_labels()
@@ -202,7 +202,7 @@ class TestFilterEngine:
     def test_range_between(self, engine):
         r = engine.filter(
             {
-                "prize": {
+                "price": {
                     "op": "between",
                     "min": "20,000 ~ 30,000",
                     "max": "40,000 ~ 60,000",
@@ -224,7 +224,7 @@ class TestFilterEngine:
         r = engine.filter(
             {
                 "brand": "bugatti",
-                "prize": {"op": "lte", "value": "below 10,000"},
+                "price": {"op": "lte", "value": "below 10,000"},
                 "seat_layout": "7-seat",
                 "size": "small",
             }
@@ -246,16 +246,16 @@ class TestFilterEngine:
 class TestQueryParser:
     def test_chinese_price_range(self, parser):
         r = parser.parse("30到40万的SUV")
-        assert "prize" in r.conditions
-        assert r.conditions["prize"]["op"] == "between"
+        assert "price" in r.conditions
+        assert r.conditions["price"]["op"] == "between"
 
     def test_chinese_price_under(self, parser):
         r = parser.parse("20万以内的车")
-        assert r.conditions["prize"]["op"] == "lte"
+        assert r.conditions["price"]["op"] == "lte"
 
     def test_chinese_price_above(self, parser):
         r = parser.parse("50万以上的车")
-        assert r.conditions["prize"]["op"] == "gte"
+        assert r.conditions["price"]["op"] == "gte"
 
     def test_brand_chinese(self, parser):
         r = parser.parse("奔驰轿车")
@@ -292,7 +292,7 @@ class TestQueryParser:
 
     def test_complex_query(self, parser):
         r = parser.parse("20万以内的国产纯电SUV，七座，四驱")
-        assert "prize" in r.conditions
+        assert "price" in r.conditions
         assert r.conditions.get("brand_country") == "china"
         assert r.conditions.get("powertrain_type") == "battery electric vehicle"
         assert r.conditions.get("vehicle_category_top") == "suv"

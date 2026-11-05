@@ -681,11 +681,14 @@ def test_concurrent_parent_child_retriever_thread_safety():
     assert all(r >= 1 for r in results)
 
 
-def test_ingest_document_propagates_chunks_and_indexes():
+def test_ingest_document_propagates_chunks_and_indexes(tmp_path):
     """Verify IncrementalIngestionPipeline.ingest_document indexes into ParentChildRetriever."""
+    from src.filter.vehicle_db import VehicleDB
+
+    test_db = VehicleDB(db_path=str(tmp_path / "bench_doc.db"))
     chunker = HierarchicalChunker()
     retriever = ParentChildRetriever(chunker=chunker)
-    pipeline = IncrementalIngestionPipeline(parent_child_retriever=retriever)
+    pipeline = IncrementalIngestionPipeline(db=test_db, parent_child_retriever=retriever)
 
     parser = MultiFormatParser()
     doc = parser.parse(BENCHMARK_DIR / "Zeekr_Battery_Warranty_Terms.md")
@@ -718,11 +721,14 @@ def test_benchmark_pipeline_harness_execution():
     assert s["avg_retrieval_latency_ms"] < 20.0
 
 
-def test_rag_service_document_search_integration():
+def test_rag_service_document_search_integration(tmp_path):
     """Verify RAGService.search_documents() returns structured parent context with breadcrumbs."""
+    from src.filter.vehicle_db import VehicleDB
+
+    test_db = VehicleDB(db_path=str(tmp_path / "bench_rag.db"))
     chunker = HierarchicalChunker()
     retriever = ParentChildRetriever(chunker=chunker)
-    pipeline = IncrementalIngestionPipeline(parent_child_retriever=retriever)
+    pipeline = IncrementalIngestionPipeline(db=test_db, parent_child_retriever=retriever)
     rag_service = RAGService(parent_child_retriever=retriever)
 
     # Ingest sample Word document

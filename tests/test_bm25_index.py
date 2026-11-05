@@ -24,14 +24,14 @@ class TestTokenize:
 
 
 class TestDocumentText:
-    def test_repeats_the_car_model(self):
+    def test_includes_the_car_model(self):
         """
-        Exact-match weighting: a query naming a model should outrank cars that
-        merely share its labels, which is the case BM25 exists to cover.
+        Document text cleanly includes the car model once without artificial string duplication.
+        Field boosting is handled at query/ranking time.
         """
         text = _document_text({"car_model": "BMW-X3", "brand": "bmw"})
 
-        assert text.split().count("BMW-X3") == 2
+        assert text.split().count("BMW-X3") == 1
 
     def test_drops_low_signal_columns(self):
         text = _document_text({"car_model": "X", "abs": "yes", "esp": "yes", "brand": "bmw"})

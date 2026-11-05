@@ -6,8 +6,8 @@ car_model = "Peugeot-5008 E-5008 Long Range Extended EV Range Model"
 
 [PriciseLabels]
 
-prize = "40,000~60,000"
-prize_comments = "The Peugeot-5008 E-5008 Long Range Extended EV Range Model is priced between $45,000 and $58,000 USD depending on the trim level and options."
+price = "40,000~60,000"
+price_comments = "The Peugeot-5008 E-5008 Long Range Extended EV Range Model is priced between $45,000 and $58,000 USD depending on the trim level and options."
 
 vehicle_category_bottom = "Mid-Size SUV"
 vehicle_category_bottom_comments = "The E-5008 is classified as a mid-size SUV with 7-seat capacity and premium EV features."

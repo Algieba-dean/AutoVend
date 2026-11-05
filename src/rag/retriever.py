@@ -71,7 +71,7 @@ class VehicleRetriever:
 
             # 执行向量检索
             vector_results = self._vector_search(
-                query_embedding, parsed_query.top_k, parsed_query.filters
+                query_embedding, parsed_query.top_k, getattr(parsed_query, "filters", None)
             )
 
             # 计算详细匹配度
@@ -112,7 +112,7 @@ class VehicleRetriever:
         Returns:
             解析后的查询
         """
-        parsed = query.copy(deep=True)
+        parsed = query.model_copy(deep=True) if hasattr(query, "model_copy") else query.copy(deep=True)
 
         # 提取价格信息
         price_range = self._extract_price_range(query.text)
@@ -303,8 +303,8 @@ class VehicleRetriever:
             document = vector_results["documents"][0][i]
             distance = vector_results["distances"][0][i]
 
-            # 计算语义相似度
-            semantic_score = 1.0 - distance  # ChromaDB返回的是距离
+            # 计算语义相似度 (ChromaDB cosine 距离范围为 [0, 2]，归一化至 [0, 1] 杜绝负分下毒)
+            semantic_score = max(0.0, min(1.0, 1.0 - (distance / 2.0)))
 
             # 计算各项匹配度
             price_score = self._calculate_price_match(query, metadata)
@@ -525,7 +525,7 @@ class VehicleRetriever:
 
         precise_labels = PreciseLabels(
             brand=metadata.get("brand"),
-            prize=metadata.get("price"),
+            price=metadata.get("price"),
             vehicle_category_bottom=metadata.get("category"),
             powertrain_type=metadata.get("powertrain_type"),
         )

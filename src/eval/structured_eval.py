@@ -142,7 +142,7 @@ class StructuredNLIEvaluator:
         car_context_snippets = []
         for car in matched_cars:
             c_name = car.get("car_model") or car.get("model") or ""
-            c_price = car.get("price") or car.get("prize") or ""
+            c_price = car.get("price") or ""
             c_range = car.get("electric_range") or ""
             c_meta = str(car.get("metadata") or {})
             c_snippet = car.get("text_snippet") or ""
@@ -297,7 +297,7 @@ class StructuredNLIEvaluator:
         # ── Rubric 2: Constraint Adherence (25%) ────────────────────────────
         score_constraint = 1.0
         if constraints:
-            target_budget = constraints.get("prize") or constraints.get("budget") or ""
+            target_budget = constraints.get("price") or constraints.get("budget") or ""
             target_brand = constraints.get("brand") or ""
             target_seats = constraints.get("seat_layout") or ""
 
@@ -307,7 +307,7 @@ class StructuredNLIEvaluator:
                 if b_match:
                     b_val = float(b_match.group(1))
                     for car in matched_cars[:2]:
-                        p_str = car.get("price") or car.get("prize") or ""
+                        p_str = car.get("price") or ""
                         nums = [float(x) for x in re.findall(r"(\d+)", p_str)]
                         if nums and min(nums) > b_val * 1.25 and b_val < 50:
                             score_constraint -= 0.35

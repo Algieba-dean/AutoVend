@@ -6,13 +6,16 @@ SQLite 车辆数据库
 """
 
 import contextlib
+import json
 import os
 import re
 import sqlite3
 import threading
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 from src.filter.label_registry import LabelRegistry
 from src.utils.config import config
@@ -30,7 +33,6 @@ TOML_FIELD_NORMALIZE: Dict[str, str] = {
     "voice_interfaction": "voice_interaction",
     "passibility": "passability",
     "clod_resistance": "cold_resistance",
-    "price": "prize",
 }
 
 
@@ -58,6 +60,7 @@ class VehicleDB:
 
         self._lock = threading.RLock()
         self._conn: Optional[sqlite3.Connection] = None
+        self._seed_cache: Dict[str, Dict[str, Any]] = {}
         self._ensure_table()
 
     # ------------------------------------------------------------------
@@ -117,7 +120,7 @@ class VehicleDB:
         index_fields = [
             "brand",
             "vehicle_category_bottom",
-            "prize",
+            "price",
             "powertrain_type",
             "drive_type",
             "seat_layout",
@@ -152,12 +155,125 @@ class VehicleDB:
                 )"""
             )
 
+            # SQLite FTS5 全文检索虚拟表 (阶段一 P0: 支持 BM25 稀疏检索)
+            try:
+                self.conn.execute(
+                    """CREATE VIRTUAL TABLE IF NOT EXISTS vehicle_fts USING fts5(
+                        car_model,
+                        brand,
+                        powertrain_type,
+                        category,
+                        search_text,
+                        tokenize = 'unicode61'
+                    )"""
+                )
+            except sqlite3.OperationalError:
+                try:
+                    self.conn.execute(
+                        """CREATE VIRTUAL TABLE IF NOT EXISTS temp.vehicle_fts USING fts5(
+                            car_model,
+                            brand,
+                            powertrain_type,
+                            category,
+                            search_text,
+                            tokenize = 'unicode61'
+                        )"""
+                    )
+                except Exception as temp_err:
+                    self.logger.warning(f"Could not create temp.vehicle_fts: {temp_err}")
+
             self.conn.commit()
+            if Path(self.db_path).resolve() == Path(config.vehicle_db_path).resolve():
+                self._seed_flagship_specs()
         except sqlite3.OperationalError as e:
             if "readonly" in str(e).lower() or "read-only" in str(e).lower():
                 self.logger.debug(f"Database opened in read-only environment: {e}")
             else:
                 raise
+
+    def _seed_flagship_specs(self) -> None:
+        """从种子数据文件动态预热加载旗舰车型到 SQLite 数据库与内存缓存."""
+        seed_path = PROJECT_ROOT / "data" / "seeds" / "flagship_specs.json"
+        if not seed_path.exists():
+            return
+        try:
+            with seed_path.open("r", encoding="utf-8") as f:
+                specs_dict = json.load(f)
+            self._seed_cache = {k: dict(v) for k, v in specs_dict.items()}
+
+            extra_cols = [
+                "acceleration_0_100",
+                "max_speed",
+                "electric_range",
+                "motor_tech",
+                "charging_tech",
+            ]
+            for col in extra_cols:
+                try:
+                    self.conn.execute(f'ALTER TABLE vehicles ADD COLUMN "{col}" TEXT')
+                except Exception:
+                    pass
+
+            for car_model, spec in specs_dict.items():
+                cur = self.conn.execute(
+                    "SELECT 1 FROM vehicles WHERE car_model = ?", (car_model,)
+                )
+                if not cur.fetchone():
+                    keys = list(spec.keys())
+                    vals = [str(spec[k]) for k in keys]
+                    cols_str = ", ".join(f'"{k}"' for k in keys)
+                    placeholders = ", ".join("?" for _ in keys)
+                    self.conn.execute(
+                        f"INSERT OR REPLACE INTO vehicles ({cols_str}) VALUES ({placeholders})",
+                        vals,
+                    )
+            self.conn.commit()
+        except Exception as e:
+            self.logger.debug(f"Seeded flagship specs into memory cache (DB write skipped/readonly: {e})")
+
+    def get_aliases_for_model(self, car_model: str) -> List[str]:
+        """为车型动态派生口语化别名与搜索简称，杜绝人工枚举字典."""
+        aliases = set()
+        clean = car_model.lower().strip()
+        aliases.add(clean)
+        aliases.add(clean.replace(" ", ""))
+        aliases.add(clean.replace("-", " "))
+        aliases.add(clean.replace("-", ""))
+
+        if "-" in car_model:
+            brand, sub_name = car_model.split("-", 1)
+            b_clean = brand.lower().strip()
+            s_clean = sub_name.lower().strip()
+            aliases.add(s_clean)
+            aliases.add(s_clean.replace(" ", ""))
+            aliases.add(f"{b_clean}{s_clean}")
+            aliases.add(f"{b_clean} {s_clean}")
+
+            # Sub-series e.g. "SU7" from "SU7 Max" or "SU7 标准版"
+            sub_parts = s_clean.split()
+            if len(sub_parts) > 1:
+                series = sub_parts[0]
+                aliases.add(series)
+                aliases.add(f"{b_clean}{series}")
+                aliases.add(f"{b_clean} {series}")
+
+        # Bilingual brand abbreviations
+        brand_mappings = {
+            "小米": "xiaomi",
+            "特斯拉": "tesla",
+            "极氪": "zeekr",
+            "蔚来": "nio",
+            "比亚迪": "byd",
+            "理想": "lixiang",
+            "问界": "aito",
+        }
+        for zh_b, en_b in brand_mappings.items():
+            if zh_b in car_model:
+                for a in list(aliases):
+                    if zh_b in a:
+                        aliases.add(a.replace(zh_b, en_b))
+
+        return [a for a in aliases if len(a) >= 2]
 
     # ------------------------------------------------------------------
     # 数据导入
@@ -325,12 +441,21 @@ class VehicleDB:
         return [dict(r) for r in rows]
 
     def get_all_car_models(self) -> List[str]:
-        """获取所有 car_model"""
-        cursor = self.conn.execute("SELECT car_model FROM vehicles ORDER BY car_model")
-        return [r[0] for r in cursor.fetchall()]
+        """获取所有 car_model（SQLite 表模型与种子视图合集）"""
+        try:
+            cursor = self.conn.execute("SELECT car_model FROM vehicles ORDER BY car_model")
+            db_models = [r[0] for r in cursor.fetchall()]
+        except Exception:
+            db_models = []
+        if Path(self.db_path).resolve() == Path(config.vehicle_db_path).resolve():
+            combined = set(db_models) | set(self._seed_cache.keys())
+            return sorted(combined)
+        return sorted(db_models)
 
     def count(self) -> int:
         """获取车辆总数"""
+        if Path(self.db_path).resolve() == Path(config.vehicle_db_path).resolve():
+            return len(self.get_all_car_models())
         cursor = self.conn.execute("SELECT COUNT(*) FROM vehicles")
         return cursor.fetchone()[0]
 
@@ -344,17 +469,33 @@ class VehicleDB:
         return [r[0] for r in cursor.fetchall()]
 
     def get_by_model(self, car_model: str) -> Optional[Dict[str, Any]]:
-        """获取指定 car_model 的记录字典，包含规范化的 version 整数"""
-        cursor = self.conn.execute("SELECT * FROM vehicles WHERE car_model = ?", (car_model,))
-        row = cursor.fetchone()
-        if not row:
-            return None
-        res = dict(row)
-        if "version" in res and res["version"] is not None:
-            res["version"] = int(res["version"])
-        else:
-            res["version"] = 1
-        return res
+        """获取指定 car_model 的记录字典，包含规范化的 version 整数与额外规格字段"""
+        with self._lock:
+            res = None
+            try:
+                cursor = self.conn.execute("SELECT * FROM vehicles WHERE car_model = ?", (car_model,))
+                row = cursor.fetchone()
+                if row:
+                    res = dict(row)
+            except Exception:
+                pass
+
+            if not res and car_model in self._seed_cache:
+                res = dict(self._seed_cache[car_model])
+            elif res and car_model in self._seed_cache:
+                # Merge seed extra columns if DB row missed them
+                for k, v in self._seed_cache[car_model].items():
+                    if k not in res or not res[k]:
+                        res[k] = v
+
+            if not res:
+                return None
+
+            if "version" in res and res["version"] is not None:
+                res["version"] = int(res["version"])
+            else:
+                res["version"] = 1
+            return res
 
     def get_vehicle(self, car_model: str) -> Optional[Any]:
         """获取指定 car_model 并重构为 Vehicle 对象"""
@@ -365,7 +506,7 @@ class VehicleDB:
 
         precise = PreciseLabels(
             brand=row.get("brand"),
-            prize=row.get("prize"),
+            price=row.get("price"),
             vehicle_category_bottom=row.get("vehicle_category_bottom"),
             powertrain_type=row.get("powertrain_type"),
             wheelbase=row.get("wheelbase"),
@@ -473,6 +614,128 @@ class VehicleDB:
     def get_all_models(self) -> List[str]:
         """获取所有 car_model 列表"""
         return self.get_all_car_models()
+
+    def sync_fts5(self) -> int:
+        """
+        Synchronize full catalogue from vehicles into SQLite FTS5 table.
+        Returns count of synced rows.
+        """
+        from src.retrieval.bm25_index import tokenize
+
+        with self._lock:
+            try:
+                tbl_name = "vehicle_fts"
+                try:
+                    self.conn.execute(f"DELETE FROM {tbl_name}")
+                except sqlite3.OperationalError:
+                    tbl_name = "temp.vehicle_fts"
+                    self.conn.execute(
+                        """CREATE VIRTUAL TABLE IF NOT EXISTS temp.vehicle_fts USING fts5(
+                            car_model, brand, powertrain_type, category, search_text, tokenize = 'unicode61'
+                        )"""
+                    )
+                    self.conn.execute(f"DELETE FROM {tbl_name}")
+
+                all_records: Dict[str, Dict[str, Any]] = {}
+                # Include seed cache specs
+                for m, s in self._seed_cache.items():
+                    all_records[m] = dict(s)
+                # Include DB rows
+                try:
+                    cursor = self.conn.execute("SELECT * FROM vehicles")
+                    rows = cursor.fetchall()
+                    if rows:
+                        cols = [d[0] for d in cursor.description]
+                        for r in rows:
+                            rec = dict(zip(cols, r))
+                            model = rec.get("car_model") or ""
+                            if model:
+                                all_records[model] = rec
+                except Exception:
+                    pass
+
+                if not all_records:
+                    return 0
+
+                synced = 0
+                for model, rec in all_records.items():
+                    brand = str(rec.get("brand") or "").strip()
+                    powertrain = str(rec.get("powertrain_type") or "").strip()
+                    cat = str(rec.get("vehicle_category_bottom") or rec.get("category") or "").strip()
+                    search_parts = [model, brand, powertrain, cat]
+                    for k, v in rec.items():
+                        if k not in (
+                            "car_model",
+                            "brand",
+                            "powertrain_type",
+                            "vehicle_category_bottom",
+                            "category",
+                            "version",
+                        ):
+                            if v and str(v).strip():
+                                search_parts.append(str(v).strip())
+                    raw_text = " ".join(search_parts)
+                    tokens = tokenize(raw_text)
+                    search_text = " ".join(tokens)
+
+                    self.conn.execute(
+                        f"INSERT INTO {tbl_name} (car_model, brand, powertrain_type, category, search_text) VALUES (?, ?, ?, ?, ?)",
+                        (model, brand, powertrain, cat, search_text),
+                    )
+                    synced += 1
+                try:
+                    self.conn.commit()
+                except Exception:
+                    pass
+                return synced
+            except Exception as e:
+                self.logger.warning(f"sync_fts5 failed: {e}")
+                return 0
+
+    def search_fts5(self, query_text: str, top_k: int = 10) -> List[Tuple[str, str, float]]:
+        """
+        Execute native SQLite FTS5 sparse lexical retrieval with BM25 ranking.
+        Returns List of (car_model, brand, bm25_score) where bm25_score is positive (higher is better).
+        """
+        if not query_text or not query_text.strip():
+            return []
+
+        from src.retrieval.bm25_index import tokenize
+
+        clean_q = re.sub(r'["\*\:\^\(\)]', " ", query_text).strip()
+        tokens = tokenize(clean_q)
+        if not tokens:
+            tokens = [t for t in clean_q.split() if t]
+        if not tokens:
+            return []
+
+        fts_match = " OR ".join(f'"{t}"' for t in tokens)
+        with self._lock:
+            try:
+                # Ensure FTS5 table is populated
+                c_check = None
+                try:
+                    c_check = self.conn.execute("SELECT count(*) FROM vehicle_fts").fetchone()
+                except sqlite3.OperationalError:
+                    pass
+                if not c_check or c_check[0] == 0:
+                    self.sync_fts5()
+
+                cur = self.conn.execute(
+                    """SELECT car_model, brand, bm25(vehicle_fts) AS bm25_score
+                    FROM vehicle_fts
+                    WHERE vehicle_fts MATCH :query_match
+                    ORDER BY bm25_score ASC
+                    LIMIT :top_k""",
+                    {"query_match": fts_match, "top_k": top_k},
+                )
+                rows = cur.fetchall()
+                # In SQLite FTS5, bm25() returns negative values where lower is better.
+                # Transform to positive score where higher is better for standard retrieval interfaces.
+                return [(r[0], r[1] or "", abs(float(r[2]))) for r in rows]
+            except Exception as e:
+                self.logger.warning(f"FTS5 search error: {e}")
+                return []
 
     def summary(self) -> Dict[str, Any]:
         """数据库摘要"""

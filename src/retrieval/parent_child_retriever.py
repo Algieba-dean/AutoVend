@@ -17,6 +17,8 @@ import time
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
+
 from src.ingestion.hierarchical_chunker import Chunk, HierarchicalChunker
 from src.ingestion.layout_parser import ParsedDocument
 
@@ -137,6 +139,7 @@ class SimpleVectorIndex:
         self.chunks: List[Chunk] = []
         self.chunk_map: Dict[str, Chunk] = {}
         self.embeddings: List[List[float]] = []
+        self._norm_matrix: Optional[np.ndarray] = None
         self._lock = threading.RLock()
 
     def add_chunks(self, chunks: List[Chunk]) -> None:
@@ -153,10 +156,10 @@ class SimpleVectorIndex:
                 return
 
             texts = [c.content for c in new_chunks]
+            embeds = []
             if hasattr(self.embedding_model, "embed_documents"):
                 try:
                     embeds = self.embedding_model.embed_documents(texts)
-                    self.embeddings.extend(embeds)
                 except Exception as e:
                     logger.warning(f"Embedding model batch encoding failed: {e}")
             elif hasattr(self.embedding_model, "encode"):
@@ -166,19 +169,36 @@ class SimpleVectorIndex:
                         embeds = raw_embeds.tolist()
                     else:
                         embeds = [list(e) for e in raw_embeds]
-                    self.embeddings.extend(embeds)
                 except Exception as e:
                     logger.warning(f"SentenceTransformer batch encode failed: {e}")
 
-    def search(self, query: str, top_k: int = 5) -> List[Tuple[Chunk, float]]:
-        """Dense cosine search or fallback to token-overlap BM25-style scorer."""
+            if embeds:
+                self.embeddings.extend(embeds)
+                mat = np.asarray(self.embeddings, dtype=np.float32)
+                norms = np.linalg.norm(mat, axis=1, keepdims=True)
+                norms = np.where(norms == 0, 1e-9, norms)
+                self._norm_matrix = mat / norms
+
+    def search(
+        self,
+        query: str,
+        top_k: int = 5,
+        filter_metadata: Optional[Dict[str, Any]] = None,
+    ) -> List[Tuple[Chunk, float]]:
+        """Dense cosine search (SIMD accelerated via NumPy) or fallback to token-overlap BM25-style scorer."""
         with self._lock:
             if not self.chunks:
                 return []
 
             # If embeddings are populated and embedding model is present
-            if self.embedding_model and len(self.embeddings) == len(self.chunks):
+            if self.embedding_model and self.embeddings and len(self.embeddings) == len(self.chunks):
                 try:
+                    if self._norm_matrix is None or len(self._norm_matrix) != len(self.embeddings):
+                        mat = np.asarray(self.embeddings, dtype=np.float32)
+                        norms = np.linalg.norm(mat, axis=1, keepdims=True)
+                        norms = np.where(norms == 0, 1e-9, norms)
+                        self._norm_matrix = mat / norms
+
                     if hasattr(self.embedding_model, "embed_query"):
                         query_vec = self.embedding_model.embed_query(query)
                     elif hasattr(self.embedding_model, "encode"):
@@ -187,16 +207,25 @@ class SimpleVectorIndex:
                     else:
                         query_vec = None
 
-                    if query_vec:
-                        scores: List[Tuple[Chunk, float]] = []
-                        for chunk, vec in zip(self.chunks, self.embeddings):
-                            dot = sum(a * b for a, b in zip(query_vec, vec))
-                            norm_a = math.sqrt(sum(a * a for a in query_vec)) or 1e-9
-                            norm_b = math.sqrt(sum(b * b for b in vec)) or 1e-9
-                            sim = dot / (norm_a * norm_b)
-                            scores.append((chunk, float(sim)))
-                        scores.sort(key=lambda x: x[1], reverse=True)
-                        return scores[:top_k]
+                    if query_vec is not None:
+                        q_arr = np.asarray(query_vec, dtype=np.float32)
+                        q_norm = np.linalg.norm(q_arr)
+                        if q_norm > 0:
+                            q_arr = q_arr / q_norm
+
+                        if not filter_metadata:
+                            ranked = vectorized_cosine_search(q_arr, self._norm_matrix, top_k=top_k)
+                            return [(self.chunks[idx], score) for idx, score in ranked]
+
+                        valid_indices = [
+                            i for i in range(len(self.chunks))
+                            if self._matches_filter(self.chunks[i], filter_metadata)
+                        ]
+                        if not valid_indices:
+                            return []
+                        sub_matrix = self._norm_matrix[valid_indices]
+                        sub_ranked = vectorized_cosine_search(q_arr, sub_matrix, top_k=top_k)
+                        return [(self.chunks[valid_indices[sub_idx]], score) for sub_idx, score in sub_ranked]
                 except Exception as e:
                     logger.warning(f"Dense vector query failed: {e}. Falling back to lexical scoring.")
 
@@ -211,11 +240,17 @@ class SimpleVectorIndex:
             for i in range(len(zh_chars) - 2):
                 query_terms.add(zh_chars[i] + zh_chars[i + 1] + zh_chars[i + 2])
 
+            candidate_chunks = self.chunks
+            if filter_metadata:
+                candidate_chunks = [
+                    c for c in candidate_chunks if self._matches_filter(c, filter_metadata)
+                ]
+
             if not query_terms:
-                return [(c, 0.0) for c in self.chunks[:top_k]]
+                return [(c, 0.0) for c in candidate_chunks[:top_k]]
 
             scored: List[Tuple[Chunk, float]] = []
-            for chunk in self.chunks:
+            for chunk in candidate_chunks:
                 chunk_text = chunk.content.lower()
                 overlap = 0.0
                 for term in query_terms:
@@ -228,6 +263,17 @@ class SimpleVectorIndex:
 
             scored.sort(key=lambda x: x[1], reverse=True)
             return scored[:top_k]
+
+    @staticmethod
+    def _matches_filter(chunk: Chunk, filter_metadata: Dict[str, Any]) -> bool:
+        for k, v in filter_metadata.items():
+            val = chunk.metadata.get(k)
+            if isinstance(v, str) and isinstance(val, str):
+                if v.lower() not in val.lower() and val.lower() not in v.lower():
+                    return False
+            elif val != v:
+                return False
+        return True
 
 
 class ParentChildRetriever:
@@ -364,3 +410,89 @@ class ParentChildRetriever:
                 child_hit_count=len(valid_child_matches),
                 search_time=elapsed,
             )
+
+
+def vectorized_cosine_search(
+    query_vec: np.ndarray, doc_matrix: np.ndarray, top_k: int = 5
+) -> List[Tuple[int, float]]:
+    """
+    Vectorized cosine similarity search using NumPy matrix multiplication.
+    doc_matrix shape: (N, D), query_vec shape: (D,)
+    Returns list of (index, similarity_score) sorted descending by similarity.
+    """
+    if doc_matrix.size == 0 or query_vec.size == 0:
+        return []
+    dots = np.dot(doc_matrix, query_vec)
+    norms = np.linalg.norm(doc_matrix, axis=1) * (np.linalg.norm(query_vec) + 1e-9)
+    sims = dots / norms
+    n_docs = len(sims)
+    k = min(top_k, n_docs)
+    if k <= 0:
+        return []
+    if k < n_docs:
+        top_indices = np.argpartition(sims, -k)[-k:]
+        sorted_top = top_indices[np.argsort(-sims[top_indices])]
+    else:
+        sorted_top = np.argsort(-sims)
+    return [(int(idx), float(sims[idx])) for idx in sorted_top]
+
+
+def retrieve_multi_vehicle_context(
+    query: str,
+    car_models: List[str],
+    parent_child_retriever: Any,
+    top_k_per_vehicle: int = 2,
+) -> Dict[str, List[Chunk]]:
+    """
+    Slot-based Entity-Scoped Context Retrieval.
+    Guarantees zero cross-entity context contamination.
+    """
+    scoped_contexts: Dict[str, List[Chunk]] = {}
+
+    for model in car_models:
+        if not model:
+            continue
+        scoped_filter = {"car_model": model}
+        try:
+            car_docs = parent_child_retriever.search(
+                query=f"{model} {query}",
+                filter_metadata=scoped_filter,
+                top_k_parents=top_k_per_vehicle,
+            )
+        except Exception as e:
+            logger.warning(f"retrieve_multi_vehicle_context error for {model}: {e}")
+            car_docs = []
+
+        chunks: List[Chunk] = []
+        if hasattr(car_docs, "results"):
+            for r in car_docs.results:
+                if hasattr(r, "parent_chunk"):
+                    chunks.append(r.parent_chunk)
+                elif isinstance(r, Chunk):
+                    chunks.append(r)
+        elif isinstance(car_docs, list):
+            for r in car_docs:
+                if hasattr(r, "parent_chunk"):
+                    chunks.append(r.parent_chunk)
+                elif isinstance(r, Chunk):
+                    chunks.append(r)
+        scoped_contexts[model] = chunks
+
+    return scoped_contexts
+
+
+def format_isolated_llm_context(scoped_contexts: Dict[str, List[Chunk]]) -> str:
+    """按实体明确分块组装，禁止扁平无差别拼接."""
+    context_blocks = []
+    for model, chunks in scoped_contexts.items():
+        valid_snippets = [
+            f"  - {getattr(c, 'content', str(c)).strip()}"
+            for c in chunks
+            if getattr(c, "content", str(c)).strip()
+        ]
+        doc_texts = "\n".join(valid_snippets) if valid_snippets else "  - 暂无专属深度评测"
+        block = f"### 车型: 【{model}】专属参考资料:\n{doc_texts}"
+        context_blocks.append(block)
+
+    return "\n\n".join(context_blocks)
+

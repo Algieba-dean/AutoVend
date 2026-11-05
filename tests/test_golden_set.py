@@ -26,7 +26,7 @@ def catalogue_path(tmp_path_factory):
     conn = sqlite3.connect(path)
     conn.execute(
         "CREATE TABLE vehicles ("
-        "car_model TEXT, vehicle_category_bottom TEXT, brand TEXT, prize TEXT, "
+        "car_model TEXT, vehicle_category_bottom TEXT, brand TEXT, price TEXT, "
         "powertrain_type TEXT, seat_layout TEXT, drive_type TEXT, design_style TEXT, "
         "driving_range TEXT, autonomous_driving_level TEXT, trunk_volume TEXT, "
         "city_commuting TEXT, highway_long_distance TEXT, cargo_capability TEXT, "

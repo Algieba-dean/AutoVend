@@ -7,8 +7,8 @@ car_model_comments = "The Bugatti Chiron Super Sport 300+ is a limited-edition h
 
 [PriciseLabels]
 
-prize = "Above 100,000"
-prize_comments = "The Bugatti Chiron Super Sport 300+ is priced at approximately $3.9 million USD, making it one of the most expensive production cars in the world."
+price = "Above 100,000"
+price_comments = "The Bugatti Chiron Super Sport 300+ is priced at approximately $3.9 million USD, making it one of the most expensive production cars in the world."
 
 vehicle_category_bottom = "Two-door Hardtop Sports Car"
 vehicle_category_bottom_comments = "The Chiron Super Sport 300+ is a high-performance, two-door coupe with a fixed roof, designed for ultimate speed and aerodynamics."

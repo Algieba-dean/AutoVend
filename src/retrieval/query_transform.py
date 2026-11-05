@@ -126,46 +126,55 @@ class QueryTransformationEngine:
         return QueryExpander.expand_query(query_text)
 
     # 3. HyDE (Hypothetical Document Embeddings / 假设性文档嵌入)
-    def generate_hyde_doc(self, query_text: str) -> str:
+    def generate_hyde_doc(self, query_text: str, strict_llm: bool = False) -> Optional[str]:
         """
-        Generate a hypothetical mock vehicle specification document for the query.
-        Retrieving doc-to-doc embedding vectors yields significantly higher similarity.
+        Generate hypothetical vehicle specification document using active LLM.
+        Strict rule: Returns None if LLM is unavailable (or falls back only to domain knowledge graph terms).
         """
-        if not query_text:
-            return query_text
+        if not query_text or not query_text.strip():
+            return None
 
-        # Generate structured hypothetical spec document string
-        tech_note = ""
+        clean_query = query_text.strip()
+        # 1. 工业级准则：优先使用活体 LLM 生成真实假设性文档
+        if self.llm is not None and getattr(self.llm, "is_available", lambda: True)():
+            prompt = (
+                f"请为以下汽车选购需求生成一段客观、假设性的标准车辆配置参数规格说明（200字以内）：\n"
+                f"需求: {clean_query}\n"
+                f"假想规格说明:"
+            )
+            try:
+                resp = self.llm.complete(prompt)
+                hyde_text = resp.text.strip() if hasattr(resp, "text") else str(resp).strip()
+                if len(hyde_text) > 10:
+                    return hyde_text
+            except Exception as e:
+                logger.warning(f"HyDE LLM generation failed: {e}. Falling back to raw query.")
+                if strict_llm:
+                    return None
+
+        # 2. Strict LLM mode: absolutely return None to prevent any poisoning
+        if strict_llm:
+            logger.debug("LLM 未挂载或不可用，跳过 HyDE 生成，避免语义硬编码污染")
+            return None
+
+        # 3. Non-strict fallback: ONLY allow grounded tech specs if verified in AutomotiveKnowledgeGraph.
+        # If no technology entity is matched, return None to prevent hallucination poisoning.
         try:
             from src.core.terminology import AutomotiveKnowledgeGraph
+
             kg = AutomotiveKnowledgeGraph.get_instance()
-            matched = kg.extract_terms(query_text)
+            matched = kg.extract_terms(clean_query)
             if matched:
                 tech_names = "、".join([f"{m.entity.name}（{m.entity.summary}）" for m in matched[:2]])
                 tech_note = f" 搭载核心技术：{tech_names}。"
+                return (
+                    f"【目标车型规格文档】 车型需求: {clean_query}。{tech_note}"
+                    f"官方指导价格区间、车身级别与动力配置参数精准契合该检索意图与核心规格标准。"
+                )
         except Exception:
             pass
 
-        hyde_doc = (
-            f"【目标车型规格文档】 车型需求: {query_text}。{tech_note}"
-            f"车辆类型包含中大型SUV/纯电轿跑，配置包含大空间二排、高阶智驾系统、800V高压快充及气囊安全防护。"
-            f"官方指导价格区间与参数指标精准匹配该需求。"
-        )
-
-        if self.llm is not None:
-            prompt = (
-                f"请为以下汽车采购需求生成一段假设性的标准车辆配置说明文档（HyDE文档，200字以内）：\n"
-                f"需求: {query_text}\n"
-                f"假想说明文档:"
-            )
-            try:
-                res = self.llm.complete(prompt)
-                if res and res.text:
-                    hyde_doc = res.text.strip()
-            except Exception as e:
-                logger.warning(f"HyDE LLM generation fallback to rule: {e}")
-
-        return hyde_doc
+        return None
 
     # 4. Multi-Query Expansion (多路查询展开)
     def generate_multi_queries(self, query_text: str) -> List[str]:

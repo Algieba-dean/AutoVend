@@ -6,9 +6,9 @@ car_model = "Honda-Civic Sedan LX"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "20,000~30,000"
-prize_comments = "The Honda-Civic Sedan LX is priced between $23,950 and $28,500 USD depending on options and location."
+# Price and category
+price = "20,000~30,000"
+price_comments = "The Honda-Civic Sedan LX is priced between $23,950 and $28,500 USD depending on options and location."
 
 vehicle_category_bottom = "Compact Sedan"
 vehicle_category_bottom_comments = "The Civic Sedan LX is classified as a compact sedan, offering a balance of space and efficiency."

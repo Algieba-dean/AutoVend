@@ -6,9 +6,9 @@ car_model = "XPeng-X9 740 Ultra-Long-Range FWD"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "40,000~60,000"
-prize_comments = "The XPeng-X9 740 Ultra-Long-Range FWD is priced between $45,000 and $55,000 USD, depending on optional features and regional pricing."
+# Price and category
+price = "40,000~60,000"
+price_comments = "The XPeng-X9 740 Ultra-Long-Range FWD is priced between $45,000 and $55,000 USD, depending on optional features and regional pricing."
 
 vehicle_category_bottom = "Large MPV"
 vehicle_category_bottom_comments = "The X9 is a full-size electric MPV with a focus on luxury and family-oriented space."

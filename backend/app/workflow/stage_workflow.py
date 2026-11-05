@@ -273,8 +273,8 @@ class StageWorkflow:
         filters = {}
         if explicit.brand:
             filters["brand"] = explicit.brand
-        if explicit.prize:
-            filters["prize"] = explicit.prize
+        if explicit.price:
+            filters["price"] = explicit.price
         if explicit.powertrain_type:
             filters["powertrain_type"] = explicit.powertrain_type
 

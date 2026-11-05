@@ -205,7 +205,7 @@ class TestAgentToolIntegration:
             user_role=UserRole.CUSTOMER,
             stage=Stage.NEEDS_ANALYSIS,
             profile=UserProfile(name="张先生", family_size="3口之家"),
-            needs=VehicleNeeds(explicit=ExplicitNeeds(prize="25-30万")),
+            needs=VehicleNeeds(explicit=ExplicitNeeds(price="25-30万")),
         )
 
     def test_tools_allowed_in_stages(self):
@@ -328,7 +328,7 @@ class TestNewTruthToolsDispatch:
             user_role=UserRole.CUSTOMER,
             stage=Stage.NEEDS_ANALYSIS,
             profile=UserProfile(name="李女士"),
-            needs=VehicleNeeds(explicit=ExplicitNeeds(prize="20-30万")),
+            needs=VehicleNeeds(explicit=ExplicitNeeds(price="20-30万")),
         )
 
     def test_dispatch_calculate_real_drive_away_price(self, initial_state):

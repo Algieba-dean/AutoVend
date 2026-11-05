@@ -44,7 +44,7 @@ asian    → japan         → [toyota, honda, nissan, suzuki, mazda]
 
 | 标签 | 候选值 | 别名 |
 |------|--------|------|
-| prize | below 10,000 ~ above 100,000 (7档) | cheap, economy, mid-range low-end, mid-range, mid-range high-end, high-end, luxury |
+| price | below 10,000 ~ above 100,000 (7档) | cheap, economy, mid-range low-end, mid-range, mid-range high-end, high-end, luxury |
 | horsepower | below 100hp ~ above 400hp (5档) | low, lower-medium, medium, high, extra-high |
 | motor_power | below 70kw ~ above 400kw (6档) | low ~ extra-high |
 | torque | below 200n·m ~ above 500n·m (5档) | low ~ extra-high |
@@ -97,7 +97,7 @@ size, vehicle_usability, aesthetics, energy_consumption_level, comfort_level, sm
 - **区间**: "200-400hp" → index("200-300 hp") ≤ index ≤ index("300-400 hp")
 
 ### 3. 别名映射匹配
-用户说"便宜的车" → alias "cheap" → 映射到 prize "below 10,000"
+用户说"便宜的车" → alias "cheap" → 映射到 price "below 10,000"
 用户说"动力强劲" → alias "high" → 映射到 horsepower "300-400 hp" 或 "above 400 hp"
 
 ### 4. 降级策略
@@ -125,7 +125,7 @@ Level 4: 放弃粗筛，直接RAG全库搜索
 **Step 1.2** `src/filter/vehicle_db.py` — SQLite车辆数据库
 - 建表: vehicles表包含 car_model(PK) + 所有PreciseLabels字段 + 所有AmbiguousLabels字段
 - 所有值统一小写存储，便于case-insensitive匹配
-- 索引: brand, vehicle_category_bottom, prize, powertrain_type, drive_type
+- 索引: brand, vehicle_category_bottom, price, powertrain_type, drive_type
 - 从TOML文件批量导入（复用data_loader逻辑）
 - DB文件存储于 `data/vehicles.db`
 
@@ -149,7 +149,7 @@ Level 4: 放弃粗筛，直接RAG全库搜索
 
 **Step 2.2** `src/filter/llm_parser.py` — LLM意图解析（fallback）
 - Prompt模板: 将自然语言转为结构化JSON，schema与label_registry对齐
-- 输出格式: `{"brand": "volvo", "vehicle_category_top": "suv", "prize_alias": "mid-range"}`
+- 输出格式: `{"brand": "volvo", "vehicle_category_top": "suv", "price_alias": "mid-range"}`
 - 输出验证: 确保key和value在label_registry中合法
 
 ### Phase 3: 管道整合

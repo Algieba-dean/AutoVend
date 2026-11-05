@@ -72,7 +72,7 @@ TECHNICAL_QUERY_PATTERNS: List[Tuple[re.Pattern, str]] = [
 SLOT_HINT_PATTERNS: List[Tuple[re.Pattern, str]] = [
     (re.compile(r"\b1[3-9]\d{9}\b"), "phone_number"),
     (re.compile(r"(?:我叫|姓名|叫我|先生|女士|本人|我是|我姓)\s*([^\s，,。]{1,6})"), "name"),
-    (re.compile(r"(\d+(?:\.\d+)?)\s*万|\d+W|\d+w|预算(?:\s*[\d一二两三四五六七八九十百]+(?:\s*[-至到]\s*[\d一二两三四五六七八九十百]+)?\s*万?)"), "prize"),
+    (re.compile(r"(\d+(?:\.\d+)?)\s*万|\d+W|\d+w|预算(?:\s*[\d一二两三四五六七八九十百]+(?:\s*[-至到]\s*[\d一二两三四五六七八九十百]+)?\s*万?)"), "price"),
     (re.compile(r"(?:明天|后天|大后天|这周(?:末|[一二三四五六日天])?|下周(?:末|[一二三四五六日天])?|本周(?:末|[一二三四五六日天])?|周[一二三四五六日天]|星期[一二三四五六日天]|\d{1,2}月\d{1,2}[日号]|(?:[12]?\d|3[01])[日号](?![汽油]))"), "reservation_date"),
     (re.compile(r"(?:上午|下午|晚上|中午|早晨|\d{1,2}点(?:\d{1,2}分)?|\d{1,2}:\d{2})"), "reservation_time"),
     (re.compile(r"(?:店|体验中心|4s店|交付中心)", re.IGNORECASE), "reservation_location"),

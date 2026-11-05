@@ -6,9 +6,9 @@ car_model = "Volvo-EX30-Ultra"
 
 [PriciseLabels]
 
-# Prize and category
-prize = "40,000~60,000"
-prize_comments = "The Volvo EX30 Ultra is priced between $48,000 and $58,000 USD, depending on options and region."
+# Price and category
+price = "40,000~60,000"
+price_comments = "The Volvo EX30 Ultra is priced between $48,000 and $58,000 USD, depending on options and region."
 
 vehicle_category_bottom = "Compact SUV"
 vehicle_category_bottom_comments = "The EX30 is a premium compact SUV with a length of 4,233mm and a focus on urban mobility."

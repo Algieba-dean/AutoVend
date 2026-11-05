@@ -139,18 +139,18 @@ class TestToolHandlers:
     def test_unknown_field_is_dropped_not_fatal(self):
         state = _state(Stage.NEEDS_ANALYSIS)
 
-        result = dispatch(state, "record_need", {"fields": {"budget": "30万", "prize": "30万"}})
+        result = dispatch(state, "record_need", {"fields": {"budget": "30万", "price": "30万"}})
 
         assert result.ok
-        assert state.needs.explicit.prize == "30万"
-        assert [p.path for p in result.patches] == ["needs.explicit.prize"]
+        assert state.needs.explicit.price == "30万"
+        assert [p.path for p in result.patches] == ["needs.explicit.price"]
 
     def test_rewriting_the_same_value_produces_no_patch(self):
         state = _state(
-            Stage.NEEDS_ANALYSIS, needs=VehicleNeeds(explicit=ExplicitNeeds(prize="30万"))
+            Stage.NEEDS_ANALYSIS, needs=VehicleNeeds(explicit=ExplicitNeeds(price="30万"))
         )
 
-        result = dispatch(state, "record_need", {"fields": {"prize": "30万"}})
+        result = dispatch(state, "record_need", {"fields": {"price": "30万"}})
 
         assert result.ok
         assert result.patches == []
@@ -210,13 +210,13 @@ class TestDispatchAll:
         results = dispatch_all(
             state,
             [
-                {"tool": "record_need", "args": {"fields": {"prize": "30万"}}},
+                {"tool": "record_need", "args": {"fields": {"price": "30万"}}},
                 {"tool": "transition_to", "args": {"stage": "car_selection_confirmation"}},
             ],
         )
 
         assert [r.tool for r in results] == ["record_need", "transition_to"]
-        assert state.needs.explicit.prize == "30万"
+        assert state.needs.explicit.price == "30万"
 
     def test_one_refusal_does_not_abort_the_batch(self):
         state = _state(Stage.NEEDS_ANALYSIS)
@@ -225,12 +225,12 @@ class TestDispatchAll:
             state,
             [
                 {"tool": "select_vehicle", "args": {"car_model": "A"}},  # wrong stage
-                {"tool": "record_need", "args": {"fields": {"prize": "30万"}}},
+                {"tool": "record_need", "args": {"fields": {"price": "30万"}}},
             ],
         )
 
         assert not results[0].ok and results[1].ok
-        assert state.needs.explicit.prize == "30万"
+        assert state.needs.explicit.price == "30万"
 
     def test_non_dict_args_are_refused(self):
         results = dispatch_all(_state(), [{"tool": "record_profile", "args": "oops"}])
@@ -258,7 +258,7 @@ class TestSnapshotAndDiff:
         assert patches[0].source == "extractor"
 
     def test_diff_marks_changed_fields_as_update_with_previous(self):
-        patches = diff({"needs.explicit.prize": "30万"}, {"needs.explicit.prize": "80万"})
+        patches = diff({"needs.explicit.price": "30万"}, {"needs.explicit.price": "80万"})
 
         assert patches[0].op is PatchOp.UPDATE
         assert patches[0].previous == "30万"
@@ -307,14 +307,14 @@ class TestApplyAndInvert:
 
     def test_invert_round_trips_a_change(self):
         state = _state()
-        state.needs.explicit.prize = "30万"
-        forward = [StatePatch(PatchOp.UPDATE, "needs.explicit.prize", "80万", previous="30万")]
+        state.needs.explicit.price = "30万"
+        forward = [StatePatch(PatchOp.UPDATE, "needs.explicit.price", "80万", previous="30万")]
 
         apply_patches(state, forward)
-        assert state.needs.explicit.prize == "80万"
+        assert state.needs.explicit.price == "80万"
 
         apply_patches(state, invert(forward))
-        assert state.needs.explicit.prize == "30万"
+        assert state.needs.explicit.price == "30万"
 
     def test_invert_of_an_add_removes(self):
         inverted = invert([StatePatch(PatchOp.ADD, "profile.name", "张伟")])
@@ -343,12 +343,12 @@ class TestPatchLog:
     def test_for_path_matches_a_subtree(self):
         log = PatchLog(
             [
-                StatePatch(PatchOp.ADD, "needs.explicit.prize", "30万"),
+                StatePatch(PatchOp.ADD, "needs.explicit.price", "30万"),
                 StatePatch(PatchOp.ADD, "profile.name", "张伟"),
             ]
         )
 
-        assert [p.path for p in log.for_path("needs.explicit")] == ["needs.explicit.prize"]
+        assert [p.path for p in log.for_path("needs.explicit")] == ["needs.explicit.price"]
 
     def test_recent_returns_the_tail(self):
         log = PatchLog([StatePatch(PatchOp.ADD, f"profile.f{i}", i) for i in range(10)])
@@ -360,10 +360,10 @@ class TestPatchLog:
 class TestPromptFormatting:
     def test_renders_changes_for_injection(self):
         text = format_for_prompt(
-            [StatePatch(PatchOp.UPDATE, "needs.explicit.prize", "80万", previous="30万")]
+            [StatePatch(PatchOp.UPDATE, "needs.explicit.price", "80万", previous="30万")]
         )
 
-        assert "needs.explicit.prize" in text
+        assert "needs.explicit.price" in text
         assert "30万" in text and "80万" in text
 
     def test_empty_input_renders_nothing(self):
@@ -385,12 +385,12 @@ class TestAgentIntegration:
         state.profile.name = "张伟"
         _record_patches(state, {}, source="extractor")
 
-        state.needs.explicit.prize = "30万"
-        _record_patches(state, snapshot(state) | {"needs.explicit.prize": None}, source="tool")
+        state.needs.explicit.price = "30万"
+        _record_patches(state, snapshot(state) | {"needs.explicit.price": None}, source="tool")
 
         paths = [p["path"] for p in state.patch_log]
         assert "profile.name" in paths
-        assert "needs.explicit.prize" in paths
+        assert "needs.explicit.price" in paths
 
     def test_no_change_clears_last_patch_but_keeps_the_log(self):
         from src.agent.sales_agent import _record_patches

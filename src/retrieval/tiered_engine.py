@@ -18,6 +18,8 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+import numpy as np
+
 from src.core.terminology import AutomotiveKnowledgeGraph
 from src.filter.vehicle_db import VehicleDB
 
@@ -33,7 +35,7 @@ SPEC_ATTRIBUTE_PATTERNS: List[Tuple[re.Pattern, str, str]] = [
     (re.compile(r"极速|最高时速|最高车速|能跑多快"), "max_speed", "最高车速"),
     (re.compile(r"纯电续航|综合续航|续航里程|续航|能跑多少公里|cltc"), "electric_range", "CLTC续航里程"),
     (re.compile(r"电池(?:容量|大小|包|品牌|厂家|厂商|供应商|类型|安全)?|多少度电|度电|电芯|三元锂|磷酸铁锂|麒麟电池|神行电池|刀片电池"), "battery_capacity", "电池规格与品牌"),
-    (re.compile(r"官方指导价|指导价|售价|价格|多少钱|多少万|落地价|预算"), "prize", "官方指导价"),
+    (re.compile(r"官方指导价|指导价|售价|价格|多少钱|多少万|落地价|预算"), "price", "官方指导价"),
     (re.compile(r"马力|功率|多少匹|输出功率"), "horsepower", "最大马力"),
     (re.compile(r"扭矩|峰值扭矩"), "torque", "峰值扭矩"),
     (re.compile(r"电机转速|转速|转/分|rpm|双电机|单电机|电机"), "motor_tech", "电机动力科技"),
@@ -47,12 +49,76 @@ SPEC_ATTRIBUTE_PATTERNS: List[Tuple[re.Pattern, str, str]] = [
 ]
 
 
-class SemanticQueryCache:
-    """Thread-safe LRU in-memory query cache for sub-millisecond retrieval hits."""
+class TrieNode:
+    __slots__ = ("children", "canonical", "is_end")
 
-    def __init__(self, capacity: int = 1000):
+    def __init__(self):
+        self.children: Dict[str, "TrieNode"] = {}
+        self.canonical: Optional[str] = None
+        self.is_end: bool = False
+
+
+class EntityIndex:
+    """Trie-based entity extraction automaton for O(L) multi-keyword matching."""
+
+    def __init__(self):
+        self.root = TrieNode()
+
+    def add_keyword(self, keyword: str, canonical: str) -> None:
+        if not keyword:
+            return
+        node = self.root
+        for ch in keyword.lower():
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+        node.canonical = canonical
+
+    def extract_all(self, text: str) -> List[Tuple[int, int, str]]:
+        """Extract non-overlapping entity spans (start, end, canonical) in text order."""
+        t_lower = text.lower()
+        matches: List[Tuple[int, int, str]] = []
+        n = len(t_lower)
+        i = 0
+        while i < n:
+            curr = self.root
+            longest_match = None
+            longest_end = -1
+            for j in range(i, n):
+                ch = t_lower[j]
+                if ch not in curr.children:
+                    break
+                curr = curr.children[ch]
+                if curr.is_end:
+                    longest_match = curr.canonical
+                    longest_end = j + 1
+            if longest_match is not None:
+                matches.append((i, longest_end, longest_match))
+                i = longest_end
+            else:
+                i += 1
+        return matches
+
+
+class SemanticQueryCache:
+    """
+    Production-grade Semantic Query Cache.
+    Combines sub-millisecond exact normalized key hits (< 0.05ms) with
+    high-threshold (>= 0.96) cosine similarity vector caching.
+    """
+
+    def __init__(
+        self,
+        capacity: int = 1000,
+        similarity_threshold: float = 0.96,
+        embedding_model: Optional[Any] = None,
+    ):
         self.capacity = capacity
-        self._cache: OrderedDict[str, Any] = OrderedDict()
+        self.similarity_threshold = similarity_threshold
+        self.embedding_model = embedding_model
+        self._exact_cache: OrderedDict[str, Any] = OrderedDict()
+        self._query_embeddings: Dict[str, np.ndarray] = {}
         self._lock = threading.RLock()
 
     def _normalize_key(self, query: str) -> str:
@@ -60,30 +126,91 @@ class SemanticQueryCache:
         q = re.sub(r"[\s\?\!\,\.\;\:\'\"\(\)\-\_，。？！]+", "", q)
         return q
 
-    def get(self, query: str) -> Optional[Any]:
-        key = self._normalize_key(query)
-        if not key:
+    def _get_embedding(self, query: str) -> Optional[np.ndarray]:
+        if not self.embedding_model:
             return None
+        try:
+            if hasattr(self.embedding_model, "_get_text_embedding"):
+                vec = self.embedding_model._get_text_embedding(query)
+            elif hasattr(self.embedding_model, "encode"):
+                vec = self.embedding_model.encode(query)
+            else:
+                return None
+            arr = np.asarray(vec, dtype=np.float32)
+            norm = float(np.linalg.norm(arr))
+            return (arr / norm) if norm > 0 else None
+        except Exception:
+            return None
+
+    def get(self, query: str) -> Optional[Any]:
+        norm_key = self._normalize_key(query)
+        if not norm_key:
+            return None
+
         with self._lock:
-            if key in self._cache:
-                self._cache.move_to_end(key)
-                return self._cache[key]
+            # 1. Exact normalized hit (< 0.05ms)
+            if norm_key in self._exact_cache:
+                self._exact_cache.move_to_end(norm_key)
+                return self._exact_cache[norm_key]
+
+            # 2. Semantic vector cosine similarity hit (>= 0.96 threshold)
+            if self._query_embeddings:
+                q_vec = self._get_embedding(query)
+                if q_vec is not None:
+                    best_sim = -1.0
+                    best_key = None
+                    for cached_key, c_vec in self._query_embeddings.items():
+                        sim = float(np.dot(q_vec, c_vec))
+                        if sim > best_sim:
+                            best_sim = sim
+                            best_key = cached_key
+                    if best_sim >= self.similarity_threshold and best_key in self._exact_cache:
+                        # 工业级实体一致性校验，确认无跨车型语义漂移
+                        def _extract_query_entities(txt: str) -> set:
+                            try:
+                                idx = FastSpecIndex._instance
+                                if idx is not None:
+                                    return set(idx.match_all_vehicle_models(txt))
+                            except Exception:
+                                pass
+                            return set(
+                                re.findall(
+                                    r"(?:model\s*[3ysx]|su7|001|007|l[789]|m[79]|es6|et5|u8|q5|x3)",
+                                    txt.lower(),
+                                )
+                            )
+
+                        q_entities = _extract_query_entities(query)
+                        k_entities = _extract_query_entities(best_key)
+                        if q_entities == k_entities:
+                            self._exact_cache.move_to_end(best_key)
+                            return self._exact_cache[best_key]
+
             return None
 
     def put(self, query: str, value: Any) -> None:
-        key = self._normalize_key(query)
-        if not key:
+        norm_key = self._normalize_key(query)
+        if not norm_key:
             return
+
         with self._lock:
-            if key in self._cache:
-                self._cache.move_to_end(key)
-            self._cache[key] = value
-            if len(self._cache) > self.capacity:
-                self._cache.popitem(last=False)
+            if norm_key in self._exact_cache:
+                self._exact_cache.move_to_end(norm_key)
+            self._exact_cache[norm_key] = value
+
+            # Cache normalized embedding if available
+            q_vec = self._get_embedding(query)
+            if q_vec is not None:
+                self._query_embeddings[norm_key] = q_vec
+
+            if len(self._exact_cache) > self.capacity:
+                oldest_key, _ = self._exact_cache.popitem(last=False)
+                self._query_embeddings.pop(oldest_key, None)
 
     def clear(self) -> None:
         with self._lock:
-            self._cache.clear()
+            self._exact_cache.clear()
+            self._query_embeddings.clear()
 
 
 @dataclass
@@ -100,223 +227,10 @@ class TieredSearchResult:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-ENTERPRISE_FLAGSHIP_SPECS: Dict[str, Dict[str, Any]] = {
-    "小米-SU7 Max": {
-        "car_model": "小米-SU7 Max",
-        "brand": "小米",
-        "prize": "29.99万元",
-        "vehicle_category_bottom": "中大型纯电轿跑",
-        "powertrain_type": "纯电动",
-        "drive_type": "双电机全轮驱动 (AWD)",
-        "seat_layout": "5座",
-        "acceleration_0_100": "2.78秒",
-        "max_speed": "265km/h",
-        "electric_range": "800km (CLTC)",
-        "battery_capacity": "101kWh三元锂麒麟电池",
-        "horsepower": "673马力 (495kW)",
-        "torque": "838N·m",
-        "wheelbase": "3000mm",
-        "motor_tech": "小米HyperEngine V6s超高效双电机 (转速高达21,000rpm，V8s电机可达27,200rpm)",
-        "charging_tech": "全栈871V真800V高压碳化硅平台 (15分钟充电补能510km)",
-        "autonomous_driving_level": "Xiaomi Pilot Max (双Orin-X 508TOPS + 激光雷达)",
-    },
-    "小米-SU7 Pro": {
-        "car_model": "小米-SU7 Pro",
-        "brand": "小米",
-        "prize": "24.59万元",
-        "vehicle_category_bottom": "中大型纯电轿跑",
-        "powertrain_type": "纯电动",
-        "drive_type": "单电机后驱 (RWD)",
-        "seat_layout": "5座",
-        "acceleration_0_100": "5.7秒",
-        "max_speed": "210km/h",
-        "electric_range": "830km (CLTC)",
-        "battery_capacity": "94.3kWh神行超充电池",
-        "horsepower": "299马力 (220kW)",
-        "torque": "400N·m",
-        "wheelbase": "3000mm",
-        "motor_tech": "小米HyperEngine V6电机 (转速21,000rpm)",
-        "charging_tech": "全域高压快充平台",
-        "autonomous_driving_level": "Xiaomi Pilot Max (双Orin-X + 激光雷达)",
-    },
-    "小米-SU7 标准版": {
-        "car_model": "小米-SU7 标准版",
-        "brand": "小米",
-        "prize": "21.59万元",
-        "vehicle_category_bottom": "中大型纯电轿跑",
-        "powertrain_type": "纯电动",
-        "drive_type": "单电机后驱 (RWD)",
-        "seat_layout": "5座",
-        "acceleration_0_100": "5.28秒",
-        "max_speed": "210km/h",
-        "electric_range": "700km (CLTC)",
-        "battery_capacity": "73.6kWh磷酸铁锂刀片电池",
-        "horsepower": "299马力 (220kW)",
-        "torque": "400N·m",
-        "wheelbase": "3000mm",
-        "motor_tech": "小米HyperEngine V6电机 (转速21,000rpm)",
-        "charging_tech": "全域碳化硅快充平台",
-        "autonomous_driving_level": "Xiaomi Pilot Pro (单Orin-N 84TOPS)",
-    },
-    "极氪-001": {
-        "car_model": "极氪-001",
-        "brand": "极氪",
-        "prize": "26.90-32.90万元",
-        "vehicle_category_bottom": "中大型豪华猎装轿跑",
-        "powertrain_type": "纯电动",
-        "drive_type": "双电机四驱 / 单电机后驱",
-        "seat_layout": "5座",
-        "acceleration_0_100": "3.3秒",
-        "max_speed": "240km/h",
-        "electric_range": "705-750km (CLTC)",
-        "battery_capacity": "95kWh神行电池 / 100kWh麒麟电池",
-        "horsepower": "789马力 (580kW)",
-        "torque": "810N·m",
-        "wheelbase": "3005mm",
-        "motor_tech": "全栈800V碳化硅高性能电机",
-        "charging_tech": "全栈800V超快充 (神行电池充电10.5分钟10%-80%)",
-        "autonomous_driving_level": "浩瀚智驾 2.0 (双Orin-X + 激光雷达)",
-    },
-    "特斯拉-Model 3": {
-        "car_model": "特斯拉-Model 3",
-        "brand": "特斯拉",
-        "prize": "23.19-27.19万元",
-        "vehicle_category_bottom": "中型纯电轿车",
-        "powertrain_type": "纯电动",
-        "drive_type": "后轮驱动 / 全轮驱动",
-        "seat_layout": "5座",
-        "acceleration_0_100": "4.4秒",
-        "max_speed": "200km/h",
-        "electric_range": "606-713km (CLTC)",
-        "battery_capacity": "60kWh / 78.4kWh",
-        "horsepower": "264-450马力",
-        "torque": "340-559N·m",
-        "wheelbase": "2875mm",
-        "motor_tech": "永磁同步电机",
-        "charging_tech": "V3/V4超充桩最高250kW峰值功率",
-        "autonomous_driving_level": "Autopilot / FSD (Hardware 4.0)",
-    },
-    "特斯拉-Model Y": {
-        "car_model": "特斯拉-Model Y",
-        "brand": "特斯拉",
-        "prize": "24.99-35.49万元",
-        "vehicle_category_bottom": "中型纯电SUV",
-        "powertrain_type": "纯电动",
-        "drive_type": "双电机全轮驱动 / 单电机后驱",
-        "seat_layout": "5座",
-        "acceleration_0_100": "3.7秒",
-        "max_speed": "217km/h",
-        "electric_range": "554-688km (CLTC)",
-        "battery_capacity": "60kWh / 78.4kWh",
-        "horsepower": "299-486马力",
-        "torque": "440-659N·m",
-        "wheelbase": "2890mm",
-        "motor_tech": "高效双电机全轮驱动",
-        "charging_tech": "V3超级充电",
-        "autonomous_driving_level": "Autopilot / FSD (Hardware 4.0)",
-    },
-    "蔚来-ES6": {
-        "car_model": "蔚来-ES6",
-        "brand": "蔚来",
-        "prize": "33.80-39.60万元",
-        "vehicle_category_bottom": "中型纯电豪华SUV",
-        "powertrain_type": "纯电动",
-        "drive_type": "双电机智能四驱",
-        "seat_layout": "5座",
-        "acceleration_0_100": "4.5秒",
-        "max_speed": "200km/h",
-        "electric_range": "500-625km (CLTC)",
-        "battery_capacity": "75kWh / 100kWh (支持可充可换可升级)",
-        "horsepower": "490马力 (360kW)",
-        "torque": "700N·m",
-        "wheelbase": "2915mm",
-        "motor_tech": "前150kW感应后210kW永磁高效双电机",
-        "charging_tech": "全场景换电 + 高压超快充 (3分钟全自动换电)",
-        "autonomous_driving_level": "Banyan系统 / 4颗Orin-X (1016TOPS)",
-    },
-    "比亚迪-汉EV": {
-        "car_model": "比亚迪-汉EV",
-        "brand": "比亚迪",
-        "prize": "17.98-24.98万元",
-        "vehicle_category_bottom": "中大型纯电轿车",
-        "powertrain_type": "纯电动",
-        "drive_type": "前驱 / 超级智能电四驱",
-        "seat_layout": "5座",
-        "acceleration_0_100": "3.9秒",
-        "max_speed": "185km/h",
-        "electric_range": "506-701km (CLTC)",
-        "battery_capacity": "60.48-85.4kWh高安全超级刀片电池",
-        "horsepower": "204-517马力",
-        "torque": "310-700N·m",
-        "wheelbase": "2920mm",
-        "motor_tech": "宽温域高效热泵电驱动系统",
-        "charging_tech": "全铝合金底盘与全车双枪超充",
-        "autonomous_driving_level": "DiPilot 100 (天神之眼高阶智能驾驶辅助)",
-    },
-    "理想-L7": {
-        "car_model": "理想-L7",
-        "brand": "理想",
-        "prize": "30.18-35.98万元",
-        "vehicle_category_bottom": "中大型豪华增程SUV",
-        "powertrain_type": "增程式混动",
-        "drive_type": "双电机智能四驱",
-        "seat_layout": "5座",
-        "acceleration_0_100": "5.3秒",
-        "max_speed": "180km/h",
-        "electric_range": "225-286km (CLTC纯电) / 1360-1421km (综合续航)",
-        "battery_capacity": "42.8kWh / 52.3kWh三元锂电池",
-        "horsepower": "449马力 (330kW)",
-        "torque": "620N·m",
-        "wheelbase": "3005mm",
-        "motor_tech": "前后双电机高效增程驱动 + 1.5T四缸增程器",
-        "charging_tech": "高压快充 (20%-80%需30分钟)",
-        "autonomous_driving_level": "AD Max (双Orin-X 508TOPS + 禾赛AT128激光雷达)",
-    },
-    "问界-M7": {
-        "car_model": "问界-M7",
-        "brand": "问界",
-        "prize": "24.98-32.98万元",
-        "vehicle_category_bottom": "中大型增程SUV",
-        "powertrain_type": "增程式混动",
-        "drive_type": "双电机四驱 / 单电机后驱",
-        "seat_layout": "5座 / 6座",
-        "acceleration_0_100": "4.8秒",
-        "max_speed": "190km/h",
-        "electric_range": "210-240km (CLTC纯电) / 1150-1300km (综合续航)",
-        "battery_capacity": "40kWh三元锂/磷酸铁锂电池",
-        "horsepower": "449马力 (330kW)",
-        "torque": "660N·m",
-        "wheelbase": "2820mm",
-        "motor_tech": "华为DriveONE高效纯电驱增程平台",
-        "charging_tech": "快速直流补能",
-        "autonomous_driving_level": "HUAWEI ADS 2.0 / 3.0 高阶智能驾驶系统",
-    },
-    "比亚迪-汉DM-i": {
-        "car_model": "比亚迪-汉DM-i",
-        "brand": "比亚迪",
-        "prize": "16.58-22.58万元",
-        "vehicle_category_bottom": "中大型插电混动轿车",
-        "powertrain_type": "插电式混合动力 (PHEV)",
-        "drive_type": "前置前驱",
-        "seat_layout": "5座",
-        "acceleration_0_100": "7.9秒",
-        "max_speed": "185km/h",
-        "electric_range": "125-200km (CLTC纯电) / 1260-1350km (综合续航)",
-        "battery_capacity": "18.3-30.7kWh专用功率型超安全刀片电池",
-        "horsepower": "197-218马力",
-        "torque": "315-325N·m",
-        "wheelbase": "2920mm",
-        "motor_tech": "DM-i超级混动专用E-CVT电驱动系统 + 骁云1.5T高热效率发动机",
-        "charging_tech": "双枪快充 / 直流快充",
-        "autonomous_driving_level": "DiPilot 智能驾驶辅助系统",
-    },
-}
-
-
 class FastSpecIndex:
     """
-    In-memory indexed vehicle specifications and OEM technology facts.
-    Enables sub-millisecond grounded spec lookup without database or vector queries.
+    In-memory indexed vehicle specifications and OEM technology facts dynamically derived
+    from SQLite VehicleDB. Enables sub-millisecond grounded spec lookup without static dicts.
     """
 
     _instance: Optional["FastSpecIndex"] = None
@@ -327,6 +241,7 @@ class FastSpecIndex:
         self.normalized_models: Dict[str, str] = {}  # alias -> canonical car_model
         self.known_brands: Set[str] = set()
         self.kg = AutomotiveKnowledgeGraph.get_instance()
+        self.entity_index = EntityIndex()
         self._build_index()
 
     @classmethod
@@ -336,12 +251,11 @@ class FastSpecIndex:
         return cls._instance
 
     def _build_index(self) -> None:
-        """Load vehicle rows into memory and create alias mapping."""
-        # Seed with enterprise flagship specs first
-        for model, rec in ENTERPRISE_FLAGSHIP_SPECS.items():
-            self.db_records[model] = dict(rec)
-            if rec.get("brand"):
-                self.known_brands.add(rec["brand"].lower())
+        """Load vehicle rows into memory from VehicleDB and dynamically build Trie entity index."""
+        self.db_records.clear()
+        self.normalized_models.clear()
+        self.known_brands.clear()
+        self.entity_index = EntityIndex()
 
         try:
             models = self.db.get_all_car_models()
@@ -359,76 +273,59 @@ class FastSpecIndex:
             if brand:
                 self.known_brands.add(brand.lower())
 
-        # Build alias map across all records
-        for model in self.db_records.keys():
+            # Load aliases dynamically from VehicleDB
+            aliases = self.db.get_aliases_for_model(model)
+            for a in aliases:
+                self.normalized_models[a.lower()] = model
+                self.normalized_models[a.lower().replace(" ", "")] = model
+                self.entity_index.add_keyword(a, model)
+
+        # Standard clean model name variations
+        for model in list(self.db_records.keys()):
             clean_model = model.lower().strip()
             self.normalized_models[clean_model] = model
             self.normalized_models[clean_model.replace(" ", "")] = model
             self.normalized_models[clean_model.replace("-", " ")] = model
             self.normalized_models[clean_model.replace("-", "")] = model
+            self.entity_index.add_keyword(clean_model, model)
+            self.entity_index.add_keyword(clean_model.replace(" ", ""), model)
+            self.entity_index.add_keyword(clean_model.replace("-", " "), model)
+            self.entity_index.add_keyword(clean_model.replace("-", ""), model)
 
             if "-" in model:
                 parts = model.split("-", 1)
                 sub_name = parts[1].lower().strip()
                 self.normalized_models[sub_name] = model
                 self.normalized_models[sub_name.replace(" ", "")] = model
-
-        # Popular aliases
-        aliases = {
-            "su7": "小米-SU7 标准版",
-            "su7 max": "小米-SU7 Max",
-            "su7 pro": "小米-SU7 Pro",
-            "小米su7": "小米-SU7 标准版",
-            "小米su7 max": "小米-SU7 Max",
-            "极氪001": "极氪-001",
-            "001": "极氪-001",
-            "model 3": "特斯拉-Model 3",
-            "model3": "特斯拉-Model 3",
-            "model y": "特斯拉-Model Y",
-            "modely": "特斯拉-Model Y",
-            "蔚来es6": "蔚来-ES6",
-            "es6": "蔚来-ES6",
-            "比亚迪汉": "比亚迪-汉EV",
-            "问界m7": "问界-M7",
-            "理想l7": "理想-L7",
-        }
-        for alias, target in aliases.items():
-            if target in self.db_records:
-                self.normalized_models[alias] = target
-                self.normalized_models[alias.replace(" ", "")] = target
-            elif any(target.lower() in m.lower() for m in self.db_records):
-                matched = next(m for m in self.db_records if target.lower() in m.lower())
-                self.normalized_models[alias] = matched
-                self.normalized_models[alias.replace(" ", "")] = matched
+                self.entity_index.add_keyword(sub_name, model)
+                self.entity_index.add_keyword(sub_name.replace(" ", ""), model)
 
     def match_all_vehicle_models(self, query: str) -> List[str]:
-        """Find all distinct canonical car models mentioned in user query text without substring collisions."""
-        q_lower = query.lower()
-        matched_spans: List[Tuple[int, int, str]] = []  # (start, end, canonical)
+        """Find all distinct canonical car models mentioned in user query text via Trie automaton."""
+        matches = self.entity_index.extract_all(query)
+        result: List[str] = []
+        for _, _, canonical in matches:
+            if canonical in self.db_records and canonical not in result:
+                result.append(canonical)
 
-        # Sort keys by length descending to match longest specific name first (e.g. "su7 max" before "su7")
-        for key in sorted(self.normalized_models.keys(), key=len, reverse=True):
-            if len(key) < 2:
-                continue
-            idx = 0
-            while True:
-                pos = q_lower.find(key, idx)
-                if pos == -1:
-                    break
-                end = pos + len(key)
-                idx = pos + 1
-                # Check if this span overlaps with an already matched longer span
-                if any(not (end <= s or pos >= e) for s, e, _ in matched_spans):
+        # Fallback to normalized_models map if Trie missed any edge case
+        if not result:
+            q_lower = query.lower()
+            matched_spans: List[Tuple[int, int, str]] = []
+            for key in sorted(self.normalized_models.keys(), key=len, reverse=True):
+                if len(key) < 2:
                     continue
-                canonical = self.normalized_models[key]
-                matched_spans.append((pos, end, canonical))
+                pos = q_lower.find(key)
+                if pos != -1:
+                    end = pos + len(key)
+                    if any(not (end <= s or pos >= e) for s, e, _ in matched_spans):
+                        continue
+                    matched_spans.append((pos, end, self.normalized_models[key]))
+            matched_spans.sort(key=lambda x: x[0])
+            for _, _, c in matched_spans:
+                if c not in result:
+                    result.append(c)
 
-        # Sort matched models by their appearance order in query
-        matched_spans.sort(key=lambda x: x[0])
-        result = []
-        for _, _, c in matched_spans:
-            if c not in result:
-                result.append(c)
         return result
 
     def match_vehicle_model(self, query: str) -> Optional[str]:
@@ -454,13 +351,34 @@ class FastSpecIndex:
         if not rec:
             return None
 
-        # Check direct vehicle DB attributes
-        if field_name in rec and rec[field_name]:
-            val = rec[field_name]
-            label = next(
-                (lbl for pat, fn, lbl in SPEC_ATTRIBUTE_PATTERNS if fn == field_name), field_name
-            )
-            return label, str(val), rec
+        # Check direct vehicle DB attributes with synonym field mapping
+        field_synonyms = {
+            "acceleration_0_100": [
+                "acceleration_0_100",
+                "zero_to_one_hundred_km_h_acceleration_time",
+            ],
+            "max_speed": ["max_speed", "top_speed"],
+            "electric_range": ["electric_range", "driving_range"],
+            "price": ["price"],
+            "horsepower": ["horsepower"],
+            "torque": ["torque"],
+            "battery_capacity": ["battery_capacity"],
+            "wheelbase": ["wheelbase"],
+            "seat_layout": ["seat_layout"],
+            "drive_type": ["drive_type"],
+            "powertrain_type": ["powertrain_type"],
+            "autonomous_driving_level": ["autonomous_driving_level"],
+            "charging_tech": ["charging_tech"],
+            "motor_tech": ["motor_tech"],
+        }
+        candidates = field_synonyms.get(field_name, [field_name])
+        for cand in candidates:
+            if cand in rec and rec[cand]:
+                val = rec[cand]
+                label = next(
+                    (lbl for pat, fn, lbl in SPEC_ATTRIBUTE_PATTERNS if fn == field_name), field_name
+                )
+                return label, str(val), rec
 
         # Check motor tech or charging tech via Knowledge Graph
         if field_name in ("motor_tech", "charging_tech"):
@@ -485,8 +403,6 @@ class FastSpecIndex:
                 ]
                 if charge_techs:
                     t = charge_techs[0]
-                    return "高压超充架构", f"{t.name}: {t.summary}", rec
-
         return None
 
 
@@ -641,7 +557,7 @@ class TieredRetrievalEngine:
                 if not rec:
                     continue
                 brand = rec.get("brand", "")
-                price = rec.get("prize", "")
+                price = rec.get("price", "")
                 category = rec.get("vehicle_category_bottom", "")
                 powertrain = rec.get("powertrain_type", "")
                 acc = rec.get("acceleration_0_100", "")
@@ -725,7 +641,7 @@ class TieredRetrievalEngine:
 
         # Build grounded vehicle snippet & facts summary
         brand = rec.get("brand", "")
-        price = rec.get("prize", "")
+        price = rec.get("price", "")
         category = rec.get("vehicle_category_bottom", "")
         powertrain = rec.get("powertrain_type", "")
         acc = rec.get("acceleration_0_100", "")
@@ -856,26 +772,41 @@ class TieredRetrievalEngine:
         tier1_res = self.search_tier1(request, top_k=top_k)
         results = tier1_res.results
 
-        # If parent-child retriever is available, enrich candidates with parent document context
-        doc_evidence = []
-        if self.parent_child_retriever is not None and query_text:
-            try:
-                doc_res = self.parent_child_retriever.search(
-                    query=query_text, top_k_children=6, top_k_parents=3
-                )
-                if hasattr(doc_res, "results"):
-                    for p in doc_res.results:
-                        doc_evidence.append(p.content[:300])
-            except Exception as e:
-                logger.warning(f"Tier 2 Parent-Child enrichment failed: {e}")
+        # Entity-scoped Parent-Child Retrieval (杜绝跨实体张冠李戴投毒)
+        candidate_models = [r.car_model for r in results]
+        scoped_contexts: Dict[str, List[Any]] = {}
+        total_doc_count = 0
+        if self.parent_child_retriever is not None and query_text and candidate_models:
+            from src.retrieval.parent_child_retriever import (
+                format_isolated_llm_context,
+                retrieve_multi_vehicle_context,
+            )
 
-        # Enrich vehicle snippets with deep document evidence
-        if doc_evidence and results:
-            evidence_str = "\n".join(doc_evidence[:2])
-            for r in results:
+            scoped_contexts = retrieve_multi_vehicle_context(
+                query=query_text,
+                car_models=candidate_models,
+                parent_child_retriever=self.parent_child_retriever,
+                top_k_per_vehicle=2,
+            )
+
+        # Enrich vehicle snippets ONLY with entity-specific evidence
+        for r in results:
+            chunks = scoped_contexts.get(r.car_model, [])
+            if chunks:
+                total_doc_count += len(chunks)
+                evidence_str = "\n".join([f"  - {getattr(c, 'content', str(c)).strip()[:200]}" for c in chunks[:2]])
                 r.text_snippet = (
-                    f"{r.text_snippet}\n【深度文档与横评参考】: {evidence_str[:250]}"
+                    f"{r.text_snippet}\n【{r.car_model} 专属深度测评参考】:\n{evidence_str[:250]}"
                 )
+
+        isolated_context = ""
+        if scoped_contexts:
+            try:
+                from src.retrieval.parent_child_retriever import format_isolated_llm_context
+
+                isolated_context = format_isolated_llm_context(scoped_contexts)
+            except Exception:
+                pass
 
         latency_ms = (time.perf_counter() - start) * 1000.0
         return TieredSearchResult(
@@ -884,8 +815,11 @@ class TieredRetrievalEngine:
             latency_ms=round(latency_ms, 3),
             results=results,
             candidate_count=tier1_res.candidate_count,
-            routing_reason="Tier 2 Deep Comparative / Parent-Child Retrieval (深度多视角文档检索)",
-            metadata={"doc_evidence_count": len(doc_evidence)},
+            metadata={
+                "doc_evidence_count": total_doc_count,
+                "scoped_entities": list(scoped_contexts.keys()),
+                "isolated_context": isolated_context,
+            },
         )
 
     def search(

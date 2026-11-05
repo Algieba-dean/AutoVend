@@ -4,17 +4,28 @@
 基于TOML数据结构的Pydantic模型定义。
 """
 
-from typing import Any, Dict, Optional
+import re
+from typing import Any, Dict, Optional, Tuple
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 
 
 class PreciseLabels(BaseModel):
-    """精确标签数据"""
+    """精确标签数据 - 强类型 Pydantic V2 生产级规范"""
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    # 规范强类型数值字段 (阶段四 P3: Data Schema Governance)
+    price_min_wan: Optional[float] = Field(None, ge=0.0, le=5000.0, description="起售价(万元)")
+    price_max_wan: Optional[float] = Field(None, ge=0.0, le=5000.0, description="顶配价(万元)")
+    wheelbase_mm: Optional[int] = Field(None, ge=1000, le=5000, description="轴距(毫米)")
+    horsepower_ps: Optional[int] = Field(None, ge=0, le=3000, description="最大马力(匹)")
+    acceleration_0_100_s: Optional[float] = Field(None, ge=1.5, le=30.0, description="零百加速(秒)")
+    electric_range_km: Optional[int] = Field(None, ge=0, le=2000, description="纯电CLTC续航(公里)")
 
     # 基础信息
-    prize: Optional[str] = None
-    prize_comments: Optional[str] = None
+    price: Optional[str] = None
+    price_comments: Optional[str] = None
 
     vehicle_category_bottom: Optional[str] = None
     vehicle_category_bottom_comments: Optional[str] = None
@@ -25,9 +36,25 @@ class PreciseLabels(BaseModel):
     powertrain_type: Optional[str] = None
     powertrain_type_comments: Optional[str] = None
 
-    # 尺寸和空间
-    passenger_sapce_volume: Optional[str] = None
-    passenger_sapce_volume_comments: Optional[str] = None
+    # 尺寸和空间 (修复 passenger_sapce_volume 错别字)
+    passenger_space_volume: Optional[str] = Field(
+        None, validation_alias=AliasChoices("passenger_space_volume", "passenger_sapce_volume")
+    )
+    passenger_sapce_volume: Optional[str] = Field(
+        None, validation_alias=AliasChoices("passenger_sapce_volume", "passenger_space_volume")
+    )
+    passenger_space_volume_comments: Optional[str] = Field(
+        None,
+        validation_alias=AliasChoices(
+            "passenger_space_volume_comments", "passenger_sapce_volume_comments"
+        ),
+    )
+    passenger_sapce_volume_comments: Optional[str] = Field(
+        None,
+        validation_alias=AliasChoices(
+            "passenger_sapce_volume_comments", "passenger_space_volume_comments"
+        ),
+    )
 
     trunk_volume: Optional[str] = None
     trunk_volume_comments: Optional[str] = None
@@ -67,9 +94,25 @@ class PreciseLabels(BaseModel):
     noise_insulation: Optional[str] = None
     noise_insulation_comments: Optional[str] = None
 
-    # 智能化配置
-    voice_interfaction: Optional[str] = None
-    voice_interfaction_comments: Optional[str] = None
+    # 智能化配置 (修复 voice_interfaction 错别字)
+    voice_interaction: Optional[str] = Field(
+        None, validation_alias=AliasChoices("voice_interaction", "voice_interfaction")
+    )
+    voice_interfaction: Optional[str] = Field(
+        None, validation_alias=AliasChoices("voice_interfaction", "voice_interaction")
+    )
+    voice_interaction_comments: Optional[str] = Field(
+        None,
+        validation_alias=AliasChoices(
+            "voice_interaction_comments", "voice_interfaction_comments"
+        ),
+    )
+    voice_interfaction_comments: Optional[str] = Field(
+        None,
+        validation_alias=AliasChoices(
+            "voice_interfaction_comments", "voice_interaction_comments"
+        ),
+    )
 
     ota_updates: Optional[str] = None
     ota_updates_comments: Optional[str] = None
@@ -135,15 +178,25 @@ class PreciseLabels(BaseModel):
     driving_range: Optional[str] = None
     driving_range_comments: Optional[str] = None
 
-    # 底盘和传动
+    # 底盘和传动 (修复 passibility 错别字)
     drive_type: Optional[str] = None
     drive_type_comments: Optional[str] = None
 
     suspension: Optional[str] = None
     suspension_comments: Optional[str] = None
 
-    passibility: Optional[str] = None
-    passibility_comments: Optional[str] = None
+    passability: Optional[str] = Field(
+        None, validation_alias=AliasChoices("passability", "passibility")
+    )
+    passibility: Optional[str] = Field(
+        None, validation_alias=AliasChoices("passibility", "passability")
+    )
+    passability_comments: Optional[str] = Field(
+        None, validation_alias=AliasChoices("passability_comments", "passibility_comments")
+    )
+    passibility_comments: Optional[str] = Field(
+        None, validation_alias=AliasChoices("passibility_comments", "passability_comments")
+    )
 
     # 实用性
     seat_layout: Optional[str] = None
@@ -161,16 +214,110 @@ class PreciseLabels(BaseModel):
     cargo_capability: Optional[str] = None
     cargo_capability_comments: Optional[str] = None
 
-    # 环境适应性
-    clod_resistance: Optional[str] = None
-    clod_resistance_comments: Optional[str] = None
+    # 环境适应性 (修复 clod_resistance 错别字)
+    cold_resistance: Optional[str] = Field(
+        None, validation_alias=AliasChoices("cold_resistance", "clod_resistance")
+    )
+    clod_resistance: Optional[str] = Field(
+        None, validation_alias=AliasChoices("clod_resistance", "cold_resistance")
+    )
+    cold_resistance_comments: Optional[str] = Field(
+        None, validation_alias=AliasChoices("cold_resistance_comments", "clod_resistance_comments")
+    )
+    clod_resistance_comments: Optional[str] = Field(
+        None, validation_alias=AliasChoices("clod_resistance_comments", "cold_resistance_comments")
+    )
 
     heat_resistance: Optional[str] = None
     heat_resistance_comments: Optional[str] = None
 
+    @model_validator(mode="after")
+    def _populate_numeric_fields(self) -> "PreciseLabels":
+        if self.price and (self.price_min_wan is None or self.price_max_wan is None):
+            p_min, p_max = self.price_range_wan
+            if self.price_min_wan is None and p_min is not None:
+                self.price_min_wan = p_min
+            if self.price_max_wan is None and p_max is not None:
+                self.price_max_wan = p_max
+
+        if self.wheelbase_mm is None and self.wheelbase:
+            m = re.search(r"(\d+)", str(self.wheelbase))
+            if m:
+                val = int(m.group(1))
+                if 1000 <= val <= 5000:
+                    self.wheelbase_mm = val
+
+        if self.horsepower_ps is None and self.horsepower:
+            m = re.search(r"(\d+)", str(self.horsepower))
+            if m:
+                val = int(m.group(1))
+                if 0 <= val <= 3000:
+                    self.horsepower_ps = val
+
+        if self.acceleration_0_100_s is None and self.zero_to_one_hundred_km_h_acceleration_time:
+            m = re.search(r"(\d+(?:\.\d+)?)", str(self.zero_to_one_hundred_km_h_acceleration_time))
+            if m:
+                val = float(m.group(1))
+                if 1.5 <= val <= 30.0:
+                    self.acceleration_0_100_s = val
+
+        if self.electric_range_km is None and self.driving_range:
+            m = re.search(r"(\d+)", str(self.driving_range))
+            if m:
+                val = int(m.group(1))
+                if 0 <= val <= 2000:
+                    self.electric_range_km = val
+
+        return self
+
+    # Strongly-typed parsed numeric accessors
+    @property
+    def price_range_wan(self) -> Tuple[Optional[float], Optional[float]]:
+        """Return (min_wan, max_wan) parsed from price field."""
+        if self.price_min_wan is not None and self.price_max_wan is not None:
+            return self.price_min_wan, self.price_max_wan
+        if not self.price:
+            return None, None
+        nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", self.price)]
+        if not nums:
+            return None, None
+        if len(nums) == 1:
+            val = nums[0] / 10000.0 if nums[0] > 1000 else nums[0]
+            return val, val
+        p_min = nums[0] / 10000.0 if nums[0] > 1000 else nums[0]
+        p_max = nums[1] / 10000.0 if nums[1] > 1000 else nums[1]
+        return min(p_min, p_max), max(p_min, p_max)
+
+    @property
+    def acceleration_s(self) -> Optional[float]:
+        """Parsed 0-100 acceleration time in seconds."""
+        if self.acceleration_0_100_s is not None:
+            return self.acceleration_0_100_s
+        txt = self.zero_to_one_hundred_km_h_acceleration_time or ""
+        m = re.search(r"(\d+(?:\.\d+)?)", txt)
+        return float(m.group(1)) if m else None
+
+    @property
+    def driving_range_km(self) -> Optional[int]:
+        """Parsed driving range in km."""
+        if self.electric_range_km is not None:
+            return self.electric_range_km
+        txt = self.driving_range or ""
+        m = re.search(r"(\d+)", txt)
+        return int(m.group(1)) if m else None
+
+    @property
+    def top_speed_kmh(self) -> Optional[int]:
+        """Parsed top speed in km/h."""
+        txt = self.top_speed or ""
+        m = re.search(r"(\d+)", txt)
+        return int(m.group(1)) if m else None
+
 
 class AmbiguousLabels(BaseModel):
     """模糊标签数据"""
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
 
     size: Optional[str] = None
     size_comments: Optional[str] = None
@@ -197,6 +344,8 @@ class AmbiguousLabels(BaseModel):
 class KeyDetails(BaseModel):
     """关键详情"""
 
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
     key_details: Optional[str] = None
     key_details_comments: Optional[str] = None
 
@@ -204,18 +353,24 @@ class KeyDetails(BaseModel):
 class Vehicle(BaseModel):
     """车辆数据模型"""
 
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
     title: str = "CarLabels"
     car_model: str
-    precise_labels: PreciseLabels = Field(alias="PriciseLabels")
-    ambiguous_labels: AmbiguousLabels = Field(alias="AmbiguousLabels")
-    key_details: KeyDetails = Field(alias="KeyDetails")
+    precise_labels: PreciseLabels = Field(
+        ..., validation_alias=AliasChoices("precise_labels", "PriciseLabels")
+    )
+    ambiguous_labels: AmbiguousLabels = Field(
+        default_factory=AmbiguousLabels,
+        validation_alias=AliasChoices("ambiguous_labels", "AmbiguousLabels"),
+    )
+    key_details: KeyDetails = Field(
+        default_factory=KeyDetails,
+        validation_alias=AliasChoices("key_details", "KeyDetails"),
+    )
 
     # 原始数据（用于调试）
     raw_data: Optional[Dict[str, Any]] = None
-
-    class Config:
-        populate_by_name = True
-        extra = "allow"
 
     def get_search_text(self) -> str:
         """
@@ -234,8 +389,8 @@ class Vehicle(BaseModel):
         if self.precise_labels.vehicle_category_bottom:
             parts.append(f"车型: {self.precise_labels.vehicle_category_bottom}")
 
-        if self.precise_labels.prize:
-            parts.append(f"价格: {self.precise_labels.prize}")
+        if self.precise_labels.price:
+            parts.append(f"价格: {self.precise_labels.price}")
 
         if self.precise_labels.powertrain_type:
             parts.append(f"动力类型: {self.precise_labels.powertrain_type}")
@@ -290,10 +445,10 @@ class Vehicle(BaseModel):
 
     def get_price_range(self) -> Optional[tuple]:
         """提取价格区间"""
-        if not self.precise_labels.prize:
+        if not self.precise_labels.price:
             return None
 
-        price_str = self.precise_labels.prize
+        price_str = self.precise_labels.price
         # 简单的价格解析逻辑，可以根据实际情况调整
         if "~" in price_str:
             try:

@@ -32,7 +32,7 @@ SAMPLE_VEHICLE = {
     "car_model": "TestBrand-TestModel A",
     "PriciseLabels": {
         "brand": "TestBrand",
-        "prize": "10,000~20,000",
+        "price": "10,000~20,000",
         "powertrain_type": "Battery Electric Vehicle",
     },
     "AmbiguousLabels": {"size": "Medium"},
@@ -47,7 +47,7 @@ SAMPLE_VEHICLE_B = {
     "car_model": "OtherBrand-Model B",
     "PriciseLabels": {
         "brand": "OtherBrand",
-        "prize": "40,000~60,000",
+        "price": "40,000~60,000",
         "powertrain_type": "Gasoline Engine",
     },
     "AmbiguousLabels": {"size": "Large"},

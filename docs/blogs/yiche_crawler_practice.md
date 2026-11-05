@@ -247,7 +247,7 @@ def _parse_html_table(self, html: str, brand: str, serial_slug: str, serial_name
 ### 坑五：传统固定 Schema 对全息汽车参数的“削足适履”
 
 **业务痛点：**
-原 AutoVend 系统的核心标签库定义在 `LabelsTree.json`（56 维特征），包含 `wheelbase`、`prize`、`powertrain_type` 等。但汽车行业的技术日新月异：
+原 AutoVend 系统的核心标签库定义在 `LabelsTree.json`（56 维特征），包含 `wheelbase`、`price`、`powertrain_type` 等。但汽车行业的技术日新月异：
 - 智驾算力（如“双 Orin-X 508TOPS”、“Thor 2000TOPS”）；
 - 补能效率（如“800V 高压平台”、“5C 闪充倍率”、“10%-80% 仅需 10.5 分钟”）；
 - 悬架系统（如“云辇-C 智能阻尼”、“双腔空气悬架”）；

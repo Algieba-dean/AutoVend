@@ -54,9 +54,17 @@ class ChatMemoryManager:
         """Convenience: add a user message."""
         self.add_message(session_id, MessageRole.USER, content)
 
+    async def aadd_user_message(self, session_id: str, content: str) -> None:
+        """Async convenience: add a user message."""
+        self.add_user_message(session_id, content)
+
     def add_assistant_message(self, session_id: str, content: str) -> None:
         """Convenience: add an assistant message."""
         self.add_message(session_id, MessageRole.ASSISTANT, content)
+
+    async def aadd_assistant_message(self, session_id: str, content: str) -> None:
+        """Async convenience: add an assistant message."""
+        self.add_assistant_message(session_id, content)
 
     def get_history(self, session_id: str) -> List[ChatMessage]:
         """Get the chat history for a session."""

@@ -36,7 +36,7 @@ def test_agent_plugin_pipeline():
     state = SessionState()
     state.profile.family_size = "5"
     state.needs.explicit.brand = "保时捷"
-    state.needs.explicit.prize = "below 20,000"
+    state.needs.explicit.price = "below 20,000"
 
     context = {"user_input": "我想看看特斯拉 Model Y 比亚迪汉"}
 

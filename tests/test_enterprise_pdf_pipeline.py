@@ -252,7 +252,7 @@ def test_toml_converter_metric_extraction():
     assert fields["battery_capacity"] == "93.7 kWh"
     assert fields["powertrain_type"] == "bev"
     assert fields["vehicle_category_bottom"] == "four-door hardtop"
-    assert fields["prize"] == "60,000 ~ 100,000"
+    assert fields["price"] == "60,000 ~ 100,000"
 
 
 def test_cross_page_table_stitching_three_continuous_pages():

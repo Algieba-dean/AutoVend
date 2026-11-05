@@ -22,7 +22,7 @@ Given the conversation and user profile below, do TWO things in ONE response:
 2. DEDUCE IMPLICIT preferences based on the user's profile and explicit needs.
 
 === EXPLICIT NEEDS (only extract what the user explicitly stated) ===
-- prize: Budget range (e.g., "10-20万", "Below 100,000")
+- price: Budget range (e.g., "10-20万", "Below 100,000")
 - vehicle_category_bottom: Vehicle type (e.g., "Compact Sedan", "Mid-size SUV")
 - brand: Preferred brand (e.g., "Tesla", "BMW", "BYD")
 - powertrain_type: Engine type (e.g., "Battery Electric", "Gasoline", "Plug-in Hybrid")

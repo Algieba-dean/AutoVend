@@ -189,35 +189,35 @@ _POWERTRAIN = [
 
 # ── Single-constraint: price ──────────────────────────────────────────
 _PRICE = [
-    QuerySpec("prc01", "below 10,000", "prize = 'below 10,000'", ["price", "rare"]),
-    QuerySpec("prc02", "10,000~20,000", "prize = '10,000 ~ 20,000'", ["price"]),
-    QuerySpec("prc03", "20,000~30,000", "prize = '20,000 ~ 30,000'", ["price"]),
-    QuerySpec("prc04", "30,000~40,000", "prize = '30,000 ~ 40,000'", ["price"]),
-    QuerySpec("prc05", "40,000~60,000", "prize = '40,000 ~ 60,000'", ["price", "broad"]),
-    QuerySpec("prc06", "above 100,000", "prize = 'above 100,000'", ["price"]),
+    QuerySpec("prc01", "below 10,000", "price = 'below 10,000'", ["price", "rare"]),
+    QuerySpec("prc02", "10,000~20,000", "price = '10,000 ~ 20,000'", ["price"]),
+    QuerySpec("prc03", "20,000~30,000", "price = '20,000 ~ 30,000'", ["price"]),
+    QuerySpec("prc04", "30,000~40,000", "price = '30,000 ~ 40,000'", ["price"]),
+    QuerySpec("prc05", "40,000~60,000", "price = '40,000 ~ 60,000'", ["price", "broad"]),
+    QuerySpec("prc06", "above 100,000", "price = 'above 100,000'", ["price"]),
     QuerySpec(
         "prc07",
         "affordable car",
-        "prize IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
+        "price IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
         ["price", "paraphrase", "known-gap"],
         "Subjective term with no direct label value.",
     ),
     QuerySpec(
         "prc08",
         "luxury car",
-        "prize IN ('above 100,000', '60,000 ~ 100,000')",
+        "price IN ('above 100,000', '60,000 ~ 100,000')",
         ["price", "paraphrase", "known-gap"],
     ),
     QuerySpec(
         "prc09",
         "budget under 30,000",
-        "prize IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
+        "price IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
         ["price", "range"],
     ),
     QuerySpec(
         "prc10",
         "预算20万到30万",
-        "prize = '20,000 ~ 30,000'",
+        "price = '20,000 ~ 30,000'",
         ["price", "zh"],
     ),
 ]
@@ -326,19 +326,19 @@ _COMBO2 = [
     QuerySpec(
         "cmb08",
         "Mid-Size SUV 40,000~60,000",
-        "vehicle_category_bottom = 'mid-size suv' AND prize = '40,000 ~ 60,000'",
+        "vehicle_category_bottom = 'mid-size suv' AND price = '40,000 ~ 60,000'",
         ["category", "price", "combo"],
     ),
     QuerySpec(
         "cmb09",
         "Compact SUV 20,000~30,000",
-        "vehicle_category_bottom = 'compact suv' AND prize = '20,000 ~ 30,000'",
+        "vehicle_category_bottom = 'compact suv' AND price = '20,000 ~ 30,000'",
         ["category", "price", "combo"],
     ),
     QuerySpec(
         "cmb10",
         "Battery Electric Vehicle above 100,000",
-        "powertrain_type = 'battery electric vehicle' AND prize = 'above 100,000'",
+        "powertrain_type = 'battery electric vehicle' AND price = 'above 100,000'",
         ["powertrain", "price", "combo"],
     ),
     QuerySpec(
@@ -410,7 +410,7 @@ _COMBO3 = [
         "cmb21",
         "Mid-Size SUV Battery Electric Vehicle 40,000~60,000",
         "vehicle_category_bottom = 'mid-size suv' "
-        "AND powertrain_type = 'battery electric vehicle' AND prize = '40,000 ~ 60,000'",
+        "AND powertrain_type = 'battery electric vehicle' AND price = '40,000 ~ 60,000'",
         ["category", "powertrain", "price", "combo3"],
     ),
     QuerySpec(
@@ -424,7 +424,7 @@ _COMBO3 = [
         "cmb23",
         "Compact SUV Gasoline Engine 20,000~30,000",
         "vehicle_category_bottom = 'compact suv' AND powertrain_type = 'gasoline engine' "
-        "AND prize = '20,000 ~ 30,000'",
+        "AND price = '20,000 ~ 30,000'",
         ["category", "powertrain", "price", "combo3"],
     ),
     QuerySpec(
@@ -444,7 +444,7 @@ _COMBO3 = [
         "cmb26",
         "Mercedes-Benz sedan above 100,000",
         "brand = 'mercedes-benz' AND vehicle_category_bottom LIKE '%sedan%' "
-        "AND prize = 'above 100,000'",
+        "AND price = 'above 100,000'",
         ["brand", "category", "price", "combo3"],
     ),
     QuerySpec(
@@ -471,7 +471,7 @@ _COMBO3 = [
         "cmb30",
         "30万预算的中型纯电SUV",
         "vehicle_category_bottom = 'mid-size suv' "
-        "AND powertrain_type = 'battery electric vehicle' AND prize = '30,000 ~ 40,000'",
+        "AND powertrain_type = 'battery electric vehicle' AND price = '30,000 ~ 40,000'",
         ["category", "powertrain", "price", "combo3", "zh"],
     ),
 ]
@@ -494,7 +494,7 @@ _NATURAL = [
     QuerySpec(
         "nat03",
         "a cheap small car for a first-time driver",
-        "size = 'small' AND prize IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
+        "size = 'small' AND price IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
         ["natural", "price", "ambiguous", "known-gap"],
         "'cheap' has no label value; the parser must map it onto a price band.",
     ),
@@ -529,7 +529,7 @@ _NATURAL = [
         "nat08",
         "预算不多，找一台经济实惠的紧凑型SUV",
         "vehicle_category_bottom = 'compact suv' "
-        "AND prize IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
+        "AND price IN ('below 10,000', '10,000 ~ 20,000', '20,000 ~ 30,000')",
         ["natural", "zh", "price", "known-gap"],
         "'经济实惠' is a subjective budget cue with no corresponding label value.",
     ),
@@ -543,7 +543,7 @@ _NATURAL = [
     QuerySpec(
         "nat10",
         "高端豪华行政轿车",
-        "vehicle_category_bottom LIKE '%sedan%' AND prize = 'above 100,000' "
+        "vehicle_category_bottom LIKE '%sedan%' AND price = 'above 100,000' "
         "AND comfort_level = 'high'",
         ["natural", "zh", "price", "known-gap"],
         "'高端豪华' must resolve to both a price band and a comfort grade.",
@@ -552,7 +552,7 @@ _NATURAL = [
         "nat11",
         "a luxury German SUV",
         "brand IN ('audi', 'bmw', 'mercedes-benz', 'porsche', 'volkswagen', 'bentley') "
-        "AND vehicle_category_bottom LIKE '%suv%' AND prize IN ('above 100,000', '60,000 ~ 100,000')",
+        "AND vehicle_category_bottom LIKE '%suv%' AND price IN ('above 100,000', '60,000 ~ 100,000')",
         ["natural", "world-knowledge", "known-gap"],
     ),
     QuerySpec(

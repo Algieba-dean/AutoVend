@@ -6,13 +6,15 @@
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .vehicle import Vehicle
 
 
 class Query(BaseModel):
     """用户查询模型"""
+
+    model_config = ConfigDict(extra="allow")
 
     text: str = Field(..., description="用户查询文本")
     top_k: int = Field(default=10, description="返回的最大结果数")
@@ -23,9 +25,6 @@ class Query(BaseModel):
     vehicle_type: Optional[str] = Field(default=None, description="车型类别")
     brand: Optional[str] = Field(default=None, description="品牌偏好")
     usage: Optional[str] = Field(default=None, description="使用场景")
-
-    class Config:
-        extra = "allow"
 
 
 class MatchScore(BaseModel):
@@ -48,12 +47,11 @@ class MatchScore(BaseModel):
 class SearchResult(BaseModel):
     """搜索结果模型"""
 
+    model_config = ConfigDict(extra="allow")
+
     vehicle: Vehicle = Field(..., description="匹配的车辆")
     score: MatchScore = Field(..., description="匹配度评分")
     explanation: str = Field(..., description="匹配解释")
-
-    class Config:
-        extra = "allow"
 
 
 class SearchResponse(BaseModel):

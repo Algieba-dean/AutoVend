@@ -34,7 +34,7 @@ class TestBuildMetadataFilters:
         filters = _build_metadata_filters(
             {
                 "brand": "Tesla",
-                "prize": "40,000~60,000",
+                "price": "40,000~60,000",
                 "powertrain_type": "Battery Electric Vehicle",
             }
         )
@@ -58,12 +58,12 @@ class TestBuildMetadataFilters:
         filters = _build_metadata_filters(
             {
                 "brand": "",
-                "prize": "10,000~20,000",
+                "price": "10,000~20,000",
             }
         )
         assert filters is not None
         assert len(filters.filters) == 1
-        assert filters.filters[0].key == "prize"
+        assert filters.filters[0].key == "price"
 
     def test_returns_none_for_empty_input(self):
         assert _build_metadata_filters({}) is None
@@ -173,7 +173,7 @@ class TestFormatRetrievalResults:
                 0.95,
                 "The Tesla Model Y is an all-electric compact SUV.",
                 brand="Tesla",
-                prize="40,000~60,000",
+                price="40,000~60,000",
                 source_file="test.toml",
             ),
             _make_node("BYD-Seal", 0.88, "A sporty EV sedan.", brand="BYD"),
@@ -186,7 +186,7 @@ class TestFormatRetrievalResults:
         assert first["car_model"] == "Tesla-Model Y"
         assert first["score"] == 0.95
         assert first["metadata"]["brand"] == "Tesla"
-        assert first["metadata"]["prize"] == "40,000~60,000"
+        assert first["metadata"]["price"] == "40,000~60,000"
         assert "source_file" not in first["metadata"]
         assert "Tesla Model Y" in first["text_snippet"]
 
