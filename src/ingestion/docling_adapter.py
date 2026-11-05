@@ -160,11 +160,16 @@ class RealDoclingAdapter(BaseLayoutEngine):
         except Exception as e:
             logger.error(f"Docling conversion failed for {file_path}: {e}; falling back to PyMuPDF")
             fallback_doc = self._fallback.parse(file_path)
+            fallback_doc.is_degraded = True
             fallback_doc.metadata["engine"] = "docling_adapter_fallback"
             fallback_doc.metadata["docling_adapter"] = True
-            fallback_doc.metadata["tableformer"] = True
+            fallback_doc.metadata["tableformer"] = False
+            fallback_doc.metadata["is_degraded"] = True
+            fallback_doc.metadata["extraction_quality"] = "degraded"
+            fallback_doc.metadata["fallback_level"] = "L2_pdfplumber"
+            fallback_doc.metadata["degraded_reason"] = f"Docling conversion failed: {e}"
             for t in fallback_doc.tables:
-                t.extraction_engine = "ibm_docling_tableformer"
+                t.extraction_engine = "pymupdf_pdfplumber"
             return fallback_doc
 
     def extract_tables(self, file_path: Union[str, Path]) -> List[TableBlock]:

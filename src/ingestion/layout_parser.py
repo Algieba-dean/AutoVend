@@ -12,6 +12,7 @@ Provides enterprise-grade layout analysis and document structure recovery:
 4. Multi-column text reading order reconstruction and hierarchical heading detection (H1-H3).
 """
 
+import contextlib
 import logging
 import os
 import re
@@ -2498,16 +2499,141 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
 
     @staticmethod
     def _run_with_timeout(func, *args, timeout_seconds: float = 30.0, **kwargs):
+        """
+        Execute func(*args, **kwargs) in an isolated process.
+        When timeout_seconds expires, forcefully terminates the worker process
+        with OS-level SIGKILL (process.kill()) to reclaim handles, VRAM, and CPU,
+        preventing unkillable zombie worker threads.
+        """
         if not timeout_seconds or timeout_seconds <= 0:
             return func(*args, **kwargs)
-        import concurrent.futures
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(func, *args, **kwargs)
+        import multiprocessing as mp
+
+        try:
+            ctx = mp.get_context("fork")
+        except ValueError:
+            ctx = mp.get_context()
+
+        parent_conn, child_conn = ctx.Pipe()
+
+        def _worker_entry():
             try:
-                return future.result(timeout=timeout_seconds)
-            except concurrent.futures.TimeoutError as te:
-                raise TimeoutError(f"Operation timed out after {timeout_seconds}s") from te
+                res = func(*args, **kwargs)
+                child_conn.send((True, res))
+            except BaseException as exc:
+                try:
+                    child_conn.send((False, exc))
+                except Exception:
+                    child_conn.send((False, RuntimeError(f"{type(exc).__name__}: {str(exc)}")))
+            finally:
+                child_conn.close()
+
+        proc = ctx.Process(target=_worker_entry)
+        proc.start()
+        proc.join(timeout=timeout_seconds)
+
+        if proc.is_alive():
+            proc.kill()
+            proc.join(timeout=2.0)
+            parent_conn.close()
+            raise TimeoutError(
+                f"Operation timed out after {timeout_seconds}s (SIGKILL delivered to PID {proc.pid})"
+            )
+
+        try:
+            if parent_conn.poll():
+                success, value = parent_conn.recv()
+                if success:
+                    return value
+                raise value
+            exit_code = proc.exitcode
+            raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
+        finally:
+            parent_conn.close()
+
+    @staticmethod
+    @contextlib.contextmanager
+    def _slice_pdf_to_temp(file_path: Path, page_numbers: Sequence[int]):
+        """
+        Extract specified 1-based page_numbers into a temporary sliced PDF.
+        Preserves original file name and stem in an isolated temporary directory so that
+        engines execute strictly on requested pages without full document overhead.
+        Yields: (temp_pdf_path, page_map)
+          where page_map maps sliced 1-based page index -> original 1-based page index.
+        """
+        import shutil
+        import tempfile
+        import fitz
+
+        sorted_pages = sorted(list(set(page_numbers)))
+        temp_dir = tempfile.mkdtemp(prefix="autovend_slice_")
+        temp_pdf_path = Path(temp_dir) / file_path.name
+
+        doc = fitz.open(str(file_path))
+        new_doc = fitz.open()
+        page_map: Dict[int, int] = {}
+
+        for new_idx, orig_p in enumerate(sorted_pages, start=1):
+            orig_idx = orig_p - 1
+            if 0 <= orig_idx < len(doc):
+                new_doc.insert_pdf(doc, from_page=orig_idx, to_page=orig_idx)
+                page_map[new_idx] = orig_p
+
+        new_doc.save(str(temp_pdf_path))
+        new_doc.close()
+        doc.close()
+
+        try:
+            yield temp_pdf_path, page_map
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
+    @staticmethod
+    def _remap_document_pages(
+        doc: ParsedDocument, page_map: Dict[int, int], original_title: str
+    ) -> ParsedDocument:
+        """
+        Remap 1-based sliced page indices back to original 1-based full document indices
+        across sections, tables, bounding boxes, headings, and dimension metadata.
+        """
+        doc.title = original_title
+        for s in doc.sections:
+            old_p = s.page_num
+            if old_p in page_map:
+                new_p = page_map[old_p]
+                s.page_num = new_p
+                if s.bbox is not None:
+                    s.bbox.page = new_p
+                s.title = s.title.replace(f"第 {old_p} 页", f"第 {new_p} 页")
+                s.breadcrumb_path = [b.replace(f"第 {old_p} 页", f"第 {new_p} 页") for b in s.breadcrumb_path]
+
+        for t in doc.tables:
+            old_p = t.page_num
+            if old_p in page_map:
+                new_p = page_map[old_p]
+                t.page_num = new_p
+                if t.bbox is not None:
+                    t.bbox.page = new_p
+                t.title = t.title.replace(f"P{old_p}_", f"P{new_p}_")
+                t.metadata["breadcrumb_path"] = [
+                    b.replace(f"第 {old_p} 页", f"第 {new_p} 页")
+                    for b in t.metadata.get("breadcrumb_path", [])
+                ]
+            if hasattr(t, "pages") and t.pages:
+                t.pages = [page_map.get(p, p) for p in t.pages]
+            if hasattr(t, "page_bboxes") and t.page_bboxes:
+                t.page_bboxes = {page_map.get(k, k): v for k, v in t.page_bboxes.items()}
+                for pb in t.page_bboxes.values():
+                    if pb is not None:
+                        pb.page = page_map.get(pb.page, pb.page)
+
+        if hasattr(doc, "page_dimensions") and doc.page_dimensions:
+            doc.page_dimensions = {page_map.get(k, k): v for k, v in doc.page_dimensions.items()}
+        if hasattr(doc, "page_orientations") and doc.page_orientations:
+            doc.page_orientations = {page_map.get(k, k): v for k, v in doc.page_orientations.items()}
+
+        return doc
 
     @staticmethod
     def _filter_doc_pages(doc: ParsedDocument, target_pages: Sequence[int]) -> ParsedDocument:
@@ -2718,7 +2844,27 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         """
         Digital Track Circuit Breaker (有字符层 genuine_chars >= 30):
         L1: Docling TableFormer -> L2: pdfplumber 表格提取 -> L3: PyMuPDF 纯文本提取
+        Pre-slices PDF to only digital pages if page_numbers is a subset of total pages.
         """
+        file_path = Path(file_path)
+        import fitz
+        try:
+            with fitz.open(str(file_path)) as full_pdf:
+                total_pages = len(full_pdf)
+        except Exception:
+            total_pages = 0
+
+        needs_slice = page_numbers is not None and 0 < len(page_numbers) < total_pages
+        if needs_slice:
+            with self._slice_pdf_to_temp(file_path, page_numbers) as (sliced_path, page_map):
+                doc = self._parse_digital_track_internal(sliced_path, page_numbers=None)
+                return self._remap_document_pages(doc, page_map, file_path.stem)
+        else:
+            return self._parse_digital_track_internal(file_path, page_numbers=page_numbers)
+
+    def _parse_digital_track_internal(
+        self, file_path: Path, page_numbers: Optional[Sequence[int]] = None
+    ) -> ParsedDocument:
         reason_l1 = ""
         reason_l2 = ""
 
@@ -2769,7 +2915,27 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         """
         Scanned Track Circuit Breaker (纯扫描件 genuine_chars < 30):
         L1: PaddleOCR (CPU) -> L2: PyMuPDF 本地 OCR -> L3: PyMuPDF 纯文本提取
+        Pre-slices PDF to only scanned pages if page_numbers is a subset of total pages.
         """
+        file_path = Path(file_path)
+        import fitz
+        try:
+            with fitz.open(str(file_path)) as full_pdf:
+                total_pages = len(full_pdf)
+        except Exception:
+            total_pages = 0
+
+        needs_slice = page_numbers is not None and 0 < len(page_numbers) < total_pages
+        if needs_slice:
+            with self._slice_pdf_to_temp(file_path, page_numbers) as (sliced_path, page_map):
+                doc = self._parse_scanned_track_internal(sliced_path, page_numbers=None)
+                return self._remap_document_pages(doc, page_map, file_path.stem)
+        else:
+            return self._parse_scanned_track_internal(file_path, page_numbers=page_numbers)
+
+    def _parse_scanned_track_internal(
+        self, file_path: Path, page_numbers: Optional[Sequence[int]] = None
+    ) -> ParsedDocument:
         reason_l1 = ""
         reason_l2 = ""
 
