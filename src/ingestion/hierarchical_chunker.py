@@ -79,7 +79,8 @@ class Chunk:
         chinese_chars = len(re.findall(r"[\u4e00-\u9fa5]", text))
         non_chinese = re.sub(r"[\u4e00-\u9fa5]", " ", text)
         english_words = len(non_chinese.split())
-        return max(1, int(chinese_chars * 0.8 + english_words * 1.3))
+        # Modern BPE tokenizers (cl100k_base, Qwen, Llama) typically take ~1.2 to 2 tokens per Chinese char.
+        return max(1, int(chinese_chars * 1.5 + english_words * 1.3))
 
     def to_dict(self) -> Dict[str, Any]:
         return {

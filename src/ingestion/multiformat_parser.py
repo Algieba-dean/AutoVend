@@ -198,8 +198,8 @@ class TesseractOCREngine(BaseOCREngine):
             avg_all_conf = sum(ln.confidence for ln in ocr_lines) / max(1, len(ocr_lines))
             return OCRResult(full_text=full_text, lines=ocr_lines, confidence=avg_all_conf, metadata={"engine": "tesseract"})
         except Exception as e:
-            logger.warning(f"Tesseract OCR failed ({e}); delegating to OfflineMockOCREngine fallback.")
-            return OfflineMockOCREngine().extract_text_and_boxes(image_path)
+            logger.warning(f"Tesseract OCR failed ({e}); honestly degrading.")
+            return OCRResult(full_text="", lines=[], confidence=0.0, metadata={"engine": "tesseract", "is_degraded": True, "error": str(e)})
 
 
 class EasyOCREngine(BaseOCREngine):
@@ -237,70 +237,44 @@ class EasyOCREngine(BaseOCREngine):
             avg_conf = sum(ln.confidence for ln in ocr_lines) / max(1, len(ocr_lines))
             return OCRResult(full_text=full_text, lines=ocr_lines, confidence=avg_conf, metadata={"engine": "easyocr"})
         except Exception as e:
-            logger.warning(f"EasyOCR extraction failed ({e}); delegating to OfflineMockOCREngine fallback.")
-            return OfflineMockOCREngine().extract_text_and_boxes(image_path)
+            logger.warning(f"EasyOCR extraction failed ({e}); honestly degrading.")
+            return OCRResult(full_text="", lines=[], confidence=0.0, metadata={"engine": "easyocr", "is_degraded": True, "error": str(e)})
 
 
 class OfflineMockOCREngine(BaseOCREngine):
     """
-    Deterministic offline mock/fallback OCR engine.
-    Ensures test hermeticity and runs reliably in CI/CD without external OCR binaries.
+    Deterministic offline mock/fallback OCR engine for testing and hermetic CI.
+    Completely purges hardcoded domain strings and filename substring matching.
+    Accepts explicitly injected mock lines for tests, otherwise honestly degrades or raises.
     """
+
+    def __init__(
+        self,
+        mock_lines: Optional[List[Tuple[str, float, float, float, float]]] = None,
+        raise_on_empty: bool = False,
+    ):
+        self.mock_lines = mock_lines
+        self.raise_on_empty = raise_on_empty
 
     def extract_text_and_boxes(self, image_path: Union[str, Path]) -> OCRResult:
         p = Path(image_path)
-        stem_lower = p.stem.lower()
-
-        # Generate realistic domain-specific automotive OCR lines based on filename or image content
-        if "aito" in stem_lower or "m9" in stem_lower:
-            lines_data = [
-                ("问界 M9 旗舰车型配置规格表 (AITO M9 Spec Sheet)", 40, 50, 720, 80),
-                ("车身尺寸: 5230mm × 1999mm × 1800mm, 轴距: 3110mm", 40, 100, 680, 125),
-                ("动力总成: 前后双电机智能四驱系统, 最大总功率 365kW / 390kW", 40, 140, 710, 165),
-                ("纯电续航: CLTC 综合工况 630km (纯电版) / 综合续航 1402km (增程版)", 40, 180, 740, 205),
-                ("智驾系统: 华为乾崑智驾 ADS 3.0 高阶智能驾驶辅助", 40, 220, 650, 245),
-                ("指导售价: 46.98 万元 - 56.98 万元 (增程Max/Ultra, 纯电Max/Ultra)", 40, 260, 700, 285),
-            ]
-        elif "v800" in stem_lower or "v8" in stem_lower:
-            lines_data = [
-                ("小米超级电机 V8s / V800 核心技术规格参数总览", 40, 50, 750, 80),
-                ("最高转速: 27200 rpm (全球量产转速天花板)", 40, 100, 700, 125),
-                ("最大综合马力: 578 PS (425 kW) 强劲动力输出", 40, 140, 710, 165),
-                ("系统峰值扭矩: 635 N·m 额定轮端扭矩", 40, 180, 680, 205),
-                ("工作电压平台: 960V SiC 超高压碳化硅平台", 40, 220, 720, 245),
-                ("电机综合效率: 98.11% 超高工况转换效率", 40, 260, 690, 285),
-            ]
-        elif "instrument" in stem_lower or "cluster" in stem_lower or "warning" in stem_lower or "tpms" in stem_lower:
-            lines_data = [
-                ("仪表盘诊断警报 (Instrument Cluster Diagnostic Alert)", 40, 50, 750, 80),
-                ("胎压监测报警 (TPMS Warning): 左前轮气压 1.6 bar (正常 2.5 bar)", 40, 100, 740, 125),
-                ("高压电池警告: 动力系统受限 请尽快联系服务中心", 40, 140, 720, 165),
-                ("当前车速: 0 km/h | 挡位: P | 动力电池电量: 78%", 40, 180, 680, 205),
-                ("剩余续航: 546 km | 累计总里程: 12480 km | 室外温度: -8℃", 40, 220, 750, 245),
-            ]
-        elif "xiaomi" in stem_lower or "su7" in stem_lower:
-            lines_data = [
-                ("小米 SU7 系列配置规格总览", 40, 50, 600, 80),
-                ("零百加速: 标准版 5.28s, Pro版 5.7s, Max版 2.78s", 40, 100, 650, 125),
-                ("电池容量: 73.6kWh 弗迪磷酸铁锂 / 94.3kWh CATL神行 / 101kWh CATL麒麟", 40, 140, 750, 165),
-                ("智能座舱: 高通骁龙 8295 芯片搭载 Xiaomi HyperOS", 40, 180, 680, 205),
-                ("官方指导价: 21.59 万元 / 24.59 万元 / 29.99 万元", 40, 220, 670, 245),
-            ]
-        else:
-            lines_data = [
-                (f"{p.stem} 汽车配置规格说明书", 40, 50, 600, 80),
-                ("车辆基本信息: 豪华中大型新能源智能汽车", 40, 100, 550, 125),
-                ("核心技术指标: 高能量密度电池包与高阶辅助驾驶", 40, 140, 620, 165),
-                ("配置矩阵: 标准版 / 旗舰版 / 高性能四驱版", 40, 180, 580, 205),
-            ]
+        if self.mock_lines is None:
+            if self.raise_on_empty:
+                from src.ingestion.layout_parser import DocumentParsingUnrecoverableError
+                raise DocumentParsingUnrecoverableError(f"OCR unavailable or failed for {p.name}")
+            return OCRResult(
+                full_text="",
+                lines=[],
+                confidence=0.0,
+                metadata={"engine": "offline_degraded", "is_degraded": True, "file_name": p.name},
+            )
 
         ocr_lines: List[OCRLine] = []
         full_text_parts: List[str] = []
 
-        for text, x0, top, x1, bottom in lines_data:
+        for text, x0, top, x1, bottom in self.mock_lines:
             full_text_parts.append(text)
             line_bbox = BoundingBox(x0=x0, top=top, x1=x1, bottom=bottom, page=1)
-            # Create word bounding boxes
             tokens = text.split()
             words: List[OCRWord] = []
             if tokens:
@@ -309,24 +283,24 @@ class OfflineMockOCREngine(BaseOCREngine):
                     w_x0 = x0 + w_idx * step_w
                     w_x1 = w_x0 + step_w
                     w_bbox = BoundingBox(x0=w_x0, top=top, x1=w_x1, bottom=bottom, page=1)
-                    words.append(OCRWord(text=tok, bbox=w_bbox, confidence=0.96))
+                    words.append(OCRWord(text=tok, bbox=w_bbox, confidence=1.0))
             else:
-                words.append(OCRWord(text=text, bbox=line_bbox, confidence=0.96))
+                words.append(OCRWord(text=text, bbox=line_bbox, confidence=1.0))
 
-            ocr_lines.append(OCRLine(text=text, bbox=line_bbox, words=words, confidence=0.96))
+            ocr_lines.append(OCRLine(text=text, bbox=line_bbox, words=words, confidence=1.0))
 
         return OCRResult(
             full_text="\n".join(full_text_parts),
             lines=ocr_lines,
-            confidence=0.96,
-            metadata={"engine": "offline_mock", "file_name": p.name},
+            confidence=1.0,
+            metadata={"engine": "offline_mock", "is_degraded": False, "file_name": p.name},
         )
 
 
 class VisionAPIOCREngine(BaseOCREngine):
     """
     Adapter for Cloud / LLM Multimodal Vision APIs (OpenAI GPT-4o, Claude 3.5, Azure Vision, etc.).
-    Supports direct REST / LLM client execution with deterministic offline mock fallback.
+    Supports direct REST / LLM client execution with honest degradation when credentials are missing.
     """
 
     def __init__(
@@ -343,12 +317,14 @@ class VisionAPIOCREngine(BaseOCREngine):
 
     def extract_text_and_boxes(self, image_path: Union[str, Path]) -> OCRResult:
         p = Path(image_path)
-        # If no client or API key is provided, gracefully use high-fidelity offline mock
+        # If no client or API key is provided, degrade honestly without faking data
         if not self.client and not self.api_key:
-            res = OfflineMockOCREngine().extract_text_and_boxes(p)
-            res.metadata["engine"] = "vision_api_offline_mock"
-            res.metadata["model"] = self.model
-            return res
+            return OCRResult(
+                full_text="",
+                lines=[],
+                confidence=0.0,
+                metadata={"engine": "vision_api", "is_degraded": True, "model": self.model},
+            )
 
         try:
             import base64
@@ -376,15 +352,20 @@ class VisionAPIOCREngine(BaseOCREngine):
                 ]
                 return OCRResult(full_text=text, lines=lines, confidence=0.98, metadata={"engine": "vision_api", "model": self.model})
             else:
-                res = OfflineMockOCREngine().extract_text_and_boxes(p)
-                res.metadata["engine"] = "vision_api"
-                res.metadata["model"] = self.model
-                return res
+                return OCRResult(
+                    full_text="",
+                    lines=[],
+                    confidence=0.0,
+                    metadata={"engine": "vision_api", "is_degraded": True, "model": self.model},
+                )
         except Exception as e:
-            logger.warning(f"Vision API extraction notice ({e}); using offline fallback.")
-            res = OfflineMockOCREngine().extract_text_and_boxes(p)
-            res.metadata["engine"] = "vision_api_fallback"
-            return res
+            logger.warning(f"Vision API extraction notice ({e}); honestly degrading.")
+            return OCRResult(
+                full_text="",
+                lines=[],
+                confidence=0.0,
+                metadata={"engine": "vision_api_fallback", "is_degraded": True, "error": str(e)},
+            )
 
 
 def get_ocr_engine(engine_name: Optional[str] = None) -> BaseOCREngine:

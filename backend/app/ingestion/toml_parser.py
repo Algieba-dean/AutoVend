@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 # Fields to extract as metadata for filtering
 METADATA_FIELDS = [
     "brand",
+    "price",
     "prize",
     "powertrain_type",
     "vehicle_category_bottom",
@@ -55,11 +56,13 @@ def _build_text_from_toml(data: dict) -> str:
     if key_details_comments:
         parts.append(f"Details: {key_details_comments}")
 
-    # Collect all comments from PreciseLabels and AmbiguousLabels
-    for section_name in ["PriciseLabels", "AmbiguousLabels"]:
+    # Collect all comments from PreciseLabels (or legacy PriciseLabels) and AmbiguousLabels
+    seen_comments = set()
+    for section_name in ["PreciseLabels", "PriciseLabels", "AmbiguousLabels"]:
         section = data.get(section_name, {})
         for key, value in section.items():
-            if key.endswith("_comments") and value:
+            if key.endswith("_comments") and value and key not in seen_comments:
+                seen_comments.add(key)
                 field_name = key.replace("_comments", "").replace("_", " ").title()
                 parts.append(f"{field_name}: {value}")
 
@@ -78,12 +81,18 @@ def _extract_metadata(data: dict) -> dict:
     if car_model:
         metadata["car_model"] = car_model
 
-    # Extract from PreciseLabels and AmbiguousLabels
-    for section_name in ["PriciseLabels", "AmbiguousLabels"]:
+    # Extract from PreciseLabels (or legacy PriciseLabels) and AmbiguousLabels
+    for section_name in ["PreciseLabels", "PriciseLabels", "AmbiguousLabels"]:
         section = data.get(section_name, {})
         for field in METADATA_FIELDS:
-            if field in section and section[field]:
+            if field in section and section[field] and field not in metadata:
                 metadata[field] = section[field]
+
+    # Normalize price and prize across metadata for dual compatibility
+    if "price" in metadata and "prize" not in metadata:
+        metadata["prize"] = metadata["price"]
+    elif "prize" in metadata and "price" not in metadata:
+        metadata["price"] = metadata["prize"]
 
     return metadata
 

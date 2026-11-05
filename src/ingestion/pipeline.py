@@ -82,9 +82,35 @@ class IncrementalIngestionPipeline:
         self.freshness_engine = freshness_engine
         self.parent_child_retriever = parent_child_retriever
         self.checksum_store: Dict[str, str] = {}
-        self.pending_sync_queue: List[Dict[str, Any]] = []
-        self.dlq: List[Dict[str, Any]] = []
         self._initialize_checksums()
+
+    @property
+    def dlq(self) -> List[Dict[str, Any]]:
+        """Persistent Dead-Letter Queue queried directly from SQLite outbox_events table."""
+        if hasattr(self.db, "get_outbox_events"):
+            events = self.db.get_outbox_events()
+            result: List[Dict[str, Any]] = []
+            for ev in events:
+                try:
+                    payload = json.loads(ev["payload"]) if isinstance(ev["payload"], str) else ev["payload"]
+                except Exception:
+                    payload = {}
+                result.append({
+                    "id": ev["id"],
+                    "car_model": payload.get("car_model", ""),
+                    "operation": ev.get("event_type", ""),
+                    "error": ev.get("error_message", "") or payload.get("error", ""),
+                    "payload": payload.get("payload", payload),
+                    "status": ev.get("status", ""),
+                    "timestamp": ev.get("created_at", 0.0),
+                })
+            return result
+        return []
+
+    @property
+    def pending_sync_queue(self) -> List[Dict[str, Any]]:
+        """Persistent pending sync queue queried directly from SQLite outbox_events table."""
+        return self.dlq
 
     def _initialize_checksums(self) -> None:
         """Load initial checksums from persistent SQLite database."""
@@ -146,7 +172,7 @@ class IncrementalIngestionPipeline:
         error_msg: str,
         payload: Dict[str, Any],
     ) -> None:
-        """Record dual-write failure event to in-memory DLQ and persistent outbox."""
+        """Record failure event directly to persistent SQLite outbox_events table."""
         dlq_entry = {
             "car_model": car_model,
             "operation": operation,
@@ -154,8 +180,6 @@ class IncrementalIngestionPipeline:
             "payload": payload,
             "timestamp": time.time(),
         }
-        self.pending_sync_queue.append(dlq_entry)
-        self.dlq.append(dlq_entry)
         if hasattr(self.db, "record_outbox_event"):
             try:
                 import uuid
@@ -169,7 +193,7 @@ class IncrementalIngestionPipeline:
                     error_message=error_msg,
                 )
             except Exception as e:
-                logger.warning(f"Failed to record outbox event: {e}")
+                logger.warning(f"Failed to record persistent outbox event: {e}")
 
     def detect_changes(
         self,
@@ -290,10 +314,11 @@ class IncrementalIngestionPipeline:
         # 1. Process CREATED & UPDATED patches with SAGA compensation
         for patch in created + updated:
             prev_record = self.db.get_by_model(patch.car_model)
+            expected_version = prev_record.get("version") if prev_record else None
 
-            # Step 1: Write to SQLite
+            # Step 1: Write to SQLite with optimistic concurrency check
             try:
-                self.db.upsert_vehicle(patch.data)
+                written_version = self.db.upsert_vehicle(patch.data, expected_version=expected_version)
             except Exception as e:
                 logger.error(f"SQLite upsert failed for {patch.car_model}: {e}")
                 self._record_dlq(patch.car_model, patch.change_type.value, str(e), patch.data)
@@ -328,18 +353,25 @@ class IncrementalIngestionPipeline:
                     f"Executing SAGA rollback compensation on SQLite."
                 )
 
-            # Step 3: Consistency arbitration
+            # Step 3: Consistency arbitration with concurrency verification
             if not downstream_ok:
                 # SAGA Rollback SQLite write
                 try:
-                    if prev_record:
-                        self.db.upsert_vehicle(prev_record)
+                    curr = self.db.get_by_model(patch.car_model)
+                    if curr and curr.get("version") == written_version:
+                        if prev_record:
+                            self.db.upsert_vehicle(prev_record, expected_version=written_version)
+                        else:
+                            self.db.delete_vehicle(patch.car_model, expected_version=written_version)
                     else:
-                        self.db.delete_vehicle(patch.car_model)
+                        logger.warning(
+                            f"Skipping SAGA rollback for {patch.car_model}: record was concurrently modified "
+                            f"(current version {curr.get('version') if curr else None} != written {written_version})"
+                        )
                 except Exception as rb_exc:
                     logger.critical(f"SAGA rollback failed for {patch.car_model}: {rb_exc}")
 
-                # Record to DLQ / pending sync without advancing checksum
+                # Record to persistent DLQ / outbox without advancing checksum
                 self._record_dlq(
                     patch.car_model,
                     patch.change_type.value,
@@ -358,10 +390,11 @@ class IncrementalIngestionPipeline:
         # 2. Process DELETED patches with SAGA compensation
         for patch in deleted:
             prev_record = self.db.get_by_model(patch.car_model)
+            expected_version = prev_record.get("version") if prev_record else None
 
-            # Step 1: Delete from SQLite
+            # Step 1: Delete from SQLite with optimistic concurrency check
             try:
-                self.db.delete_vehicle(patch.car_model)
+                self.db.delete_vehicle(patch.car_model, expected_version=expected_version)
             except Exception as e:
                 logger.error(f"SQLite deletion failed for {patch.car_model}: {e}")
                 self._record_dlq(patch.car_model, "deleted", str(e), {})
@@ -391,8 +424,14 @@ class IncrementalIngestionPipeline:
             # Step 3: Consistency arbitration
             if not downstream_ok:
                 try:
-                    if prev_record:
-                        self.db.upsert_vehicle(prev_record)
+                    curr = self.db.get_by_model(patch.car_model)
+                    if curr is None:
+                        if prev_record:
+                            self.db.upsert_vehicle(prev_record)
+                    else:
+                        logger.warning(
+                            f"Skipping SAGA rollback of deletion for {patch.car_model}: record re-created concurrently"
+                        )
                 except Exception as rb_exc:
                     logger.critical(f"SAGA rollback of deletion failed for {patch.car_model}: {rb_exc}")
 
@@ -440,8 +479,11 @@ class IncrementalIngestionPipeline:
             raise FileNotFoundError(f"File not found: {p}")
 
         start_time = time.time()
-        file_bytes = p.read_bytes()
-        file_checksum = hashlib.sha256(file_bytes).hexdigest()
+        hasher = hashlib.sha256()
+        with open(p, "rb") as f:
+            while chunk := f.read(65536):
+                hasher.update(chunk)
+        file_checksum = hasher.hexdigest()
         canonical_path = str(p)
         path_hash = hashlib.sha256(canonical_path.encode("utf-8")).hexdigest()
         store_key = f"file:{path_hash}:{p.name}"

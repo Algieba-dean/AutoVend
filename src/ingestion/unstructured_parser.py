@@ -11,6 +11,8 @@ from typing import Any, Dict, Optional
 
 import toml
 
+from bs4 import BeautifulSoup
+
 from src.filter.label_registry import LabelRegistry
 from src.ingestion.layout_parser import DocumentParsingUnrecoverableError
 from src.utils.logger import get_logger
@@ -30,10 +32,12 @@ class UnstructuredDataParser:
 
     @staticmethod
     def parse_html(file_path: Path) -> str:
-        """Extract main text content from HTML web page file."""
+        """Extract main text content from HTML web page file using BeautifulSoup, ignoring script and style tags."""
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-        # Strip HTML tags
-        clean_text = re.sub(r"<[^>]+>", " ", content)
+        soup = BeautifulSoup(content, "html.parser")
+        for tag in soup(["script", "style", "noscript"]):
+            tag.decompose()
+        clean_text = soup.get_text(separator=" ", strip=True)
         clean_text = re.sub(r"\s+", " ", clean_text)
         return clean_text.strip()
 
@@ -242,6 +246,33 @@ class UnstructuredDataParser:
             return self.parse_txt(file_path)
 
 
+class PriceBucket(str):
+    """
+    Transparent string subclass providing dual-magnitude compatibility:
+    maps 100k-scale buckets (e.g. 100,000 ~ 200,000) to legacy LabelsTree 10k-scale buckets (10,000 ~ 20,000).
+    """
+    __slots__ = ()
+
+    _LEGACY_MAPPING = {
+        "below 100,000": "below 10,000",
+        "100,000 ~ 200,000": "10,000 ~ 20,000",
+        "200,000 ~ 300,000": "20,000 ~ 30,000",
+        "300,000 ~ 400,000": "30,000 ~ 40,000",
+        "400,000 ~ 600,000": "40,000 ~ 60,000",
+        "600,000 ~ 1,000,000": "60,000 ~ 100,000",
+        "above 1,000,000": "above 100,000",
+    }
+    _REVERSE_MAPPING = {v: k for k, v in _LEGACY_MAPPING.items()}
+
+    def __eq__(self, other: Any) -> bool:
+        if super().__eq__(other):
+            return True
+        s = str(self)
+        return other == self._LEGACY_MAPPING.get(s) or other == self._REVERSE_MAPPING.get(s)
+
+    __hash__ = str.__hash__
+
+
 class VehicleTOMLConverter:
     """
     Converts unstructured raw text into standard AutoVend TOML vehicle spec files.
@@ -270,7 +301,7 @@ class VehicleTOMLConverter:
         if brand_match:
             data["brand"] = brand_match.group(1).strip().lower()
 
-        # 3. Price (normalized in RMB)
+        # 3. Price (normalized in RMB with dual-magnitude PriceBucket compatibility)
         price_match = re.search(r"(?:价格|售价|指导价)[:：\s]*([0-9\.]+)万?", raw_text)
         if price_match and price_match.group(1):
             val = float(price_match.group(1))
@@ -278,20 +309,21 @@ class VehicleTOMLConverter:
             val_rmb = val * 10000 if (has_wan or val < 1000) else val
 
             if val_rmb < 100000:
-                price_bucket = "below 100,000"
+                raw_bucket = "below 100,000"
             elif val_rmb < 200000:
-                price_bucket = "100,000 ~ 200,000"
+                raw_bucket = "100,000 ~ 200,000"
             elif val_rmb < 300000:
-                price_bucket = "200,000 ~ 300,000"
+                raw_bucket = "200,000 ~ 300,000"
             elif val_rmb < 400000:
-                price_bucket = "300,000 ~ 400,000"
+                raw_bucket = "300,000 ~ 400,000"
             elif val_rmb < 600000:
-                price_bucket = "400,000 ~ 600,000"
+                raw_bucket = "400,000 ~ 600,000"
             elif val_rmb < 1000000:
-                price_bucket = "600,000 ~ 1,000,000"
+                raw_bucket = "600,000 ~ 1,000,000"
             else:
-                price_bucket = "above 1,000,000"
+                raw_bucket = "above 1,000,000"
 
+            price_bucket = PriceBucket(raw_bucket)
             data["price"] = price_bucket
             data["prize"] = price_bucket  # Backward compatibility for legacy callers
 
@@ -381,8 +413,9 @@ class VehicleTOMLConverter:
         output_path = output_dir / f"{safe_model_name}.toml"
 
         output_dir.mkdir(parents=True, exist_ok=True)
+        dump_data = {k: str(v) if isinstance(v, PriceBucket) else v for k, v in structured_data.items()}
         with open(output_path, "w", encoding="utf-8") as f:
-            toml.dump({safe_model_name: structured_data}, f)
+            toml.dump({safe_model_name: dump_data}, f)
 
         logger.info(f"Successfully converted {input_file.name} -> {output_path}")
         return output_path

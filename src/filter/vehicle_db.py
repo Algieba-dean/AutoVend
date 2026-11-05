@@ -5,9 +5,11 @@ SQLite 车辆数据库
 所有值统一小写存储，字段名使用 LabelsTree.json 的规范名称。
 """
 
+import contextlib
 import os
 import re
 import sqlite3
+import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -15,6 +17,12 @@ from typing import Any, Dict, List, Optional
 from src.filter.label_registry import LabelRegistry
 from src.utils.config import config
 from src.utils.logger import get_logger
+
+
+class OptimisticLockError(Exception):
+    """Raised when an optimistic concurrency check detects a conflict."""
+    pass
+
 
 # TOML 字段名 → SQLite 规范字段名的映射（处理拼写不一致）
 TOML_FIELD_NORMALIZE: Dict[str, str] = {
@@ -48,11 +56,12 @@ class VehicleDB:
         self.registry = registry or LabelRegistry()
         self.columns = self.registry.get_all_db_columns()
 
+        self._lock = threading.RLock()
         self._conn: Optional[sqlite3.Connection] = None
         self._ensure_table()
 
     # ------------------------------------------------------------------
-    # 连接管理
+    # 连接与事务管理
     # ------------------------------------------------------------------
 
     @property
@@ -61,6 +70,21 @@ class VehicleDB:
             self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
             self._conn.row_factory = sqlite3.Row
         return self._conn
+
+    @contextlib.contextmanager
+    def transaction(self):
+        """显式 SQLite 事务管理，使用 BEGIN IMMEDIATE 防止并发脏读与写冲突"""
+        with self._lock:
+            self.conn.execute("BEGIN IMMEDIATE")
+            try:
+                yield self.conn
+                self.conn.commit()
+            except Exception:
+                try:
+                    self.conn.rollback()
+                except Exception:
+                    pass
+                raise
 
     def close(self) -> None:
         if self._conn is not None:
@@ -72,12 +96,18 @@ class VehicleDB:
     # ------------------------------------------------------------------
 
     def _ensure_table(self) -> None:
-        """创建车辆表（如果不存在）"""
+        """创建车辆表与持久化表（如果不存在）"""
         col_defs = ", ".join(f'"{col}" TEXT' for col in self.columns)
         create_sql = (
-            f'CREATE TABLE IF NOT EXISTS vehicles ("car_model" TEXT PRIMARY KEY, {col_defs})'
+            f'CREATE TABLE IF NOT EXISTS vehicles ("car_model" TEXT PRIMARY KEY, "version" INTEGER DEFAULT 1, {col_defs})'
         )
         self.conn.execute(create_sql)
+
+        # 确保旧数据库兼容增加 version 字段
+        try:
+            self.conn.execute('ALTER TABLE vehicles ADD COLUMN "version" INTEGER DEFAULT 1')
+        except sqlite3.OperationalError:
+            pass
 
         # 创建高频查询字段索引
         index_fields = [
@@ -250,10 +280,10 @@ class VehicleDB:
 
     def _upsert_row(self, row: Dict[str, str]) -> None:
         """插入或替换一行数据"""
-        all_cols = ["car_model"] + self.columns
+        all_cols = ["car_model", "version"] + self.columns
         placeholders = ", ".join("?" for _ in all_cols)
         col_names = ", ".join(f'"{c}"' for c in all_cols)
-        values = [row.get(c, "") for c in all_cols]
+        values = [row.get("car_model", ""), int(row.get("version", 1))] + [row.get(c, "") for c in self.columns]
 
         self.conn.execute(
             f"INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})",
@@ -310,10 +340,17 @@ class VehicleDB:
         return [r[0] for r in cursor.fetchall()]
 
     def get_by_model(self, car_model: str) -> Optional[Dict[str, Any]]:
-        """获取指定 car_model 的记录字典"""
+        """获取指定 car_model 的记录字典，包含规范化的 version 整数"""
         cursor = self.conn.execute("SELECT * FROM vehicles WHERE car_model = ?", (car_model,))
         row = cursor.fetchone()
-        return dict(row) if row else None
+        if not row:
+            return None
+        res = dict(row)
+        if "version" in res and res["version"] is not None:
+            res["version"] = int(res["version"])
+        else:
+            res["version"] = 1
+        return res
 
     def get_vehicle(self, car_model: str) -> Optional[Any]:
         """获取指定 car_model 并重构为 Vehicle 对象"""
@@ -349,28 +386,59 @@ class VehicleDB:
             raw_data=row,
         )
 
-    def upsert_vehicle(self, v_data: Dict[str, Any]) -> None:
-        """执行单条车辆记录的插入或更新 (INSERT OR REPLACE)"""
+    def upsert_vehicle(self, v_data: Dict[str, Any], expected_version: Optional[int] = None) -> int:
+        """
+        执行单条车辆记录的插入或更新，带乐观锁版本校验。
+        如果指定 expected_version 且记录已存在，校验当前版本是否匹配，不匹配则抛出 OptimisticLockError。
+        返回写入后的新版本号 (int)。
+        """
         car_model = v_data.get("car_model") or v_data.get("model")
         if not car_model:
-            return
+            return 0
 
-        row_data = {"car_model": str(car_model)}
-        for col in self.columns:
-            val = v_data.get(col)
-            row_data[col] = str(val).lower() if val is not None else ""
+        with self._lock:
+            cursor = self.conn.execute("SELECT version FROM vehicles WHERE car_model = ?", (str(car_model),))
+            existing = cursor.fetchone()
+            current_version = existing[0] if (existing and existing[0] is not None) else None
 
-        cols = list(row_data.keys())
-        placeholders = ", ".join("?" for _ in cols)
-        col_names = ", ".join(f'"{c}"' for c in cols)
-        sql = f"INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})"
-        self.conn.execute(sql, [row_data[c] for c in cols])
-        self.conn.commit()
+            if expected_version is not None and current_version is not None:
+                if current_version != expected_version:
+                    raise OptimisticLockError(
+                        f"Concurrent update conflict for {car_model}: "
+                        f"current version {current_version} != expected {expected_version}"
+                    )
 
-    def delete_vehicle(self, car_model: str) -> None:
-        """删除指定 car_model 的记录"""
-        self.conn.execute("DELETE FROM vehicles WHERE car_model = ?", (car_model,))
-        self.conn.commit()
+            if current_version is not None:
+                new_version = current_version + 1
+            else:
+                new_version = int(v_data.get("version", 1))
+
+            row_data = {"car_model": str(car_model), "version": new_version}
+            for col in self.columns:
+                val = v_data.get(col)
+                row_data[col] = str(val).lower() if val is not None else ""
+
+            cols = list(row_data.keys())
+            placeholders = ", ".join("?" for _ in cols)
+            col_names = ", ".join(f'"{c}"' for c in cols)
+            sql = f"INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})"
+            self.conn.execute(sql, [row_data[c] for c in cols])
+            self.conn.commit()
+            return new_version
+
+    def delete_vehicle(self, car_model: str, expected_version: Optional[int] = None) -> None:
+        """删除指定 car_model 的记录，支持乐观并发控制检查"""
+        with self._lock:
+            if expected_version is not None:
+                cursor = self.conn.execute("SELECT version FROM vehicles WHERE car_model = ?", (str(car_model),))
+                existing = cursor.fetchone()
+                if existing and existing[0] is not None and existing[0] != expected_version:
+                    raise OptimisticLockError(
+                        f"Concurrent delete conflict for {car_model}: "
+                        f"current version {existing[0]} != expected {expected_version}"
+                    )
+            self.conn.execute("DELETE FROM vehicles WHERE car_model = ?", (str(car_model),))
+            self.conn.commit()
 
     def get_all_models(self) -> List[str]:
         """获取所有 car_model 列表"""

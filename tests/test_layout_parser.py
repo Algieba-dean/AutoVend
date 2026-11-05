@@ -143,10 +143,12 @@ def test_azure_document_intelligence_engine_adapter():
 
     tables = azure_engine.extract_tables(PDF_SAMPLE_PATH)
     assert len(tables) >= 2
-    assert tables[0].extraction_engine == "azure_doc_intelligence_local_compat"
+    assert tables[0].extraction_engine == "pymupdf_pdfplumber"
+    assert tables[0].is_degraded is True
 
     doc = azure_engine.parse(PDF_SAMPLE_PATH)
-    assert doc.metadata["engine"] == "azure_document_intelligence_compat"
+    assert doc.metadata["engine"] == "pymupdf_pdfplumber"
+    assert doc.metadata.get("is_degraded") is True
 
 
 def test_unstructured_and_docling_adapters():

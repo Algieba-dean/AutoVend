@@ -157,6 +157,7 @@ class TableBlock:
         metadata: Optional[Dict[str, Any]] = None,
         page_bboxes: Optional[Dict[int, BoundingBox]] = None,
         header_rows_count: Optional[int] = None,
+        is_degraded: bool = False,
     ):
         self.page_num = page_num
         self.bbox = bbox
@@ -167,6 +168,7 @@ class TableBlock:
         self.is_stitched = is_stitched
         self.footnotes = [str(f).strip() for f in footnotes if str(f).strip()] if footnotes else []
         self.metadata = metadata or {}
+        self.is_degraded = is_degraded or bool(self.metadata.get("is_degraded", False))
         self.page_bboxes: Dict[int, BoundingBox] = (
             page_bboxes if page_bboxes is not None else ({self.page_num: self.bbox} if self.bbox else {})
         )
@@ -782,6 +784,7 @@ class TableBlock:
             "records": self.to_records(),
             "markdown": self.to_markdown(),
             "metadata": self.metadata,
+            "is_degraded": self.is_degraded,
         }
 
 
@@ -1443,20 +1446,23 @@ class BorderlessTableDetector:
         for g in y_groups:
             g.sort(key=lambda it: it[0][0])
             if len(g) >= 3:
-                has_sentence = any("。" in t or len(t) > 40 for _, t in g)
-                candidate_rows.append(None if has_sentence else g)
+                # 3+ columns: valid table row candidate; allow cells with periods, full sentences, or long specs
+                candidate_rows.append(g)
             elif len(g) == 2:
-                # 2-column table is only valid if cells are concise key-value pairs, not narrative sentences
-                is_narrative = any(
-                    "。" in t or "，" in t or len(t) > 18 or (b[2] - b[0] > 120.0)
-                    for b, t in g
-                )
-                candidate_rows.append(None if is_narrative else g)
+                # 2-column table candidate: key-value pair or 2-column spec.
+                # Must NOT be dual-column prose layout (where both columns are wide narrative text blocks).
+                b0, t0 = g[0]
+                b1, t1 = g[1]
+                w0 = b0[2] - b0[0]
+                w1 = b1[2] - b1[0]
+                is_dual_column_narrative = (w0 > 160.0 and w1 > 160.0) or (w0 > page_width * 0.28 and w1 > page_width * 0.28)
+                is_key_too_wide = w0 > 180.0 or w0 > page_width * 0.35
+                candidate_rows.append(None if (is_dual_column_narrative or is_key_too_wide) else g)
             else:
                 # Single line with tab or wide whitespace delimiters
                 parts = re.split(r"\s{3,}|\t", g[0][1])
                 parts = [p.strip() for p in parts if p.strip()]
-                if len(parts) >= 3 and not any("。" in p for p in parts):
+                if len(parts) >= 2:
                     l_x0, l_y0, l_x1, l_y1 = g[0][0]
                     total_w = l_x1 - l_x0
                     slot_w = total_w / len(parts)
@@ -1495,15 +1501,24 @@ class BorderlessTableDetector:
                         if after_g[0][0][1] - seq_bottom <= 30.0:
                             footnotes.append(after_g[0][1])
 
-                # Determine column anchors
+                # Determine column anchors with stable cluster centroid tracking
                 all_x0s = [b[0] for row in seq for b, _ in row]
                 all_x0s.sort()
-                anchors: List[float] = []
+                clusters: List[List[float]] = []
                 for x in all_x0s:
-                    if not anchors or abs(x - anchors[-1]) > 25.0:
-                        anchors.append(x)
+                    matched_cluster = None
+                    for cl in clusters:
+                        centroid = sum(cl) / len(cl)
+                        if abs(x - centroid) <= 25.0:
+                            matched_cluster = cl
+                            break
+                    if matched_cluster is not None:
+                        matched_cluster.append(x)
                     else:
-                        anchors[-1] = (anchors[-1] + x) / 2.0
+                        clusters.append([x])
+
+                # Stable column anchors using cluster medians to prevent coordinate drift
+                anchors = sorted([sorted(cl)[len(cl) // 2] for cl in clusters])
 
                 if len(anchors) >= 2:
                     table_rows: List[List[str]] = []
@@ -2186,7 +2201,9 @@ class AzureDocumentIntelligenceEngine(BaseLayoutEngine):
             logger.info("Azure Document Intelligence credentials not found; delegating to PyMuPDF/pdfplumber.")
             tables = self._fallback_engine.extract_tables(file_path)
             for t in tables:
-                t.extraction_engine = "azure_doc_intelligence_local_compat"
+                t.extraction_engine = "pymupdf_pdfplumber"
+                t.is_degraded = True
+                t.metadata["is_degraded"] = True
             return tables
 
         # Live Azure Document Intelligence invocation
@@ -2242,19 +2259,40 @@ class AzureDocumentIntelligenceEngine(BaseLayoutEngine):
             return tables
         except Exception as e:
             logger.error(f"Azure Document Intelligence call failed: {e}. Falling back to local hybrid engine.")
-            return self._fallback_engine.extract_tables(file_path)
+            tables = self._fallback_engine.extract_tables(file_path)
+            for t in tables:
+                t.extraction_engine = "pymupdf_pdfplumber"
+                t.is_degraded = True
+                t.metadata["is_degraded"] = True
+            return tables
 
     def parse(self, file_path: Path) -> ParsedDocument:
         if not self.is_configured:
             doc = self._fallback_engine.parse(file_path)
-            doc.metadata["engine"] = "azure_document_intelligence_compat"
+            doc.metadata["engine"] = "pymupdf_pdfplumber"
+            doc.metadata["is_degraded"] = True
+            for t in doc.tables:
+                t.extraction_engine = "pymupdf_pdfplumber"
+                t.is_degraded = True
+                t.metadata["is_degraded"] = True
             return doc
 
-        tables = self.extract_tables(file_path)
-        doc = self._fallback_engine.parse(file_path)
-        doc.tables = tables
-        doc.metadata["engine"] = "azure_document_intelligence_live"
-        return doc
+        try:
+            tables = self.extract_tables(file_path)
+            doc = self._fallback_engine.parse(file_path)
+            doc.tables = tables
+            doc.metadata["engine"] = "azure_document_intelligence_live"
+            return doc
+        except Exception as e:
+            logger.error(f"Azure Document Intelligence live parse failed: {e}; falling back to PyMuPDF/pdfplumber.")
+            doc = self._fallback_engine.parse(file_path)
+            doc.metadata["engine"] = "pymupdf_pdfplumber"
+            doc.metadata["is_degraded"] = True
+            for t in doc.tables:
+                t.extraction_engine = "pymupdf_pdfplumber"
+                t.is_degraded = True
+                t.metadata["is_degraded"] = True
+            return doc
 
 
 class UnstructuredEngine(BaseLayoutEngine):
@@ -2557,9 +2595,10 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         child_conn = None
 
         try:
-            # Prefer spawn context to avoid POSIX fork deadlocks in multi-threaded runtimes.
-            # Fallback to fork context if target/args cannot be pickled or if spawn child fails during startup.
-            for ctx_method in ("spawn", "fork"):
+            # Prefer fork context on POSIX to avoid 2-3s cold-start spawn overhead.
+            # Fallback to spawn context if fork is unavailable or if target requires fresh process.
+            available_methods = ("fork", "spawn") if "fork" in mp.get_all_start_methods() else ("spawn",)
+            for ctx_method in available_methods:
                 try:
                     ctx = mp.get_context(ctx_method)
                     parent_conn, child_conn = ctx.Pipe()
@@ -2579,7 +2618,7 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                             parent_conn.close()
                         except Exception:
                             pass
-                    if ctx_method == "fork":
+                    if ctx_method == available_methods[-1]:
                         raise
                     continue
 
@@ -2587,17 +2626,14 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                 result_payload = None
                 has_result = False
 
-                # Continuously poll to drain pipe, preventing OS pipe buffer deadlocks on large payloads
-                while time.time() - start_time < timeout_seconds:
-                    if parent_conn.poll(0.05):
-                        has_result = True
-                        result_payload = parent_conn.recv()
-                        break
-                    if not proc.is_alive():
-                        if parent_conn.poll():
-                            has_result = True
-                            result_payload = parent_conn.recv()
-                        break
+                # Non-busy blocking poll: sleeps in OS poll/select syscall without consuming CPU
+                remaining = max(0.0, timeout_seconds - (time.time() - start_time))
+                if parent_conn.poll(remaining):
+                    has_result = True
+                    result_payload = parent_conn.recv()
+                elif not proc.is_alive() and parent_conn.poll(0.01):
+                    has_result = True
+                    result_payload = parent_conn.recv()
 
                 if not has_result:
                     if proc.is_alive():
@@ -2611,7 +2647,10 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                         if proc.is_alive():
                             proc.kill()
                             proc.join(timeout=1.0)
-                        parent_conn.close()
+                        try:
+                            parent_conn.close()
+                        except Exception:
+                            pass
                         try:
                             proc.close()
                         except Exception:
@@ -2621,13 +2660,15 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                         )
                     else:
                         exit_code = proc.exitcode
-                        parent_conn.close()
+                        try:
+                            parent_conn.close()
+                        except Exception:
+                            pass
                         try:
                             proc.close()
                         except Exception:
                             pass
-                        if ctx_method == "spawn" and exit_code != 0:
-                            # Spawn child terminated during bootstrap (e.g. unpicklable dynamic closure); retry with fork
+                        if ctx_method != available_methods[-1] and exit_code != 0:
                             continue
                         raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
 
@@ -2639,7 +2680,10 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                     if proc.is_alive():
                         proc.kill()
                         proc.join(timeout=0.5)
-                parent_conn.close()
+                try:
+                    parent_conn.close()
+                except Exception:
+                    pass
                 try:
                     proc.close()
                 except Exception:
@@ -2651,7 +2695,12 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                         f_path = value["__ipc_file__"]
                         if Path(f_path).exists():
                             with open(f_path, "rb") as f:
-                                return pickle.loads(f.read())
+                                payload_data = pickle.loads(f.read())
+                            try:
+                                Path(f_path).unlink()
+                            except Exception:
+                                pass
+                            return payload_data
                     return value
                 raise value
         finally:

@@ -20,6 +20,7 @@ import openpyxl
 import pytest
 from PIL import Image
 
+from src.filter.vehicle_db import VehicleDB
 from src.ingestion.freshness import DataFreshnessEngine, FreshnessStatus
 from src.ingestion.hierarchical_chunker import ChunkType, HierarchicalChunker
 from src.ingestion.layout_parser import BoundingBox
@@ -263,7 +264,15 @@ def test_image_diagnostics_and_exif():
 
 def test_image_parser_with_ocr():
     img_file = SAMPLE_DIR / "Aito_M9_Spec_Sheet.png"
-    parser = ImageParser(ocr_engine=OfflineMockOCREngine())
+    mock_lines = [
+        ("问界 M9 旗舰车型配置规格表 (AITO M9 Spec Sheet)", 40, 50, 720, 80),
+        ("车身尺寸: 5230mm × 1999mm × 1800mm, 轴距: 3110mm", 40, 100, 680, 125),
+        ("动力总成: 前后双电机智能四驱系统, 最大总功率 365kW / 390kW", 40, 140, 710, 165),
+        ("纯电续航: CLTC 综合工况 630km (纯电版) / 综合续航 1402km (增程版)", 40, 180, 740, 205),
+        ("智驾系统: 华为乾崑智驾 ADS 3.0 高阶智能驾驶辅助", 40, 220, 650, 245),
+        ("指导售价: 46.98 万元 - 56.98 万元 (增程Max/Ultra, 纯电Max/Ultra)", 40, 260, 700, 285),
+    ]
+    parser = ImageParser(ocr_engine=OfflineMockOCREngine(mock_lines=mock_lines))
     doc = parser.parse(img_file)
 
     assert doc.metadata["format"] == "image"
@@ -278,6 +287,16 @@ def test_image_parser_with_ocr():
     assert t.row_count >= 3
     assert "车身尺寸" in t.to_markdown()
     assert "华为乾崑智驾" in t.to_markdown()
+
+
+def test_offline_mock_ocr_honest_degradation_when_no_mock_lines():
+    """Verify that OfflineMockOCREngine honestly degrades instead of matching filename substrings."""
+    img_file = SAMPLE_DIR / "Aito_M9_Spec_Sheet.png"
+    engine = OfflineMockOCREngine()
+    res = engine.extract_text_and_boxes(img_file)
+    assert res.metadata.get("is_degraded") is True
+    assert res.full_text == ""
+    assert res.lines == []
 
 
 def test_ocr_custom_adapter():
@@ -544,9 +563,10 @@ def test_parent_child_retriever_multi_format():
     assert "925V" in formatted_pptx or "神玑" in formatted_pptx
 
 
-def test_incremental_pipeline_and_freshness_engine():
+def test_incremental_pipeline_and_freshness_engine(tmp_path):
     freshness = DataFreshnessEngine()
-    pipeline = IncrementalIngestionPipeline(freshness_engine=freshness)
+    test_db = VehicleDB(db_path=str(tmp_path / "freshness_test.db"))
+    pipeline = IncrementalIngestionPipeline(db=test_db, freshness_engine=freshness)
 
     csv_path = SAMPLE_DIR / "Battery_Degradation_4680.csv"
 
@@ -661,8 +681,9 @@ def test_vision_api_ocr_engine_adapter():
 
     img_file = SAMPLE_DIR / "Aito_M9_Spec_Sheet.png"
     res = vision_engine.extract_text_and_boxes(img_file)
-    assert res.metadata["engine"] == "vision_api_offline_mock"
-    assert "问界 M9" in res.full_text
+    assert res.metadata["engine"] == "vision_api"
+    assert res.metadata.get("is_degraded") is True
+    assert res.full_text == ""
 
     class MockCompletions:
         def create(self, model, messages, **kwargs):
