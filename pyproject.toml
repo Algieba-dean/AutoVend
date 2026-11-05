@@ -56,7 +56,12 @@ dependencies = [
     "openpyxl>=3.1.5",
     "python-docx>=1.2.0",
     "python-pptx>=1.0.2",
+    # Enterprise document parsing & OCR
+    "docling>=2.0.0",
+    "paddlepaddle>=2.6.0",
+    "paddleocr>=2.7.0",
 ]
+
 
 [project.optional-dependencies]
 dev = [

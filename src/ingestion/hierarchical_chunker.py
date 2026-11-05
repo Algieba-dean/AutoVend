@@ -49,6 +49,24 @@ class Chunk:
         self.token_count = token_count or self.estimate_tokens(content)
         self.metadata = metadata or {}
 
+    @property
+    def page_number(self) -> int:
+        return int(self.metadata.get("page_number", self.metadata.get("page_num", 1)))
+
+    @property
+    def bounding_box(self) -> List[float]:
+        bbox = self.metadata.get("bounding_box")
+        if isinstance(bbox, (list, tuple)) and len(bbox) == 4:
+            return [float(x) for x in bbox]
+        raw_b = self.metadata.get("bbox")
+        if isinstance(raw_b, dict) and "x0" in raw_b and "top" in raw_b:
+            return [float(raw_b["x0"]), float(raw_b["top"]), float(raw_b["x1"]), float(raw_b["bottom"])]
+        return [0.0, 0.0, 0.0, 0.0]
+
+    @property
+    def heading_breadcrumb(self) -> List[str]:
+        return list(self.metadata.get("heading_breadcrumb", self.metadata.get("breadcrumb_path", [])))
+
     @staticmethod
     def estimate_tokens(text: str) -> int:
         """
@@ -71,6 +89,9 @@ class Chunk:
             "chunk_type": self.chunk_type.value,
             "token_count": self.token_count,
             "content": self.content,
+            "page_number": self.page_number,
+            "bounding_box": self.bounding_box,
+            "heading_breadcrumb": self.heading_breadcrumb,
             "metadata": self.metadata,
         }
 
@@ -190,6 +211,9 @@ class HierarchicalChunker:
         table_md = tbl.to_markdown(include_title=True)
         full_content = header_context + table_md
 
+        bbox_coords = [tbl.bbox.x0, tbl.bbox.top, tbl.bbox.x1, tbl.bbox.bottom] if tbl.bbox else [0.0, 0.0, 0.0, 0.0]
+        crumbs = tbl.metadata.get("breadcrumb_path") or [doc_topic, section_title]
+
         metadata = {
             "vehicle_model": doc_topic,
             "section_title": section_title,
@@ -198,7 +222,11 @@ class HierarchicalChunker:
             "pages": getattr(tbl, "pages", [tbl.page_num]),
             "table_index": table_idx,
             "page_num": tbl.page_num,
+            "page_number": tbl.page_num,
             "bbox": tbl.bbox.to_dict() if tbl.bbox else None,
+            "bounding_box": bbox_coords,
+            "heading_breadcrumb": crumbs,
+            "breadcrumb_path": crumbs,
             "row_count": tbl.row_count,
             "col_count": tbl.col_count,
             "headers": tbl.headers,
@@ -335,6 +363,9 @@ class HierarchicalChunker:
         doc_format = getattr(doc, "metadata", {}).get("format")
         if doc_format and "format" not in sec_meta:
             sec_meta["format"] = doc_format
+        sec_bbox_coords = [sec.bbox.x0, sec.bbox.top, sec.bbox.x1, sec.bbox.bottom] if getattr(sec, "bbox", None) else [0.0, 0.0, 0.0, 0.0]
+        crumbs = breadcrumbs or [sec.title]
+
         for p_idx, p_text in enumerate(parent_groups):
             p_id = f"p_{uuid.uuid4().hex[:10]}"
             enriched_parent_content = (
@@ -348,9 +379,13 @@ class HierarchicalChunker:
                 metadata={
                     "vehicle_model": vehicle_model,
                     "section_title": sec.title,
-                    "breadcrumb_path": breadcrumbs or [sec.title],
+                    "breadcrumb_path": crumbs,
+                    "heading_breadcrumb": crumbs,
                     "section_level": sec.level,
                     "page_num": sec.page_num,
+                    "page_number": sec.page_num,
+                    "bbox": sec.bbox.to_dict() if getattr(sec, "bbox", None) else None,
+                    "bounding_box": sec_bbox_coords,
                     "is_table": False,
                     **sec_meta,
                 },

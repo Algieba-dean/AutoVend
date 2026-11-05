@@ -2275,38 +2275,210 @@ class UnstructuredEngine(BaseLayoutEngine):
         return self._fallback.parse(file_path)
 
 
+class RealDoclingAdapter(BaseLayoutEngine):
+    """
+    Direct proxy to RealDoclingAdapter in docling_adapter.py.
+    """
+
+    def __init__(self, use_gpu: bool = False, **kwargs: Any):
+        super().__init__()
+        from src.ingestion.docling_adapter import RealDoclingAdapter as _DoclingImpl
+        self._impl = _DoclingImpl(use_gpu=use_gpu, **kwargs)
+
+    def parse(self, file_path: Union[str, Path]) -> ParsedDocument:
+        return self._impl.parse(Path(file_path))
+
+    def extract_tables(self, file_path: Union[str, Path]) -> List[TableBlock]:
+        return self._impl.extract_tables(Path(file_path))
+
+
+class RealPaddleOCRAdapter(BaseLayoutEngine):
+    """
+    Direct proxy to RealPaddleOCRAdapter in paddle_ocr_adapter.py.
+    """
+
+    def __init__(self, use_gpu: bool = False, **kwargs: Any):
+        super().__init__()
+        from src.ingestion.paddle_ocr_adapter import RealPaddleOCRAdapter as _PaddleImpl
+        self._impl = _PaddleImpl(use_gpu=use_gpu, **kwargs)
+
+    def parse(self, file_path: Union[str, Path]) -> ParsedDocument:
+        return self._impl.parse(Path(file_path))
+
+    def extract_tables(self, file_path: Union[str, Path]) -> List[TableBlock]:
+        return self._impl.extract_tables(Path(file_path))
+
+    def parse_scanned_pdf(
+        self, file_path: Path, page_numbers: Optional[Sequence[int]] = None
+    ) -> ParsedDocument:
+        return self._impl.parse_scanned_pdf(file_path, page_numbers=page_numbers)
+
+
 class MinerUDoclingEngine(BaseLayoutEngine):
     """
-    Enterprise & Open-Source Connector for MinerU (magic-pdf) and Docling (IBM).
-    Provides structured layout restoration with Markdown table conversions.
+    Enterprise & Open-Source Connector for MinerU and IBM Docling.
+    Integrated with real RealDoclingAdapter SDK backend.
     """
 
-    def __init__(self, engine_name: str = "docling"):
+    def __init__(self, engine_name: str = "docling", **kwargs: Any):
+        super().__init__()
         self.engine_name = engine_name
+        self._docling = RealDoclingAdapter(**kwargs)
         self._fallback = PyMuPDFPlumberEngine()
 
-    def extract_tables(self, file_path: Path) -> List[TableBlock]:
-        # MinerU / Docling integration interface
-        logger.info(f"Using {self.engine_name} adapter for layout extraction on {file_path.name}")
-        tables = self._fallback.extract_tables(file_path)
+    def extract_tables(self, file_path: Union[str, Path]) -> List[TableBlock]:
+        logger.info(f"Using {self.engine_name} adapter for layout extraction on {Path(file_path).name}")
+        tables = self._docling.extract_tables(file_path)
         for t in tables:
             t.extraction_engine = f"{self.engine_name}_adapter"
         return tables
 
-    def parse(self, file_path: Path) -> ParsedDocument:
-        doc = self._fallback.parse(file_path)
+    def parse(self, file_path: Union[str, Path]) -> ParsedDocument:
+        doc = self._docling.parse(file_path)
         doc.metadata["engine"] = f"{self.engine_name}_adapter"
         return doc
+
+
+class DualTrackLayoutEngine(BaseLayoutEngine):
+    """
+    Production Dual-Track Isolation Pipeline (双轨隔离分流流水线):
+    1. Fast Channel: genuine_chars >= 30/page -> IBM Docling (TableFormer, do_ocr=False).
+    2. Heavy OCR Failover Channel: genuine_chars < 30/page -> PaddleOCR PP-Structure (CPU-isolated).
+    Strict page-level hard routing avoids redundant computation and eliminates PyTorch/Paddle GPU conflicts.
+    """
+
+    def __init__(
+        self,
+        char_density_threshold: int = 30,
+        docling_kwargs: Optional[Dict[str, Any]] = None,
+        paddle_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__()
+        self.threshold = char_density_threshold
+        self.docling = RealDoclingAdapter(**(docling_kwargs or {}))
+        self.paddle = RealPaddleOCRAdapter(**(paddle_kwargs or {}))
+        self._fallback = PyMuPDFPlumberEngine()
+
+    def check_density(self, file_path: Path) -> Dict[str, Any]:
+        """Classify each page as digital-native (>= threshold) or scanned (< threshold)."""
+        suffix = file_path.suffix.lower()
+        if suffix in [".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".webp"]:
+            return {
+                "total_pages": 1,
+                "digital_pages": [],
+                "scanned_pages": [1],
+                "page_counts": {1: 0},
+            }
+
+        import fitz
+
+        doc = fitz.open(str(file_path))
+        digital_pages: List[int] = []
+        scanned_pages: List[int] = []
+        page_counts: Dict[int, int] = {}
+
+        for p_idx, page in enumerate(doc):
+            p_num = p_idx + 1
+            txt = page.get_text() or ""
+            genuine_chars = sum(1 for c in txt if not c.isspace())
+            page_counts[p_num] = genuine_chars
+            if genuine_chars >= self.threshold:
+                digital_pages.append(p_num)
+            else:
+                scanned_pages.append(p_num)
+
+        return {
+            "total_pages": len(doc),
+            "digital_pages": digital_pages,
+            "scanned_pages": scanned_pages,
+            "page_counts": page_counts,
+        }
+
+    def parse(self, file_path: Union[str, Path]) -> ParsedDocument:
+        file_path = Path(file_path)
+        try:
+            density_info = self.check_density(file_path)
+        except Exception as e:
+            logger.warning(f"Could not compute page character density for {file_path}: {e}")
+            return self._fallback.parse(file_path)
+
+        digital_pages = density_info["digital_pages"]
+        scanned_pages = density_info["scanned_pages"]
+        total_pages = density_info["total_pages"]
+
+        logger.info(
+            f"DualTrack routing for {file_path.name}: "
+            f"{len(digital_pages)} digital pages (>= {self.threshold} chars) -> Docling, "
+            f"{len(scanned_pages)} scanned pages (< {self.threshold} chars) -> PaddleOCR"
+        )
+
+        # 1. Pure Digital Track: all pages >= threshold
+        if digital_pages and not scanned_pages:
+            doc = self.docling.parse(file_path)
+            doc.metadata["dual_track_route"] = "all_digital_docling"
+            return doc
+
+        # 2. Pure Scanned Track: all pages < threshold
+        if scanned_pages and not digital_pages:
+            doc = self.paddle.parse(file_path)
+            doc.metadata["dual_track_route"] = "all_scanned_paddleocr"
+            return doc
+
+        # 3. Mixed Document: Page-level Hard Routing
+        # Digital pages -> Docling; Scanned pages -> PaddleOCR (CPU)
+        try:
+            docling_doc = self.docling.parse(file_path)
+            paddle_doc = self.paddle.parse_scanned_pdf(file_path, page_numbers=scanned_pages)
+
+            # Filter docling elements to digital pages
+            filtered_tables = [
+                t for t in docling_doc.tables if t.page_num in digital_pages
+            ] + [
+                t for t in paddle_doc.tables if t.page_num in scanned_pages
+            ]
+            filtered_sections = [
+                s for s in docling_doc.sections if s.page_num in digital_pages
+            ] + [
+                s for s in paddle_doc.sections if s.page_num in scanned_pages
+            ]
+
+            filtered_tables.sort(key=lambda t: t.page_num)
+            filtered_sections.sort(key=lambda s: s.page_num)
+
+            combined_raw = "\n\n".join(s.content for s in filtered_sections)
+
+            return ParsedDocument(
+                title=file_path.stem,
+                sections=filtered_sections,
+                tables=filtered_tables,
+                pages=total_pages,
+                raw_text=combined_raw,
+                metadata={
+                    "engine": "dual_track_isolation_pipeline",
+                    "dual_track_route": "mixed_pages",
+                    "digital_pages": digital_pages,
+                    "scanned_pages": scanned_pages,
+                    "density_page_counts": density_info["page_counts"],
+                },
+            )
+        except Exception as e:
+            logger.error(f"Dual-track mixed routing failed for {file_path}: {e}; falling back to hybrid")
+            return self._fallback.parse(file_path)
+
+    def extract_tables(self, file_path: Union[str, Path]) -> List[TableBlock]:
+        return self.parse(file_path).tables
 
 
 class LayoutAwareParser:
     """
     High-level facade for Layout-Aware Parsing in AutoVend.
     Dispatches to appropriate engine:
+    - 'dual_track' / 'auto': Production Dual-Track Isolation Pipeline (Docling + PaddleOCR)
+    - 'docling': IBM Docling (TableFormer, do_ocr=False)
+    - 'paddle' / 'paddleocr': PaddleOCR PP-Structure (CPU-isolated)
     - 'hybrid' (default): PyMuPDF + pdfplumber
     - 'azure': Azure Document Intelligence (Form Recognizer)
     - 'unstructured': Unstructured.io
-    - 'docling': IBM Docling
     - 'mineru': Open-source MinerU
     """
 
@@ -2316,7 +2488,13 @@ class LayoutAwareParser:
             self.engine: BaseLayoutEngine = AzureDocumentIntelligenceEngine(**kwargs)
         elif self.engine_type in ["unstructured", "unstructured_io"]:
             self.engine = UnstructuredEngine(**kwargs)
-        elif self.engine_type in ["docling", "mineru", "marker"]:
+        elif self.engine_type in ["docling"]:
+            self.engine = RealDoclingAdapter(**kwargs)
+        elif self.engine_type in ["paddle", "paddleocr", "pp_structure"]:
+            self.engine = RealPaddleOCRAdapter(**kwargs)
+        elif self.engine_type in ["dual_track", "dual", "dualtrack", "auto"]:
+            self.engine = DualTrackLayoutEngine(**kwargs)
+        elif self.engine_type in ["mineru", "marker"]:
             self.engine = MinerUDoclingEngine(engine_name=self.engine_type, **kwargs)
         else:
             self.engine = PyMuPDFPlumberEngine(**kwargs)
@@ -2326,3 +2504,4 @@ class LayoutAwareParser:
 
     def extract_tables(self, file_path: Union[str, Path]) -> List[TableBlock]:
         return self.engine.extract_tables(Path(file_path))
+

@@ -241,3 +241,60 @@ def test_byd_yangwang_u9_hierarchical_chunking():
     # Verify context enrichment contains Yangwang U9
     for t_chunk in res["tables"]:
         assert "仰望U9" in t_chunk.content or "Yangwang U9" in t_chunk.content
+
+
+def test_physical_anchor_propagation_across_all_chunks():
+    """Verify that EVERY chunk produced carries page_number, bounding_box: [x0, y0, x1, y1], and heading_breadcrumb."""
+    tbl = TableBlock(
+        page_num=2,
+        bbox=BoundingBox(50, 100, 500, 300, page=2),
+        rows=[
+            ["系统", "规格", "状态"],
+            ["激光雷达", "128线", "标配"],
+            ["毫米波雷达", "5个", "标配"],
+        ],
+        title="智驾传感器配置表",
+    )
+    sec = TextSection(
+        title="高阶智能驾驶辅助",
+        content="支持高速领航辅助与城市领航辅助系统。采用双Orin-X高算力芯片。",
+        level=2,
+        page_num=2,
+        bbox=BoundingBox(50, 350, 500, 600, page=2),
+        breadcrumb_path=["整车电子电气架构", "智能驾驶", "高阶智能驾驶辅助"],
+    )
+    doc = ParsedDocument(
+        title="智驾白皮书",
+        vehicle_model="测试车型",
+        tables=[tbl],
+        sections=[sec],
+    )
+
+    chunker = HierarchicalChunker()
+    res = chunker.chunk_document(doc)
+
+    assert len(res["all"]) > 0
+    for chunk in res["all"]:
+        # 1. page_number
+        assert isinstance(chunk.page_number, int)
+        assert chunk.page_number >= 1
+        assert chunk.metadata["page_number"] == chunk.page_number
+
+        # 2. bounding_box: [x0, y0, x1, y1]
+        assert isinstance(chunk.bounding_box, list)
+        assert len(chunk.bounding_box) == 4
+        assert all(isinstance(coord, float) for coord in chunk.bounding_box)
+        assert chunk.metadata["bounding_box"] == chunk.bounding_box
+
+        # 3. heading_breadcrumb
+        assert isinstance(chunk.heading_breadcrumb, list)
+        assert len(chunk.heading_breadcrumb) >= 1
+        assert all(isinstance(b, str) for b in chunk.heading_breadcrumb)
+        assert chunk.metadata["heading_breadcrumb"] == chunk.heading_breadcrumb
+
+        # 4. to_dict includes physical anchors
+        d = chunk.to_dict()
+        assert d["page_number"] == chunk.page_number
+        assert d["bounding_box"] == chunk.bounding_box
+        assert d["heading_breadcrumb"] == chunk.heading_breadcrumb
+

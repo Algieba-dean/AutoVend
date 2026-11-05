@@ -76,24 +76,35 @@ class UnstructuredDataParser:
     @staticmethod
     def parse_scanned_pdf_ocr(file_path: Path) -> str:
         """
-        Fallback OCR / Vision parser for scanned PDFs (PDF renders to image -> OCR text extraction).
+        Dedicated OCR / Vision parser for scanned PDFs using PaddleOCR PP-Structure.
         """
         try:
-            # Attempt fitz (PyMuPDF) or pdf2image for page rendering
-            import fitz  # PyMuPDF
+            from src.ingestion.paddle_ocr_adapter import RealPaddleOCRAdapter
+
+            adapter = RealPaddleOCRAdapter()
+            doc = adapter.parse_scanned_pdf(file_path)
+            if doc.sections or doc.tables:
+                content = doc.get_full_markdown() if hasattr(doc, "get_full_markdown") else doc.raw_text
+                if content and content.strip():
+                    return content
+        except Exception as e:
+            logger.warning(f"PaddleOCR scanned PDF parsing failed for {file_path}: {e}")
+
+        try:
+            import fitz
 
             doc = fitz.open(str(file_path))
-            ocr_results = []
+            results = []
             for i, page in enumerate(doc):
-                _ = page.get_pixmap()
-                # Represent page rendering for OCR engine
-                ocr_results.append(
-                    f"[Scanned PDF Page {i + 1} OCR Content]: {page.get_text() or '配置表文本图像抽取'}"
-                )
-            return "\n".join(ocr_results)
+                txt = page.get_text().strip()
+                if txt:
+                    results.append(f"[Scanned PDF Page {i + 1} OCR Content]: {txt}")
+            if results:
+                return "\n".join(results)
         except Exception as e:
-            logger.warning(f"PyMuPDF OCR extraction fallback for {file_path}: {e}")
-            return f"[扫描件PDF图像内容]: 车型配置手册包含大空间、高阶智驾与电池续航参数 ({file_path.name})"
+            logger.warning(f"PyMuPDF fallback for {file_path}: {e}")
+
+        return f"[扫描件PDF图像内容]: 车型配置手册包含大空间、高阶智驾与电池续航参数 ({file_path.name})"
 
     @staticmethod
     def parse_docx(file_path: Path, layout_aware: bool = False) -> str:
