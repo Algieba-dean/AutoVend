@@ -11,7 +11,7 @@ Implements 5 core RAG query transformation strategies:
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -37,17 +37,54 @@ class QueryTransformationEngine:
 
         # Pronoun coreference resolution heuristic with entity isolation
         pronouns = [
-            "它",
-            "这车",
-            "这几款",
-            "前面的",
+            "刚才提到的那款车",
+            "刚才提到的那台车",
+            "刚才提到的那辆车",
+            "刚才提到的车",
             "刚才提到的",
-            "第一款",
-            "上一款",
-            "前一个",
-            "上一台",
+            "刚才那台车",
+            "刚才那辆车",
+            "刚才那款车",
             "刚才那台",
+            "刚才那辆",
+            "刚才那个",
+            "第一款",
+            "第二款",
+            "上一款车",
+            "上一台车",
+            "上一辆车",
+            "上一款",
+            "上一台",
+            "上一个",
+            "前一款车",
+            "前一台车",
+            "前一辆车",
+            "前一款",
+            "前一台",
+            "前一个",
+            "后一款车",
+            "后一台车",
+            "后一辆车",
+            "后一款",
+            "后一台",
+            "后一个",
+            "下一款",
+            "下一台",
+            "下一个",
+            "前面的",
+            "后面的",
+            "这款车",
+            "这台车",
+            "这辆车",
+            "这个车",
+            "这几款",
+            "这车",
+            "那款车",
+            "那台车",
+            "那辆车",
             "那个车",
+            "那车",
+            "它",
         ]
         if any(p in rewritten for p in pronouns) and conversation_history:
             # Extract distinct car models or brands mentioned in conversation history
@@ -61,11 +98,23 @@ class QueryTransformationEngine:
                 for m in re.findall(brand_model_pattern, conversation_history)
                 if m.strip()
             ]
-            # Deduplicate preserving order
+            # Canonicalize mentions: map abbreviation/substring models (e.g. 'Model Y', 'SU7')
+            # to their full brand+model forms (e.g. '特斯拉 Model Y', '小米SU7') in the same context
+            longest_first = sorted(set(raw_mentions), key=len, reverse=True)
+            canon_map = {}
+            for m in raw_mentions:
+                canonical = m
+                for full in longest_first:
+                    if m != full and m in full:
+                        canonical = full
+                        break
+                canon_map[m] = canonical
+
             unique_cars: List[str] = []
             for m in raw_mentions:
-                if m not in unique_cars:
-                    unique_cars.append(m)
+                c = canon_map[m]
+                if c not in unique_cars:
+                    unique_cars.append(c)
 
             if unique_cars:
                 # Detect comparative intent
@@ -91,30 +140,38 @@ class QueryTransformationEngine:
                 explicit_in_query = [c for c in unique_cars if c in rewritten]
                 available_cars = [c for c in unique_cars if c not in explicit_in_query]
 
-                # Match pronoun spans in rewritten text (longest first to avoid partial substring clash)
+                # Match non-overlapping pronoun spans in rewritten text (longest first)
                 pronouns_sorted = sorted(pronouns, key=len, reverse=True)
+                matched_spans: List[Tuple[int, int, str]] = []
+                for p in pronouns_sorted:
+                    idx = 0
+                    while True:
+                        pos = rewritten.find(p, idx)
+                        if pos == -1:
+                            break
+                        span_end = pos + len(p)
+                        if not any(max(pos, s) < min(span_end, e) for s, e, _ in matched_spans):
+                            matched_spans.append((pos, span_end, p))
+                        idx = pos + 1
+                matched_spans.sort(key=lambda x: x[0])
 
                 if is_comparison:
-                    # Find all distinct pronoun occurrences in the query
-                    found_pronouns = [p for p in pronouns_sorted if p in rewritten]
-                    if len(found_pronouns) >= 2 and len(available_cars) >= 2:
+                    if len(matched_spans) >= 2 and len(available_cars) >= 2:
                         # Map distinct pronouns to distinct vehicles (earlier pronoun -> earlier car)
-                        # e.g., '前一款' -> available_cars[-2], '刚才提到的' -> available_cars[-1]
-                        p_first = min(found_pronouns, key=lambda p: rewritten.find(p))
-                        p_second = next(p for p in found_pronouns if p != p_first)
-                        rewritten = rewritten.replace(p_first, available_cars[-2], 1)
-                        rewritten = rewritten.replace(p_second, available_cars[-1], 1)
-                    elif available_cars:
+                        # Replace in reverse text order to preserve span indices
+                        s1, e1, _ = matched_spans[1]
+                        s0, e0, _ = matched_spans[0]
+                        rewritten = rewritten[:s1] + available_cars[-1] + rewritten[e1:]
+                        rewritten = rewritten[:s0] + available_cars[-2] + rewritten[e0:]
+                    elif available_cars and matched_spans:
                         # At most ONE pronoun is resolved; NEVER replace distinct pronouns with the SAME vehicle
                         # which would collapse comparison semantics into self-comparison
-                        target_p = found_pronouns[0] if found_pronouns else None
-                        if target_p:
-                            rewritten = rewritten.replace(target_p, available_cars[-1], 1)
+                        s0, e0, _ = matched_spans[0]
+                        rewritten = rewritten[:s0] + available_cars[-1] + rewritten[e0:]
                 else:
                     target_car = available_cars[-1] if available_cars else unique_cars[-1]
-                    for p in pronouns_sorted:
-                        if p in rewritten:
-                            rewritten = rewritten.replace(p, target_car)
+                    for s, e, _ in reversed(matched_spans):
+                        rewritten = rewritten[:s] + target_car + rewritten[e:]
 
         # Strip conversational filler noise
         fillers = ["麻烦问一下", "请问", "帮我查查", "我想知道", "能不能告诉我", "随便看看", "跟我说说"]

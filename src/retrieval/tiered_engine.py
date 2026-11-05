@@ -51,7 +51,9 @@ class SpecIntentClassifier:
         (re.compile(r"几座|座位|座椅布局|5座|6座|7座|大5座|大6座|几排座"), "seat_layout", "座椅布局"),
         (re.compile(r"驱动|四驱|后驱|两驱|前驱|全时四驱|适时四驱"), "drive_type", "驱动形式"),
         (re.compile(r"动力形式|纯电|插混|增程|油电混动|油车|燃油|电车|绿牌|蓝牌"), "powertrain_type", "动力类型"),
-        (re.compile(r"后备箱|行李箱容积|储物空间|后备箱多大|尾箱|后备厢|装载空间"), "cargo_volume", "后备箱容积"),
+        (re.compile(r"后备箱|行李箱容积|储物空间|后备箱多大|尾箱|后备厢|装载空间|行李箱"), "cargo_volume", "后备箱容积"),
+        (re.compile(r"油耗|百公里油耗|几个油|耗油|综合油耗|馈电油耗"), "fuel_consumption", "百公里油耗"),
+        (re.compile(r"电耗|百公里电耗|几个电|耗电量|百公里耗电"), "electric_consumption", "百公里电耗"),
         (re.compile(r"智驾|辅助驾驶|自动驾驶|算力|芯片|激光雷达|orin|城市noa|高速noa|领航辅助"), "autonomous_driving_level", "智能驾驶级别"),
         (re.compile(r"快充|800v|高压平台|充电速度|超充|充满要多久|充电要多久|几分钟充满|充电倍率|5c|4c"), "charging_tech", "高压超快充架构"),
     ]
@@ -63,8 +65,9 @@ class SpecIntentClassifier:
         (re.compile(r"(?:0到100|0-100|零到一百).*(?:几秒|多久|多长时间)"), "acceleration_0_100", "0-100km/h加速"),
         (re.compile(r"(?:冲|飙|开到).*(?:一百|100|百码)"), "acceleration_0_100", "0-100km/h加速"),
 
-        # Max speed spoken phrasing e.g. "能开到多少码", "最高能跑几码"
-        (re.compile(r"(?:最快|最高|顶格|能开到|能跑到|极限).*(?:时速|车速|速度|码|多快)"), "max_speed", "最高车速"),
+        # Max speed spoken phrasing e.g. "能开到多少码", "最高能跑几码", "能开多少码", "最高跑多少"
+        (re.compile(r"(?:最快|最高|顶格|能开|能跑|极限).*(?:时速|车速|速度|码|多快|多少)"), "max_speed", "最高车速"),
+        (re.compile(r"(?:跑|开).*(?:多少码|多快|几码)"), "max_speed", "最高车速"),
 
         # Range spoken phrasing e.g. "满电能跑多远", "充满电能跑多远", "一箱油能跑多久"
         (re.compile(r"(?:充满|满电|满油|一箱油|一箱电|纯电|综合).*(?:能跑|开多远|跑多远|里程|多少公里|公里|多远)"), "electric_range", "CLTC续航里程"),
@@ -87,16 +90,21 @@ class SpecIntentClassifier:
         (re.compile(r"(?:智驾|辅助驾驶|自动驾驶|算力|智能驾驶).*(?:水平|等级|几级|级别|版本|多强|好不好用)"), "autonomous_driving_level", "智能驾驶级别"),
 
         # Cargo volume spoken phrasing e.g. "后备箱多大", "能放几个行李箱", "能不能装大件"
-        (re.compile(r"(?:后备箱|行李箱|尾箱|后备厢).*(?:多大|容积|空间|能装|升|几升|容纳)"), "cargo_volume", "后备箱容积"),
-        (re.compile(r"(?:能装|能放|能塞).*(?:几个行李箱|多少东西|大件|婴儿车|露营)"), "cargo_volume", "后备箱容积"),
+        (re.compile(r"(?:后备箱|行李箱|尾箱|后备厢).*(?:多大|容积|空间|能装|升|几升|容纳|大不大|怎么样)"), "cargo_volume", "后备箱容积"),
+        (re.compile(r"(?:能装|能放|能塞|装得下).*(?:几个行李箱|多少东西|大件|婴儿车|露营)"), "cargo_volume", "后备箱容积"),
 
-        # Seat layout spoken phrasing e.g. "能坐几人", "后座能坐几个人"
-        (re.compile(r"(?:能坐|坐得下|后排|后座).*(?:几人|几个人|多少人)"), "seat_layout", "座椅布局"),
+        # Seat layout spoken phrasing e.g. "能坐几人", "后座能坐几个人", "能不能坐7个人"
+        (re.compile(r"(?:能坐|坐得下|后排|后座|可以坐|能容纳).*(?:几人|几个人|多少人|\d+人|\d+个人)"), "seat_layout", "座椅布局"),
+
+        # Consumption spoken phrasing
+        (re.compile(r"(?:百公里).*(?:几个油|几个电|多少油|多少电|能耗)"), "fuel_consumption", "百公里油耗"),
+        (re.compile(r"(?:省不省油|费不费油|油耗怎么样)"), "fuel_consumption", "百公里油耗"),
+        (re.compile(r"(?:省不省电|耗不耗电|电耗怎么样)"), "electric_consumption", "百公里电耗"),
     ]
 
     SEMANTIC_KEYWORDS: Dict[str, Tuple[Set[str], str]] = {
         "acceleration_0_100": ({"加速", "零百", "0-100", "百公里", "破百", "起步", "推背", "提速", "冲刺", "一百码", "100码", "百码"}, "0-100km/h加速"),
-        "max_speed": ({"极速", "最高时速", "最高车速", "能跑多快", "封顶时速", "限速", "最快跑", "极速多少"}, "最高车速"),
+        "max_speed": ({"极速", "最高时速", "最高车速", "能跑多快", "封顶时速", "限速", "最快跑", "极速多少", "最高跑", "能开", "多少码"}, "最高车速"),
         "electric_range": ({"续航", "纯电续航", "综合续航", "里程", "跑多远", "能跑多少公里", "能开多远", "满电跑", "cltc", "wltc"}, "CLTC续航里程"),
         "battery_capacity": ({"电池", "电量", "多少度电", "度电", "电芯", "三元锂", "磷酸铁锂", "刀片电池", "麒麟电池", "神行电池"}, "电池规格与品牌"),
         "price": ({"价格", "售价", "指导价", "多少钱", "多少万", "落地价", "预算", "拿下", "买下", "开走", "入手"}, "官方指导价"),
@@ -104,10 +112,12 @@ class SpecIntentClassifier:
         "torque": ({"扭矩", "峰值扭矩", "扭力", "nm", "牛米"}, "峰值扭矩"),
         "motor_tech": ({"电机", "转速", "双电机", "单电机", "三电机", "四电机", "驱动电机", "rpm"}, "电机动力科技"),
         "wheelbase": ({"轴距", "车长", "车宽", "车高", "长宽高", "尺寸", "外部尺寸", "多长", "多宽"}, "轴距/车身尺寸"),
-        "seat_layout": ({"几座", "座位", "座椅布局", "5座", "6座", "7座", "布局", "坐几个人", "能坐几人"}, "座椅布局"),
+        "seat_layout": ({"几座", "座位", "座椅布局", "5座", "6座", "7座", "布局", "坐几个人", "能坐几人", "几个人", "能坐"}, "座椅布局"),
         "drive_type": ({"驱动", "四驱", "后驱", "前驱", "两驱", "全时四驱", "适时四驱"}, "驱动形式"),
         "powertrain_type": ({"动力形式", "动力类型", "纯电", "插混", "增程", "油电混动", "油车", "燃油", "电车"}, "动力类型"),
-        "cargo_volume": ({"后备箱", "行李箱容积", "储物空间", "尾箱", "装载", "能放几个行李箱"}, "后备箱容积"),
+        "cargo_volume": ({"后备箱", "行李箱容积", "储物空间", "尾箱", "装载", "能放几个行李箱", "后备厢", "行李箱"}, "后备箱容积"),
+        "fuel_consumption": ({"油耗", "百公里油耗", "几个油", "省油", "耗油", "馈电油耗"}, "百公里油耗"),
+        "electric_consumption": ({"电耗", "百公里电耗", "几个电", "省电", "耗电"}, "百公里电耗"),
         "autonomous_driving_level": ({"智驾", "辅助驾驶", "自动驾驶", "算力", "芯片", "激光雷达", "orin", "城市noa", "高速noa"}, "智能驾驶级别"),
         "charging_tech": ({"快充", "800v", "高压平台", "充电速度", "超充", "充满要多久", "充电要多久"}, "高压超快充架构"),
     }
@@ -463,6 +473,9 @@ class FastSpecIndex:
             "seat_layout": ["seat_layout"],
             "drive_type": ["drive_type"],
             "powertrain_type": ["powertrain_type"],
+            "cargo_volume": ["cargo_volume", "trunk_volume", "cargo_capability"],
+            "fuel_consumption": ["fuel_consumption", "energy_consumption_level"],
+            "electric_consumption": ["electric_consumption", "energy_consumption_level"],
             "autonomous_driving_level": ["autonomous_driving_level"],
             "charging_tech": ["charging_tech"],
             "motor_tech": ["motor_tech"],

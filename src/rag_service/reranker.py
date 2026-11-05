@@ -10,6 +10,7 @@ import math
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
+from src.rag_service.onnx_reranker import OnnxCrossEncoderReranker
 from src.rag_service.schemas import VehicleSearchResult
 
 logger = logging.getLogger(__name__)
@@ -17,31 +18,29 @@ logger = logging.getLogger(__name__)
 
 def parse_numeric_price_range(price_str: str) -> Tuple[Optional[float], Optional[float]]:
     """
-    Parse a vehicle price string (e.g. '21.59-29.99万', '30万', '15.98万元起')
-    into (min_price_k_yuan, max_price_k_yuan).
+    Parse a vehicle price string (e.g. '21.59-29.99万', '30万', '15.98万元起', '200000-25万')
+    into (min_price_k_yuan, max_price_k_yuan) in 万元.
     """
     if not price_str:
         return None, None
 
-    nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", price_str)]
+    clean_str = str(price_str).replace(",", "").replace("，", "")
+    nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", clean_str)]
     if not nums:
         return None, None
 
-    if len(nums) == 1:
-        # Single number e.g. '25万' -> 25.0, 25.0
-        val = nums[0]
-        if val > 1000:  # e.g. 250000 -> 25.0
-            val = val / 10000.0
-        return val, val
+    # Range e.g. 21.59 - 29.99, 21.59-29.99万起, 200000-25万
+    if len(nums) >= 2:
+        vals = [x / 10000.0 if x > 1000 else x for x in nums[:2]]
+        return min(vals[0], vals[1]), max(vals[0], vals[1])
 
-    # Range e.g. 21.59 - 29.99
-    p_min = min(nums)
-    p_max = max(nums)
-    if p_min > 1000:
-        p_min /= 10000.0
-    if p_max > 1000:
-        p_max /= 10000.0
-    return p_min, p_max
+    # Single number
+    val = nums[0] / 10000.0 if nums[0] > 1000 else nums[0]
+    if any(w in clean_str.lower() for w in ["below", "以下", "以内"]):
+        return 0.0, val
+    if any(w in clean_str.lower() for w in ["above", "以上", "起"]):
+        return val, 10000.0
+    return val, val
 
 
 def parse_budget_limit(budget_str: str) -> Optional[float]:
@@ -265,8 +264,6 @@ class RankRefiner:
         scored_items.sort(key=lambda x: x[0], reverse=True)
         return [item for _, item in scored_items[:top_k]]
 
-
-from src.rag_service.onnx_reranker import OnnxCrossEncoderReranker
 
 CrossEncoderReranker = OnnxCrossEncoderReranker
 

@@ -496,7 +496,7 @@ All car need fields can appear in either explicit or implicit categories dependi
 | driving_range | String | No | Distance per charge/tank | "300~400km", "400~800km", "Above 800km" |
 | drive_type | String | No | Wheel drive configuration | "Front-Wheel Drive", "Rear-Wheel Drive", "All-Wheel Drive" |
 | suspension | String | No | Suspension system type | "Independent Suspension", "Non-independent Suspension" |
-| passibility | String | No | Rough terrain capability | "Low", "Medium", "High" |
+| passability | String | No | Rough terrain capability | "Low", "Medium", "High" |
 | seat_layout | String | No | Seating configuration | "5-seat", "7-seat" |
 | city_commuting | String | No | Urban driving suitability | "Yes", "No" |
 | highway_long_distance | String | No | Highway driving suitability | "Yes", "No" |

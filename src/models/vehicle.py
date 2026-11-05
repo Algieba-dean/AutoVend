@@ -395,10 +395,10 @@ class Vehicle(BaseModel):
         """
         提取车辆价格区间 (元)。
         支持多种主流价格表示格式：
-        - 中划线区间: '21.59-29.99万', '20-30万元', '21.59–29.99万'
+        - 中划线区间: '21.59-29.99万', '20-30万元', '21.59–29.99万起'
         - 中文'到'/'至'区间: '20万到30万', '15万至25万'
         - 波浪号区间: '30,000~40,000', '21.59~29.99万'
-        - 上限/下限描述: 'Below 10,000', '10万以下', 'Above 100,000', '50万以上'
+        - 上限/下限描述: 'Below 10,000', '10万以下', 'Above 100,000', '50万以上', '15.98万起'
         - 单一固定价格: '25万', '250000'
         """
         if not self.precise_labels or not self.precise_labels.price:
@@ -408,52 +408,51 @@ class Vehicle(BaseModel):
         if not price_str:
             return None
 
-        is_wan = "万" in price_str or "w" in price_str.lower()
         clean_str = price_str.replace(",", "").replace("，", "")
 
-        # Check 'Below X' / 'X以下' / 'X以内'
-        if any(w in clean_str.lower() for w in ["below", "以下", "以内"]):
-            nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", clean_str)]
-            if nums:
-                limit = nums[0] * 10000 if (is_wan or nums[0] < 1000) else nums[0]
-                return (0, int(round(limit)))
-
-        # Check 'Above X' / 'X以上' / 'X起'
-        if any(w in clean_str.lower() for w in ["above", "以上", "起"]):
-            nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", clean_str)]
-            if nums:
-                val = nums[0] * 10000 if (is_wan or nums[0] < 1000) else nums[0]
-                upper = val * 5 if val > 0 else 1000000
-                return (int(round(val)), int(round(upper)))
-
-        # Extract numeric components
+        # Extract numeric components first
         nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)", clean_str)]
         if not nums:
             return None
 
-        if len(nums) == 1:
-            val = nums[0] * 10000 if (is_wan or nums[0] < 1000) else nums[0]
-            ival = int(round(val))
-            return (ival, ival)
+        # Case 1: Two or more numbers define an explicit price range (e.g. 21.59-29.99万, 21.59-29.99万起)
+        # Even if '起' or '到' is present, having 2 numbers indicates a defined range
+        if len(nums) >= 2:
+            # Convert each number independently to RMB (元) before calculating min/max
+            # to prevent inverted ranges when mixing units (e.g. '200000-25万')
+            vals = [
+                n * 10000 if n < 1000 else n
+                for n in nums[:2]
+            ]
+            p_min = min(vals[0], vals[1])
+            p_max = max(vals[0], vals[1])
+            return (int(round(p_min)), int(round(p_max)))
 
-        p_min_raw = min(nums[0], nums[1])
-        p_max_raw = max(nums[0], nums[1])
+        # Case 2: Exactly one number with directional qualifiers or fixed price
+        val_raw = nums[0]
+        val = val_raw * 10000 if val_raw < 1000 else val_raw
 
-        # If either number is small (< 1000) or '万' is present, convert from 万元 to 元
-        if is_wan or p_min_raw < 1000 or p_max_raw < 1000:
-            p_min = p_min_raw * 10000 if p_min_raw < 1000 else p_min_raw
-            p_max = p_max_raw * 10000 if p_max_raw < 1000 else p_max_raw
-        else:
-            p_min = p_min_raw
-            p_max = p_max_raw
+        # Check 'Below X' / 'X以下' / 'X以内'
+        if any(w in clean_str.lower() for w in ["below", "以下", "以内"]):
+            return (0, int(round(val)))
 
-        return (int(round(p_min)), int(round(p_max)))
+        # Check 'Above X' / 'X以上' / 'X起'
+        if any(w in clean_str.lower() for w in ["above", "以上", "起"]):
+            # For open-ended upper bounds, allow up to 100M RMB so luxury vehicles are not excluded
+            return (int(round(val)), 100_000_000)
+
+        # Single exact price
+        ival = int(round(val))
+        return (ival, ival)
 
     def matches_price_range(self, target_price: float, tolerance: float = 0.2) -> bool:
         """
         检查是否匹配目标价格范围。
         若车辆无有效价格区间，则无法通过价格过滤（返回 False，避免静默全部放行）。
         """
+        if target_price <= 0:
+            return False
+
         price_range = self.get_price_range()
         if not price_range:
             return False  # 修复静默失效兜底：无价格信息不可默认全部放行
