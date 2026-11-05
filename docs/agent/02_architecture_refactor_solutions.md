@@ -25,9 +25,9 @@ flowchart LR
 ```
 
 ### 1. Step 1（先治病，改 Schema）
-- 在 `src/agent/schemas.py` 中正式引入 `budget` 字段，并配置 `Field(validation_alias=AliasChoices("budget", "price", "prize"))`。
-- 将原本的 `prize` 降级为 `@property` 兼容属性或别名，对外维持向下兼容。
-- 运行单元测试，确保旧调用代码零报错平滑过渡。
+- 彻底清理历史笔误 `prize`，全量恢复为标准字段 `price`，废弃所有容错别名与向下兼容 hack。
+- 将原本散落于各处的 `prize` 纠正为 `price`，清除所有双重回退逻辑。
+- 运行单元测试，确保全系统在标准 Schema 下平滑运转。
 
 ### 2. Step 2（收紧类型，删正则）
 - 在 `VehicleNeeds` 中将核心比较字段（预算、气囊、人数、动力类型）升级为结构化强类型（数值型、区间对象或 `Enum`），并配以 `@field_validator(mode="before")` 进行宽容清洗。
