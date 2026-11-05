@@ -1455,9 +1455,8 @@ class BorderlessTableDetector:
                 b1, t1 = g[1]
                 w0 = b0[2] - b0[0]
                 w1 = b1[2] - b1[0]
-                is_dual_column_narrative = (w0 > 160.0 and w1 > 160.0) or (w0 > page_width * 0.28 and w1 > page_width * 0.28)
-                is_key_too_wide = w0 > 180.0 or w0 > page_width * 0.35
-                candidate_rows.append(None if (is_dual_column_narrative or is_key_too_wide) else g)
+                is_dual_column_narrative = (w0 > 220.0 and w1 > 220.0) or (w0 > page_width * 0.40 and w1 > page_width * 0.40)
+                candidate_rows.append(None if is_dual_column_narrative else g)
             else:
                 # Single line with tab or wide whitespace delimiters
                 parts = re.split(r"\s{3,}|\t", g[0][1])
@@ -2579,7 +2578,8 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         import tempfile
         import time
 
-        shm_dir = Path("/dev/shm") if Path("/dev/shm").is_dir() else None
+        shm_path = Path("/dev/shm")
+        shm_dir = shm_path if shm_path.is_dir() and os.access(str(shm_path), os.W_OK) else None
         temp_file_path = None
         try:
             temp_file = tempfile.NamedTemporaryFile(

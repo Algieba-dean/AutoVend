@@ -110,8 +110,15 @@ class TestSummarize:
         def to_pandas(self):
             return self._frame
 
+    def _get_pandas(self):
+        try:
+            import pandas as pd
+            return pd
+        except Exception as e:
+            pytest.skip(f"pandas is unavailable: {e}")
+
     def test_averages_only_successful_samples(self):
-        pd = pytest.importorskip("pandas")
+        pd = self._get_pandas()
         frame = pd.DataFrame(
             {
                 "user_input": ["a", "b", "c"],
@@ -126,7 +133,7 @@ class TestSummarize:
         assert summary["faithfulness"]["n_failed"] == 1
 
     def test_all_failed_yields_none_not_zero(self):
-        pd = pytest.importorskip("pandas")
+        pd = self._get_pandas()
         frame = pd.DataFrame({"user_input": ["a"], "faithfulness": [float("nan")]})
 
         summary = ragas_eval.summarize(self._FakeResult(frame))
@@ -136,7 +143,7 @@ class TestSummarize:
         )
 
     def test_ignores_the_dataset_columns(self):
-        pd = pytest.importorskip("pandas")
+        pd = self._get_pandas()
         frame = pd.DataFrame(
             {
                 "user_input": ["a"],

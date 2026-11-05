@@ -18,7 +18,7 @@ class SQLiteTaskQueue:
     """Manages persistent crawl jobs with status tracking and automatic resumption."""
 
     def __init__(self, db_path: Optional[Path] = None):
-        self.db_path = db_path or Path("/home/algieba/projects/hackthon/AutoVend/data/crawled/yiche/yiche_catalog.db")
+        self.db_path = db_path or Path(__file__).resolve().parent.parent.parent.parent / "data" / "crawled" / "yiche" / "yiche_catalog.db"
         self._init_queue_table()
 
     def _init_queue_table(self) -> None:

@@ -27,7 +27,7 @@ class DiffEngine:
     """Tracks incremental changes across crawls and alerts on price/spec drifts."""
 
     def __init__(self, db_path: Optional[Path] = None):
-        self.db_path = db_path or Path("/home/algieba/projects/hackthon/AutoVend/data/crawled/yiche/yiche_catalog.db")
+        self.db_path = db_path or Path(__file__).resolve().parent.parent.parent.parent / "data" / "crawled" / "yiche" / "yiche_catalog.db"
         self._init_diff_table()
 
     def _init_diff_table(self) -> None:

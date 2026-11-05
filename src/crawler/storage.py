@@ -44,14 +44,28 @@ class RawDataStorage:
     """Handles raw JSON file archiving and SQLite indexing for crawled vehicle datasets."""
 
     def __init__(self, base_dir: Optional[Path] = None):
-        self.base_dir = base_dir or Path("/home/algieba/projects/hackthon/AutoVend/data/crawled/yiche")
+        if base_dir:
+            self.base_dir = Path(base_dir)
+        else:
+            default_dir = Path(__file__).resolve().parent.parent.parent / "data" / "crawled" / "yiche"
+            try:
+                default_dir.mkdir(parents=True, exist_ok=True)
+                self.base_dir = default_dir
+            except OSError:
+                self.base_dir = Path("/tmp/autovend_crawled/yiche")
         self.raw_dir = self.base_dir / "raw"
         self.db_path = self.base_dir / "yiche_catalog.db"
         self._init_storage()
 
     def _init_storage(self) -> None:
         """Create necessary directories and SQLite tables."""
-        self.raw_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.raw_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            self.base_dir = Path("/tmp/autovend_crawled/yiche")
+            self.raw_dir = self.base_dir / "raw"
+            self.db_path = self.base_dir / "yiche_catalog.db"
+            self.raw_dir.mkdir(parents=True, exist_ok=True)
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("""

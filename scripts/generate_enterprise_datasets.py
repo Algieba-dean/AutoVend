@@ -49,7 +49,7 @@ from pptx.util import Pt as PPT_Pt
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("enterprise_dataset_gen")
 
-PROJECT_ROOT = Path("/home/algieba/projects/hackthon/AutoVend")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -60,8 +60,16 @@ from scripts.dataset_builders.pdf_builders import generate_all_new_pdf_datasets
 from scripts.dataset_builders.pptx_builders import generate_all_new_pptx_datasets
 from scripts.dataset_builders.word_builders import generate_all_new_word_datasets
 
-BENCHMARK_DIR = PROJECT_ROOT / "data" / "enterprise_benchmark"
-SAMPLE_SPECS_DIR = PROJECT_ROOT / "data" / "sample_specs"
+def _resolve_dir(target_dir: Path, fallback_dir: Path) -> Path:
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        return target_dir
+    except OSError:
+        fallback_dir.mkdir(parents=True, exist_ok=True)
+        return fallback_dir
+
+BENCHMARK_DIR = _resolve_dir(PROJECT_ROOT / "data" / "enterprise_benchmark", Path("/tmp/autovend_enterprise_benchmark"))
+SAMPLE_SPECS_DIR = _resolve_dir(PROJECT_ROOT / "data" / "sample_specs", Path("/tmp/autovend_sample_specs"))
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -1605,8 +1613,11 @@ def generate_all_enterprise_datasets():
 
     # Mirror all generated benchmark files into sample_specs for unified access
     for src in generated_files:
-        dest = SAMPLE_SPECS_DIR / src.name
-        shutil.copy2(src, dest)
+        try:
+            dest = SAMPLE_SPECS_DIR / src.name
+            shutil.copy2(src, dest)
+        except Exception:
+            pass
 
     logger.info(
         f"Successfully generated {len(generated_files)} benchmark files in {BENCHMARK_DIR} "

@@ -75,16 +75,20 @@ class VehicleDB:
     def transaction(self):
         """显式 SQLite 事务管理，使用 BEGIN IMMEDIATE 防止并发脏读与写冲突"""
         with self._lock:
-            self.conn.execute("BEGIN IMMEDIATE")
-            try:
+            if self.conn.in_transaction:
+                # Already in a transaction; yield directly to support re-entrancy
                 yield self.conn
-                self.conn.commit()
-            except Exception:
+            else:
+                self.conn.execute("BEGIN IMMEDIATE")
                 try:
-                    self.conn.rollback()
+                    yield self.conn
+                    self.conn.commit()
                 except Exception:
-                    pass
-                raise
+                    try:
+                        self.conn.rollback()
+                    except Exception:
+                        pass
+                    raise
 
     def close(self) -> None:
         if self._conn is not None:
@@ -401,7 +405,7 @@ class VehicleDB:
             existing = cursor.fetchone()
             current_version = existing[0] if (existing and existing[0] is not None) else None
 
-            if expected_version is not None and current_version is not None:
+            if expected_version is not None:
                 if current_version != expected_version:
                     raise OptimisticLockError(
                         f"Concurrent update conflict for {car_model}: "
@@ -422,8 +426,21 @@ class VehicleDB:
             placeholders = ", ".join("?" for _ in cols)
             col_names = ", ".join(f'"{c}"' for c in cols)
             sql = f"INSERT OR REPLACE INTO vehicles ({col_names}) VALUES ({placeholders})"
-            self.conn.execute(sql, [row_data[c] for c in cols])
-            self.conn.commit()
+
+            in_tx = self.conn.in_transaction
+            if not in_tx:
+                self.conn.execute("BEGIN IMMEDIATE")
+            try:
+                self.conn.execute(sql, [row_data[c] for c in cols])
+                if not in_tx:
+                    self.conn.commit()
+            except Exception:
+                if not in_tx:
+                    try:
+                        self.conn.rollback()
+                    except Exception:
+                        pass
+                raise
             return new_version
 
     def delete_vehicle(self, car_model: str, expected_version: Optional[int] = None) -> None:
@@ -432,13 +449,26 @@ class VehicleDB:
             if expected_version is not None:
                 cursor = self.conn.execute("SELECT version FROM vehicles WHERE car_model = ?", (str(car_model),))
                 existing = cursor.fetchone()
-                if existing and existing[0] is not None and existing[0] != expected_version:
+                current_version = existing[0] if (existing and existing[0] is not None) else None
+                if current_version != expected_version:
                     raise OptimisticLockError(
                         f"Concurrent delete conflict for {car_model}: "
-                        f"current version {existing[0]} != expected {expected_version}"
+                        f"current version {current_version} != expected {expected_version}"
                     )
-            self.conn.execute("DELETE FROM vehicles WHERE car_model = ?", (str(car_model),))
-            self.conn.commit()
+            in_tx = self.conn.in_transaction
+            if not in_tx:
+                self.conn.execute("BEGIN IMMEDIATE")
+            try:
+                self.conn.execute("DELETE FROM vehicles WHERE car_model = ?", (str(car_model),))
+                if not in_tx:
+                    self.conn.commit()
+            except Exception:
+                if not in_tx:
+                    try:
+                        self.conn.rollback()
+                    except Exception:
+                        pass
+                raise
 
     def get_all_models(self) -> List[str]:
         """获取所有 car_model 列表"""

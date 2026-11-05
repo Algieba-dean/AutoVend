@@ -5,6 +5,7 @@ SAGA rollback compensation, and explicit vs full snapshot deletion.
 """
 
 from unittest.mock import MagicMock
+import pytest
 from src.filter.vehicle_db import VehicleDB
 from src.ingestion.pipeline import ChangeType, IncrementalIngestionPipeline
 
@@ -242,4 +243,112 @@ def test_vehicle_db_price_normalization_and_outbox(tmp_path):
     assert row is not None
     assert "prize" in row
     assert row["prize"] == "100,000 ~ 200,000"
+
+
+def test_optimistic_locking_conflict_on_missing_or_concurrent_row(tmp_path):
+    """Verify that expected_version conflict is raised when row was deleted or modified."""
+    from src.filter.vehicle_db import OptimisticLockError
+
+    test_db = VehicleDB(db_path=str(tmp_path / "opt_lock.db"))
+    test_db.upsert_vehicle({"car_model": "ConflictCar", "brand": "BrandX", "version": 1})
+
+    # Record exists at version 1; updating with expected_version=2 should fail
+    with pytest.raises(OptimisticLockError):
+        test_db.upsert_vehicle({"car_model": "ConflictCar", "brand": "BrandX"}, expected_version=2)
+
+    # Deleting with expected_version=2 should fail
+    with pytest.raises(OptimisticLockError):
+        test_db.delete_vehicle("ConflictCar", expected_version=2)
+
+    # Delete the car
+    test_db.delete_vehicle("ConflictCar", expected_version=1)
+
+    # Now row is deleted; updating with expected_version=1 must fail because row is missing
+    with pytest.raises(OptimisticLockError):
+        test_db.upsert_vehicle({"car_model": "ConflictCar", "brand": "BrandX"}, expected_version=1)
+
+    # Deleting missing row with expected_version=1 must fail
+    with pytest.raises(OptimisticLockError):
+        test_db.delete_vehicle("ConflictCar", expected_version=1)
+
+
+def test_concurrent_threads_optimistic_locking(tmp_path):
+    """Stress test: 50 concurrent threads simultaneously updating the same vehicle record."""
+    import concurrent.futures
+    from src.filter.vehicle_db import OptimisticLockError
+
+    test_db = VehicleDB(db_path=str(tmp_path / "concurrent_opt.db"))
+    test_db.upsert_vehicle({"car_model": "RaceCar", "brand": "BrandR", "version": 1})
+
+    success_count = 0
+    conflict_count = 0
+
+    def attempt_update(target_brand: str):
+        row = test_db.get_by_model("RaceCar")
+        v = row["version"]
+        try:
+            test_db.upsert_vehicle(
+                {"car_model": "RaceCar", "brand": target_brand},
+                expected_version=v,
+            )
+            return True
+        except OptimisticLockError:
+            return False
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(attempt_update, f"Brand_{i}") for i in range(50)]
+        for f in concurrent.futures.as_completed(futures):
+            if f.result():
+                success_count += 1
+            else:
+                conflict_count += 1
+
+    assert success_count >= 1
+    assert conflict_count > 0  # Some threads must have hit optimistic lock conflicts
+    # Final version should equal initial version + successful updates
+    final_row = test_db.get_by_model("RaceCar")
+    assert final_row["version"] == 1 + success_count
+
+
+def test_borderless_table_detector_preserves_automotive_tyre_spec():
+    """Verify that BorderlessTableDetector does not discard standard 28-character tyre spec rows."""
+    from src.ingestion.layout_parser import BorderlessTableDetector
+
+    # Simulate 2-column spec table:
+    # Column 0: Tyre spec (28 chars, 200pt width)
+    # Column 1: Config flag (2 chars, 50pt width)
+    page_dict = {
+        "blocks": [
+            {
+                "bbox": [50.0, 100.0, 500.0, 200.0],
+                "lines": [
+                    {
+                        "bbox": [50.0, 100.0, 250.0, 115.0],
+                        "spans": [{"text": "标配 Michelin 255/50 R20 静音低滚阻轮胎"}],
+                    },
+                    {
+                        "bbox": [300.0, 100.0, 350.0, 115.0],
+                        "spans": [{"text": "标配"}],
+                    },
+                    {
+                        "bbox": [50.0, 120.0, 220.0, 135.0],
+                        "spans": [{"text": "智能空气悬架系统带 CDC 动态阻尼"}],
+                    },
+                    {
+                        "bbox": [300.0, 120.0, 350.0, 135.0],
+                        "spans": [{"text": "标配"}],
+                    },
+                ],
+            }
+        ]
+    }
+
+    tables = BorderlessTableDetector.detect_tables_from_dict(
+        page_dict, page_num=1, page_width=595.0, page_height=842.0
+    )
+    assert len(tables) >= 1
+    t_md = tables[0].to_markdown()
+    assert "Michelin" in t_md
+    assert "空气悬架" in t_md
+
 

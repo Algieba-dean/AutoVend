@@ -20,8 +20,8 @@ def indices_available():
     """Skip rather than fail when the machine has no built index."""
     from src.filter.vehicle_db import VehicleDB
 
-    if VehicleDB().count() == 0:
-        pytest.skip("vehicle catalogue is empty — run `python -m src.main build-index`")
+    if VehicleDB().count() < 100:
+        pytest.skip("vehicle catalogue is incomplete (<100 vehicles) — run `python -m src.main build-index`")
 
     from src.rag.vector_store import ChromaVectorStore
 

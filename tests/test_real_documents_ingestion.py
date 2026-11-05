@@ -48,7 +48,13 @@ from src.ingestion.multiformat_parser import (
 from src.ingestion.pipeline import IncrementalIngestionPipeline
 from src.retrieval.parent_child_retriever import ParentChildRetriever
 
+import pytest
+
 CORPUS_DIR = Path(__file__).resolve().parent.parent / "data" / "real_enterprise_docs"
+pytestmark = pytest.mark.skipif(
+    not CORPUS_DIR.exists() or not any(CORPUS_DIR.iterdir()) if CORPUS_DIR.exists() else True,
+    reason="Real automotive documents not fetched; run scripts/fetch_real_automotive_docs.py to download.",
+)
 
 
 # ── 1. Corpus Integrity & Manifest Validation ────────────────────────────────
