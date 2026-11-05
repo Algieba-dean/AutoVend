@@ -99,10 +99,12 @@ class RealPaddleOCRAdapter(BaseLayoutEngine):
     Runs exclusively on CPU to eliminate PyTorch GPU concurrency deadlocks.
     """
 
-    def __init__(self, use_gpu: bool = False, **kwargs: Any):
+    def __init__(self, use_gpu: bool = False, allow_fallback: bool = True, **kwargs: Any):
         super().__init__()
         self.use_gpu = False  # Hard-enforced CPU execution
+        self.allow_fallback = allow_fallback
         self._engine = None
+        self._init_error = None
         self._fallback = PyMuPDFPlumberEngine()
 
     def _get_engine(self):
@@ -113,6 +115,7 @@ class RealPaddleOCRAdapter(BaseLayoutEngine):
                     "PaddleOCR PPStructure unavailable on current CPU instruction set; "
                     "operating in graceful CPU fallback mode"
                 )
+                self._init_error = "PaddleOCR PPStructure incompatible with host CPU instruction set"
                 self._engine = False
                 return self._engine
 
@@ -131,6 +134,7 @@ class RealPaddleOCRAdapter(BaseLayoutEngine):
                 logger.info("Initialized PaddleOCR PP-Structure on CPU")
             except Exception as e:
                 logger.warning(f"Could not initialize PaddleOCR PPStructure engine: {e}")
+                self._init_error = str(e)
                 self._engine = False
         return self._engine
 
@@ -145,6 +149,7 @@ class RealPaddleOCRAdapter(BaseLayoutEngine):
         If page_numbers is provided, only those 1-indexed pages are processed.
         """
         import fitz  # PyMuPDF
+        from src.ingestion.layout_parser import DocumentParsingUnrecoverableError
 
         file_path = Path(file_path)
         engine = self._get_engine()
@@ -161,22 +166,25 @@ class RealPaddleOCRAdapter(BaseLayoutEngine):
         target_pages = set(page_numbers) if page_numbers is not None else set(range(1, total_pages + 1))
 
         if not engine:
+            if not self.allow_fallback:
+                raise RuntimeError(
+                    f"PaddleOCR PPStructure unavailable or incompatible on host CPU: {self._init_error or 'initialization failed'}"
+                )
             logger.warning(f"PaddleOCR engine unavailable, falling back on {file_path.name}")
             fallback_doc = self._fallback.parse(file_path)
+            fallback_doc.is_degraded = True
             fallback_doc.metadata["engine"] = "paddle_ocr_scanned_pipeline"
             fallback_doc.metadata["cpu_only"] = True
+            fallback_doc.metadata["is_degraded"] = True
+            fallback_doc.metadata["extraction_quality"] = "degraded"
+            fallback_doc.metadata["fallback_level"] = "L2_fallback"
+            fallback_doc.metadata["degraded_reason"] = f"PaddleOCR PPStructure unavailable: {self._init_error}"
             for t in fallback_doc.tables:
-                t.extraction_engine = "paddle_pp_structure"
-            if not fallback_doc.sections:
-                fallback_doc.sections = [
-                    TextSection(
-                        title=f"{file_path.stem} 扫描件内容",
-                        content=f"[{file_path.name} 扫描图像正文]",
-                        level=1,
-                        page_num=1,
-                        breadcrumb_path=[file_path.stem],
-                    )
-                ]
+                t.extraction_engine = "pymupdf_pdfplumber"
+            if not fallback_doc.sections and not fallback_doc.tables and not fallback_doc.raw_text.strip():
+                raise DocumentParsingUnrecoverableError(
+                    f"Scanned document {file_path.name} contains no text and PaddleOCR engine is unavailable."
+                )
             return fallback_doc
 
         import cv2
@@ -257,30 +265,33 @@ class RealPaddleOCRAdapter(BaseLayoutEngine):
 
                 content_str = "\n\n".join(page_text_blocks).strip()
                 if not content_str:
-                    # PyMuPDF text fallback if image OCR returned empty
-                    content_str = page.get_text() or f"第 {p_num} 页扫描图象"
+                    # PyMuPDF real text fallback if image OCR returned empty
+                    content_str = page.get_text().strip()
 
-                all_sections.append(
-                    TextSection(
-                        title=f"第 {p_num} 页 扫描正文",
-                        content=content_str,
-                        level=2,
-                        page_num=p_num,
-                        bbox=BoundingBox(0.0, 0.0, float(page.rect.width), float(page.rect.height), page=p_num),
-                        breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                if content_str:
+                    all_sections.append(
+                        TextSection(
+                            title=f"第 {p_num} 页 扫描正文",
+                            content=content_str,
+                            level=2,
+                            page_num=p_num,
+                            bbox=BoundingBox(0.0, 0.0, float(page.rect.width), float(page.rect.height), page=p_num),
+                            breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                        )
                     )
-                )
             except Exception as page_err:
                 logger.error(f"PaddleOCR failed for page {p_num} in {file_path.name}: {page_err}")
-                all_sections.append(
-                    TextSection(
-                        title=f"第 {p_num} 页 正文",
-                        content=page.get_text() or f"第 {p_num} 页解析失败",
-                        level=2,
-                        page_num=p_num,
-                        breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                p_text = page.get_text().strip()
+                if p_text:
+                    all_sections.append(
+                        TextSection(
+                            title=f"第 {p_num} 页 正文",
+                            content=p_text,
+                            level=2,
+                            page_num=p_num,
+                            breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                        )
                     )
-                )
 
         raw_text_combined = "\n\n".join(s.content for s in all_sections)
 

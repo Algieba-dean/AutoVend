@@ -32,10 +32,12 @@ class RealDoclingAdapter(BaseLayoutEngine):
     recovering complex tables with TableFormer and preserving hierarchical sections.
     """
 
-    def __init__(self, use_gpu: bool = False, **kwargs: Any):
+    def __init__(self, use_gpu: bool = False, allow_fallback: bool = True, **kwargs: Any):
         super().__init__()
         self.use_gpu = use_gpu
+        self.allow_fallback = allow_fallback
         self._converter = None
+        self._init_error = None
         self._fallback = PyMuPDFPlumberEngine()
 
     def _get_converter(self):
@@ -56,6 +58,7 @@ class RealDoclingAdapter(BaseLayoutEngine):
                 )
             except Exception as e:
                 logger.warning(f"Could not initialize IBM Docling DocumentConverter: {e}")
+                self._init_error = str(e)
                 self._converter = False
         return self._converter
 
@@ -64,13 +67,22 @@ class RealDoclingAdapter(BaseLayoutEngine):
         converter = self._get_converter()
 
         if not converter:
+            if not self.allow_fallback:
+                raise RuntimeError(
+                    f"IBM Docling DocumentConverter is unavailable: {self._init_error or 'initialization failed'}"
+                )
             logger.info(f"Docling not available; falling back to PyMuPDFPlumberEngine on {file_path.name}")
             doc = self._fallback.parse(file_path)
+            doc.is_degraded = True
             doc.metadata["engine"] = "docling_adapter_fallback"
             doc.metadata["docling_adapter"] = True
-            doc.metadata["tableformer"] = True
+            doc.metadata["tableformer"] = False
+            doc.metadata["is_degraded"] = True
+            doc.metadata["extraction_quality"] = "degraded"
+            doc.metadata["fallback_level"] = "L2_pdfplumber"
+            doc.metadata["degraded_reason"] = f"Docling DocumentConverter unavailable: {self._init_error}"
             for t in doc.tables:
-                t.extraction_engine = "ibm_docling_tableformer"
+                t.extraction_engine = "pymupdf_pdfplumber"
             return doc
 
         try:

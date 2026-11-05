@@ -2488,8 +2488,8 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         super().__init__()
         self.threshold = char_density_threshold
         self.timeout_seconds = timeout_seconds
-        self.docling = RealDoclingAdapter(**(docling_kwargs or {}))
-        self.paddle = RealPaddleOCRAdapter(**(paddle_kwargs or {}))
+        self.docling = RealDoclingAdapter(allow_fallback=False, **(docling_kwargs or {}))
+        self.paddle = RealPaddleOCRAdapter(allow_fallback=False, **(paddle_kwargs or {}))
         self._fallback = PyMuPDFPlumberEngine()
 
     def check_density(self, file_path: Path) -> Dict[str, Any]:
@@ -2558,6 +2558,7 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         page_oris: Dict[int, str] = {}
 
         has_ocr_content = False
+        ocr_errors: List[str] = []
         for p_idx, page in enumerate(doc):
             p_num = p_idx + 1
             if p_num not in target_pages:
@@ -2573,10 +2574,8 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
                 txt = page.get_text(textpage=tp).strip()
             except Exception as ocr_err:
                 logger.debug(f"PyMuPDF OCR failed on page {p_num}: {ocr_err}")
+                ocr_errors.append(str(ocr_err))
                 txt = ""
-
-            if not txt:
-                txt = page.get_text().strip()
 
             if txt:
                 has_ocr_content = True
@@ -2595,14 +2594,15 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         doc.close()
 
         if not has_ocr_content or not "\n\n".join(raw_texts).strip():
-            raise RuntimeError(f"PyMuPDF OCR extracted 0 characters from {file_path.name}")
+            err_msg = "; ".join(ocr_errors) if ocr_errors else "0 OCR characters extracted"
+            raise RuntimeError(f"PyMuPDF OCR unavailable or extracted 0 characters from {file_path.name}: {err_msg}")
 
         full_raw = "\n\n".join(raw_texts).strip()
         parsed = ParsedDocument(
             title=file_path.stem,
             sections=sections,
             tables=[],  # L2 OCR: 保住基础文字，丢失表格结构
-            pages=len(sections) if target_pages else len(page_dims),
+            pages=len(page_dims) if page_dims else (len(target_pages) or 1),
             raw_text=full_raw,
             metadata={
                 "engine": "pymupdf_ocr_fallback",
@@ -2623,7 +2623,7 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         page_numbers: Optional[Sequence[int]] = None,
         degraded_reason: str = "",
     ) -> ParsedDocument:
-        """L3 Ultimate Fallback: Directly extract character stream via PyMuPDF fitz.get_text(), dropping table topology."""
+        """L3 Ultimate Fallback: Directly extract character stream via PyMuPDF fitz.get_text('blocks'), dropping table topology."""
         import fitz
 
         file_path = Path(file_path)
@@ -2643,19 +2643,47 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
             page_dims[p_num] = (round(float(rect.width), 2), round(float(rect.height), 2))
             page_oris[p_num] = "landscape" if rect.width > rect.height else "portrait"
 
-            txt = page.get_text().strip()
-            if txt:
-                raw_texts.append(txt)
-                sections.append(
-                    TextSection(
-                        title=f"{file_path.stem} 第 {p_num} 页正文",
-                        content=txt,
-                        level=1,
-                        page_num=p_num,
-                        bbox=BoundingBox(0.0, 0.0, float(rect.width), float(rect.height), page=p_num),
-                        breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+            page_blocks = page.get_text("blocks")
+            has_valid_blocks = False
+            for b_idx, b in enumerate(page_blocks):
+                # b: (x0, y0, x1, y1, text, block_no, block_type)
+                if len(b) >= 7 and b[6] == 0:  # text block
+                    bx0, by0, bx1, by1, btext = b[0], b[1], b[2], b[3], b[4]
+                    btext_clean = btext.strip()
+                    if btext_clean:
+                        has_valid_blocks = True
+                        raw_texts.append(btext_clean)
+                        sections.append(
+                            TextSection(
+                                title=f"{file_path.stem} 第 {p_num} 页 区块 {b_idx + 1}",
+                                content=btext_clean,
+                                level=1,
+                                page_num=p_num,
+                                bbox=BoundingBox(
+                                    round(float(bx0), 2),
+                                    round(float(by0), 2),
+                                    round(float(bx1), 2),
+                                    round(float(by1), 2),
+                                    page=p_num,
+                                ),
+                                breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                            )
+                        )
+
+            if not has_valid_blocks:
+                txt = page.get_text().strip()
+                if txt:
+                    raw_texts.append(txt)
+                    sections.append(
+                        TextSection(
+                            title=f"{file_path.stem} 第 {p_num} 页正文",
+                            content=txt,
+                            level=1,
+                            page_num=p_num,
+                            bbox=BoundingBox(0.0, 0.0, float(rect.width), float(rect.height), page=p_num),
+                            breadcrumb_path=[file_path.stem, f"第 {p_num} 页"],
+                        )
                     )
-                )
 
         doc.close()
 
@@ -2669,7 +2697,7 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
             title=file_path.stem,
             sections=sections,
             tables=[],  # L3: 放弃所有表格拓扑
-            pages=len(sections) if target_pages else len(page_dims),
+            pages=len(page_dims) if page_dims else (len(target_pages) or 1),
             raw_text=full_raw,
             metadata={
                 "engine": "pymupdf_raw_text_fallback",
@@ -2700,6 +2728,8 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
             doc = self._run_with_timeout(self.docling.parse, file_path, timeout_seconds=self.timeout_seconds)
             if not doc or (not doc.sections and not doc.tables and not doc.raw_text.strip()):
                 raise ValueError("Docling returned empty document")
+            if getattr(doc, "is_degraded", False) or doc.metadata.get("is_degraded"):
+                raise RuntimeError(f"Docling adapter degraded internally: {doc.metadata.get('degraded_reason')}")
             if page_numbers is not None:
                 doc = self._filter_doc_pages(doc, page_numbers)
                 if not doc.sections and not doc.tables and not doc.raw_text.strip():
@@ -2720,6 +2750,8 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         try:
             logger.info(f"[Digital Path L2] Attempting pdfplumber bordered table extraction on {file_path.name}")
             doc = self._extract_l2_pdfplumber(file_path, page_numbers=page_numbers, degraded_reason=reason_l1)
+            if not doc or (not doc.sections and not doc.tables and not doc.raw_text.strip()):
+                raise ValueError("pdfplumber returned empty document")
             return doc
         except Exception as l2_err:
             reason_l2 = f"{reason_l1} -> pdfplumber failure: {l2_err}"
@@ -2751,6 +2783,8 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
             )
             if not doc or (not doc.sections and not doc.tables and not doc.raw_text.strip()):
                 raise ValueError("PaddleOCR returned empty document")
+            if getattr(doc, "is_degraded", False) or doc.metadata.get("is_degraded"):
+                raise RuntimeError(f"PaddleOCR adapter degraded internally: {doc.metadata.get('degraded_reason')}")
             if page_numbers is not None:
                 doc = self._filter_doc_pages(doc, page_numbers)
                 if not doc.sections and not doc.tables and not doc.raw_text.strip():
@@ -2819,15 +2853,38 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
             return doc
 
         # Case C: Mixed Document (Page-Level Hard Routing)
-        digital_doc = self.parse_digital_track(file_path, page_numbers=digital_pages)
-        scanned_doc = self.parse_scanned_track(file_path, page_numbers=scanned_pages)
+        digital_doc = None
+        scanned_doc = None
+        digital_err = None
+        scanned_err = None
 
-        combined_tables = [t for t in digital_doc.tables if t.page_num in digital_pages] + [
-            t for t in scanned_doc.tables if t.page_num in scanned_pages
-        ]
-        combined_sections = [s for s in digital_doc.sections if s.page_num in digital_pages] + [
-            s for s in scanned_doc.sections if s.page_num in scanned_pages
-        ]
+        if digital_pages:
+            try:
+                digital_doc = self.parse_digital_track(file_path, page_numbers=digital_pages)
+            except Exception as e:
+                digital_err = e
+                logger.warning(f"Mixed document digital track failed on {file_path.name}: {e}")
+
+        if scanned_pages:
+            try:
+                scanned_doc = self.parse_scanned_track(file_path, page_numbers=scanned_pages)
+            except Exception as e:
+                scanned_err = e
+                logger.warning(f"Mixed document scanned track failed on {file_path.name}: {e}")
+
+        if digital_doc is None and scanned_doc is None:
+            raise DocumentParsingUnrecoverableError(
+                f"Mixed document {file_path.name} produced 0 content: digital error ({digital_err}), scanned error ({scanned_err})"
+            )
+
+        combined_tables = []
+        combined_sections = []
+        if digital_doc:
+            combined_tables.extend([t for t in digital_doc.tables if t.page_num in digital_pages])
+            combined_sections.extend([s for s in digital_doc.sections if s.page_num in digital_pages])
+        if scanned_doc:
+            combined_tables.extend([t for t in scanned_doc.tables if t.page_num in scanned_pages])
+            combined_sections.extend([s for s in scanned_doc.sections if s.page_num in scanned_pages])
 
         combined_tables.sort(key=lambda t: (t.page_num, t.bbox.top if t.bbox else 0.0))
         combined_sections.sort(key=lambda s: (s.page_num, s.bbox.top if s.bbox else 0.0))
@@ -2836,18 +2893,31 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
         if not combined_raw and not combined_tables:
             raise DocumentParsingUnrecoverableError(f"Mixed document {file_path.name} produced 0 content.")
 
-        is_degraded = bool(digital_doc.is_degraded or scanned_doc.is_degraded)
+        is_degraded = bool(
+            (digital_doc and digital_doc.is_degraded)
+            or (scanned_doc and scanned_doc.is_degraded)
+            or digital_err is not None
+            or scanned_err is not None
+        )
         fallback_levels: List[str] = []
-        if digital_doc.is_degraded:
-            fallback_levels.append(digital_doc.metadata.get("fallback_level", "degraded"))
-        if scanned_doc.is_degraded:
-            fallback_levels.append(scanned_doc.metadata.get("fallback_level", "degraded"))
+        if digital_doc and digital_doc.is_degraded:
+            fallback_levels.append(digital_doc.metadata.get("fallback_level", "digital_degraded"))
+        elif digital_err:
+            fallback_levels.append("digital_unrecoverable")
+        if scanned_doc and scanned_doc.is_degraded:
+            fallback_levels.append(scanned_doc.metadata.get("fallback_level", "scanned_degraded"))
+        elif scanned_err:
+            fallback_levels.append("scanned_unrecoverable")
 
         degraded_reasons: List[str] = []
-        if digital_doc.metadata.get("degraded_reason"):
+        if digital_doc and digital_doc.metadata.get("degraded_reason"):
             degraded_reasons.append(digital_doc.metadata["degraded_reason"])
-        if scanned_doc.metadata.get("degraded_reason"):
+        elif digital_err:
+            degraded_reasons.append(f"Digital path error: {digital_err}")
+        if scanned_doc and scanned_doc.metadata.get("degraded_reason"):
             degraded_reasons.append(scanned_doc.metadata["degraded_reason"])
+        elif scanned_err:
+            degraded_reasons.append(f"Scanned path error: {scanned_err}")
 
         merged_doc = ParsedDocument(
             title=file_path.stem,

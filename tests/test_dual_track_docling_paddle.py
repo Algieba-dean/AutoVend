@@ -49,14 +49,14 @@ def test_real_docling_adapter_tableformer():
 
 def test_paddle_ocr_adapter_cpu_isolation(tmp_path):
     """Verify that RealPaddleOCRAdapter runs on CPU without GPU memory hijacking."""
-    adapter = RealPaddleOCRAdapter()
+    adapter = RealPaddleOCRAdapter(allow_fallback=True)
     assert adapter.use_gpu is False
 
-    # Create a 1-page scanned PDF (image only, 0 text layer chars)
+    # Create a 1-page scanned PDF with real text
     scanned_pdf_path = tmp_path / "scanned_doc.pdf"
     doc_pdf = fitz.open()
     page = doc_pdf.new_page(width=400, height=300)
-    # Draw red rectangle to act as scanned image content
+    page.insert_text((50, 50), "PaddleOCR CPU测试文本", fontname="china-s")
     page.draw_rect(fitz.Rect(50, 50, 350, 250), color=(1, 0, 0), fill=(0.9, 0.9, 0.9))
     doc_pdf.save(str(scanned_pdf_path))
     doc_pdf.close()
@@ -66,6 +66,7 @@ def test_paddle_ocr_adapter_cpu_isolation(tmp_path):
     assert parsed.pages == 1
     assert parsed.metadata.get("cpu_only") is True or "paddle_ocr" in parsed.metadata.get("engine", "")
     assert len(parsed.sections) >= 1
+    assert "PaddleOCR CPU测试文本" in parsed.raw_text
 
 
 def test_dual_track_density_classification(tmp_path):
@@ -84,10 +85,10 @@ def test_dual_track_density_classification(tmp_path):
     doc_pdf = fitz.open()
 
     p1 = doc_pdf.new_page(width=400, height=300)
-    p1.insert_text((50, 50), "这是第一页原生数字内容，包含超过三十个字符以触发Docling通道。" * 2)
+    p1.insert_text((50, 50), "这是第一页原生数字内容，包含超过三十个字符以触发Docling通道。" * 2, fontname="china-s")
 
     p2 = doc_pdf.new_page(width=400, height=300)
-    p2.insert_text((50, 50), "短文本")  # only 3 chars < 30 threshold
+    p2.insert_text((50, 50), "短文本", fontname="china-s")  # only 3 chars < 30 threshold
     p2.draw_rect(fitz.Rect(20, 20, 380, 280), color=(0, 0, 1))
 
     doc_pdf.save(str(mixed_pdf_path))
@@ -113,6 +114,7 @@ def test_dual_track_scanned_routing(tmp_path):
     scanned_path = tmp_path / "pure_scanned.pdf"
     doc_pdf = fitz.open()
     page = doc_pdf.new_page(width=400, height=300)
+    page.insert_text((50, 50), "扫描件短文本", fontname="china-s")  # 6 chars < 30 threshold
     page.draw_rect(fitz.Rect(10, 10, 390, 290), color=(0, 0, 0))
     doc_pdf.save(str(scanned_path))
     doc_pdf.close()
@@ -122,6 +124,7 @@ def test_dual_track_scanned_routing(tmp_path):
 
     assert isinstance(doc, ParsedDocument)
     assert doc.metadata.get("dual_track_route") == "all_scanned_paddleocr"
+    assert "扫描件短文本" in doc.raw_text
 
 
 def test_dual_track_mixed_page_hard_routing(tmp_path):
@@ -130,10 +133,10 @@ def test_dual_track_mixed_page_hard_routing(tmp_path):
     doc_pdf = fitz.open()
 
     p1 = doc_pdf.new_page(width=400, height=300)
-    p1.insert_text((50, 50), "这是第一页原生数字内容，包含超过三十个字符以触发Docling通道。" * 2)
+    p1.insert_text((50, 50), "这是第一页原生数字内容，包含超过三十个字符以触发Docling通道。" * 2, fontname="china-s")
 
     p2 = doc_pdf.new_page(width=400, height=300)
-    p2.insert_text((50, 50), "签字")  # 2 chars < 30 threshold
+    p2.insert_text((50, 50), "签字", fontname="china-s")  # 2 chars < 30 threshold
     p2.draw_rect(fitz.Rect(20, 20, 380, 280), color=(0, 0, 1))
 
     doc_pdf.save(str(mixed_pdf_path))
@@ -318,7 +321,7 @@ def test_scanned_path_l1_failure_trips_to_l2_or_l3(tmp_path, monkeypatch):
     assert len(doc.sections) >= 1
 
 
-def test_zero_mock_data_unrecoverable_error(tmp_path, monkeypatch):
+def test_zero_mock_data_unrecoverable_error(tmp_path):
     """Verify that if even PyMuPDF extracts nothing, DocumentParsingUnrecoverableError is raised (no mock fake data)."""
     # Create empty PDF with no text at all
     blank_pdf = tmp_path / "completely_blank.pdf"
@@ -329,10 +332,7 @@ def test_zero_mock_data_unrecoverable_error(tmp_path, monkeypatch):
 
     engine = DualTrackLayoutEngine(char_density_threshold=30)
 
-    # Mock paddle and docling to fail
-    monkeypatch.setattr(engine.paddle, "parse_scanned_pdf", lambda *args, **kwargs: None)
-    monkeypatch.setattr(engine.docling, "parse", lambda *args, **kwargs: None)
-
+    # Completely unmocked: engine should naturally trip L1 -> L2 -> L3 and raise DocumentParsingUnrecoverableError
     with pytest.raises(DocumentParsingUnrecoverableError):
         engine.parse(blank_pdf)
 
@@ -363,4 +363,89 @@ def test_physical_anchor_propagation_on_l2_degraded_document(monkeypatch):
         assert len(chunk.bounding_box) == 4
         assert isinstance(chunk.heading_breadcrumb, list)
         assert len(chunk.heading_breadcrumb) >= 1
+
+
+def test_physical_anchor_propagation_on_l3_degraded_document(monkeypatch):
+    """Verify that L3 PyMuPDF degraded documents propagate page_number, bounding_box, and breadcrumb to all chunks."""
+    engine = DualTrackLayoutEngine(char_density_threshold=30)
+
+    # Force L3 degradation by tripping both L1 docling and L2 pdfplumber
+    monkeypatch.setattr(engine.docling, "parse", lambda p: (_ for _ in ()).throw(RuntimeError("Docling failed")))
+    monkeypatch.setattr(engine._fallback, "parse", lambda p, **kw: (_ for _ in ()).throw(RuntimeError("pdfplumber failed")))
+
+    doc = engine.parse(PDF_SAMPLE_PATH)
+    assert doc.is_degraded is True
+    assert doc.metadata.get("fallback_level") == "L3_pymupdf_text"
+
+    chunker = HierarchicalChunker()
+    res = chunker.chunk_document(doc)
+
+    assert len(res["all"]) > 0
+    for chunk in res["all"]:
+        assert isinstance(chunk.page_number, int)
+        assert chunk.page_number >= 1
+        assert isinstance(chunk.bounding_box, list)
+        assert len(chunk.bounding_box) == 4
+        # Verify valid non-zero bounding boxes from get_text("blocks")
+        assert any(v > 0 for v in chunk.bounding_box)
+        assert isinstance(chunk.heading_breadcrumb, list)
+        assert len(chunk.heading_breadcrumb) >= 1
+
+
+def test_honest_degradation_metadata_audit():
+    """Verify that when Docling cannot initialize in the current runtime, the engine trips to L2 with honest metadata."""
+    engine = DualTrackLayoutEngine(char_density_threshold=30)
+    doc = engine.parse(PDF_SAMPLE_PATH)
+
+    assert isinstance(doc, ParsedDocument)
+    assert doc.is_degraded is True
+    assert doc.metadata.get("extraction_quality") == "degraded"
+    assert doc.metadata.get("fallback_level") == "L2_pdfplumber"
+    assert "Docling" in doc.metadata.get("degraded_reason", "")
+    assert len(doc.tables) >= 1
+
+
+def test_alternating_multipage_hybrid_document(tmp_path):
+    """Verify 6-page hybrid document with alternating digital and scanned pages routes and merges correctly."""
+    hybrid_pdf = tmp_path / "alternating_hybrid.pdf"
+    doc_pdf = fitz.open()
+
+    for p in range(1, 7):
+        page = doc_pdf.new_page(width=400, height=300)
+        if p % 2 == 1:
+            # Digital page: > 30 chars
+            page.insert_text(
+                (50, 50),
+                f"这是第 {p} 页数字原生内容，包含足够多的参数字符以确保字符数大于三十个字符门限值。",
+                fontname="china-s",
+            )
+        else:
+            # Scanned page: < 30 chars
+            page.insert_text((50, 50), f"附录{p}", fontname="china-s")  # 3 chars < 30
+            page.draw_rect(fitz.Rect(20, 20, 380, 280), color=(0, 0, 1))
+
+    doc_pdf.save(str(hybrid_pdf))
+    doc_pdf.close()
+
+    engine = DualTrackLayoutEngine(char_density_threshold=30)
+    density_info = engine.check_density(hybrid_pdf)
+    assert density_info["digital_pages"] == [1, 3, 5]
+    assert density_info["scanned_pages"] == [2, 4, 6]
+
+    doc = engine.parse(hybrid_pdf)
+    assert isinstance(doc, ParsedDocument)
+    assert doc.pages == 6
+    assert doc.metadata.get("dual_track_route") == "mixed_pages"
+    assert doc.metadata.get("digital_pages") == [1, 3, 5]
+    assert doc.metadata.get("scanned_pages") == [2, 4, 6]
+    assert doc.is_degraded is True
+    assert doc.metadata.get("extraction_quality") == "degraded"
+
+    # Confirm sections from both digital and scanned pages are present and sorted
+    pages_found = [s.page_num for s in doc.sections]
+    assert 1 in pages_found
+    assert 2 in pages_found
+    assert pages_found == sorted(pages_found)
+
+
 

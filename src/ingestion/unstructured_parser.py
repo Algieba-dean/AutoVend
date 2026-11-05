@@ -39,8 +39,13 @@ class UnstructuredDataParser:
 
     @staticmethod
     def parse_pdf(file_path: Path, layout_aware: bool = False) -> str:
-        """Extract text content from PDF file with layout awareness or PyMuPDF/DualTrack fallback."""
+        """Extract text content from PDF file with PreFlightProbe gating and layout awareness or OCR fallback."""
         file_path = Path(file_path)
+        from src.ingestion.layout_parser import PreFlightProbe
+
+        # Step 1: Pre-flight probe (<5ms) to check corruption, password, and character density
+        probe = PreFlightProbe.inspect(file_path, char_density_threshold=30)
+
         if layout_aware:
             try:
                 from src.ingestion.layout_parser import LayoutAwareParser
@@ -51,31 +56,21 @@ class UnstructuredDataParser:
             except Exception as e:
                 logger.warning(f"Layout-aware parsing failed for {file_path}: {e}")
 
+        # If scanned document (pure scanned or mixed scanned)
+        if probe["scanned_pages"] and not probe["digital_pages"]:
+            logger.info(
+                f"PreFlightProbe classified {file_path.name} as scanned PDF ({probe['page_counts']} chars), triggering OCR pipeline."
+            )
+            return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
+
+        # Digital track: extract底层字符流 via PyMuPDF
         try:
             import fitz
 
-            try:
-                doc = fitz.open(str(file_path))
-            except Exception as open_err:
-                logger.warning(f"PyMuPDF open failed for {file_path}: {open_err}")
-                return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
-
-            if getattr(doc, "is_encrypted", False) and not doc.authenticate(""):
-                raise DocumentParsingUnrecoverableError(
-                    f"PDF document is encrypted/password-protected: {file_path.name}"
-                )
-
+            doc = fitz.open(str(file_path))
             pages_text = [page.get_text() for page in doc if page.get_text()]
+            doc.close()
             full_text = "\n".join(pages_text).strip()
-
-            genuine_chars = sum(1 for c in full_text if not c.isspace())
-
-            # Scanned PDF Detection: text layer is empty or nearly 0 characters (< 30)
-            if genuine_chars < 30 and len(doc) > 0:
-                logger.info(
-                    f"Detected Scanned PDF (纯扫描件) for {file_path.name} ({genuine_chars} chars), triggering OCR pipeline."
-                )
-                return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
 
             if not full_text:
                 return UnstructuredDataParser.parse_scanned_pdf_ocr(file_path)
@@ -106,7 +101,7 @@ class UnstructuredDataParser:
         try:
             from src.ingestion.paddle_ocr_adapter import RealPaddleOCRAdapter
 
-            adapter = RealPaddleOCRAdapter()
+            adapter = RealPaddleOCRAdapter(allow_fallback=False)
             doc = adapter.parse_scanned_pdf(file_path)
             if doc.sections or doc.tables:
                 content = doc.get_full_markdown() if hasattr(doc, "get_full_markdown") else doc.raw_text
@@ -129,9 +124,6 @@ class UnstructuredDataParser:
                 except Exception as page_ocr_err:
                     logger.debug(f"PyMuPDF OCR failed on page {i + 1}: {page_ocr_err}")
                     txt = ""
-
-                if not txt:
-                    txt = page.get_text().strip()
 
                 if txt:
                     results.append(f"[Scanned PDF Page {i + 1} OCR Content]: {txt}")
