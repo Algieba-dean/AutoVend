@@ -147,14 +147,19 @@ $$\Delta t_{\text{price}} = \frac{T_{\text{now}} - T_{\text{price}}}{86400}$$
 ### 2. 参数数据衰减天数：
 $$\Delta t_{\text{spec}} = \frac{T_{\text{now}} - T_{\text{spec}}}{86400}$$
 
-### 3. SLA 判定决策矩阵：
+### 3. SLA 判定决策矩阵与双状态机规范：
 
-| 判定状态 | 触发条件数学准则 | 系统应对动作 |
+系统严格区分 **数据时效状态机 (`FreshnessStatus`)** 与 **车型生命周期状态机 (`LifecycleStatus`)**，并由 `deprecation_reason` 字段提供结构化废弃审计陈述（曾有文档误将 `deprecation_reason` 属性作为状态枚举名，现已完成代码与文档对齐统合）：
+- **`FreshnessStatus`**（时效性仲裁）：`FRESH`（有效保鲜）、`STALE`（临期巡检）、`EXPIRED`（超期失效）、`UNVERIFIED`（未核验登记），以及为显式废弃配置提供兼容的 `DEPRECATED`（已废弃）。
+- **`LifecycleStatus`**（生命周期流转）：`ACTIVE`（在售量产）、`FACELIFTED`（中期改款）、`SUPERSEDED`（换代停更）、`DISCONTINUED`（停产停售）、`TOMBSTONE`（墓碑隔离）、`DEPRECATED`（已废弃）。
+- **`deprecation_reason`**（废弃审计原因）：字符串字段，详细陈述下线或废弃的技术与业务依据。
+
+| 判定状态 (`FreshnessStatus`) | 触发条件数学准则 | 系统应对动作 |
 | :--- | :--- | :--- |
 | **`FRESH`** | $\Delta t_{\text{price}} \le 30 \land \Delta t_{\text{spec}} \le 180 \land (\text{Date} \le D_{\text{promo}}) \land \neg \text{Tombstone}$ | 正常执行 RAG 检索与价格报价 |
 | **`STALE`** | $30 < \Delta t_{\text{price}} \le 90 \lor 180 < \Delta t_{\text{spec}} \le 360$ | 产生后台增量网络巡检任务，回复附带价格参考免责提示 |
-| **`EXPIRED`** | $\Delta t_{\text{price}} > 90 \lor (\text{Date} > D_{\text{promo}}) \lor \text{Tombstone} \lor \text{Discontinued}$ | 严格隐藏失效优惠；若是墓碑车辆直接从候选集剔除 |
-| **`SUPERSEDED`** | $\text{Status} = \text{SUPERSEDED} \land \text{Has}(\text{SupersededBy})$ | 触发代际迁移路由，自动向用户推荐全新一代升级款 |
+| **`EXPIRED`** | $\Delta t_{\text{price}} > 90 \lor (\text{Date} > D_{\text{promo}}) \lor \text{Tombstone} \lor \text{Discontinued} \lor \text{Deprecated}$ | 严格隐藏失效优惠；若是墓碑/停售车辆直接从候选集剔除 |
+| **`SUPERSEDED` / `DEPRECATED`** | $\text{LifecycleStatus} \in \{\text{SUPERSEDED}, \text{DEPRECATED}\} \land \text{Has}(\text{SupersededBy})$ | 触发代际迁移路由，自动向用户推荐全新一代升级款 |
 
 ---
 

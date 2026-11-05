@@ -25,22 +25,30 @@ logger = logging.getLogger(__name__)
 
 
 class FreshnessStatus(str, Enum):
-    """SLA verification status for vehicle specification or pricing records."""
+    """
+    SLA verification and freshness status for vehicle specification or pricing records.
+    Status values: FRESH, STALE, EXPIRED, UNVERIFIED, DEPRECATED.
+    """
 
     FRESH = "fresh"              # Verified within SLA window
     STALE = "stale"              # Approaching expiration, requires background crawl
     EXPIRED = "expired"          # Exceeded validity threshold, suppressed from quoting
     UNVERIFIED = "unverified"    # New record awaiting human or crawler verification
+    DEPRECATED = "deprecated"    # Explicitly deprecated record or superseded specification
 
 
 class LifecycleStatus(str, Enum):
-    """Automotive lifecycle progression status."""
+    """
+    Automotive lifecycle progression status.
+    Status values: ACTIVE, FACELIFTED, SUPERSEDED, DISCONTINUED, TOMBSTONE, DEPRECATED.
+    """
 
     ACTIVE = "active"                  # Current mass-production model actively on sale
     FACELIFTED = "facelifted"          # Mid-cycle refresh released
     SUPERSEDED = "superseded"          # Replaced by next-generation model
     DISCONTINUED = "discontinued"      # Ceased production and delisted
     TOMBSTONE = "tombstone"            # Delisted marker preventing obsolete recommendations
+    DEPRECATED = "deprecated"          # Delisted/deprecated model or predecessor configuration
 
 
 class FreshnessSLAConfig(BaseModel):
@@ -241,8 +249,15 @@ class DataFreshnessEngine:
         }
 
         # Check expiration thresholds
-        if record.is_tombstone or record.lifecycle_status == LifecycleStatus.DISCONTINUED:
-            return FreshnessStatus.EXPIRED, {**diagnostics, "reason": "车型已停产停售(Tombstone)"}
+        if record.is_tombstone or record.lifecycle_status in (
+            LifecycleStatus.DISCONTINUED,
+            LifecycleStatus.TOMBSTONE,
+            LifecycleStatus.DEPRECATED,
+        ):
+            reason = "车型已停产停售(Tombstone/Deprecated)"
+            if record.deprecation_reason:
+                reason = f"车型已停产停售: {record.deprecation_reason}"
+            return FreshnessStatus.EXPIRED, {**diagnostics, "reason": reason}
 
         if price_age_days >= self.sla.price_expire_days:
             return FreshnessStatus.EXPIRED, {**diagnostics, "reason": f"价格数据超期 {price_age_days:.0f} 天未核验"}

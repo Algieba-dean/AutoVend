@@ -27,19 +27,13 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-font_name = "Helvetica"
-cjk_font_paths = [
-    "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
-    "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
-]
-for p in cjk_font_paths:
-    if os.path.exists(p):
-        try:
-            pdfmetrics.registerFont(TTFont("wqy", p))
-            font_name = "wqy"
-            break
-        except Exception:
-            pass
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+
+font_name = "STSong-Light"
+try:
+    pdfmetrics.registerFont(UnicodeCIDFont("STSong-Light"))
+except Exception:
+    font_name = "Helvetica"
 
 
 def generate_xiaomi_su7_pdf(output_path: Path):
@@ -1659,38 +1653,42 @@ def generate_unequal_three_column_specs_pdf(output_path: Path):
 
 
 if __name__ == "__main__":
-    out_su7 = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/xiaomi_su7_ultra_specs.pdf")
+    _PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    _SAMPLE_DIR = _PROJECT_ROOT / "data" / "sample_specs"
+    _SAMPLE_DIR.mkdir(parents=True, exist_ok=True)
+
+    out_su7 = _SAMPLE_DIR / "xiaomi_su7_ultra_specs.pdf"
     generate_xiaomi_su7_pdf(out_su7)
 
-    out_u9 = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/byd_yangwang_u9_specs.pdf")
+    out_u9 = _SAMPLE_DIR / "byd_yangwang_u9_specs.pdf"
     generate_byd_yangwang_u9_pdf(out_u9)
 
-    out_ent = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/enterprise_multipage_specs.pdf")
+    out_ent = _SAMPLE_DIR / "enterprise_multipage_specs.pdf"
     generate_enterprise_multipage_pdf(out_ent)
 
-    out_3p = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/enterprise_3page_scroll_specs.pdf")
+    out_3p = _SAMPLE_DIR / "enterprise_3page_scroll_specs.pdf"
     generate_enterprise_3page_continuous_table_pdf(out_3p)
 
-    out_fin = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/financial_autoloan_policy_specs.pdf")
+    out_fin = _SAMPLE_DIR / "financial_autoloan_policy_specs.pdf"
     generate_financial_autoloan_pdf(out_fin)
 
-    out_maint = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/vehicle_maintenance_diagnostic_manual.pdf")
+    out_maint = _SAMPLE_DIR / "vehicle_maintenance_diagnostic_manual.pdf"
     generate_vehicle_maintenance_manual_pdf(out_maint)
 
-    out_border = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/irregular_borderless_specs.pdf")
+    out_border = _SAMPLE_DIR / "irregular_borderless_specs.pdf"
     generate_irregular_borderless_specs_pdf(out_border)
 
-    out_mixed = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/mixed_orientation_enterprise_specs.pdf")
+    out_mixed = _SAMPLE_DIR / "mixed_orientation_enterprise_specs.pdf"
     generate_mixed_orientation_enterprise_specs_pdf(out_mixed)
 
-    out_scan = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/scanned_brochure_watermark_specs.pdf")
+    out_scan = _SAMPLE_DIR / "scanned_brochure_watermark_specs.pdf"
     generate_scanned_brochure_watermark_pdf(out_scan)
 
-    out_border_multi = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/enterprise_borderless_multipage_specs.pdf")
+    out_border_multi = _SAMPLE_DIR / "enterprise_borderless_multipage_specs.pdf"
     generate_enterprise_borderless_multipage_pdf(out_border_multi)
 
-    out_warr = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/oem_warranty_maintenance_matrix.pdf")
+    out_warr = _SAMPLE_DIR / "oem_warranty_maintenance_matrix.pdf"
     generate_oem_warranty_maintenance_matrix_pdf(out_warr)
 
-    out_3col = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/unequal_three_column_specs.pdf")
+    out_3col = _SAMPLE_DIR / "unequal_three_column_specs.pdf"
     generate_unequal_three_column_specs_pdf(out_3col)

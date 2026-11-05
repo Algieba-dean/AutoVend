@@ -17,7 +17,7 @@ import os
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 logger = logging.getLogger(__name__)
 
@@ -150,6 +150,7 @@ class TableBlock:
         footnotes: Optional[List[str]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         page_bboxes: Optional[Dict[int, BoundingBox]] = None,
+        header_rows_count: Optional[int] = None,
     ):
         self.page_num = page_num
         self.bbox = bbox
@@ -197,8 +198,8 @@ class TableBlock:
         # Infer or set headers
         self.cells = cells or []
         self.lines = lines or []
-        self.header_rows_count = 1
-        self.is_multilevel_header = False
+        self.header_rows_count = header_rows_count if header_rows_count is not None else 1
+        self.is_multilevel_header = (self.header_rows_count > 1)
 
         # Infer or set headers
         if len(self.rows) >= 3 and self._detect_multilevel_headers(self.rows[0], self.rows[1]):
@@ -293,18 +294,89 @@ class TableBlock:
     def is_borderless(self) -> bool:
         return self.extraction_engine.startswith("borderless")
 
-    def normalize_forward_fill(self) -> List[List[str]]:
+    def _is_index_column(self, col_idx: int, start_row: int) -> bool:
         """
-        Forward-fill empty/merged category cells (first 1-2 columns)
-        across consecutive rows to normalize ragged or merged table hierarchies.
-        When a parent category changes, child category caches are reset to prevent cross-category contamination.
+        Detect if a column is a row-number/sequence index column (e.g. '1', '2', '3' or '序号').
+        Index columns increment row-by-row and MUST NOT be treated as a parent hierarchy
+        that resets child category caches.
+        """
+        if not self.rows or col_idx >= self.col_count:
+            return False
+
+        header_text = ""
+        if hasattr(self, "headers") and self.headers and col_idx < len(self.headers):
+            header_text = str(self.headers[col_idx]).strip().lower()
+        elif self.rows and col_idx < len(self.rows[0]):
+            header_text = str(self.rows[0][col_idx]).strip().lower()
+
+        if header_text in ("序号", "序号/item", "no", "no.", "id", "item", "index", "#", "item_no", "行号"):
+            return True
+
+        total_data_rows = len(self.rows) - start_row
+        if total_data_rows <= 1:
+            return False
+
+        numeric_rows = 0
+        vals = []
+        for r_idx in range(start_row, len(self.rows)):
+            row = self.rows[r_idx]
+            val = str(row[col_idx]).strip() if col_idx < len(row) else ""
+            if re.match(r"^\d+$", val):
+                numeric_rows += 1
+                try:
+                    vals.append(int(val))
+                except ValueError:
+                    pass
+
+        if numeric_rows / total_data_rows >= 0.7:
+            if len(vals) >= 2 and all(vals[k] < vals[k + 1] for k in range(len(vals) - 1)):
+                # Starts at small index or increments by regular step (e.g. 1, 2, 3... or 101, 102, 103...)
+                if vals[0] <= 10 or all(vals[k + 1] - vals[k] == 1 for k in range(len(vals) - 1)):
+                    return True
+                # Constant step sequence
+                if len(set(vals[k + 1] - vals[k] for k in range(len(vals) - 1))) == 1:
+                    return True
+
+        return False
+
+    def normalize_forward_fill(
+        self,
+        fill_columns: Optional[Union[Sequence[int], int]] = None,
+        max_fill_cols: Optional[int] = None,
+        detect_index_col: bool = True,
+    ) -> List[List[str]]:
+        """
+        Forward-fill empty/merged category cells across consecutive rows to normalize
+        ragged or multi-level merged table hierarchies.
+
+        Features:
+        - Supports arbitrary number of hierarchy columns (no hardcoded min(2) restriction).
+        - Automatically identifies row sequence / index columns (e.g. 1, 2, 3... or '序号')
+          and excludes them from invalidating child category caches.
+        - Hierarchical cache reset: When a parent category changes, child category caches
+          are reset to prevent cross-category contamination.
         """
         if not self.rows:
             return []
+
+        start_row = self.header_rows_count if hasattr(self, "header_rows_count") else 1
+        col_0_is_index = detect_index_col and self._is_index_column(0, start_row)
+
+        if fill_columns is not None:
+            if isinstance(fill_columns, int):
+                active_cols = list(range(min(fill_columns, self.col_count)))
+            else:
+                active_cols = [c for c in fill_columns if 0 <= c < self.col_count]
+        elif max_fill_cols is not None:
+            active_cols = list(range(min(max_fill_cols, self.col_count)))
+        else:
+            active_cols = list(range(self.col_count))
+
+        hierarchy_cols = [c for c in active_cols if not (c == 0 and col_0_is_index)]
+
         normalized: List[List[str]] = []
         last_values: List[str] = [""] * self.col_count
 
-        start_row = self.header_rows_count if hasattr(self, "header_rows_count") else 1
         for r_idx in range(min(start_row, len(self.rows))):
             norm_h = list(self.rows[r_idx])
             if len(norm_h) < self.col_count:
@@ -316,18 +388,222 @@ class TableBlock:
             new_row = list(row)
             if len(new_row) < self.col_count:
                 new_row += [""] * (self.col_count - len(new_row))
-            for c_idx in range(min(2, self.col_count)):
+
+            for c_idx in active_cols:
+                if c_idx == 0 and col_0_is_index:
+                    continue
+
                 val = new_row[c_idx].strip()
                 if not val and last_values[c_idx]:
                     new_row[c_idx] = last_values[c_idx]
                 elif val:
-                    # Reset lower-level hierarchy caches on higher-level category shift
-                    if c_idx == 0 and val != last_values[0]:
-                        for k in range(1, len(last_values)):
-                            last_values[k] = ""
+                    if c_idx in hierarchy_cols:
+                        curr_h_idx = hierarchy_cols.index(c_idx)
+                        if last_values[c_idx] and val != last_values[c_idx]:
+                            for lower_c in hierarchy_cols[curr_h_idx + 1:]:
+                                last_values[lower_c] = ""
                     last_values[c_idx] = val
+
             normalized.append(new_row)
         return normalized
+
+    def normalize_backward_fill(
+        self,
+        fill_columns: Optional[Union[Sequence[int], int]] = None,
+        max_fill_cols: Optional[int] = None,
+        detect_index_col: bool = True,
+    ) -> List[List[str]]:
+        """
+        Backward-fill empty cells across consecutive rows upward.
+        Useful when category summaries or footnotes are aligned to row bottoms.
+        """
+        if not self.rows:
+            return []
+
+        start_row = self.header_rows_count if hasattr(self, "header_rows_count") else 1
+        col_0_is_index = detect_index_col and self._is_index_column(0, start_row)
+
+        if fill_columns is not None:
+            if isinstance(fill_columns, int):
+                active_cols = list(range(min(fill_columns, self.col_count)))
+            else:
+                active_cols = [c for c in fill_columns if 0 <= c < self.col_count]
+        elif max_fill_cols is not None:
+            active_cols = list(range(min(max_fill_cols, self.col_count)))
+        else:
+            active_cols = list(range(self.col_count))
+
+        hierarchy_cols = [c for c in active_cols if not (c == 0 and col_0_is_index)]
+
+        normalized_body: List[List[str]] = []
+        next_values: List[str] = [""] * self.col_count
+
+        for r_idx in range(len(self.rows) - 1, start_row - 1, -1):
+            row = self.rows[r_idx]
+            new_row = list(row)
+            if len(new_row) < self.col_count:
+                new_row += [""] * (self.col_count - len(new_row))
+
+            for c_idx in active_cols:
+                if c_idx == 0 and col_0_is_index:
+                    continue
+
+                val = new_row[c_idx].strip()
+                if not val and next_values[c_idx]:
+                    new_row[c_idx] = next_values[c_idx]
+                elif val:
+                    if c_idx in hierarchy_cols:
+                        curr_h_idx = hierarchy_cols.index(c_idx)
+                        if next_values[c_idx] and val != next_values[c_idx]:
+                            for lower_c in hierarchy_cols[curr_h_idx + 1:]:
+                                next_values[lower_c] = ""
+                    next_values[c_idx] = val
+
+            normalized_body.append(new_row)
+
+        normalized_body.reverse()
+
+        normalized: List[List[str]] = []
+        for r_idx in range(min(start_row, len(self.rows))):
+            norm_h = list(self.rows[r_idx])
+            if len(norm_h) < self.col_count:
+                norm_h += [""] * (self.col_count - len(norm_h))
+            normalized.append(norm_h)
+
+        normalized.extend(normalized_body)
+        return normalized
+
+    def normalize_bidirectional_fill(
+        self,
+        fill_columns: Optional[Union[Sequence[int], int]] = None,
+        max_fill_cols: Optional[int] = None,
+        detect_index_col: bool = True,
+    ) -> List[List[str]]:
+        """
+        Bidirectional fill: Resolves empty merged cells by propagating values from
+        both top (forward) and bottom (backward) boundaries based on proximity to the nearest anchor,
+        while strictly respecting parent hierarchy boundaries.
+        """
+        if not self.rows:
+            return []
+
+        start_row = self.header_rows_count if hasattr(self, "header_rows_count") else 1
+        col_0_is_index = detect_index_col and self._is_index_column(0, start_row)
+
+        if fill_columns is not None:
+            if isinstance(fill_columns, int):
+                active_cols = list(range(min(fill_columns, self.col_count)))
+            else:
+                active_cols = [c for c in fill_columns if 0 <= c < self.col_count]
+        elif max_fill_cols is not None:
+            active_cols = list(range(min(max_fill_cols, self.col_count)))
+        else:
+            active_cols = list(range(self.col_count))
+
+        hierarchy_cols = [c for c in active_cols if not (c == 0 and col_0_is_index)]
+
+        # Clone table rows
+        normalized: List[List[str]] = []
+        for r_idx in range(len(self.rows)):
+            row = list(self.rows[r_idx])
+            if len(row) < self.col_count:
+                row += [""] * (self.col_count - len(row))
+            normalized.append(row)
+
+        # Process column by column in hierarchy order
+        for c_idx in active_cols:
+            if c_idx == 0 and col_0_is_index:
+                continue
+
+            curr_h_idx = hierarchy_cols.index(c_idx) if c_idx in hierarchy_cols else -1
+            parent_cols = hierarchy_cols[:curr_h_idx] if curr_h_idx > 0 else []
+
+            r = start_row
+            while r < len(normalized):
+                if not normalized[r][c_idx].strip():
+                    run_start = r
+                    while r < len(normalized) and not normalized[r][c_idx].strip():
+                        if parent_cols and r > run_start:
+                            prev_p = [normalized[r - 1][pc] for pc in parent_cols]
+                            curr_p = [normalized[r][pc] for pc in parent_cols]
+                            if prev_p != curr_p:
+                                break
+                        r += 1
+                    run_end = r - 1
+
+                    # Look for top anchor
+                    top_anchor_val = None
+                    top_anchor_r = None
+                    for tr in range(run_start - 1, start_row - 1, -1):
+                        if parent_cols and [normalized[tr][pc] for pc in parent_cols] != [normalized[run_start][pc] for pc in parent_cols]:
+                            break
+                        if normalized[tr][c_idx].strip():
+                            top_anchor_val = normalized[tr][c_idx].strip()
+                            top_anchor_r = tr
+                            break
+
+                    # Look for bottom anchor
+                    bottom_anchor_val = None
+                    bottom_anchor_r = None
+                    for br in range(run_end + 1, len(normalized)):
+                        if parent_cols and [normalized[br][pc] for pc in parent_cols] != [normalized[run_end][pc] for pc in parent_cols]:
+                            break
+                        if normalized[br][c_idx].strip():
+                            bottom_anchor_val = normalized[br][c_idx].strip()
+                            bottom_anchor_r = br
+                            break
+
+                    # Fill empty cells between run_start and run_end
+                    for fill_r in range(run_start, run_end + 1):
+                        if top_anchor_val and bottom_anchor_val:
+                            dist_top = fill_r - top_anchor_r
+                            dist_bottom = bottom_anchor_r - fill_r
+                            if dist_top <= dist_bottom:
+                                normalized[fill_r][c_idx] = top_anchor_val
+                            else:
+                                normalized[fill_r][c_idx] = bottom_anchor_val
+                        elif top_anchor_val:
+                            normalized[fill_r][c_idx] = top_anchor_val
+                        elif bottom_anchor_val:
+                            normalized[fill_r][c_idx] = bottom_anchor_val
+                else:
+                    r += 1
+
+        return normalized
+
+    def normalize_fill(
+        self,
+        direction: str = "forward",
+        fill_columns: Optional[Union[Sequence[int], int]] = None,
+        max_fill_cols: Optional[int] = None,
+        detect_index_col: bool = True,
+    ) -> List[List[str]]:
+        """
+        Unified table normalization method supporting forward, backward, and bidirectional fill.
+        """
+        direction = (direction or "forward").lower().strip()
+        if direction in ("forward", "ffill", "down"):
+            return self.normalize_forward_fill(
+                fill_columns=fill_columns,
+                max_fill_cols=max_fill_cols,
+                detect_index_col=detect_index_col,
+            )
+        elif direction in ("backward", "bfill", "up"):
+            return self.normalize_backward_fill(
+                fill_columns=fill_columns,
+                max_fill_cols=max_fill_cols,
+                detect_index_col=detect_index_col,
+            )
+        elif direction in ("bidirectional", "both", "two_way"):
+            return self.normalize_bidirectional_fill(
+                fill_columns=fill_columns,
+                max_fill_cols=max_fill_cols,
+                detect_index_col=detect_index_col,
+            )
+        else:
+            raise ValueError(
+                f"Invalid fill direction '{direction}'. Supported directions: 'forward', 'backward', 'bidirectional'."
+            )
 
     def to_records(self) -> List[Dict[str, str]]:
         """
@@ -725,8 +1001,18 @@ class OCROrientationDetector:
 
 class ReadingOrderSorter:
     """
-    Reconstructs natural reading order for dual-column and multi-column documents.
-    Eliminates horizontal cross-talk across column gutters while preserving full-width banners.
+    Reconstructs natural reading order for dual-column and multi-column documents
+    using heuristic geometric banding and horizontal X-coordinate clustering.
+
+    Algorithm Architecture:
+    1. Spanning Banner Detection: Identifies full-width section headers, banners, and callout blocks
+       via geometric heuristics (width > 55% page width, or crossing the midpoint with width > 40%,
+       or heading syntax 【, #, \\d+\\. with no horizontal peer).
+    2. Vertical Band Partitioning: Uses detected banners as horizontal slicing boundaries
+       to partition the page into independent vertical zones.
+    3. Multi-Column X-Clustering: Within each zone, clusters non-spanning text blocks by horizontal
+       origin (x0 proximity <= 45pt), reconstructs left-to-right column progression, and sorts
+       blocks within each column top-to-bottom to eliminate horizontal cross-talk.
     """
 
     @classmethod
@@ -823,9 +1109,51 @@ class ReadingOrderSorter:
 
 class CrossPageTableStitcher:
     """
-    Detects and seamlessly stitches split tables spanning across page boundaries.
-    Eliminates duplicated headers and fragmented table chunks across arbitrary page depths (2, 3, N pages).
+    Seamlessly stitches split tables spanning across page boundaries.
+
+    Alignment & Compatibility Strategy:
+    1. Bounding Box Alignment: Checks outer horizontal bounding box coordinate alignment
+       (abs(x0_curr - x0_next) <= 25.0 pt and abs(x1_curr - x1_next) <= 25.0 pt).
+    2. Column Count Consistency: Enforces curr_tbl.col_count == next_tbl.col_count (> 0).
+    3. Column Width Profile Variance: When individual cell bounding boxes exist, computes
+       per-column width arrays and evaluates the mean squared difference (variance) between
+       consecutive tables to verify column geometry alignment.
+    4. Header Consistency & Deduplication: Eliminates repeated continuation headers on subsequent pages.
     """
+
+    @classmethod
+    def _compute_column_widths(cls, table: TableBlock) -> List[float]:
+        """Compute estimated column widths from cell bounding boxes when available."""
+        if not getattr(table, "cells", None):
+            return []
+        widths_by_col: Dict[int, List[float]] = {}
+        for c in table.cells:
+            if c.bbox and getattr(c, "col_span", 1) == 1:
+                widths_by_col.setdefault(c.col_idx, []).append(c.bbox.width)
+        if not widths_by_col:
+            return []
+        widths = []
+        for i in range(table.col_count):
+            if i in widths_by_col and widths_by_col[i]:
+                widths.append(sum(widths_by_col[i]) / len(widths_by_col[i]))
+            else:
+                widths.append(0.0)
+        return widths
+
+    @classmethod
+    def _compute_column_width_variance(
+        cls, curr_widths: List[float], next_widths: List[float]
+    ) -> float:
+        """
+        Compute mean squared difference (variance of column width differences)
+        between two tables' column width profiles for valid observed columns.
+        """
+        if not curr_widths or not next_widths or len(curr_widths) != len(next_widths) or len(curr_widths) == 0:
+            return 0.0
+        valid_diffs = [(w1 - w2) for w1, w2 in zip(curr_widths, next_widths) if w1 > 0.0 and w2 > 0.0]
+        if not valid_diffs:
+            return 0.0
+        return sum(d * d for d in valid_diffs) / len(valid_diffs)
 
     @classmethod
     def stitch_tables(
@@ -858,6 +1186,16 @@ class CrossPageTableStitcher:
                         and abs(curr_tbl.bbox.x1 - next_tbl.bbox.x1) <= 25.0
                     ) if (curr_tbl.bbox and next_tbl.bbox) else True
 
+                    # Evaluate column width distribution variance if cell coordinates exist
+                    curr_col_widths = cls._compute_column_widths(curr_tbl)
+                    next_col_widths = cls._compute_column_widths(next_tbl)
+                    col_widths_compatible = True
+                    if curr_col_widths and next_col_widths and len(curr_col_widths) == len(next_col_widths):
+                        col_var = cls._compute_column_width_variance(curr_col_widths, next_col_widths)
+                        # Threshold: RMS column width deviation <= 25.0 pt (variance <= 625.0)
+                        if col_var > 625.0:
+                            col_widths_compatible = False
+
                     headers_identical = (
                         bool(curr_tbl.headers)
                         and bool(next_tbl.headers)
@@ -880,8 +1218,8 @@ class CrossPageTableStitcher:
                     curr_near_bottom = curr_tbl.bbox.bottom >= curr_ph * 0.35 if curr_tbl.bbox else True
                     next_near_top = next_tbl.bbox.top <= next_ph * 0.45 if next_tbl.bbox else True
 
-                    # Relax x_aligned if headers are identical or columns match
-                    can_align_x = x_aligned or (headers_identical and cols_match)
+                    # Relax x_aligned if headers are identical or columns match, provided column width variance is compatible
+                    can_align_x = (x_aligned or (headers_identical and cols_match)) and col_widths_compatible
 
                     can_stitch = cols_match and can_align_x and not has_conflicting_headers and (
                         headers_identical

@@ -470,3 +470,25 @@ class TestFuzzyLifecycleAndPolymorphicCandidates:
         assert len(advisories) == 1
         assert "2025款比亚迪汉EV" in advisories[0]
 
+    def test_deprecated_status_and_lifecycle_handling(self, tmp_path):
+        """Verify DEPRECATED enum is supported and correctly triggers expiration and advisory."""
+        db = VehicleDB(db_path=str(tmp_path / "freshness_test.db"))
+        engine = DataFreshnessEngine(db=db)
+
+        rec = ModelLifecycleRecord(
+            car_model="已废弃老旧燃油车",
+            lifecycle_status=LifecycleStatus.DEPRECATED,
+            deprecation_reason="国四排放标准全面淘汰，停止销售支持",
+            price_verified_at=time.time(),
+            last_verified_at=time.time(),
+        )
+        engine.register_lifecycle_record(rec)
+
+        assert FreshnessStatus.DEPRECATED.value == "deprecated"
+        assert LifecycleStatus.DEPRECATED.value == "deprecated"
+
+        status, diag = engine.assess_freshness("已废弃老旧燃油车")
+        assert status == FreshnessStatus.EXPIRED
+        assert "国四排放标准全面淘汰" in diag["reason"]
+
+

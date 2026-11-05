@@ -45,7 +45,7 @@ from src.ingestion.multiformat_parser import (
 from src.ingestion.pipeline import IncrementalIngestionPipeline
 from src.retrieval.parent_child_retriever import ParentChildRetriever
 
-SAMPLE_DIR = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs")
+SAMPLE_DIR = Path(__file__).resolve().parent.parent / "data" / "sample_specs"
 
 
 # ── 1. Format Autodetection Tests ────────────────────────────────────────
@@ -743,4 +743,31 @@ def test_legacy_ole2_fallback():
     assert doc.sections[0].content != ""
     assert doc.metadata["format"] == "word"
     tmp_path.unlink()
+
+
+def test_excel_parser_openpyxl_missing_graceful_fallback(monkeypatch, tmp_path):
+    """Verify ExcelParser does not crash if openpyxl is not installed, gracefully falling back."""
+    import builtins
+    real_import = builtins.__import__
+
+    def mock_import(name, *args, **kwargs):
+        if name == "openpyxl":
+            raise ImportError("No module named 'openpyxl' (simulated missing dependency)")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+
+    # Legacy OLE2 fake excel file
+    header = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+    utf16_text = "比亚迪汉EV参数表".encode("utf-16le")
+    payload = header + b"\x00" * 32 + utf16_text
+    test_xls = tmp_path / "test_missing_openpyxl.xls"
+    test_xls.write_bytes(payload)
+
+    parser = ExcelParser()
+    # Must not raise ModuleNotFoundError or Crash!
+    doc = parser.parse(test_xls)
+    assert doc is not None
+    assert doc.metadata["format"] == "excel"
+
 

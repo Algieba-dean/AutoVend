@@ -24,7 +24,8 @@ from src.ingestion.layout_parser import (
     TextSection,
 )
 
-PDF_SAMPLE_PATH = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/xiaomi_su7_ultra_specs.pdf")
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PDF_SAMPLE_PATH = _PROJECT_ROOT / "data" / "sample_specs" / "xiaomi_su7_ultra_specs.pdf"
 
 
 def test_token_estimation():
@@ -224,7 +225,7 @@ def test_table_with_none_bbox_graceful_handling():
 
 
 def test_byd_yangwang_u9_hierarchical_chunking():
-    u9_path = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/byd_yangwang_u9_specs.pdf")
+    u9_path = _PROJECT_ROOT / "data" / "sample_specs" / "byd_yangwang_u9_specs.pdf"
     assert u9_path.exists()
 
     parser = LayoutAwareParser(engine_type="hybrid")

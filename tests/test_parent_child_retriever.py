@@ -23,7 +23,8 @@ from src.retrieval.parent_child_retriever import (
     SimpleVectorIndex,
 )
 
-PDF_SAMPLE_PATH = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/xiaomi_su7_ultra_specs.pdf")
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PDF_SAMPLE_PATH = _PROJECT_ROOT / "data" / "sample_specs" / "xiaomi_su7_ultra_specs.pdf"
 
 
 def test_parent_child_retrieval_flow():
@@ -179,7 +180,7 @@ def test_sentence_transformer_encode_support():
 
 
 def test_byd_yangwang_u9_retrieval_returns_full_markdown():
-    u9_path = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/byd_yangwang_u9_specs.pdf")
+    u9_path = _PROJECT_ROOT / "data" / "sample_specs" / "byd_yangwang_u9_specs.pdf"
     assert u9_path.exists()
 
     parser = LayoutAwareParser(engine_type="hybrid")

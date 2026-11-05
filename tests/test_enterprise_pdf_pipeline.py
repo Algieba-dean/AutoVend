@@ -40,7 +40,7 @@ from src.retrieval.parent_child_retriever import (
     ParentChildSearchResponse,
 )
 
-ENTERPRISE_PDF_PATH = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs/enterprise_multipage_specs.pdf")
+ENTERPRISE_PDF_PATH = Path(__file__).resolve().parent.parent / "data" / "sample_specs" / "enterprise_multipage_specs.pdf"
 SAMPLE_SPECS_DIR = ENTERPRISE_PDF_PATH.parent
 
 

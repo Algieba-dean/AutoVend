@@ -711,12 +711,14 @@ def infer_automotive_vehicle_model(file_path: Union[str, Path], doc_title: str, 
 
 class ExcelParser(BaseFormatParser):
     """
-    Enterprise Excel parser:
+    Enterprise Excel parser using openpyxl (pure Python library) with OLE2 fallback:
     - Multi-sheet workbook navigation
     - Merged cell resolution (propagating top-left values across spans)
     - Formula evaluation with fallback to cached values (data_only=True)
     - Currency and date formatting
     - Conversion to TableBlock and TextSection objects with sheet metadata
+    - Graceful degradation: If openpyxl is not installed or file is legacy binary (.xls),
+      automatically falls back to OLE2 stream extraction without crashing.
     """
 
     def can_parse(self, file_path: Path, format_type: DocumentFormat) -> bool:
@@ -761,8 +763,6 @@ class ExcelParser(BaseFormatParser):
         return val_str
 
     def parse(self, file_path: Union[str, Path], **kwargs) -> ParsedDocument:
-        import openpyxl
-
         file_path = Path(file_path)
         doc_title = file_path.stem.replace("_", " ")
 
@@ -777,29 +777,41 @@ class ExcelParser(BaseFormatParser):
         wb_formulas = None
         wb_readonly = None
 
-        if is_large_file:
-            try:
-                wb_readonly = openpyxl.load_workbook(str(file_path), data_only=True, read_only=True)
-            except Exception as e:
-                logger.warning(f"openpyxl read_only load failed for {file_path}: {e}")
-                wb_readonly = None
-            wb = wb_readonly
+        try:
+            import openpyxl
+        except ImportError as e:
+            logger.warning(
+                f"openpyxl (pure Python Excel library) is not installed ({e}). "
+                f"Gracefully degrading to OLE2 binary text extraction for {file_path}"
+            )
+            openpyxl = None
+
+        if openpyxl is not None:
+            if is_large_file:
+                try:
+                    wb_readonly = openpyxl.load_workbook(str(file_path), data_only=True, read_only=True)
+                except Exception as e:
+                    logger.warning(f"openpyxl read_only load failed for {file_path}: {e}")
+                    wb_readonly = None
+                wb = wb_readonly
+            else:
+                # 1. Load data_only workbook for evaluated formula values
+                try:
+                    wb_data = openpyxl.load_workbook(str(file_path), data_only=True, read_only=False)
+                except Exception as e:
+                    logger.warning(f"openpyxl data_only load failed for {file_path}: {e}")
+                    wb_data = None
+
+                # 2. Load non-data_only workbook for formula fallback if needed
+                try:
+                    wb_formulas = openpyxl.load_workbook(str(file_path), data_only=False, read_only=False)
+                except Exception as e:
+                    logger.warning(f"openpyxl formulas load failed for {file_path}: {e}")
+                    wb_formulas = None
+
+                wb = wb_data or wb_formulas
         else:
-            # 1. Load data_only workbook for evaluated formula values
-            try:
-                wb_data = openpyxl.load_workbook(str(file_path), data_only=True, read_only=False)
-            except Exception as e:
-                logger.warning(f"openpyxl data_only load failed for {file_path}: {e}")
-                wb_data = None
-
-            # 2. Load non-data_only workbook for formula fallback if needed
-            try:
-                wb_formulas = openpyxl.load_workbook(str(file_path), data_only=False, read_only=False)
-            except Exception as e:
-                logger.warning(f"openpyxl formulas load failed for {file_path}: {e}")
-                wb_formulas = None
-
-            wb = wb_data or wb_formulas
+            wb = None
 
         if not wb:
             ole_text = extract_ole2_text(file_path)

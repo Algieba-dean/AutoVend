@@ -20,7 +20,7 @@ from pptx.dml.color import RGBColor as PPT_RGBColor
 from pptx.util import Inches as PPT_Inches
 from pptx.util import Pt as PPT_Pt
 
-SAMPLE_DIR = Path("/home/algieba/projects/hackthon/AutoVend/data/sample_specs")
+SAMPLE_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "sample_specs"
 SAMPLE_DIR.mkdir(parents=True, exist_ok=True)
 
 

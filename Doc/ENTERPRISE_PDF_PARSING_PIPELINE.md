@@ -28,7 +28,7 @@
   - 第 1 页末尾表格未闭合，第 2 页顶部重复出现 6 列全套表头；
   - 传统工具将其分为两个独立小表格，检索“仰望U9纽北版电驱参数”时只能召回第 2 页，缺失原始表头语义定义；若直接合并原始字符，则正文中插入冗余重复表头。
 - **AutoVend 落地方案**：
-  - **几何与特征对齐拼接**：`CrossPageTableStitcher` 检测前后页表格的列数、水平边框坐标（`x0`, `x1` 偏差 $\le 25\text{pt}$）以及表头相似度。
+  - **几何与特征对齐拼接**：`CrossPageTableStitcher` 检测前后页表格的列数一致性、水平外接矩形边框坐标（`x0`, `x1` 偏差 $\le 25\text{pt}$）、逐列列宽几何分布方差（Column Width Variance $\le 625\text{pt}^2$）以及表头相似度。
   - **表头去重与行号重映射**：自动剥离续页重复表头，将后续数据行追加至首页表格，合并单元格坐标与边界框，生成标注有 `is_stitched=True, pages=[1, 2]` 的统一 `TableBlock`。
   - **标准二维 Markdown 输出**：LLM 接收到的是一张完整平铺的 10 行 $\times$ 6 列全局参数矩阵。
 
@@ -37,7 +37,7 @@
 - **痛点体现**：
   - 朴素文本提取沿垂直 Y 轴扫描，提取出“前轴采用全铝合金双叉臂... 后轴搭载双独立电机... 系统每秒监测1000次... 产生偏航力矩...”，左右两栏句子被物理交织，语法完全破坏。
 - **AutoVend 落地方案**：
-  - **版面分栏检测与中缝分割**：`ReadingOrderSorter` 实时计算页面文本块水平中点（Midpoint），统计左右两栏的块分布及全宽横幅（Spanning Banner）。
+  - **启发式几何分带与水平X轴自适应聚类**：`ReadingOrderSorter` 结合全宽阈值与标题特征判定 Spanning Banner（横幅隔离带），将版面纵向切分多区域，并在各区域内按水平 X 坐标聚类左右分栏。
   - **自然阅读顺序重组**：先顺序读取全宽章节横幅，再自上而下完整读取左栏所有段落，最后自上而下读取右栏所有段落，彻底消除分栏穿透。
 
 ### 案例三：内部机密销售策略与调价函扫描件（水印/页眉页脚与混合扫描）
@@ -141,10 +141,10 @@
 
 | 序号 | 核心难点 / 痛点 | 常见失效模式 | AutoVend 企业级技术攻关方案 |
 | :--- | :--- | :--- | :--- |
-| **1** | **跨页长表格无缝缝合**<br>*(Multi-Page Continuous Stitching)* | 跨 3 页以上连续表格拼接断裂；续页重复表头或无表头切断；`curr_tbl.page_num` 固定导致第 3 页断开 | `CrossPageTableStitcher`：动态追踪累积最后一页（`max(curr_tbl.pages) + 1`），支持连续 3 页及以上无缝累加缝合；自动剥离续页表头并重映射行索引与单元格坐标，生成统合 `TableBlock(pages=[1, 2, 3...], is_stitched=True)`。 |
+| **1** | **跨页长表格无缝缝合**<br>*(Multi-Page Continuous Stitching)* | 跨 3 页以上连续表格拼接断裂；续页重复表头或无表头切断；`curr_tbl.page_num` 固定导致第 3 页断开 | `CrossPageTableStitcher`：表格外接矩形水平边界对齐（偏差 $\le 25\text{pt}$）、列数一致性校验及逐列列宽几何分布方差一致性校验；动态追踪累积最后一页，自动剥离续页表头并重映射行索引与单元格坐标，生成统合 `TableBlock(pages=[1, 2, 3...], is_stitched=True)`。 |
 | **2** | **复合多级表头与防字典覆盖**<br>*(Multi-Level Compound Headers)* | 2 层复合表头（大类+子属性）第二行被误认为数据行；同名列在 `to_records()` 字典转换中相互覆盖导致数据永久丢失 | `TableBlock`：自动识别跨列多级表头（Row 0 广义大类 + Row 1 细化参数），生成标准化复合表头（`大类 > 参数项`）；自动重命名同名列进行消歧，确保键值对完整不丢失。 |
-| **3** | **表格层级归一化与父级重置**<br>*(Hierarchical Normalization & Reset)* | 合并分类单元格跨行导致子行出现空值（`""`）；父分类切换时子分类错误沿用前一分类缓存引发语义污染 | `TableBlock.normalize_forward_fill()`：第一二列分类项向前平铺；当一级主分类（Column 0）发生变化时，强制清空所有二级以下子分类缓存，杜绝跨系统数据串扰。 |
-| **4** | **双栏/多栏排版自然阅读顺序**<br>*(Multi-Column Reading Order)* | 双栏或三栏排版水平读取造成多栏行间文字交织混乱；错落段落因局部缺乏对齐邻居被误判为全局横幅 | `ReadingOrderSorter`：结合 X 轴聚类与标题特征判定；仅当段落具备标题语法（`【`、`\d+\.`）且无对齐邻居或跨越页面中轴线时判定为横幅；严格保证自然“左栏顶至底 $\to$ 中栏 $\to$ 右栏”顺序，消除行穿透。 |
+| **3** | **表格层级归一化与父级重置**<br>*(Hierarchical Normalization & Reset)* | 合并分类单元格跨行导致子行出现空值（`""`）；父分类切换时子分类错误沿用前一分类缓存引发语义污染；序号列误重置下级分类 | `TableBlock.normalize_fill()`：支持任意列深度与向前/向后/双向平铺；自动识别并保护行号序号列（Index Column），一级主分类发生变化时递归清空所有二级以下子分类缓存，杜绝跨系统数据串扰。 |
+| **4** | **双栏/多栏排版自然阅读顺序**<br>*(Multi-Column Reading Order)* | 双栏或三栏排版水平读取造成多栏行间文字交织混乱；错落段落因局部缺乏对齐邻居被误判为全局横幅 | `ReadingOrderSorter`：采用启发式几何分带与水平 X 轴自适应聚类算法；结合宽度阈值与标题特征判定 Spanning Banner 切分垂直带，在带内聚类左右栏，严格保证自然“左栏顶至底 $\to$ 中栏 $\to$ 右栏”顺序，消除行穿透。 |
 | **5** | **OCR 朝向检测与扫描件容灾**<br>*(OCR Disorientation & Scanned Fallback)* | 移动端拍摄或扫描件发生 90°/180°/270° 旋转导致 OCR 字符乱码；本地缺字库时纯扫描页被静默丢弃 | `OCROrientationDetector`：解析行向量 `dir` 与页面属性判定旋转角度并校正归一；针对纯扫描图片页，在 OCR 无法提取时保留包含尺寸、朝向、图片资产的结构化诊断 `TextSection`，杜绝页面静默丢失。 |
 | **6** | **页眉/页脚/水印噪音多页去重**<br>*(Running Header & Watermark Cleaner)* | 各页运行页眉在向量切块中碎片化分散；斜向机密水印穿插在价格与参数中严重污染相似度 | `HeaderFooterWatermarkFilter`：统计全文档顶部边距高频文本（出现 $\ge 2$ 次直接认定为运行页眉）；扩展中英文页码正则引擎；结合旋转矢量判定 120 字符内水印标签，确保文本纯净。 |
 | **7** | **表格独立原子分块与富元数据**<br>*(Table Atomic Chunking)* | 表格在分块时被随机 token 上限截断破坏 Markdown 语法与结构 | `HierarchicalChunker`：表格强制作为独立原子 Parent Chunk；在表头注入车型、章节、页码、BBox、拼接状态元数据；按行滑动切分小 Child Chunk。 |
@@ -154,7 +154,7 @@
 | **11** | **密集重复水印矩阵与半透明文字过滤**<br>*(Repeated Watermark Matrix Cleaner)* | 斜向密集覆盖的“INTERNAL ONLY”等重复文字分散在每一页中，大量污染稠密向量空间引发检索误导 | `HeaderFooterWatermarkFilter`：综合旋转矢量 `dir`、高频机密词库正则（`INTERNAL ONLY`、`CONFIDENTIAL`）以及文字透明度/浅灰色彩度阈值，实现全文档 0 残留彻底清洗。 |
 | **12** | **单双栏混合与嵌入式无框线表格阅读时序**<br>*(Mixed Layout Reading Topology)* | 顶部横幅、中部双栏、嵌入式无框线表格与底部终检验收规范纵向交错，导致下方横幅或规范被错误提前或滞后 | `ReadingOrderSorter` 与 `ParsedDocument.get_full_markdown()`：通过结合特征的横幅判定识别 Spanning Block；记录真实几何 BBox，按统一时序拓扑将横幅、双栏流、嵌入式无框线表格及底部规范自上而下严格还原。 |
 | **13** | **跨页无网格线连续表格拼接**<br>*(Continuous Borderless Table Stitching)* | 跨页长表格无任何边框网格，各页均通过空白流列对齐，续页带有重复表头导致跨页拼接算法失效 | `BorderlessTableDetector` 与 `CrossPageTableStitcher`：前后页分别提取无框线表格后，基于一致列数、水平列锚点坐标容差（$\le 25\text{pt}$）以及表头字符串一致性，自动剥离续页重复表头并无缝缝合为统一跨页大表。 |
-| **14** | **三层深度树状合并单元格向前填充**<br>*(3-Level Merged Category Normalization)* | 一级大类、二级子模块、三级零件三层深度树状表格，在多行合并下出现层级空值与父类污染 | `TableBlock.normalize_forward_fill()`：支持 2 列以上分类前向平铺；主分类变更时递归清空所有子级缓存，输出规范扁平记录字典。 |
+| **14** | **多层深度树状合并单元格双向填充**<br>*(Multi-Level Merged Category Normalization)* | 一级大类、二级子模块、三级零件多层深度树状表格，在多行合并下出现层级空值与父类污染；序号列导致下级误重置 | `TableBlock.normalize_fill()`：支持任意列深度分类向前/向后/双向平铺；序号列独立保护，主分类变更时递归清空所有子级缓存，输出规范扁平记录字典。 |
 | **15** | **非对称三栏排版与中嵌全宽横幅**<br>*(Asymmetric 3-Column Reading Reconstruction)* | 三栏宽度不均（155pt/215pt/153pt），中间跨越全宽强制安全规程横幅，朴素提取发生栏间串联 | `ReadingOrderSorter`：自适应聚类非对称水平 X 坐标，以全宽横幅为自然阻断屏障，构建清晰的 Zone 1（左 $\to$ 中 $\to$ 右） $\to$ 横幅 $\to$ Zone 2（左 $\to$ 中 $\to$ 右）拓扑。 |
 
 ---
