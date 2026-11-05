@@ -628,22 +628,22 @@ class BaseFormatParser(ABC):
 AUTOMOTIVE_MODEL_PATTERNS = [
     ("Xiaomi SU7 Ultra", ["SU7 Ultra", "SU7_Ultra", "su7 ultra"]),
     ("Xiaomi SU7", ["Xiaomi SU7", "小米 SU7", "小米SU7", "SU7", "su7"]),
-    ("BYD Yangwang U9", ["Yangwang U9", "仰望 U9", "仰望U9", "U9"]),
-    ("BYD Yangwang U8", ["Yangwang U8", "仰望 U8", "仰望U8", "U8"]),
+    ("BYD Yangwang U9", ["Yangwang U9", "仰望 U9", "仰望U9"]),
+    ("BYD Yangwang U8", ["Yangwang U8", "仰望 U8", "仰望U8"]),
     ("BYD Denza Z9 GT", ["Denza Z9 GT", "腾势 Z9 GT", "腾势Z9 GT", "Z9 GT", "Z9GT"]),
     ("BYD Denza D9", ["Denza D9", "腾势 D9", "腾势D9"]),
-    ("Fangchengbao Bao 8", ["Fangchengbao Bao 8", "Fangchengbao Bao8", "方程豹 豹8", "豹8"]),
-    ("Fangchengbao Bao 5", ["Fangchengbao Bao 5", "Fangchengbao Bao5", "方程豹 豹5", "豹5"]),
+    ("Fangchengbao Bao 8", ["Fangchengbao Bao 8", "Fangchengbao Bao8", "方程豹 豹8", "方程豹豹8"]),
+    ("Fangchengbao Bao 5", ["Fangchengbao Bao 5", "Fangchengbao Bao5", "方程豹 豹5", "方程豹豹5"]),
     ("BYD Han EV", ["Han EV", "比亚迪 汉", "汉EV", "汉 EV"]),
     ("BYD Tang DM-i", ["Tang DM-i", "唐DM-i", "唐 DM-i"]),
     ("BYD Seal EV", ["Seal EV", "海豹EV", "海豹 EV"]),
     ("Tesla Cybertruck", ["Cybertruck", "cybertruck", "赛博皮卡"]),
-    ("Tesla Model S Plaid", ["Model S Plaid", "Model S", "Plaid"]),
+    ("Tesla Model S Plaid", ["Model S Plaid", "Model S"]),
     ("Tesla Model 3", ["Model 3", "model 3", "Model3"]),
     ("Tesla Model Y", ["Model Y", "model y", "ModelY"]),
-    ("NIO ET9", ["ET9", "et9", "蔚来 ET9", "蔚来ET9"]),
-    ("NIO ET7", ["ET7", "et7", "蔚来 ET7", "蔚来ET7"]),
-    ("NIO ES8", ["ES8", "es8", "蔚来 ES8", "蔚来ES8"]),
+    ("NIO ET9", ["蔚来 ET9", "蔚来ET9", "NIO ET9"]),
+    ("NIO ET7", ["蔚来 ET7", "蔚来ET7", "NIO ET7"]),
+    ("NIO ES8", ["蔚来 ES8", "蔚来ES8", "NIO ES8"]),
     ("Li Auto MEGA", ["Li Mega", "Li MEGA", "理想 MEGA", "理想MEGA"]),
     ("Li Auto L9", ["Li L9", "理想 L9", "理想L9"]),
     ("Li Auto L8", ["Li L8", "理想 L8", "理想L8"]),
@@ -657,13 +657,13 @@ AUTOMOTIVE_MODEL_PATTERNS = [
     ("AITO M7", ["AITO M7", "问界 M7", "问界M7"]),
     ("Luxeed S7", ["Luxeed S7", "智界 S7", "智界S7"]),
     ("Stelato S9", ["Stelato S9", "享界 S9", "享界S9"]),
-    ("Maextro S800", ["Maextro S800", "Maextro", "尊界 S800", "尊界S800", "尊界"]),
+    ("Maextro S800", ["Maextro S800", "尊界 S800", "尊界S800"]),
     ("Avatr 12", ["Avatr 12", "阿维塔 12", "阿维塔12"]),
     ("Avatr 11", ["Avatr 11", "阿维塔 11", "阿维塔11"]),
     ("Avatr 07", ["Avatr 07", "阿维塔 07", "阿维塔07"]),
     ("LynkCo 08", ["LynkCo 08", "Lynk & Co 08", "领克 08", "领克08"]),
     ("Geely Galaxy E8", ["Galaxy E8", "银河 E8", "银河E8"]),
-    ("Geely Galaxy Starship", ["Galaxy Starship", "银河星舰", "星舰"]),
+    ("Geely Galaxy Starship", ["Galaxy Starship", "银河星舰"]),
     ("Chery Exeed Sterra ES", ["Sterra ES", "星纪元 ES", "星纪元ES"]),
     ("Chery iCAR 03", ["iCAR 03", "iCAR03"]),
     ("GAC Hyper SSR", ["Hyper SSR", "昊铂 SSR", "昊铂SSR"]),
@@ -671,7 +671,7 @@ AUTOMOTIVE_MODEL_PATTERNS = [
     ("Tank 700 Hi4-T", ["Tank 700", "坦克 700", "坦克700"]),
     ("Tank 500 Hi4-T", ["Tank 500", "坦克 500", "坦克500"]),
     ("Haval Raptor Hi4", ["Haval Raptor", "哈弗 猛龙", "哈弗猛龙"]),
-    ("Wey Lanshan", ["Wey Lanshan", "魏牌 蓝山", "魏牌蓝山", "蓝山"]),
+    ("Wey Lanshan", ["Wey Lanshan", "魏牌 蓝山", "魏牌蓝山"]),
     ("IM L6", ["IM L6", "智己 L6", "智己L6"]),
     ("IM LS6", ["IM LS6", "智己 LS6", "智己LS6"]),
     ("Porsche Taycan", ["Taycan", "taycan", "保时捷 Taycan", "保时捷Taycan"]),
@@ -688,7 +688,7 @@ AUTOMOTIVE_MODEL_PATTERNS = [
 
 
 def infer_automotive_vehicle_model(file_path: Union[str, Path], doc_title: str, text_sample: str = "") -> str:
-    """Infer canonical vehicle model and brand reliably from file path, title, and initial text."""
+    """Infer vehicle model and brand from file path, title, and initial text."""
     combined_name = f"{Path(file_path).stem} {doc_title}"
     # 1. Match from file path & doc_title first (highest priority)
     for canonical, aliases in AUTOMOTIVE_MODEL_PATTERNS:
@@ -700,7 +700,12 @@ def infer_automotive_vehicle_model(file_path: Union[str, Path], doc_title: str, 
     if text_sample:
         for canonical, aliases in AUTOMOTIVE_MODEL_PATTERNS:
             for alias in aliases:
-                if len(alias) >= 3 and alias.lower() in text_sample.lower():
+                # Use word-boundary matching for short or alphanumeric aliases to prevent substring pollution
+                if len(alias) <= 4 or alias.isalnum():
+                    pattern = rf"(?<![\w\u4e00-\u9fa5]){re.escape(alias)}(?![\w\u4e00-\u9fa5])"
+                    if re.search(pattern, text_sample, re.IGNORECASE):
+                        return canonical
+                elif alias.lower() in text_sample.lower():
                     return canonical
 
     return doc_title
@@ -909,10 +914,14 @@ class ExcelParser(BaseFormatParser):
                             max_c_m = min(max_c_m, max_col)
                             top_left_val = grid[min_r - 1][min_c - 1]
 
-                            # Propagate value to all cells in the span
+                            # Propagate value down rows for category context, but do NOT duplicate
+                            # across columns to avoid repeated header strings in Markdown tables.
                             for r in range(min_r, max_r_m + 1):
                                 for c in range(min_c, max_c_m + 1):
-                                    grid[r - 1][c - 1] = top_left_val
+                                    if c == min_c:
+                                        grid[r - 1][c - 1] = top_left_val
+                                    else:
+                                        grid[r - 1][c - 1] = ""
                                     if (r, c) != (min_r, min_c):
                                         merged_positions.add((r - 1, c - 1))
 
@@ -964,8 +973,8 @@ class ExcelParser(BaseFormatParser):
                         file_path, doc_title, " ".join(sheet_names) + (" " + " ".join(grid[0]) if grid else "")
                     )
 
-                # Create TableBlock
-                bbox = BoundingBox(x0=0, top=0, x1=max_col * 60.0, bottom=len(grid) * 20.0, page=sheet_idx)
+                # Excel workbooks do not possess absolute pixel geometry; use None and record logical grid dimensions
+                bbox = None
                 tbl = TableBlock(
                     page_num=sheet_idx,
                     bbox=bbox,
@@ -979,6 +988,7 @@ class ExcelParser(BaseFormatParser):
                         "total_sheets": len(sheet_names),
                         "max_rows": len(grid),
                         "max_cols": max_col,
+                        "logical_grid": {"rows": len(grid), "cols": max_col},
                     },
                 )
                 tables.append(tbl)

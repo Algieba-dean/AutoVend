@@ -143,8 +143,8 @@ class TableBlock:
     def __init__(
         self,
         page_num: int,
-        bbox: BoundingBox,
-        rows: List[List[str]],
+        bbox: Optional[BoundingBox] = None,
+        rows: Optional[List[List[str]]] = None,
         headers: Optional[List[str]] = None,
         cells: Optional[List[TableCell]] = None,
         lines: Optional[List[TableLine]] = None,
@@ -2457,9 +2457,40 @@ class PreFlightProbe:
             doc.close()
 
 
+def _isolated_layout_worker(func, args, kwargs, child_conn, temp_file_path=None):
+    """
+    Worker entrypoint executed in isolated subprocess.
+    Transfers large payloads (>64KB) via shared temporary file to avoid IPC buffer deadlocks.
+    """
+    try:
+        res = func(*args, **kwargs)
+        if temp_file_path is not None:
+            try:
+                import pickle
+                data_bytes = pickle.dumps(res, protocol=pickle.HIGHEST_PROTOCOL)
+                if len(data_bytes) > 65536:
+                    with open(temp_file_path, "wb") as f:
+                        f.write(data_bytes)
+                    child_conn.send((True, {"__ipc_file__": temp_file_path}))
+                    return
+            except Exception:
+                pass
+        child_conn.send((True, res))
+    except BaseException as exc:
+        try:
+            child_conn.send((False, exc))
+        except Exception:
+            child_conn.send((False, RuntimeError(f"{type(exc).__name__}: {str(exc)}")))
+    finally:
+        try:
+            child_conn.close()
+        except Exception:
+            pass
+
+
 class DualTrackLayoutEngine(BaseLayoutEngine):
     """
-    Production 4-Tier Circuit Breaker Dual-Track Pipeline (生产级四级熔断降级架构):
+    Dual-track document parsing engine with fallback tiers:
 
     1. Pre-flight probe: PyMuPDF (5ms) checks corruption, password, dimensions, and genuine_chars count.
     2. Digital Track (genuine_chars >= 30/page):
@@ -2500,93 +2531,137 @@ class DualTrackLayoutEngine(BaseLayoutEngine):
     @staticmethod
     def _run_with_timeout(func, *args, timeout_seconds: float = 30.0, **kwargs):
         """
-        Execute func(*args, **kwargs) in an isolated process.
-        When timeout_seconds expires, forcefully terminates the worker process
-        with OS-level SIGKILL (process.kill()) to reclaim handles, VRAM, and CPU,
-        preventing unkillable zombie worker threads.
-        Drains pipe continuously to avoid OS pipe buffer deadlocks on large payloads.
+        Execute func(*args, **kwargs) in an isolated process with timeout enforcement.
+        Uses multiprocessing spawn context by default to prevent POSIX deadlocks in
+        multi-threaded runtimes (OpenMP/PyTorch/fitz), falling back to fork only if
+        unpicklable closures are passed.
+        Attempts graceful SIGTERM before SIGKILL.
         """
         if not timeout_seconds or timeout_seconds <= 0:
             return func(*args, **kwargs)
 
         import multiprocessing as mp
+        import pickle
+        import tempfile
         import time
 
+        shm_dir = Path("/dev/shm") if Path("/dev/shm").is_dir() else None
+        temp_file_path = None
         try:
-            ctx = mp.get_context("fork")
-        except ValueError:
-            ctx = mp.get_context()
+            temp_file = tempfile.NamedTemporaryFile(
+                dir=shm_dir, prefix="autovend_ipc_", suffix=".bin", delete=False
+            )
+            temp_file_path = temp_file.name
+            temp_file.close()
+        except Exception:
+            temp_file_path = None
 
-        parent_conn, child_conn = ctx.Pipe()
+        proc = None
+        parent_conn = None
+        child_conn = None
 
-        def _worker_entry():
+        # Prefer spawn context to avoid POSIX fork deadlocks in multi-threaded runtimes.
+        # Fallback to fork context if target/args cannot be pickled (e.g. local test closures).
+        for ctx_method in ("spawn", "fork"):
             try:
-                res = func(*args, **kwargs)
-                child_conn.send((True, res))
-            except BaseException as exc:
-                try:
-                    child_conn.send((False, exc))
-                except Exception:
-                    child_conn.send((False, RuntimeError(f"{type(exc).__name__}: {str(exc)}")))
-            finally:
-                child_conn.close()
-
-        proc = ctx.Process(target=_worker_entry)
-        proc.start()
+                ctx = mp.get_context(ctx_method)
+                parent_conn, child_conn = ctx.Pipe()
+                proc = ctx.Process(
+                    target=_isolated_layout_worker,
+                    args=(func, args, kwargs, child_conn, temp_file_path),
+                )
+                proc.start()
+                break
+            except (AttributeError, TypeError, pickle.PicklingError):
+                if child_conn is not None:
+                    try:
+                        child_conn.close()
+                    except Exception:
+                        pass
+                if parent_conn is not None:
+                    try:
+                        parent_conn.close()
+                    except Exception:
+                        pass
+                if ctx_method == "fork":
+                    raise
+                continue
 
         start_time = time.time()
         result_payload = None
         has_result = False
 
-        # Continuously poll to drain pipe, preventing OS pipe buffer deadlocks on large payloads
-        while time.time() - start_time < timeout_seconds:
-            if parent_conn.poll(0.05):
-                has_result = True
-                result_payload = parent_conn.recv()
-                break
-            if not proc.is_alive():
-                if parent_conn.poll():
+        try:
+            # Continuously poll to drain pipe, preventing OS pipe buffer deadlocks on large payloads
+            while time.time() - start_time < timeout_seconds:
+                if parent_conn.poll(0.05):
                     has_result = True
                     result_payload = parent_conn.recv()
-                break
+                    break
+                if not proc.is_alive():
+                    if parent_conn.poll():
+                        has_result = True
+                        result_payload = parent_conn.recv()
+                    break
 
-        if not has_result:
-            if proc.is_alive():
-                child_pid = proc.pid
-                proc.kill()
-                proc.join(timeout=2.0)
-                parent_conn.close()
-                try:
-                    proc.close()
-                except Exception:
-                    pass
-                raise TimeoutError(
-                    f"Operation timed out after {timeout_seconds}s (SIGKILL delivered to PID {child_pid})"
-                )
-            else:
-                exit_code = proc.exitcode
-                parent_conn.close()
-                try:
-                    proc.close()
-                except Exception:
-                    pass
-                raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
+            if not has_result:
+                if proc.is_alive():
+                    child_pid = proc.pid
+                    # Attempt graceful termination (SIGTERM) before hard kill (SIGKILL)
+                    try:
+                        proc.terminate()
+                        proc.join(timeout=0.3)
+                    except Exception:
+                        pass
+                    if proc.is_alive():
+                        proc.kill()
+                        proc.join(timeout=1.0)
+                    parent_conn.close()
+                    try:
+                        proc.close()
+                    except Exception:
+                        pass
+                    raise TimeoutError(
+                        f"Operation timed out after {timeout_seconds}s (SIGKILL delivered to PID {child_pid})"
+                    )
+                else:
+                    exit_code = proc.exitcode
+                    parent_conn.close()
+                    try:
+                        proc.close()
+                    except Exception:
+                        pass
+                    raise RuntimeError(f"Process terminated abruptly with exit code {exit_code}")
 
-        # Wait for worker process to exit cleanly
-        proc.join(timeout=1.0)
-        if proc.is_alive():
-            proc.kill()
+            # Wait for worker process to exit cleanly
             proc.join(timeout=1.0)
-        parent_conn.close()
-        try:
-            proc.close()
-        except Exception:
-            pass
+            if proc.is_alive():
+                proc.terminate()
+                proc.join(timeout=0.5)
+                if proc.is_alive():
+                    proc.kill()
+                    proc.join(timeout=0.5)
+            parent_conn.close()
+            try:
+                proc.close()
+            except Exception:
+                pass
 
-        success, value = result_payload
-        if success:
-            return value
-        raise value
+            success, value = result_payload
+            if success:
+                if isinstance(value, dict) and "__ipc_file__" in value:
+                    f_path = value["__ipc_file__"]
+                    if Path(f_path).exists():
+                        with open(f_path, "rb") as f:
+                            return pickle.loads(f.read())
+                return value
+            raise value
+        finally:
+            if temp_file_path and Path(temp_file_path).exists():
+                try:
+                    Path(temp_file_path).unlink()
+                except Exception:
+                    pass
 
     @staticmethod
     @contextlib.contextmanager

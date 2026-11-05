@@ -196,9 +196,14 @@ class RealPaddleOCRAdapter(BaseLayoutEngine):
 
             try:
                 pix = page.get_pixmap(dpi=150)
-                img_bytes = pix.tobytes("png")
-                nparr = np.frombuffer(img_bytes, np.uint8)
-                img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                # Convert raw memory pixel samples directly to NumPy array without intermediate PNG compression
+                img_np = np.frombuffer(pix.samples, dtype=np.uint8).reshape((pix.height, pix.width, pix.n))
+                if pix.n == 4:
+                    img_np = cv2.cvtColor(img_np, cv2.COLOR_RGBA2BGR)
+                elif pix.n == 3:
+                    img_np = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
+                elif pix.n == 1:
+                    img_np = cv2.cvtColor(img_np, cv2.COLOR_GRAY2BGR)
 
                 # Execute PP-Structure inference
                 result = engine(img_np)

@@ -94,7 +94,35 @@ class VehicleDB:
                     f'CREATE INDEX IF NOT EXISTS "{idx_name}" ON vehicles ("{field}")'
                 )
 
-        self.conn.commit()
+        try:
+            # Checksum 持久化表（支持 Pod 重启恢复状态，避免全量重算）
+            self.conn.execute(
+                """CREATE TABLE IF NOT EXISTS checksum_store (
+                    key TEXT PRIMARY KEY,
+                    checksum TEXT NOT NULL,
+                    updated_at REAL NOT NULL
+                )"""
+            )
+
+            # Transactional Outbox / DLQ 事件表（支持多引擎写入一致性与事务补偿）
+            self.conn.execute(
+                """CREATE TABLE IF NOT EXISTS outbox_events (
+                    id TEXT PRIMARY KEY,
+                    event_type TEXT NOT NULL,
+                    payload TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    error_message TEXT,
+                    created_at REAL NOT NULL,
+                    updated_at REAL NOT NULL
+                )"""
+            )
+
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            if "readonly" in str(e).lower() or "read-only" in str(e).lower():
+                self.logger.debug(f"Database opened in read-only environment: {e}")
+            else:
+                raise
 
     # ------------------------------------------------------------------
     # 数据导入
@@ -358,3 +386,68 @@ class VehicleDB:
             "distinct_categories": categories,
             "db_path": self.db_path,
         }
+
+    # ------------------------------------------------------------------
+    # Checksum 持久化接口
+    # ------------------------------------------------------------------
+
+    def get_checksum(self, key: str) -> Optional[str]:
+        """获取指定 key 的持久化 Checksum"""
+        try:
+            cursor = self.conn.execute("SELECT checksum FROM checksum_store WHERE key = ?", (key,))
+            row = cursor.fetchone()
+            return row[0] if row else None
+        except sqlite3.OperationalError:
+            return None
+
+    def set_checksum(self, key: str, checksum: str) -> None:
+        """保存或更新 key 的 Checksum"""
+        try:
+            self.conn.execute(
+                "INSERT OR REPLACE INTO checksum_store (key, checksum, updated_at) VALUES (?, ?, ?)",
+                (key, checksum, time.time()),
+            )
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            self.logger.debug(f"Unable to write persistent checksum: {e}")
+
+    def delete_checksum(self, key: str) -> None:
+        """删除 key 的 Checksum"""
+        try:
+            self.conn.execute("DELETE FROM checksum_store WHERE key = ?", (key,))
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            self.logger.debug(f"Unable to delete persistent checksum: {e}")
+
+    def get_all_checksums(self) -> Dict[str, str]:
+        """加载所有已持久化的 Checksum 字典"""
+        try:
+            cursor = self.conn.execute("SELECT key, checksum FROM checksum_store")
+            return {row[0]: row[1] for row in cursor.fetchall()}
+        except sqlite3.OperationalError:
+            return {}
+
+    # ------------------------------------------------------------------
+    # Transactional Outbox / DLQ 事件持久化
+    # ------------------------------------------------------------------
+
+    def record_outbox_event(
+        self,
+        event_id: str,
+        event_type: str,
+        payload_json: str,
+        status: str = "PENDING",
+        error_message: Optional[str] = None,
+    ) -> None:
+        """写入或更新 Outbox / DLQ 事件记录"""
+        try:
+            now = time.time()
+            self.conn.execute(
+                """INSERT OR REPLACE INTO outbox_events 
+                   (id, event_type, payload, status, error_message, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (event_id, event_type, payload_json, status, error_message or "", now, now),
+            )
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            self.logger.debug(f"Unable to record outbox event: {e}")

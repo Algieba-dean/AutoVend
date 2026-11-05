@@ -270,46 +270,82 @@ class VehicleTOMLConverter:
         if brand_match:
             data["brand"] = brand_match.group(1).strip().lower()
 
-        # 3. Price
+        # 3. Price (normalized in RMB)
         price_match = re.search(r"(?:价格|售价|指导价)[:：\s]*([0-9\.]+)万?", raw_text)
         if price_match and price_match.group(1):
             val = float(price_match.group(1))
-            if val < 10:
-                data["prize"] = "below 10,000"
-            elif val < 20:
-                data["prize"] = "10,000 ~ 20,000"
-            elif val < 30:
-                data["prize"] = "20,000 ~ 30,000"
-            elif val < 40:
-                data["prize"] = "30,000 ~ 40,000"
-            elif val < 60:
-                data["prize"] = "40,000 ~ 60,000"
-            elif val < 100:
-                data["prize"] = "60,000 ~ 100,000"
-            else:
-                data["prize"] = "above 100,000"
+            has_wan = "万" in raw_text[price_match.start():price_match.end() + 2]
+            val_rmb = val * 10000 if (has_wan or val < 1000) else val
 
-        # 4. Powertrain Type
-        if "增程" in raw_text:
+            if val_rmb < 100000:
+                price_bucket = "below 100,000"
+            elif val_rmb < 200000:
+                price_bucket = "100,000 ~ 200,000"
+            elif val_rmb < 300000:
+                price_bucket = "200,000 ~ 300,000"
+            elif val_rmb < 400000:
+                price_bucket = "300,000 ~ 400,000"
+            elif val_rmb < 600000:
+                price_bucket = "400,000 ~ 600,000"
+            elif val_rmb < 1000000:
+                price_bucket = "600,000 ~ 1,000,000"
+            else:
+                price_bucket = "above 1,000,000"
+
+            data["price"] = price_bucket
+            data["prize"] = price_bucket  # Backward compatibility for legacy callers
+
+        # 4. Powertrain Type with Negation Handling
+        def _is_negated(term: str, text: str) -> bool:
+            """Check if all occurrences of term are preceded by negation tokens."""
+            matches = list(re.finditer(re.escape(term), text, re.IGNORECASE))
+            if not matches:
+                return False
+            neg_pattern = re.compile(
+                rf"(?:绝非|并非|不是|不属于|非|拒绝|免除|彻底解决|摆脱)\s*(?:是|为)?\s*{re.escape(term)}",
+                re.IGNORECASE,
+            )
+            neg_matches = list(neg_pattern.finditer(text))
+            return len(neg_matches) >= len(matches)
+
+        if "增程" in raw_text and not _is_negated("增程", raw_text):
             data["powertrain_type"] = "range-extended"
-        elif "插电混动" in raw_text or "PHEV" in raw_text:
+        elif ("插电混动" in raw_text or re.search(r"\bPHEV\b", raw_text, re.I)) and not _is_negated("插电混动", raw_text):
             data["powertrain_type"] = "plug-in hybrid"
-        elif "油电混动" in raw_text or "HEV" in raw_text:
+        elif ("油电混动" in raw_text or re.search(r"\bHEV\b", raw_text, re.I)) and not _is_negated("油电混动", raw_text):
             data["powertrain_type"] = "hybrid"
-        elif "纯电" in raw_text or "BEV" in raw_text or "EV" in raw_text:
+        elif (
+            ("纯电" in raw_text and not _is_negated("纯电", raw_text))
+            or (re.search(r"\bBEV\b", raw_text) and not _is_negated("BEV", raw_text))
+            or (re.search(r"\bEV\b", raw_text) and not _is_negated("EV", raw_text))
+        ):
             data["powertrain_type"] = "bev"
+        elif "燃油" in raw_text or "汽油" in raw_text or "柴油" in raw_text:
+            data["powertrain_type"] = "gasoline"
         else:
             data["powertrain_type"] = "gasoline"
 
         # 5. Vehicle Category Bottom
-        if "SUV" in raw_text:
-            data["vehicle_category_bottom"] = "mid-size suv"
-        elif "MPV" in raw_text:
-            data["vehicle_category_bottom"] = "family mpv"
-        elif "轿跑" in raw_text or "跑车" in raw_text or "超跑" in raw_text:
-            data["vehicle_category_bottom"] = "four-door hardtop"
-        else:
-            data["vehicle_category_bottom"] = "mid-size sedan"
+        cat_match = re.search(r"(?:级别|车型类别|类别)[:：\s]*([^\r\n,，。]+)", raw_text)
+        if cat_match:
+            cat_text = cat_match.group(1).lower()
+            if "suv" in cat_text:
+                data["vehicle_category_bottom"] = "mid-size suv"
+            elif "mpv" in cat_text:
+                data["vehicle_category_bottom"] = "family mpv"
+            elif any(s in cat_text for s in ("轿跑", "跑车", "超跑")):
+                data["vehicle_category_bottom"] = "four-door hardtop"
+            elif "轿车" in cat_text:
+                data["vehicle_category_bottom"] = "mid-size sedan"
+        if "vehicle_category_bottom" not in data:
+            if re.search(r"(?<!对标)(?<!竞品)(?<!对比)\bSUV\b", raw_text, re.IGNORECASE) or "suv" in raw_text.lower():
+                data["vehicle_category_bottom"] = "mid-size suv"
+            elif re.search(r"(?<!对标)(?<!竞品)(?<!对比)\bMPV\b", raw_text, re.IGNORECASE) or "mpv" in raw_text.lower():
+                data["vehicle_category_bottom"] = "family mpv"
+            elif any(s in raw_text for s in ("轿跑", "跑车", "超跑")):
+                data["vehicle_category_bottom"] = "four-door hardtop"
+            else:
+                data["vehicle_category_bottom"] = "mid-size sedan"
 
         # 6. Advanced powertrain metrics
         hp_match = re.search(r"(\d+)\s*(?:PS|马力|匹马力|匹)", raw_text)

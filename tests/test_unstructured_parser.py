@@ -46,6 +46,35 @@ def test_convert_file_to_toml():
 
         assert rec["powertrain_type"] == "range-extended"
         assert "理想" in rec["brand"] or "理想" in first_key
+        assert rec["price"] == "300,000 ~ 400,000"
+
+
+def test_price_bucket_magnitude_and_field_name():
+    """Verify price field name and correct 10,000 RMB magnitude (15万 -> 100,000~200,000)."""
+    converter = VehicleTOMLConverter()
+    text = "车型：比亚迪海豹 指导价：15.98万 纯电中型轿车"
+    fields = converter.extract_structured_fields(text)
+
+    # Must have correct field name 'price' (and backward-compatible 'prize')
+    assert "price" in fields
+    assert fields["price"] == "100,000 ~ 200,000"
+    assert fields["prize"] == "100,000 ~ 200,000"
+    assert fields["powertrain_type"] == "bev"
+
+
+def test_powertrain_negation_handling():
+    """Verify that negations like '绝非纯电' do not falsely classify car as BEV."""
+    converter = VehicleTOMLConverter()
+    text = "车型：问界M7 价格：28.98万 本车绝非纯电车型，彻底解决续航焦虑，搭载增程动力系统。"
+    fields = converter.extract_structured_fields(text)
+
+    assert fields["powertrain_type"] == "range-extended"
+    assert fields["powertrain_type"] != "bev"
+
+    # Pure gasoline with negation of electric
+    gas_text = "车型：大众迈腾 指导价：19.98万 本车并非纯电或插混，采用2.0T燃油发动机。"
+    gas_fields = converter.extract_structured_fields(gas_text)
+    assert gas_fields["powertrain_type"] == "gasoline"
 
 
 def test_scanned_pdf_ocr_fallback():

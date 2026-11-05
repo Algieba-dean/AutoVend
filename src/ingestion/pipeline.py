@@ -1,8 +1,8 @@
 """
-Incremental Data Ingestion & Index Update Pipeline for AutoVend.
+Incremental data ingestion and multi-store update pipeline for AutoVend.
 
-Provides zero-downtime UPSERT synchronization across SQLite, ChromaDB vector store,
-and BM25 sparse index when vehicle specifications, prices, or new models change.
+Synchronizes vehicle records and document chunks across SQLite, vector store,
+and cache/search indices with SAGA rollback compensation and persistent checksums.
 """
 
 import hashlib
@@ -61,7 +61,8 @@ def compute_vehicle_checksum(data: Dict[str, Any]) -> str:
 class IncrementalIngestionPipeline:
     """
     Manages incremental ingestion & index updates for vehicle data.
-    UPSERTS into SQLite, ChromaDB vector store, and BM25 index.
+    UPSERTS into SQLite, ChromaDB vector store, and BM25 index with SAGA rollback compensation,
+    Transactional Outbox / DLQ tracking, and SQLite-persistent checksums.
     """
 
     def __init__(
@@ -76,23 +77,102 @@ class IncrementalIngestionPipeline:
         self.freshness_engine = freshness_engine
         self.parent_child_retriever = parent_child_retriever
         self.checksum_store: Dict[str, str] = {}
+        self.pending_sync_queue: List[Dict[str, Any]] = []
+        self.dlq: List[Dict[str, Any]] = []
         self._initialize_checksums()
 
     def _initialize_checksums(self) -> None:
-        """Load initial checksums from existing SQLite database."""
+        """Load initial checksums from persistent SQLite database."""
         try:
+            # 1. Load persisted checksums from SQLite checksum_store
+            if hasattr(self.db, "get_all_checksums"):
+                persisted = self.db.get_all_checksums()
+                self.checksum_store.update(persisted)
+
+            # 2. Backfill vehicle model checksums if not yet recorded in checksum_store
             records = self.db.get_all_models()
             for car_model in records:
-                rec = self.db.get_by_model(car_model)
-                if rec:
-                    d = rec.to_dict() if hasattr(rec, "to_dict") else {}
-                    self.checksum_store[car_model] = compute_vehicle_checksum(d)
+                if car_model not in self.checksum_store:
+                    rec = self.db.get_by_model(car_model)
+                    if rec:
+                        d = rec.to_dict() if hasattr(rec, "to_dict") else dict(rec)
+                        ck = compute_vehicle_checksum(d)
+                        self.checksum_store[car_model] = ck
+                        if hasattr(self.db, "set_checksum"):
+                            self.db.set_checksum(car_model, ck)
         except Exception as e:
             logger.warning(f"Could not load initial checksums: {e}")
 
-    def detect_changes(self, new_vehicles: List[Dict[str, Any]]) -> List[VehicleDataPatch]:
+    def _set_checksum(self, key: str, checksum: str) -> None:
+        """Update checksum in memory and SQLite persistent store."""
+        self.checksum_store[key] = checksum
+        if hasattr(self.db, "set_checksum"):
+            try:
+                self.db.set_checksum(key, checksum)
+            except Exception as e:
+                logger.warning(f"Failed to persist checksum for {key}: {e}")
+
+    def _delete_checksum(self, key: str) -> None:
+        """Delete checksum from memory and SQLite persistent store."""
+        self.checksum_store.pop(key, None)
+        if hasattr(self.db, "delete_checksum"):
+            try:
+                self.db.delete_checksum(key)
+            except Exception as e:
+                logger.warning(f"Failed to delete persistent checksum for {key}: {e}")
+
+    def _get_vehicle_models_in_store(self) -> List[str]:
+        """Return all car model keys in checksum store, ignoring file: or doc: keys."""
+        return [
+            k for k in self.checksum_store.keys()
+            if not k.startswith("file:") and not k.startswith("doc:")
+        ]
+
+    def _record_dlq(
+        self,
+        car_model: str,
+        operation: str,
+        error_msg: str,
+        payload: Dict[str, Any],
+    ) -> None:
+        """Record dual-write failure event to in-memory DLQ and persistent outbox."""
+        dlq_entry = {
+            "car_model": car_model,
+            "operation": operation,
+            "error": error_msg,
+            "payload": payload,
+            "timestamp": time.time(),
+        }
+        self.pending_sync_queue.append(dlq_entry)
+        self.dlq.append(dlq_entry)
+        if hasattr(self.db, "record_outbox_event"):
+            try:
+                import uuid
+                event_id = f"outbox_{uuid.uuid4().hex[:12]}"
+                payload_str = json.dumps(dlq_entry, ensure_ascii=False)
+                self.db.record_outbox_event(
+                    event_id=event_id,
+                    event_type=f"vehicle_sync_{operation}",
+                    payload_json=payload_str,
+                    status="FAILED",
+                    error_message=error_msg,
+                )
+            except Exception as e:
+                logger.warning(f"Failed to record outbox event: {e}")
+
+    def detect_changes(
+        self,
+        new_vehicles: List[Dict[str, Any]],
+        full_sync: bool = False,
+    ) -> List[VehicleDataPatch]:
         """
         Compare incoming vehicle records against stored checksums to identify changes.
+        
+        Args:
+            new_vehicles: List of vehicle dictionary records.
+            full_sync: If True, performs full snapshot reconciliation (models missing from
+                       new_vehicles are marked DELETED). If False (default incremental CDC),
+                       models omitted from delta batches are strictly preserved and NEVER deleted.
         """
         patches: List[VehicleDataPatch] = []
         incoming_models = set()
@@ -103,6 +183,24 @@ class IncrementalIngestionPipeline:
                 continue
 
             incoming_models.add(car_model)
+
+            # Check explicit deletion marker
+            is_explicit_delete = bool(
+                v_data.get("is_deleted")
+                or v_data.get("change_type") in (ChangeType.DELETED, "deleted")
+                or v_data.get("_deleted")
+            )
+            if is_explicit_delete:
+                patches.append(
+                    VehicleDataPatch(
+                        car_model=car_model,
+                        change_type=ChangeType.DELETED,
+                        data=v_data,
+                        checksum="",
+                    )
+                )
+                continue
+
             new_checksum = compute_vehicle_checksum(v_data)
             old_checksum = self.checksum_store.get(car_model)
 
@@ -134,85 +232,177 @@ class IncrementalIngestionPipeline:
                     )
                 )
 
-        # Detect deleted / de-listed models
-        for old_model in list(self.checksum_store.keys()):
-            if old_model not in incoming_models:
-                patches.append(
-                    VehicleDataPatch(
-                        car_model=old_model,
-                        change_type=ChangeType.DELETED,
-                        checksum="",
+        # Detect deleted / de-listed models ONLY when full snapshot reconciliation is explicitly requested
+        if full_sync:
+            for old_model in self._get_vehicle_models_in_store():
+                if old_model not in incoming_models:
+                    patches.append(
+                        VehicleDataPatch(
+                            car_model=old_model,
+                            change_type=ChangeType.DELETED,
+                            checksum="",
+                        )
                     )
-                )
 
         return patches
 
-    def ingest_batch(self, new_vehicles: List[Dict[str, Any]]) -> IngestionSummary:
+    def ingest_batch(
+        self,
+        new_vehicles: List[Dict[str, Any]],
+        full_sync: bool = False,
+    ) -> IngestionSummary:
         """
-        Execute incremental ingestion and multi-index synchronization.
+        Execute incremental ingestion and multi-index synchronization with SAGA compensation
+        and Outbox DLQ consistency guarantees.
 
         Args:
             new_vehicles: List of vehicle dictionary data.
+            full_sync: If True, performs snapshot reconciliation (missing items deleted).
 
         Returns:
             IngestionSummary report.
         """
         start_time = time.time()
-        patches = self.detect_changes(new_vehicles)
+        patches = self.detect_changes(new_vehicles, full_sync=full_sync)
 
         created = [p for p in patches if p.change_type == ChangeType.CREATED]
         updated = [p for p in patches if p.change_type == ChangeType.UPDATED]
         deleted = [p for p in patches if p.change_type == ChangeType.DELETED]
         unchanged = [p for p in patches if p.change_type == ChangeType.UNCHANGED]
 
-        affected_models = [p.car_model for p in patches if p.change_type != ChangeType.UNCHANGED]
+        actually_created = 0
+        actually_updated = 0
+        actually_deleted = 0
+        affected_models: List[str] = []
 
-        # 1. Update SQLite DB Records
+        # 1. Process CREATED & UPDATED patches with SAGA compensation
         for patch in created + updated:
+            prev_record = self.db.get_by_model(patch.car_model)
+
+            # Step 1: Write to SQLite
             try:
-                # Upsert record in SQLite DB
                 self.db.upsert_vehicle(patch.data)
-                self.checksum_store[patch.car_model] = patch.checksum
             except Exception as e:
                 logger.error(f"SQLite upsert failed for {patch.car_model}: {e}")
+                self._record_dlq(patch.car_model, patch.change_type.value, str(e), patch.data)
+                continue
 
-        for patch in deleted:
+            # Step 2: Downstream sync (Vector store & Cache / Freshness eviction)
+            downstream_ok = True
+            downstream_err = None
             try:
-                self.db.delete_vehicle(patch.car_model)
-                self.checksum_store.pop(patch.car_model, None)
-                if self.freshness_engine and hasattr(self.freshness_engine, "invalidate_and_evict"):
-                    self.freshness_engine.invalidate_and_evict(
-                        patch.car_model, reason="Incremental deletion", is_tombstone=True
-                    )
-            except Exception as e:
-                logger.error(f"SQLite deletion failed for {patch.car_model}: {e}")
-
-        if self.freshness_engine and hasattr(self.freshness_engine, "invalidate_and_evict"):
-            for patch in updated:
-                self.freshness_engine.invalidate_and_evict(
-                    patch.car_model, reason="Incremental spec/price update", is_tombstone=False
-                )
-
-        # 2. Update Vector Store (ChromaDB) if pipeline is configured
-        if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
-            retriever = self.hybrid_pipeline.retriever
-            vector_store = getattr(retriever, "vector_store", None)
-            if vector_store and hasattr(vector_store, "upsert_document"):
-                for patch in created + updated:
-                    try:
+                # 2a. Update Vector Store (ChromaDB)
+                if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
+                    retriever = self.hybrid_pipeline.retriever
+                    vector_store = getattr(retriever, "vector_store", None)
+                    if vector_store and hasattr(vector_store, "upsert_document"):
                         vector_store.upsert_document(
                             doc_id=patch.car_model,
                             text=str(patch.data.get("key_details", "")),
                             metadata=patch.data.get("metadata", {}),
                         )
-                    except Exception as e:
-                        logger.warning(f"Vector store upsert warning for {patch.car_model}: {e}")
+
+                # 2b. Evict / Invalidate Freshness Cache
+                if self.freshness_engine and hasattr(self.freshness_engine, "invalidate_and_evict"):
+                    if patch.change_type == ChangeType.UPDATED:
+                        self.freshness_engine.invalidate_and_evict(
+                            patch.car_model, reason="Incremental spec/price update", is_tombstone=False
+                        )
+            except Exception as sync_exc:
+                downstream_ok = False
+                downstream_err = sync_exc
+                logger.error(
+                    f"Downstream sync failed for {patch.car_model}: {sync_exc}. "
+                    f"Executing SAGA rollback compensation on SQLite."
+                )
+
+            # Step 3: Consistency arbitration
+            if not downstream_ok:
+                # SAGA Rollback SQLite write
+                try:
+                    if patch.change_type == ChangeType.CREATED:
+                        self.db.delete_vehicle(patch.car_model)
+                    elif patch.change_type == ChangeType.UPDATED:
+                        if prev_record:
+                            self.db.upsert_vehicle(prev_record)
+                        else:
+                            self.db.delete_vehicle(patch.car_model)
+                except Exception as rb_exc:
+                    logger.critical(f"SAGA rollback failed for {patch.car_model}: {rb_exc}")
+
+                # Record to DLQ / pending sync without advancing checksum
+                self._record_dlq(
+                    patch.car_model,
+                    patch.change_type.value,
+                    str(downstream_err),
+                    patch.data,
+                )
+            else:
+                # All stores acknowledged successfully: advance persistent checksum
+                self._set_checksum(patch.car_model, patch.checksum)
+                affected_models.append(patch.car_model)
+                if patch.change_type == ChangeType.CREATED:
+                    actually_created += 1
+                else:
+                    actually_updated += 1
+
+        # 2. Process DELETED patches with SAGA compensation
+        for patch in deleted:
+            prev_record = self.db.get_by_model(patch.car_model)
+
+            # Step 1: Delete from SQLite
+            try:
+                self.db.delete_vehicle(patch.car_model)
+            except Exception as e:
+                logger.error(f"SQLite deletion failed for {patch.car_model}: {e}")
+                self._record_dlq(patch.car_model, "deleted", str(e), {})
+                continue
+
+            # Step 2: Downstream deletion sync
+            downstream_ok = True
+            downstream_err = None
+            try:
+                if self.freshness_engine and hasattr(self.freshness_engine, "invalidate_and_evict"):
+                    self.freshness_engine.invalidate_and_evict(
+                        patch.car_model, reason="Incremental deletion", is_tombstone=True
+                    )
+                if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
+                    retriever = self.hybrid_pipeline.retriever
+                    vector_store = getattr(retriever, "vector_store", None)
+                    if vector_store and hasattr(vector_store, "delete_document"):
+                        vector_store.delete_document(patch.car_model)
+            except Exception as sync_exc:
+                downstream_ok = False
+                downstream_err = sync_exc
+                logger.error(
+                    f"Downstream deletion sync failed for {patch.car_model}: {sync_exc}. "
+                    f"Executing SAGA rollback compensation on SQLite."
+                )
+
+            # Step 3: Consistency arbitration
+            if not downstream_ok:
+                try:
+                    if prev_record:
+                        self.db.upsert_vehicle(prev_record)
+                except Exception as rb_exc:
+                    logger.critical(f"SAGA rollback of deletion failed for {patch.car_model}: {rb_exc}")
+
+                self._record_dlq(
+                    patch.car_model,
+                    "deleted",
+                    str(downstream_err),
+                    prev_record or {},
+                )
+            else:
+                self._delete_checksum(patch.car_model)
+                affected_models.append(patch.car_model)
+                actually_deleted += 1
 
         elapsed = time.time() - start_time
         summary = IngestionSummary(
-            created_count=len(created),
-            updated_count=len(updated),
-            deleted_count=len(deleted),
+            created_count=actually_created,
+            updated_count=actually_updated,
+            deleted_count=actually_deleted,
             unchanged_count=len(unchanged),
             total_processed=len(patches),
             elapsed_seconds=round(elapsed, 3),
@@ -220,8 +410,8 @@ class IncrementalIngestionPipeline:
         )
 
         logger.info(
-            f"Ingestion completed in {elapsed:.3f}s: +{len(created)} created, "
-            f"~{len(updated)} updated, -{len(deleted)} deleted, {len(unchanged)} unchanged."
+            f"Ingestion completed in {elapsed:.3f}s: +{actually_created} created, "
+            f"~{actually_updated} updated, -{actually_deleted} deleted, {len(unchanged)} unchanged."
         )
 
         return summary
@@ -233,16 +423,19 @@ class IncrementalIngestionPipeline:
     ) -> IngestionSummary:
         """
         Incrementally ingest any enterprise document (PDF, Excel, Word, PPTX, Image, CSV).
-        Uses hash-based change detection (SHA-256) to ensure zero redundant processing.
+        Uses canonical path hash-based change detection (SHA-256) to ensure zero key collision
+        and zero redundant processing across restarts.
         """
-        p = Path(file_path)
+        p = Path(file_path).resolve()
         if not p.exists():
             raise FileNotFoundError(f"File not found: {p}")
 
         start_time = time.time()
         file_bytes = p.read_bytes()
         file_checksum = hashlib.sha256(file_bytes).hexdigest()
-        store_key = f"file:{p.name}"
+        canonical_path = str(p)
+        path_hash = hashlib.sha256(canonical_path.encode("utf-8")).hexdigest()
+        store_key = f"file:{path_hash}:{p.name}"
         old_checksum = self.checksum_store.get(store_key)
 
         if old_checksum == file_checksum:
@@ -269,12 +462,17 @@ class IncrementalIngestionPipeline:
         chunker = HierarchicalChunker()
         chunk_dict = chunker.chunk_document(parsed_doc)
 
+        indexing_failed = False
+        indexing_error = None
+
         # Index into ParentChildRetriever if configured
         if self.parent_child_retriever and hasattr(self.parent_child_retriever, "index_chunks"):
             try:
                 self.parent_child_retriever.index_chunks(chunk_dict)
             except Exception as e:
                 logger.warning(f"ParentChildRetriever indexing warning: {e}")
+                indexing_failed = True
+                indexing_error = e
 
         # Index into vector store if configured
         if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
@@ -290,23 +488,31 @@ class IncrementalIngestionPipeline:
                         )
                     except Exception as e:
                         logger.warning(f"Vector store upsert failed for chunk {parent.chunk_id}: {e}")
-
-        # Update checksum store
-        is_created = old_checksum is None
-        self.checksum_store[store_key] = file_checksum
+                        indexing_failed = True
+                        indexing_error = e
 
         # Invalidate / update freshness engine if present
         if self.freshness_engine and hasattr(self.freshness_engine, "register_document_freshness"):
-            self.freshness_engine.register_document_freshness(
-                doc_id=p.name,
-                file_path=p,
-                metadata={
-                    "vehicle_model": model_name,
-                    "format": parsed_doc.metadata.get("format", "unknown"),
-                    "table_count": len(parsed_doc.tables),
-                    "section_count": len(parsed_doc.sections),
-                },
-            )
+            try:
+                self.freshness_engine.register_document_freshness(
+                    doc_id=p.name,
+                    file_path=p,
+                    metadata={
+                        "vehicle_model": model_name,
+                        "format": parsed_doc.metadata.get("format", "unknown"),
+                        "table_count": len(parsed_doc.tables),
+                        "section_count": len(parsed_doc.sections),
+                    },
+                )
+            except Exception as e:
+                logger.warning(f"Freshness registration failed for {p.name}: {e}")
+
+        # Update checksum store only if critical downstream indexing succeeded
+        is_created = old_checksum is None
+        if not indexing_failed:
+            self._set_checksum(store_key, file_checksum)
+        else:
+            self._record_dlq(model_name, "file_ingest", str(indexing_error), {"file_path": str(p)})
 
         elapsed = time.time() - start_time
         return IngestionSummary(
@@ -348,12 +554,17 @@ class IncrementalIngestionPipeline:
         chunker = HierarchicalChunker()
         chunk_dict = chunker.chunk_document(doc)
 
+        indexing_failed = False
+        indexing_error = None
+
         # Index into ParentChildRetriever if configured
         if self.parent_child_retriever and hasattr(self.parent_child_retriever, "index_chunks"):
             try:
                 self.parent_child_retriever.index_chunks(chunk_dict)
             except Exception as e:
                 logger.warning(f"ParentChildRetriever indexing warning: {e}")
+                indexing_failed = True
+                indexing_error = e
 
         # Index into vector store if configured
         if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
@@ -369,24 +580,32 @@ class IncrementalIngestionPipeline:
                         )
                     except Exception as e:
                         logger.warning(f"Vector store upsert failed for chunk {parent.chunk_id}: {e}")
+                        indexing_failed = True
+                        indexing_error = e
 
         model_name = getattr(doc, "vehicle_model", None) or getattr(doc, "title", "unknown")
 
         # Invalidate / update freshness engine if present
         if self.freshness_engine and hasattr(self.freshness_engine, "register_document_freshness"):
-            self.freshness_engine.register_document_freshness(
-                doc_id=doc_id,
-                file_path=None,
-                metadata={
-                    "vehicle_model": model_name,
-                    "format": getattr(doc, "metadata", {}).get("format", "unknown"),
-                    "table_count": len(getattr(doc, "tables", [])),
-                    "section_count": len(getattr(doc, "sections", [])),
-                },
-            )
+            try:
+                self.freshness_engine.register_document_freshness(
+                    doc_id=doc_id,
+                    file_path=None,
+                    metadata={
+                        "vehicle_model": model_name,
+                        "format": getattr(doc, "metadata", {}).get("format", "unknown"),
+                        "table_count": len(getattr(doc, "tables", [])),
+                        "section_count": len(getattr(doc, "sections", [])),
+                    },
+                )
+            except Exception as e:
+                logger.warning(f"Freshness registration failed for {doc_id}: {e}")
 
         is_created = old_checksum is None
-        self.checksum_store[store_key] = doc_checksum
+        if not indexing_failed:
+            self._set_checksum(store_key, doc_checksum)
+        else:
+            self._record_dlq(model_name, "doc_ingest", str(indexing_error), {"doc_id": doc_id})
 
         elapsed = time.time() - start_time
         return IngestionSummary(

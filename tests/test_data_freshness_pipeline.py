@@ -388,9 +388,9 @@ class TestPipelineWithFreshnessEngine:
         summary1 = pipeline.ingest_batch([v_a, v_b])
         assert summary1.created_count == 2
 
-        # Batch 2: Update Model A price, Delete Model B (omit from new list)
+        # Batch 2: Update Model A price, Delete Model B via snapshot reconciliation (full_sync=True)
         v_a_new = {"car_model": "Model_Alpha", "brand": "AlphaBrand", "prize": "22万"}
-        summary2 = pipeline.ingest_batch([v_a_new])
+        summary2 = pipeline.ingest_batch([v_a_new], full_sync=True)
         assert summary2.updated_count == 1
         assert summary2.deleted_count == 1
 
