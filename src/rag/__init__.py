@@ -8,7 +8,7 @@ from .data_loader import VehicleDataLoader
 from .embeddings import BGEEmbeddingModel, EmbeddingDegradedError, EmbeddingInferenceError
 from .index_builder import IndexBuilder, IndexDLQ
 from .retriever import VehicleRetriever
-from .vector_store import ChromaVectorStore, generate_vehicle_doc_id
+from .vector_store import ChromaVectorStore, extract_vehicle_trim, generate_vehicle_doc_id
 
 __all__ = [
     "VehicleDataLoader",
@@ -20,4 +20,5 @@ __all__ = [
     "IndexBuilder",
     "IndexDLQ",
     "generate_vehicle_doc_id",
+    "extract_vehicle_trim",
 ]

@@ -18,6 +18,32 @@ from src.utils.config import config
 from src.utils.logger import get_logger, log_performance
 
 
+def extract_vehicle_trim(vehicle: Vehicle) -> str:
+    """Extract vehicle trim / version / configuration to guarantee unique deterministic IDs."""
+    if hasattr(vehicle, "trim") and vehicle.trim:
+        return str(vehicle.trim).strip()
+    if hasattr(vehicle, "raw_data") and isinstance(vehicle.raw_data, dict):
+        for k in ["trim", "trim_name", "version", "config_name", "model_version"]:
+            val = vehicle.raw_data.get(k)
+            if val:
+                return str(val).strip()
+    if hasattr(vehicle, "precise_labels") and vehicle.precise_labels:
+        trim_lbl = getattr(vehicle.precise_labels, "trim", None) or getattr(vehicle.precise_labels, "version", None)
+        if trim_lbl:
+            return str(trim_lbl).strip()
+        if hasattr(vehicle.precise_labels, "model_extra") and isinstance(vehicle.precise_labels.model_extra, dict):
+            for k in ["trim", "trim_name", "version", "config_name"]:
+                val = vehicle.precise_labels.model_extra.get(k)
+                if val:
+                    return str(val).strip()
+    if hasattr(vehicle, "model_extra") and isinstance(vehicle.model_extra, dict):
+        for k in ["trim", "trim_name", "version", "config_name"]:
+            val = vehicle.model_extra.get(k)
+            if val:
+                return str(val).strip()
+    return ""
+
+
 def generate_vehicle_doc_id(car_model: str, trim: str = "") -> str:
     """Generate deterministic, idempotent document ID for vector stores."""
     raw_key = f"{car_model.strip().lower()}::{trim.strip().lower()}"
@@ -180,8 +206,9 @@ class ChromaVectorStore:
         metadatas = []
 
         for vehicle in vehicles:
-            # 基于车型名称生成确定性ID，确保幂等更新与关系型数据库主键对齐
-            doc_id = generate_vehicle_doc_id(vehicle.car_model or str(uuid.uuid4()))
+            # 基于车型名称与款型生成确定性ID，确保幂等更新与多款型配置隔离
+            trim = extract_vehicle_trim(vehicle)
+            doc_id = generate_vehicle_doc_id(vehicle.car_model or str(uuid.uuid4()), trim=trim)
             ids.append(doc_id)
 
             # 文档内容（用于检索）
@@ -190,6 +217,7 @@ class ChromaVectorStore:
             # 元数据
             metadata = {
                 "car_model": vehicle.car_model,
+                "trim": trim,
                 "brand": vehicle.precise_labels.brand or "",
                 "category": vehicle.precise_labels.vehicle_category_bottom or "",
                 "price": vehicle.precise_labels.price or "",
@@ -320,8 +348,10 @@ class ChromaVectorStore:
         """
         try:
             document = vehicle.get_search_text()
+            trim = extract_vehicle_trim(vehicle)
             metadata = {
                 "car_model": vehicle.car_model,
+                "trim": trim,
                 "brand": vehicle.precise_labels.brand or "",
                 "category": vehicle.precise_labels.vehicle_category_bottom or "",
                 "price": vehicle.precise_labels.price or "",
@@ -347,9 +377,72 @@ class ChromaVectorStore:
             self.logger.error(f"更新车辆数据失败: {e}")
             raise
 
-    def delete_vehicle(self, doc_id: str) -> None:
+    def upsert_document(
+        self,
+        doc_id: str,
+        text: str,
+        metadata: Optional[Dict[str, Any]] = None,
+        embedding: Optional[List[float]] = None,
+    ) -> None:
         """
-        删除车辆数据
+        幂等更新或插入单篇文档/车辆到向量存储中（对齐 Ingestion Pipeline 契约）。
+
+        Args:
+            doc_id: 文档唯一标识 (如 vehicle car_model 或 chunk_id)
+            text: 文档正文内容
+            metadata: 文档元数据字典
+            embedding: 可选的嵌入向量。若未提供，优先由绑定模型生成，或使用匹配维度的安全向量
+        """
+        try:
+            if embedding is None and hasattr(self, "embedding_model") and self.embedding_model:
+                try:
+                    if not getattr(self.embedding_model, "is_degraded", False):
+                        embedding = self.embedding_model.get_text_embedding(text)
+                except Exception as emb_err:
+                    self.logger.warning(f"生成嵌入向量失败 ({doc_id}): {emb_err}")
+
+            clean_metadata: Dict[str, Any] = {}
+            if metadata:
+                for k, v in metadata.items():
+                    if isinstance(v, (str, int, float, bool)):
+                        clean_metadata[k] = v
+                    elif v is not None:
+                        clean_metadata[k] = str(v)
+            if not clean_metadata:
+                clean_metadata = {"doc_id": doc_id}
+
+            kwargs: Dict[str, Any] = {
+                "ids": [doc_id],
+                "documents": [text or " "],
+                "metadatas": [clean_metadata],
+            }
+            if embedding is not None:
+                kwargs["embeddings"] = [embedding]
+            else:
+                dim = 1024
+                if self.collection:
+                    try:
+                        peek = self.collection.peek(limit=1)
+                        if peek and peek.get("embeddings") is not None and len(peek["embeddings"]) > 0:
+                            dim = len(peek["embeddings"][0])
+                    except Exception:
+                        pass
+                kwargs["embeddings"] = [[0.0] * dim]
+
+            if hasattr(self.collection, "upsert"):
+                self.collection.upsert(**kwargs)
+            else:
+                self.collection.add(**kwargs)
+
+            self.stats["total_documents"] = self.collection.count()
+            self.logger.info(f"已成功 upsert 向量文档: {doc_id}")
+        except Exception as e:
+            self.logger.error(f"upsert 向量文档失败 ({doc_id}): {e}")
+            raise
+
+    def delete_document(self, doc_id: str) -> None:
+        """
+        根据 ID 删除文档（对齐 Ingestion Pipeline 契约）。
 
         Args:
             doc_id: 文档ID
@@ -357,10 +450,19 @@ class ChromaVectorStore:
         try:
             self.collection.delete(ids=[doc_id])
             self.stats["total_documents"] = self.collection.count()
-            self.logger.info(f"已删除车辆数据: {doc_id}")
+            self.logger.info(f"已删除向量文档: {doc_id}")
         except Exception as e:
-            self.logger.error(f"删除车辆数据失败: {e}")
+            self.logger.error(f"删除向量文档失败 ({doc_id}): {e}")
             raise
+
+    def delete_vehicle(self, doc_id: str) -> None:
+        """
+        删除车辆数据
+
+        Args:
+            doc_id: 文档ID
+        """
+        self.delete_document(doc_id)
 
     def clear_collection(self) -> None:
         """清空集合"""

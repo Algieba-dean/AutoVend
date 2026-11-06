@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 from src.filter.vehicle_db import VehicleDB
 from src.ingestion.pipeline import ChangeType, IncrementalIngestionPipeline
+from src.rag.vector_store import ChromaVectorStore, generate_vehicle_doc_id
 
 
 def test_incremental_ingestion_delta_batch_preserves_omitted_models(tmp_path):
@@ -104,8 +105,8 @@ def test_saga_rollback_and_dlq_on_downstream_failure(tmp_path):
     """
     test_db = VehicleDB(db_path=str(tmp_path / "saga_test.db"))
 
-    # Mock hybrid pipeline with vector_store that fails
-    mock_vs = MagicMock()
+    # Mock hybrid pipeline with vector_store conforming to real ChromaVectorStore contract that fails
+    mock_vs = MagicMock(spec=ChromaVectorStore)
     mock_vs.upsert_document.side_effect = ConnectionError("ChromaDB connection refused")
     mock_retriever = MagicMock()
     mock_retriever.vector_store = mock_vs
@@ -164,8 +165,8 @@ def test_saga_rollback_restores_preexisting_record(tmp_path):
     original = {"car_model": "Model_Preserve", "brand": "OriginalBrand", "price": "30万"}
     pipeline.ingest_batch([original])
 
-    # Set up failing vector store
-    mock_vs = MagicMock()
+    # Set up failing vector store conforming to real ChromaVectorStore contract
+    mock_vs = MagicMock(spec=ChromaVectorStore)
     mock_vs.upsert_document.side_effect = TimeoutError("ChromaDB timeout")
     mock_retriever = MagicMock()
     mock_retriever.vector_store = mock_vs
@@ -352,5 +353,92 @@ def test_borderless_table_detector_preserves_automotive_tyre_spec():
     t_md = tables[0].to_markdown()
     assert "Michelin" in t_md
     assert "空气悬架" in t_md
+
+
+def test_chroma_vector_store_real_upsert_and_delete_contract(tmp_path):
+    """Test ChromaVectorStore real implementation of upsert_document and delete_document."""
+    vs = ChromaVectorStore(persist_directory=str(tmp_path / "chroma_real"), collection_name="test_contract")
+    assert hasattr(vs, "upsert_document")
+    assert hasattr(vs, "delete_document")
+
+    # Real upsert
+    vs.upsert_document(
+        doc_id="model_real_1",
+        text="这是小米SU7 Max的参数内容",
+        metadata={"car_model": "小米SU7", "trim": "Max版", "price": "29.99万"},
+        embedding=[0.1] * 1024,
+    )
+    assert vs.collection.count() == 1
+
+    # Overwrite / idempotent upsert
+    vs.upsert_document(
+        doc_id="model_real_1",
+        text="这是小米SU7 Max更新后的参数内容",
+        metadata={"car_model": "小米SU7", "trim": "Max版", "price": "29.99万"},
+        embedding=[0.2] * 1024,
+    )
+    assert vs.collection.count() == 1
+
+    # Delete
+    vs.delete_document("model_real_1")
+    assert vs.collection.count() == 0
+
+
+def test_vector_store_missing_contract_triggers_saga_rollback(tmp_path):
+    """If vector store fails to implement upsert_document contract, pipeline MUST fail downstream and rollback."""
+    test_db = VehicleDB(db_path=str(tmp_path / "saga_contract_fail.db"))
+
+    # Object without upsert_document
+    class IncompleteVectorStore:
+        pass
+
+    mock_retriever = MagicMock()
+    mock_retriever.vector_store = IncompleteVectorStore()
+    mock_hybrid = MagicMock()
+    mock_hybrid.retriever = mock_retriever
+
+    pipeline = IncrementalIngestionPipeline(db=test_db, hybrid_pipeline=mock_hybrid)
+    v_new = {"car_model": "Model_Contract_Fail", "brand": "Brand", "price": "20万"}
+
+    summary = pipeline.ingest_batch([v_new])
+    assert summary.created_count == 0  # Rolled back
+    assert test_db.get_by_model("Model_Contract_Fail") is None
+    assert len(pipeline.dlq) == 1
+    assert "does not implement required 'upsert_document' contract" in pipeline.dlq[0]["error"]
+    assert "Model_Contract_Fail" not in pipeline.checksum_store
+
+
+def test_multi_trim_doc_id_deterministic_and_no_collision(tmp_path):
+    """Different trims of same car model must produce distinct doc_ids and never overwrite each other."""
+    from src.models.vehicle import PreciseLabels, Vehicle
+
+    id_std = generate_vehicle_doc_id("小米SU7", trim="标准版")
+    id_pro = generate_vehicle_doc_id("小米SU7", trim="Pro版")
+    id_max = generate_vehicle_doc_id("小米SU7", trim="Max版")
+
+    assert id_std != id_pro
+    assert id_pro != id_max
+    assert id_std != id_max
+
+    vs = ChromaVectorStore(persist_directory=str(tmp_path / "chroma_trims"), collection_name="test_trims")
+    v1 = Vehicle(
+        car_model="小米SU7",
+        trim="标准版",
+        precise_labels=PreciseLabels(brand="小米", price="21.59万"),
+    )
+    v2 = Vehicle(
+        car_model="小米SU7",
+        trim="Pro版",
+        precise_labels=PreciseLabels(brand="小米", price="24.59万"),
+    )
+    v3 = Vehicle(
+        car_model="小米SU7",
+        trim="Max版",
+        precise_labels=PreciseLabels(brand="小米", price="29.99万"),
+    )
+
+    vs.add_vehicles([v1, v2, v3], embeddings=[[0.1] * 1024, [0.2] * 1024, [0.3] * 1024])
+    assert vs.collection.count() == 3
+
 
 

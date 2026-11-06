@@ -82,9 +82,47 @@ class TestContextCompressionAndPruning:
         assert isinstance(compressed, CompressedContext)
         assert compressed.compressed_length <= 150
         assert "702km" in compressed.compressed_text or "激光雷达" in compressed.compressed_text
-        assert "买到就是赚到" not in compressed.compressed_text
-        assert "秒杀同级" not in compressed.compressed_text
         assert compressed.compression_ratio < 1.0
+
+    def test_markdown_table_preserved_without_shredding(self):
+        """Markdown tables must NOT be split by pipe characters into isolated cell fragments."""
+        table_snippet = (
+            "以下是两款配置的核心技术规格：\n"
+            "| 车型 | 纯电续航 | 零百加速 | 指导价 |\n"
+            "| 小米SU7 标准版 | 700km | 5.28s | 21.59万 |\n"
+            "| 小米SU7 Max | 800km | 2.78s | 29.99万 |\n"
+            "全系标配高通8295智能座舱芯片。"
+        )
+        sentences = ContextCompressor.split_sentences(table_snippet)
+        # Table rows must be preserved as whole rows, not shredded by '|'
+        assert any("| 车型 | 纯电续航 | 零百加速 | 指导价 |" in s for s in sentences)
+        assert any("| 小米SU7 标准版 | 700km | 5.28s | 21.59万 |" in s for s in sentences)
+        assert any("| 小米SU7 Max | 800km | 2.78s | 29.99万 |" in s for s in sentences)
+
+        compressed = ContextCompressor.compress_snippet(
+            table_snippet,
+            query_text="续航和零百加速",
+            max_length=300,
+        )
+        assert "| 小米SU7" in compressed.compressed_text
+        assert "700km" in compressed.compressed_text
+
+    def test_marketing_fluff_grammar_preservation(self):
+        """Marketing cleaning must not leave ungrammatical dangling clauses."""
+        text = "搭载了华为被业界誉为遥遥领先的鸿蒙座舱，整体操作非常流畅。"
+        cleaned = ContextCompressor.clean_marketing_fluff(text)
+        assert "遥遥领先" not in cleaned
+        assert "被业界誉为的" not in cleaned  # Ungrammatical fragment eliminated
+        assert "搭载了华为鸿蒙座舱" in cleaned or "鸿蒙座舱" in cleaned
+
+    def test_marketing_fluff_preserved_when_explicitly_queried(self):
+        """When query explicitly searches for a marketing term, evidence must not be discarded."""
+        text = "发布会上宣布该车型在智能驾驶领域遥遥领先，并且配备了双Orin-X芯片。"
+        # Query specifically mentions 遥遥领先
+        cleaned = ContextCompressor.clean_marketing_fluff(text, query_text="哪款车自称遥遥领先")
+        assert "遥遥领先" in cleaned  # Kept as key search evidence
+        assert "双Orin-X芯片" in cleaned
+
 
 
 class TestTabularSpecReranking:

@@ -360,19 +360,25 @@ class HybridPipeline:
             weights=weights.as_list(),
             top_k=top_k,
         )
+        max_possible_rrf = sum(weights.as_list()) / (self.fusion_k + 1.0) if weights else 1.0 / (self.fusion_k + 1.0)
+        max_possible_rrf = max(max_possible_rrf, 1e-9)
+
         dense_map = {r.vehicle.car_model: r for r in response.results}
         reranked = []
         for model, rrf_score in fused:
+            norm_score = min(1.0, max(0.0, float(rrf_score) / max_possible_rrf))
             if model in dense_map:
-                reranked.append(dense_map[model])
+                res_item = dense_map[model]
+                res_item.score.overall_score = round(norm_score, 4)
+                reranked.append(res_item)
             elif self.db is not None:
                 veh = self.db.get_vehicle(model)
                 if veh:
                     reranked.append(
                         SearchResult(
                             vehicle=veh,
-                            score=MatchScore(overall_score=min(1.0, float(rrf_score) * 10)),
-                            explanation=f"BM25稀疏检索命中 (RRF评分: {rrf_score:.4f})",
+                            score=MatchScore(overall_score=round(norm_score, 4)),
+                            explanation=f"BM25稀疏检索命中 (RRF归一化评分: {norm_score:.4f})",
                         )
                     )
 
@@ -424,19 +430,25 @@ class HybridPipeline:
             weights=weights.as_list(),
             top_k=top_k,
         )
+        max_possible_rrf = sum(weights.as_list()) / (self.fusion_k + 1.0) if weights else 1.0 / (self.fusion_k + 1.0)
+        max_possible_rrf = max(max_possible_rrf, 1e-9)
+
         dense_map = {r.vehicle.car_model: r for r in response.results}
         reranked = []
         for model, rrf_score in fused:
+            norm_score = min(1.0, max(0.0, float(rrf_score) / max_possible_rrf))
             if model in dense_map:
-                reranked.append(dense_map[model])
+                res_item = dense_map[model]
+                res_item.score.overall_score = round(norm_score, 4)
+                reranked.append(res_item)
             elif self.db is not None:
                 veh = self.db.get_vehicle(model)
                 if veh:
                     reranked.append(
                         SearchResult(
                             vehicle=veh,
-                            score=MatchScore(overall_score=min(1.0, float(rrf_score) * 10)),
-                            explanation=f"BM25稀疏检索命中 (RRF评分: {rrf_score:.4f})",
+                            score=MatchScore(overall_score=round(norm_score, 4)),
+                            explanation=f"BM25稀疏检索命中 (RRF归一化评分: {norm_score:.4f})",
                         )
                     )
 
@@ -542,3 +554,7 @@ def build_default_pipeline(
         retriever=retriever,
         sparse_index=sparse_index,
     )
+
+
+build_hybrid_pipeline = build_default_pipeline
+

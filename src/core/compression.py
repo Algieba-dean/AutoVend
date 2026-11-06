@@ -71,24 +71,72 @@ class ContextCompressor:
     """
 
     @classmethod
-    def clean_marketing_fluff(cls, text: str) -> str:
-        """Strip marketing superlatives and ungrounded hyperbole."""
+    def clean_marketing_fluff(cls, text: str, query_text: str = "") -> str:
+        """
+        Strip marketing superlatives and ungrounded hyperbole in a grammatically sound manner.
+        If the query explicitly asks about marketing terms (e.g. '遥遥领先'), preserves them.
+        """
+        if not text:
+            return ""
+
+        # Check which fluff terms the user specifically queried about
+        query_lower = query_text.lower()
+        active_query_fluff = [
+            p for p in MARKETING_FLUFF_PATTERNS if p.lower() in query_lower
+        ]
+
         cleaned = text
         for pattern in MARKETING_FLUFF_PATTERNS:
-            cleaned = re.sub(pattern, "", cleaned)
-        # Clean double spaces or messy punctuation
+            if pattern in active_query_fluff:
+                # Do not strip terms explicitly queried by the user
+                continue
+
+            # Grammar-preserving regex: handle optional modifiers before and after
+            # e.g., "搭载了华为被业界誉为遥遥领先的鸿蒙座舱" -> "搭载了华为鸿蒙座舱"
+            regex = (
+                rf"(?:被[^\s，。、]{{1,10}}(?:誉为|称为|评为|冠以)|堪称|号称|自诩)?\s*"
+                rf"{pattern}\s*"
+                rf"(?:的|之称|级别|体验)?(?:同级)?(?:[!！，,。]*)?"
+            )
+            cleaned = re.sub(regex, "", cleaned)
+
+        # Clean double spaces, dangling punctuation, or messy punctuation
         cleaned = re.sub(r"[,，、\s]{2,}", "，", cleaned).strip("，, 。.；; \t\n")
         return cleaned
 
     @classmethod
-    def split_sentences(cls, text: str) -> List[str]:
-        """Split text into discrete spec sentences/clauses."""
+    def split_sentences(cls, text: str, query_text: str = "") -> List[str]:
+        """
+        Split text into discrete spec sentences/clauses, preserving Markdown tables.
+        Never splits on pipes ('|', '｜') to avoid destroying Markdown table structures.
+        """
         if not text:
             return []
-        # Split on sentence boundaries, pipes, or semicolons
-        raw_parts = re.split(r"[。；;\n\r|｜]+", text)
-        sentences = [cls.clean_marketing_fluff(p.strip()) for p in raw_parts if p.strip()]
-        return [s for s in sentences if s and len(s) >= 4]
+
+        lines = text.splitlines()
+        sentences: List[str] = []
+
+        for line in lines:
+            line_str = line.strip()
+            if not line_str:
+                continue
+
+            # If line is part of a markdown table (starts and ends with pipe, or has multiple pipes)
+            if (line_str.startswith("|") and line_str.endswith("|")) or line_str.count("|") >= 2:
+                # Markdown table row: preserve completely intact without splitting on pipes!
+                cleaned_row = cls.clean_marketing_fluff(line_str, query_text=query_text)
+                if cleaned_row:
+                    sentences.append(cleaned_row)
+            else:
+                # Normal narrative text: split on sentence boundaries (Chinese/English periods, semicolons, exclamation marks, question marks)
+                # Strictly DO NOT split on pipes '|' or '｜'!
+                raw_parts = re.split(r"[。！？!?；;]+", line_str)
+                for p in raw_parts:
+                    p_clean = cls.clean_marketing_fluff(p.strip(), query_text=query_text)
+                    if p_clean and len(p_clean) >= 4:
+                        sentences.append(p_clean)
+
+        return sentences
 
     @classmethod
     def score_sentence(
@@ -102,6 +150,11 @@ class ContextCompressor:
         Higher score = more factual and more pertinent to query.
         """
         score = 0.0
+
+        # Structured Markdown Table bonus: tables are dense verified technical specifications
+        is_table_row = (sentence.strip().startswith("|") and sentence.strip().endswith("|")) or sentence.count("|") >= 2
+        if is_table_row:
+            score += 2.0
 
         # Base factual signal: presence of concrete technical metrics
         for pattern in FACTUAL_SPEC_PATTERNS:
@@ -122,9 +175,9 @@ class ContextCompressor:
                 if val and str(val).lower() in sentence.lower():
                     score += 2.5
 
-        # Penalty for purely vague or generic marketing statements with no numbers or specs
+        # Penalty for purely vague or generic marketing statements with no numbers, specs, or table structure
         has_any_spec = any(re.search(pat, sentence, re.IGNORECASE) for pat in FACTUAL_SPEC_PATTERNS)
-        if not has_any_spec:
+        if not has_any_spec and not is_table_row:
             score -= 1.0
 
         return score
@@ -141,7 +194,7 @@ class ContextCompressor:
         Compress a single vehicle text snippet into a concise, factual context.
         """
         if not snippet or len(snippet) <= max_length:
-            cleaned = cls.clean_marketing_fluff(snippet or "")
+            cleaned = cls.clean_marketing_fluff(snippet or "", query_text=query_text)
             return CompressedContext(
                 original_text=snippet or "",
                 compressed_text=cleaned,
@@ -152,7 +205,7 @@ class ContextCompressor:
                 pruned_sentences=[],
             )
 
-        sentences = cls.split_sentences(snippet)
+        sentences = cls.split_sentences(snippet, query_text=query_text)
         if not sentences:
             return CompressedContext(
                 original_text=snippet,
@@ -185,9 +238,14 @@ class ContextCompressor:
 
         # Restore original reading flow order from the source text
         preserved = [s for s in sentences if s in chosen]
-        compressed_text = "；".join(preserved)
-        if compressed_text and not compressed_text.endswith("。"):
-            compressed_text += "。"
+
+        # Join Markdown table rows with newlines to preserve tabular formatting; otherwise join with semicolons
+        if any(s.strip().startswith("|") and s.strip().endswith("|") for s in preserved):
+            compressed_text = "\n".join(preserved)
+        else:
+            compressed_text = "；".join(preserved)
+            if compressed_text and not compressed_text.endswith("。"):
+                compressed_text += "。"
 
         ratio = round(len(compressed_text) / max(len(snippet), 1), 3)
 

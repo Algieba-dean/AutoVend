@@ -305,6 +305,7 @@ class Vehicle(BaseModel):
 
     title: str = "CarLabels"
     car_model: str
+    trim: Optional[str] = Field(default=None, description="车辆款型/具体配置版本")
     precise_labels: PreciseLabels = Field(
         ..., validation_alias=AliasChoices("precise_labels", "PriciseLabels")
     )

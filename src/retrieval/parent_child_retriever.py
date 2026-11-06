@@ -131,53 +131,117 @@ class SimpleVectorIndex:
     """
     In-memory vector & lexical index for child chunks.
     Allows zero-dependency high-speed cosine & token matching with optional dense embedding model.
-    Thread-safe for concurrent ingestion and query operations.
+    Thread-safe with lockless Copy-on-Write reads and write-locked mutators.
     """
 
     def __init__(self, embedding_model: Optional[Any] = None):
         self.embedding_model = embedding_model
         self.chunks: List[Chunk] = []
         self.chunk_map: Dict[str, Chunk] = {}
-        self.embeddings: List[List[float]] = []
         self._norm_matrix: Optional[np.ndarray] = None
-        self._lock = threading.RLock()
+        self._write_lock = threading.RLock()
+
+    @property
+    def embeddings(self) -> List[List[float]]:
+        """Backwards compatibility view for test assertions; eliminates dual RAM storage."""
+        if self._norm_matrix is None:
+            return []
+        return self._norm_matrix.tolist()
 
     def add_chunks(self, chunks: List[Chunk]) -> None:
-        with self._lock:
+        """
+        Incrementally add chunks and embeddings.
+        Avoids O(N^2) reallocation by only normalizing the newly added batch
+        and vertically concatenating to the existing normalized matrix.
+        """
+        with self._write_lock:
             new_chunks: List[Chunk] = []
             for chunk in chunks:
                 if chunk.chunk_id in self.chunk_map:
                     continue
-                self.chunks.append(chunk)
-                self.chunk_map[chunk.chunk_id] = chunk
                 new_chunks.append(chunk)
 
-            if not new_chunks or not self.embedding_model:
+            if not new_chunks:
                 return
 
-            texts = [c.content for c in new_chunks]
-            embeds = []
-            if hasattr(self.embedding_model, "embed_documents"):
-                try:
-                    embeds = self.embedding_model.embed_documents(texts)
-                except Exception as e:
-                    logger.warning(f"Embedding model batch encoding failed: {e}")
-            elif hasattr(self.embedding_model, "encode"):
-                try:
-                    raw_embeds = self.embedding_model.encode(texts)
-                    if hasattr(raw_embeds, "tolist"):
-                        embeds = raw_embeds.tolist()
-                    else:
-                        embeds = [list(e) for e in raw_embeds]
-                except Exception as e:
-                    logger.warning(f"SentenceTransformer batch encode failed: {e}")
+            new_norm_embeds = None
+            if self.embedding_model:
+                texts = [c.content for c in new_chunks]
+                embeds = []
+                if hasattr(self.embedding_model, "embed_documents"):
+                    try:
+                        embeds = self.embedding_model.embed_documents(texts)
+                    except Exception as e:
+                        logger.warning(f"Embedding model batch encoding failed: {e}")
+                elif hasattr(self.embedding_model, "encode"):
+                    try:
+                        raw_embeds = self.embedding_model.encode(texts)
+                        if hasattr(raw_embeds, "tolist"):
+                            embeds = raw_embeds.tolist()
+                        else:
+                            embeds = [list(e) for e in raw_embeds]
+                    except Exception as e:
+                        logger.warning(f"SentenceTransformer batch encode failed: {e}")
 
-            if embeds:
-                self.embeddings.extend(embeds)
-                mat = np.asarray(self.embeddings, dtype=np.float32)
-                norms = np.linalg.norm(mat, axis=1, keepdims=True)
-                norms = np.where(norms == 0, 1e-9, norms)
-                self._norm_matrix = mat / norms
+                if embeds:
+                    batch_mat = np.asarray(embeds, dtype=np.float32)
+                    batch_norms = np.linalg.norm(batch_mat, axis=1, keepdims=True)
+                    batch_norms = np.where(batch_norms == 0, 1e-9, batch_norms)
+                    new_norm_embeds = batch_mat / batch_norms
+
+            # Update map
+            for c in new_chunks:
+                self.chunk_map[c.chunk_id] = c
+
+            updated_chunks = list(self.chunks) + new_chunks
+
+            if new_norm_embeds is not None:
+                if self._norm_matrix is None or len(self._norm_matrix) == 0:
+                    updated_matrix = new_norm_embeds
+                else:
+                    updated_matrix = np.vstack([self._norm_matrix, new_norm_embeds])
+            else:
+                updated_matrix = self._norm_matrix
+
+            # Copy-on-Write atomic publish
+            self.chunks = updated_chunks
+            self._norm_matrix = updated_matrix
+
+    def evict(self, chunk_ids: List[str]) -> int:
+        """
+        Evict chunks by id from index, reclaiming memory and updating the matrix.
+        Prevents memory leaks when documents are updated or deleted.
+        """
+        with self._write_lock:
+            to_remove = set(chunk_ids)
+            if not to_remove:
+                return 0
+
+            keep_indices = []
+            new_chunks = []
+            for idx, c in enumerate(self.chunks):
+                if c.chunk_id in to_remove:
+                    self.chunk_map.pop(c.chunk_id, None)
+                else:
+                    keep_indices.append(idx)
+                    new_chunks.append(c)
+
+            removed_count = len(self.chunks) - len(new_chunks)
+            if removed_count == 0:
+                return 0
+
+            if self._norm_matrix is not None and len(keep_indices) > 0:
+                updated_matrix = self._norm_matrix[keep_indices]
+            else:
+                updated_matrix = None
+
+            # Copy-on-Write atomic publish
+            self.chunks = new_chunks
+            self._norm_matrix = updated_matrix
+            return removed_count
+
+    def delete_chunks(self, chunk_ids: List[str]) -> int:
+        return self.evict(chunk_ids)
 
     def search(
         self,
@@ -185,84 +249,83 @@ class SimpleVectorIndex:
         top_k: int = 5,
         filter_metadata: Optional[Dict[str, Any]] = None,
     ) -> List[Tuple[Chunk, float]]:
-        """Dense cosine search (SIMD accelerated via NumPy) or fallback to token-overlap BM25-style scorer."""
-        with self._lock:
-            if not self.chunks:
-                return []
+        """
+        Dense cosine search (SIMD accelerated via NumPy) or fallback to token-overlap BM25-style scorer.
+        Lockless read execution relying on Copy-on-Write snapshots of chunks and norm_matrix.
+        """
+        chunks_snapshot = self.chunks
+        norm_matrix_snapshot = self._norm_matrix
 
-            # If embeddings are populated and embedding model is present
-            if self.embedding_model and self.embeddings and len(self.embeddings) == len(self.chunks):
-                try:
-                    if self._norm_matrix is None or len(self._norm_matrix) != len(self.embeddings):
-                        mat = np.asarray(self.embeddings, dtype=np.float32)
-                        norms = np.linalg.norm(mat, axis=1, keepdims=True)
-                        norms = np.where(norms == 0, 1e-9, norms)
-                        self._norm_matrix = mat / norms
+        if not chunks_snapshot:
+            return []
 
-                    if hasattr(self.embedding_model, "embed_query"):
-                        query_vec = self.embedding_model.embed_query(query)
-                    elif hasattr(self.embedding_model, "encode"):
-                        raw_vec = self.embedding_model.encode(query)
-                        query_vec = raw_vec.tolist() if hasattr(raw_vec, "tolist") else list(raw_vec)
-                    else:
-                        query_vec = None
+        # If embeddings are populated and embedding model is present
+        if self.embedding_model and norm_matrix_snapshot is not None and len(norm_matrix_snapshot) == len(chunks_snapshot):
+            try:
+                if hasattr(self.embedding_model, "embed_query"):
+                    query_vec = self.embedding_model.embed_query(query)
+                elif hasattr(self.embedding_model, "encode"):
+                    raw_vec = self.embedding_model.encode(query)
+                    query_vec = raw_vec.tolist() if hasattr(raw_vec, "tolist") else list(raw_vec)
+                else:
+                    query_vec = None
 
-                    if query_vec is not None:
-                        q_arr = np.asarray(query_vec, dtype=np.float32)
-                        q_norm = np.linalg.norm(q_arr)
-                        if q_norm > 0:
-                            q_arr = q_arr / q_norm
+                if query_vec is not None:
+                    q_arr = np.asarray(query_vec, dtype=np.float32)
+                    q_norm = np.linalg.norm(q_arr)
+                    if q_norm > 0:
+                        q_arr = q_arr / q_norm
 
-                        if not filter_metadata:
-                            ranked = vectorized_cosine_search(q_arr, self._norm_matrix, top_k=top_k)
-                            return [(self.chunks[idx], score) for idx, score in ranked]
+                    if not filter_metadata:
+                        ranked = vectorized_cosine_search(q_arr, norm_matrix_snapshot, top_k=top_k)
+                        return [(chunks_snapshot[idx], score) for idx, score in ranked]
 
-                        valid_indices = [
-                            i for i in range(len(self.chunks))
-                            if self._matches_filter(self.chunks[i], filter_metadata)
-                        ]
-                        if not valid_indices:
-                            return []
-                        sub_matrix = self._norm_matrix[valid_indices]
-                        sub_ranked = vectorized_cosine_search(q_arr, sub_matrix, top_k=top_k)
-                        return [(self.chunks[valid_indices[sub_idx]], score) for sub_idx, score in sub_ranked]
-                except Exception as e:
-                    logger.warning(f"Dense vector query failed: {e}. Falling back to lexical scoring.")
+                    valid_indices = [
+                        i for i in range(len(chunks_snapshot))
+                        if self._matches_filter(chunks_snapshot[i], filter_metadata)
+                    ]
+                    if not valid_indices:
+                        return []
+                    sub_matrix = norm_matrix_snapshot[valid_indices]
+                    sub_ranked = vectorized_cosine_search(q_arr, sub_matrix, top_k=top_k)
+                    return [(chunks_snapshot[valid_indices[sub_idx]], score) for sub_idx, score in sub_ranked]
+            except Exception as e:
+                logger.warning(f"Dense vector query failed: {e}. Falling back to lexical scoring.")
 
-            # Robust lexical scoring (character unigrams + bigrams + alphanumeric tokens for bilingual accuracy)
-            clean_q = query.lower()
-            query_terms = set(re.findall(r"[A-Za-z0-9\.\-]+", clean_q))
-            zh_chars = re.findall(r"[\u4e00-\u9fa5]", clean_q)
-            for ch in zh_chars:
-                query_terms.add(ch)
-            for i in range(len(zh_chars) - 1):
-                query_terms.add(zh_chars[i] + zh_chars[i + 1])
-            for i in range(len(zh_chars) - 2):
-                query_terms.add(zh_chars[i] + zh_chars[i + 1] + zh_chars[i + 2])
+        # Robust lexical scoring (character unigrams + bigrams + alphanumeric tokens for bilingual accuracy)
+        clean_q = query.lower()
+        query_terms = set(re.findall(r"[A-Za-z0-9\.\-]+", clean_q))
+        zh_chars = re.findall(r"[\u4e00-\u9fa5]", clean_q)
+        for ch in zh_chars:
+            query_terms.add(ch)
+        for i in range(len(zh_chars) - 1):
+            query_terms.add(zh_chars[i] + zh_chars[i + 1])
+        for i in range(len(zh_chars) - 2):
+            query_terms.add(zh_chars[i] + zh_chars[i + 1] + zh_chars[i + 2])
 
-            candidate_chunks = self.chunks
-            if filter_metadata:
-                candidate_chunks = [
-                    c for c in candidate_chunks if self._matches_filter(c, filter_metadata)
-                ]
+        candidate_chunks = chunks_snapshot
+        if filter_metadata:
+            candidate_chunks = [
+                c for c in candidate_chunks if self._matches_filter(c, filter_metadata)
+            ]
 
-            if not query_terms:
-                return [(c, 0.0) for c in candidate_chunks[:top_k]]
+        if not query_terms:
+            return [(c, 0.0) for c in candidate_chunks[:top_k]]
 
-            scored: List[Tuple[Chunk, float]] = []
-            for chunk in candidate_chunks:
-                chunk_text = chunk.content.lower()
-                overlap = 0.0
-                for term in query_terms:
-                    if term in chunk_text:
-                        # Higher weight for longer domain terms (e.g. bigrams, trigrams, model names)
-                        overlap += 1.0 + (len(term) * 0.5)
-                norm_score = overlap / (len(query_terms) + 1.0)
-                if norm_score > 0.0:
-                    scored.append((chunk, norm_score))
+        scored: List[Tuple[Chunk, float]] = []
+        for chunk in candidate_chunks:
+            chunk_text = chunk.content.lower()
+            overlap = 0.0
+            for term in query_terms:
+                if term in chunk_text:
+                    # Higher weight for longer domain terms (e.g. bigrams, trigrams, model names)
+                    overlap += 1.0 + (len(term) * 0.5)
+            norm_score = overlap / (len(query_terms) + 1.0)
+            if norm_score > 0.0:
+                scored.append((chunk, norm_score))
 
-            scored.sort(key=lambda x: x[1], reverse=True)
-            return scored[:top_k]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return scored[:top_k]
 
     @staticmethod
     def _matches_filter(chunk: Chunk, filter_metadata: Dict[str, Any]) -> bool:
@@ -294,7 +357,8 @@ class ParentChildRetriever:
         self.embedding_model = embedding_model
         self.parent_store: Dict[str, Chunk] = {}
         self.child_index = SimpleVectorIndex(embedding_model=embedding_model)
-        self._lock = threading.RLock()
+        self._write_lock = threading.RLock()
+        self._lock = self._write_lock
 
     def index_document(self, doc: ParsedDocument) -> Dict[str, int]:
         """Index a single ParsedDocument."""
@@ -305,7 +369,7 @@ class ParentChildRetriever:
         """
         Index parents in Key-Value store and children in vector/lexical index.
         """
-        with self._lock:
+        with self._write_lock:
             parents = chunk_dict.get("parents", [])
             children = chunk_dict.get("children", [])
 
@@ -327,6 +391,40 @@ class ParentChildRetriever:
                 "total_children": len(self.child_index.chunks),
             }
 
+    def evict_document(self, doc_id: str) -> Dict[str, int]:
+        """
+        Evict all parent and child chunks associated with a document/vehicle.
+        Prevents ghost chunks and memory leaks across updates.
+        """
+        with self._write_lock:
+            parent_ids_to_remove = set()
+            for pid, p in list(self.parent_store.items()):
+                if (
+                    pid == doc_id
+                    or p.metadata.get("doc_id") == doc_id
+                    or p.metadata.get("vehicle_model") == doc_id
+                    or p.metadata.get("car_model") == doc_id
+                ):
+                    parent_ids_to_remove.add(pid)
+                    self.parent_store.pop(pid, None)
+
+            child_ids_to_remove = [
+                c.chunk_id
+                for c in self.child_index.chunks
+                if (
+                    c.parent_id in parent_ids_to_remove
+                    or c.chunk_id == doc_id
+                    or c.metadata.get("doc_id") == doc_id
+                    or c.metadata.get("vehicle_model") == doc_id
+                    or c.metadata.get("car_model") == doc_id
+                )
+            ]
+            evicted_children = self.child_index.evict(child_ids_to_remove)
+            return {
+                "parents_evicted": len(parent_ids_to_remove),
+                "children_evicted": evicted_children,
+            }
+
     def search(
         self,
         query: str,
@@ -337,79 +435,78 @@ class ParentChildRetriever:
     ) -> ParentChildSearchResponse:
         """
         Execute parent-child retrieval:
-        1. Search vector index for top-k children.
+        1. Search vector index for top-k children (lockless).
         2. Group matched children by parent_id.
         3. Retrieve parent chunk and aggregate child scores.
         4. Apply optional metadata filters (e.g. is_table, vehicle_model).
         5. Return top-k parent contexts with matched evidence.
         """
-        with self._lock:
-            start_time = time.time()
-            effective_k_children = max(top_k_children, top_k_parents * 4)
-            child_matches = self.child_index.search(query=query, top_k=effective_k_children)
+        start_time = time.time()
+        effective_k_children = max(top_k_children, top_k_parents * 4)
+        child_matches = self.child_index.search(query=query, top_k=effective_k_children)
 
-            # Filter by min_score
-            valid_child_matches = [
-                (c, s) for c, s in child_matches if s >= min_score
-            ]
+        # Filter by min_score
+        valid_child_matches = [
+            (c, s) for c, s in child_matches if s >= min_score
+        ]
 
-            # Group by parent_id
-            parent_child_groups: Dict[str, List[ChildHit]] = defaultdict(list)
-            parent_max_scores: Dict[str, float] = defaultdict(float)
+        # Group by parent_id
+        parent_child_groups: Dict[str, List[ChildHit]] = defaultdict(list)
+        parent_max_scores: Dict[str, float] = defaultdict(float)
 
-            for chunk, score in valid_child_matches:
-                pid = chunk.parent_id or chunk.chunk_id
-                hit = ChildHit(chunk=chunk, score=score)
-                parent_child_groups[pid].append(hit)
-                if score > parent_max_scores[pid]:
-                    parent_max_scores[pid] = score
+        for chunk, score in valid_child_matches:
+            pid = chunk.parent_id or chunk.chunk_id
+            hit = ChildHit(chunk=chunk, score=score)
+            parent_child_groups[pid].append(hit)
+            if score > parent_max_scores[pid]:
+                parent_max_scores[pid] = score
 
-            results: List[ParentRetrievalResult] = []
-            for pid, hits in parent_child_groups.items():
-                parent_chunk = self.parent_store.get(pid)
-                if not parent_chunk:
-                    # If parent not in store, fallback to child chunk itself
-                    parent_chunk = hits[0].chunk
+        results: List[ParentRetrievalResult] = []
+        for pid, hits in parent_child_groups.items():
+            parent_chunk = self.parent_store.get(pid)
+            if not parent_chunk:
+                # If parent not in store, fallback to child chunk itself
+                parent_chunk = hits[0].chunk
 
-                # Metadata filtering (supports substring and case-insensitive matching for string fields)
-                if filter_metadata:
-                    match = True
-                    for k, v in filter_metadata.items():
-                        val = parent_chunk.metadata.get(k)
-                        if isinstance(v, str) and isinstance(val, str):
-                            if v.lower() not in val.lower() and val.lower() not in v.lower():
-                                match = False
-                                break
-                        elif val != v:
+            # Metadata filtering (supports substring and case-insensitive matching for string fields)
+            if filter_metadata:
+                match = True
+                for k, v in filter_metadata.items():
+                    val = parent_chunk.metadata.get(k)
+                    if isinstance(v, str) and isinstance(val, str):
+                        if v.lower() not in val.lower() and val.lower() not in v.lower():
                             match = False
                             break
-                    if not match:
-                        continue
+                    elif val != v:
+                        match = False
+                        break
+                if not match:
+                    continue
 
-                # Aggregate score: max child score + bonus for multiple matching child chunks
-                base_score = parent_max_scores[pid]
-                diversity_bonus = min(0.2, (len(hits) - 1) * 0.05)
-                final_score = base_score + diversity_bonus
+            # Aggregate score: max child score + bonus for multiple matching child chunks
+            base_score = parent_max_scores[pid]
+            diversity_bonus = min(0.2, (len(hits) - 1) * 0.05)
+            final_score = base_score + diversity_bonus
 
-                results.append(
-                    ParentRetrievalResult(
-                        parent_chunk=parent_chunk,
-                        score=final_score,
-                        matched_children=hits,
-                    )
+            results.append(
+                ParentRetrievalResult(
+                    parent_chunk=parent_chunk,
+                    score=final_score,
+                    matched_children=hits,
                 )
-
-            # Sort parents by final score descending
-            results.sort(key=lambda r: r.score, reverse=True)
-            truncated_results = results[:top_k_parents]
-
-            elapsed = time.time() - start_time
-            return ParentChildSearchResponse(
-                query=query,
-                results=truncated_results,
-                child_hit_count=len(valid_child_matches),
-                search_time=elapsed,
             )
+
+        # Sort parents by final score descending
+        results.sort(key=lambda r: r.score, reverse=True)
+        truncated_results = results[:top_k_parents]
+
+        elapsed = time.time() - start_time
+        return ParentChildSearchResponse(
+            query=query,
+            results=truncated_results,
+            child_hit_count=len(valid_child_matches),
+            search_time=elapsed,
+        )
 
 
 def vectorized_cosine_search(
@@ -418,13 +515,12 @@ def vectorized_cosine_search(
     """
     Vectorized cosine similarity search using NumPy matrix multiplication.
     doc_matrix shape: (N, D), query_vec shape: (D,)
+    Assumes query_vec and doc_matrix rows are unit-norm (pre-normalized).
     Returns list of (index, similarity_score) sorted descending by similarity.
     """
     if doc_matrix.size == 0 or query_vec.size == 0:
         return []
-    dots = np.dot(doc_matrix, query_vec)
-    norms = np.linalg.norm(doc_matrix, axis=1) * (np.linalg.norm(query_vec) + 1e-9)
-    sims = dots / norms
+    sims = np.dot(doc_matrix, query_vec)
     n_docs = len(sims)
     k = min(top_k, n_docs)
     if k <= 0:

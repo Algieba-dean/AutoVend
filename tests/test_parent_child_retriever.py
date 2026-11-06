@@ -203,3 +203,87 @@ def test_byd_yangwang_u9_retrieval_returns_full_markdown():
             break
 
     assert found_u9_table, "Expected query to retrieve full un-truncated U9 powertrain/chassis markdown table."
+
+
+def test_concurrent_lockless_search_throughput():
+    """Verify high-concurrency read operations run concurrently without mutex starvation."""
+    import concurrent.futures
+
+    class MockEmbedModel:
+        def encode(self, texts):
+            if isinstance(texts, str):
+                return [1.0, 0.0, 0.0]
+            return [[1.0, 0.0, 0.0] for _ in range(len(texts))]
+
+    retriever = ParentChildRetriever(embedding_model=MockEmbedModel())
+    c1 = Chunk(chunk_id="c1", content="特斯拉Model 3高性能版", chunk_type=ChunkType.CHILD, parent_id="p1")
+    p1 = Chunk(chunk_id="p1", content="特斯拉Model 3详细配置信息", chunk_type=ChunkType.PARENT)
+    retriever.index_chunks({"parents": [p1], "children": [c1]})
+
+    def perform_search(q: str):
+        res = retriever.search(query=q)
+        return len(res.results)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        futures = [executor.submit(perform_search, f"Model 3 Query {i}") for i in range(50)]
+        results = [f.result() for f in concurrent.futures.as_completed(futures)]
+
+    assert len(results) == 50
+    assert all(count >= 1 for count in results)
+
+
+def test_simple_vector_index_eviction_and_memory_reclaim():
+    """Verify that eviction removes chunks and cleanly resizes the normalized matrix without leaks."""
+    class MockEmbedModel:
+        def encode(self, texts):
+            if isinstance(texts, str):
+                return [1.0, 0.0]
+            return [[float(i + 1), 1.0] for i in range(len(texts))]
+
+    index = SimpleVectorIndex(embedding_model=MockEmbedModel())
+    chunks = [
+        Chunk(chunk_id=f"c_{i}", content=f"Vehicle Chunk {i}", chunk_type=ChunkType.CHILD)
+        for i in range(5)
+    ]
+    index.add_chunks(chunks)
+
+    assert len(index.chunks) == 5
+    assert len(index.embeddings) == 5
+    assert index._norm_matrix is not None
+    assert index._norm_matrix.shape == (5, 2)
+
+    # Evict 2 chunks
+    evicted = index.evict(["c_1", "c_3"])
+    assert evicted == 2
+    assert len(index.chunks) == 3
+    assert len(index.embeddings) == 3
+    assert index._norm_matrix.shape == (3, 2)
+    assert "c_1" not in index.chunk_map
+    assert "c_3" not in index.chunk_map
+    assert [c.chunk_id for c in index.chunks] == ["c_0", "c_2", "c_4"]
+
+
+def test_parent_child_retriever_evict_document():
+    """Verify document-level eviction removes associated parent and child chunks."""
+    retriever = ParentChildRetriever()
+    p1 = Chunk(chunk_id="doc_A", content="Doc A Parent", chunk_type=ChunkType.PARENT, metadata={"vehicle_model": "CarA"})
+    c1 = Chunk(chunk_id="c_a1", content="Doc A Child 1", chunk_type=ChunkType.CHILD, parent_id="doc_A")
+    c2 = Chunk(chunk_id="c_a2", content="Doc A Child 2", chunk_type=ChunkType.CHILD, parent_id="doc_A")
+
+    p2 = Chunk(chunk_id="doc_B", content="Doc B Parent", chunk_type=ChunkType.PARENT, metadata={"vehicle_model": "CarB"})
+    c3 = Chunk(chunk_id="c_b1", content="Doc B Child 1", chunk_type=ChunkType.CHILD, parent_id="doc_B")
+
+    retriever.index_chunks({"parents": [p1, p2], "children": [c1, c2, c3]})
+    assert len(retriever.parent_store) == 2
+    assert len(retriever.child_index.chunks) == 3
+
+    # Evict CarA
+    evict_res = retriever.evict_document("doc_A")
+    assert evict_res["parents_evicted"] == 1
+    assert evict_res["children_evicted"] == 2
+
+    assert "doc_A" not in retriever.parent_store
+    assert "doc_B" in retriever.parent_store
+    assert len(retriever.child_index.chunks) == 1
+    assert retriever.child_index.chunks[0].chunk_id == "c_b1"
+

@@ -332,11 +332,25 @@ class IncrementalIngestionPipeline:
                 if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
                     retriever = self.hybrid_pipeline.retriever
                     vector_store = getattr(retriever, "vector_store", None)
-                    if vector_store and hasattr(vector_store, "upsert_document"):
+                    if vector_store:
+                        if not hasattr(vector_store, "upsert_document"):
+                            raise AttributeError(
+                                f"Vector store {type(vector_store).__name__} does not implement required 'upsert_document' contract"
+                            )
+                        emb = None
+                        if hasattr(retriever, "embedding_model") and retriever.embedding_model:
+                            try:
+                                if not getattr(retriever.embedding_model, "is_degraded", False):
+                                    emb = retriever.embedding_model.get_text_embedding(
+                                        str(patch.data.get("key_details", "")) or patch.car_model
+                                    )
+                            except Exception as emb_err:
+                                logger.warning(f"Failed to generate embedding for {patch.car_model}: {emb_err}")
                         vector_store.upsert_document(
                             doc_id=patch.car_model,
                             text=str(patch.data.get("key_details", "")),
                             metadata=patch.data.get("metadata", {}),
+                            embedding=emb,
                         )
 
                 # 2b. Evict / Invalidate Freshness Cache
@@ -411,7 +425,11 @@ class IncrementalIngestionPipeline:
                 if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
                     retriever = self.hybrid_pipeline.retriever
                     vector_store = getattr(retriever, "vector_store", None)
-                    if vector_store and hasattr(vector_store, "delete_document"):
+                    if vector_store:
+                        if not hasattr(vector_store, "delete_document"):
+                            raise AttributeError(
+                                f"Vector store {type(vector_store).__name__} does not implement required 'delete_document' contract"
+                            )
                         vector_store.delete_document(patch.car_model)
             except Exception as sync_exc:
                 downstream_ok = False
@@ -529,18 +547,32 @@ class IncrementalIngestionPipeline:
         if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
             retriever = self.hybrid_pipeline.retriever
             vector_store = getattr(retriever, "vector_store", None)
-            if vector_store and hasattr(vector_store, "upsert_document"):
-                for parent in chunk_dict.get("parents", []):
-                    try:
-                        vector_store.upsert_document(
-                            doc_id=parent.chunk_id,
-                            text=parent.content,
-                            metadata=parent.metadata,
-                        )
-                    except Exception as e:
-                        logger.warning(f"Vector store upsert failed for chunk {parent.chunk_id}: {e}")
-                        indexing_failed = True
-                        indexing_error = e
+            if vector_store:
+                if not hasattr(vector_store, "upsert_document"):
+                    indexing_failed = True
+                    indexing_error = AttributeError(
+                        f"Vector store {type(vector_store).__name__} does not implement required 'upsert_document' contract"
+                    )
+                else:
+                    for parent in chunk_dict.get("parents", []):
+                        try:
+                            emb = None
+                            if hasattr(retriever, "embedding_model") and retriever.embedding_model:
+                                try:
+                                    if not getattr(retriever.embedding_model, "is_degraded", False):
+                                        emb = retriever.embedding_model.get_text_embedding(parent.content)
+                                except Exception:
+                                    pass
+                            vector_store.upsert_document(
+                                doc_id=parent.chunk_id,
+                                text=parent.content,
+                                metadata=parent.metadata,
+                                embedding=emb,
+                            )
+                        except Exception as e:
+                            logger.warning(f"Vector store upsert failed for chunk {parent.chunk_id}: {e}")
+                            indexing_failed = True
+                            indexing_error = e
 
         # Invalidate / update freshness engine if present
         if self.freshness_engine and hasattr(self.freshness_engine, "register_document_freshness"):
@@ -621,18 +653,32 @@ class IncrementalIngestionPipeline:
         if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
             retriever = self.hybrid_pipeline.retriever
             vector_store = getattr(retriever, "vector_store", None)
-            if vector_store and hasattr(vector_store, "upsert_document"):
-                for parent in chunk_dict.get("parents", []):
-                    try:
-                        vector_store.upsert_document(
-                            doc_id=parent.chunk_id,
-                            text=parent.content,
-                            metadata=parent.metadata,
-                        )
-                    except Exception as e:
-                        logger.warning(f"Vector store upsert failed for chunk {parent.chunk_id}: {e}")
-                        indexing_failed = True
-                        indexing_error = e
+            if vector_store:
+                if not hasattr(vector_store, "upsert_document"):
+                    indexing_failed = True
+                    indexing_error = AttributeError(
+                        f"Vector store {type(vector_store).__name__} does not implement required 'upsert_document' contract"
+                    )
+                else:
+                    for parent in chunk_dict.get("parents", []):
+                        try:
+                            emb = None
+                            if hasattr(retriever, "embedding_model") and retriever.embedding_model:
+                                try:
+                                    if not getattr(retriever.embedding_model, "is_degraded", False):
+                                        emb = retriever.embedding_model.get_text_embedding(parent.content)
+                                except Exception:
+                                    pass
+                            vector_store.upsert_document(
+                                doc_id=parent.chunk_id,
+                                text=parent.content,
+                                metadata=parent.metadata,
+                                embedding=emb,
+                            )
+                        except Exception as e:
+                            logger.warning(f"Vector store upsert failed for chunk {parent.chunk_id}: {e}")
+                            indexing_failed = True
+                            indexing_error = e
 
         model_name = getattr(doc, "vehicle_model", None) or getattr(doc, "title", "unknown")
 

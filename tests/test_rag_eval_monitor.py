@@ -57,3 +57,22 @@ def test_out_of_domain_drift_rolling_alert():
     summary = monitor.get_summary_statistics()
     assert summary["window_sample_count"] == 15
     assert summary["ood_query_rate"] > 0.0
+
+
+def test_automotive_query_with_leisure_keywords_not_flagged_ood():
+    """Verify that automotive queries mentioning travel/barbecue/leisure are NOT falsely flagged as OOD."""
+    monitor = RAGEvalMonitor()
+
+    # User query from real buyer scenario
+    query = "想买一辆 30 万左右的 SUV，周末方便带一家老小去自驾旅游，后备箱能装下户外露营和烧烤架。"
+    alerts = monitor.record_retrieval(
+        query_text=query,
+        results=[{"score": 0.88}],
+        candidate_count=5,
+        latency_ms=80.0,
+    )
+
+    ood_alerts = [a for a in alerts if a.alert_type == "OUT_OF_DOMAIN_DRIFT"]
+    assert len(ood_alerts) == 0
+    assert not monitor._detect_out_of_domain(query)
+

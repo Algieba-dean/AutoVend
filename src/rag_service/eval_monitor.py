@@ -127,9 +127,38 @@ class RAGEvalMonitor:
         return self._evaluate_drift_alerts(snapshot)
 
     def _detect_out_of_domain(self, text: str) -> bool:
-        """Heuristic check for query domain drift (e.g. non-automotive prompts)."""
+        """
+        Intent-aware automotive domain boundary check.
+        Never flags OOD if automotive intent or entities (e.g. 购车, SUV, 预算, 后备箱, 续航)
+        are present, even when life/leisure scenario keywords (e.g. 自驾旅游, 烧烤架, 露营) are mentioned.
+        Only flags true out-of-domain queries that lack automotive context.
+        """
         if not text:
             return False
+
+        text_lower = text.lower()
+
+        # Automotive domain signals (entities, categories, features, purchase intent)
+        auto_domain_patterns = [
+            r"车", r"suv", r"mpv", r"轿车", r"跑车", r"越野", r"皮卡", r"旅行车",
+            r"买车", r"购车", r"选车", r"提车", r"落地", r"预算", r"配置", r"车型",
+            r"自驾", r"通勤", r"代步", r"家用", r"商务",
+            r"后备箱", r"后备厢", r"底盘", r"悬架", r"续航", r"百公里", r"加速",
+            r"电机", r"电池", r"纯电", r"混动", r"插混", r"增程", r"燃油", r"油耗", r"电耗",
+            r"智驾", r"自动驾驶", r"辅助驾驶", r"座舱", r"车机", r"空间", r"座椅",
+            r"四驱", r"两驱", r"后驱", r"前驱", r"轴距",
+            r"\d+\s*万", r"\d+\s*元", r"指导价", r"落地价",
+            # Common automotive brand keywords
+            r"比亚迪", r"特斯拉", r"理想", r"蔚来", r"小鹏", r"问界", r"小米", r"极氪",
+            r"奔驰", r"宝马", r"奥迪", r"大众", r"丰田", r"本田", r"保时捷", r"吉利",
+            r"长安", r"奇瑞", r"长城", r"红旗", r"领克", r"腾势", r"仰望", r"零跑",
+        ]
+
+        has_auto_signal = any(re.search(pat, text_lower) for pat in auto_domain_patterns)
+        if has_auto_signal:
+            return False
+
+        # Non-automotive domain drift keywords
         ood_keywords = [
             "火锅",
             "烧烤",
@@ -142,7 +171,6 @@ class RAGEvalMonitor:
             "电影",
             "游戏",
         ]
-        text_lower = text.lower()
         return any(kw in text_lower for kw in ood_keywords)
 
     def _evaluate_drift_alerts(self, current: RetrievalMetricsSnapshot) -> List[QueryDriftAlert]:
