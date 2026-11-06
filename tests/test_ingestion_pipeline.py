@@ -441,4 +441,27 @@ def test_multi_trim_doc_id_deterministic_and_no_collision(tmp_path):
     assert vs.collection.count() == 3
 
 
+def test_pipeline_ingest_multi_trim_upserts_distinct_vector_docs(tmp_path):
+    """Verify IncrementalIngestionPipeline passes unique deterministic trim doc_ids to downstream vector store."""
+    test_db = VehicleDB(db_path=str(tmp_path / "test_pipeline_trims.db"))
+    mock_vs = MagicMock(spec=ChromaVectorStore)
+    mock_retriever = MagicMock()
+    mock_retriever.vector_store = mock_vs
+    mock_retriever.embedding_model = None
+    mock_hybrid = MagicMock()
+    mock_hybrid.retriever = mock_retriever
+
+    pipeline = IncrementalIngestionPipeline(db=test_db, hybrid_pipeline=mock_hybrid)
+
+    v1 = {"car_model": "小米SU7", "trim": "标准版", "brand": "小米", "price": "21.59万"}
+    pipeline.ingest_batch([v1])
+
+    assert mock_vs.upsert_document.called
+    call_kwargs = mock_vs.upsert_document.call_args[1]
+    expected_doc_id = generate_vehicle_doc_id("小米SU7", trim="标准版")
+    assert call_kwargs["doc_id"] == expected_doc_id
+    assert call_kwargs["metadata"]["trim"] == "标准版"
+
+
+
 

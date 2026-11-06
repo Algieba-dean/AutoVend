@@ -65,6 +65,16 @@ class TestReciprocalRankFusion:
 
         assert sharp["a"] / sharp["c"] > flat["a"] / flat["c"]
 
+    def test_normalized_rrf_scores_within_unit_interval(self):
+        """When normalize=True, scores map strictly into [0.0, 1.0] with rank-1 consensus hitting 1.0."""
+        rankings = [["a", "b", "c"], ["a", "d", "e"]]
+        fused = reciprocal_rank_fusion(rankings, k=60, normalize=True)
+        assert len(fused) == 5
+        assert fused[0][0] == "a"
+        assert pytest.approx(fused[0][1], 0.001) == 1.0
+        for item_id, score in fused:
+            assert 0.0 <= score <= 1.0
+
 
 class TestFusionWeights:
     """

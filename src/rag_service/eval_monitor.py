@@ -140,18 +140,21 @@ class RAGEvalMonitor:
 
         # Automotive domain signals (entities, categories, features, purchase intent)
         auto_domain_patterns = [
-            r"车", r"suv", r"mpv", r"轿车", r"跑车", r"越野", r"皮卡", r"旅行车",
-            r"买车", r"购车", r"选车", r"提车", r"落地", r"预算", r"配置", r"车型",
-            r"自驾", r"通勤", r"代步", r"家用", r"商务",
-            r"后备箱", r"后备厢", r"底盘", r"悬架", r"续航", r"百公里", r"加速",
-            r"电机", r"电池", r"纯电", r"混动", r"插混", r"增程", r"燃油", r"油耗", r"电耗",
-            r"智驾", r"自动驾驶", r"辅助驾驶", r"座舱", r"车机", r"空间", r"座椅",
-            r"四驱", r"两驱", r"后驱", r"前驱", r"轴距",
-            r"\d+\s*万", r"\d+\s*元", r"指导价", r"落地价",
-            # Common automotive brand keywords
+            r"车", r"suv", r"mpv", r"轿车", r"跑车", r"越野", r"皮卡", r"旅行车", r"轿跑", r"猎装", r"掀背", r"跨界",
+            r"买车", r"购车", r"选车", r"提车", r"落地", r"预算", r"配置", r"车型", r"车系", r"款型", r"标配", r"选装",
+            r"自驾", r"通勤", r"代步", r"家用", r"商务", r"露营", r"户外",
+            r"后备箱", r"后备厢", r"底盘", r"悬架", r"续航", r"百公里", r"加速", r"零百", r"刹车", r"制动",
+            r"电机", r"电池", r"纯电", r"混动", r"插混", r"增程", r"燃油", r"油耗", r"电耗", r"充电", r"快充", r"慢充", r"换电", r"对外放电", r"v2l",
+            r"智驾", r"自动驾驶", r"辅助驾驶", r"座舱", r"车机", r"空间", r"座椅", r"天窗", r"hud", r"音响", r"后视镜",
+            r"四驱", r"两驱", r"后驱", r"前驱", r"轴距", r"离地间隙", r"风阻",
+            r"\d+\s*万", r"\d+\s*元", r"指导价", r"落地价", r"首付", r"月供", r"二手车",
+            r"cltc", r"wltc", r"nedc",
+            # Domestic & international automotive brand keywords
             r"比亚迪", r"特斯拉", r"理想", r"蔚来", r"小鹏", r"问界", r"小米", r"极氪",
             r"奔驰", r"宝马", r"奥迪", r"大众", r"丰田", r"本田", r"保时捷", r"吉利",
             r"长安", r"奇瑞", r"长城", r"红旗", r"领克", r"腾势", r"仰望", r"零跑",
+            r"阿维塔", r"智己", r"极狐", r"深蓝", r"智界", r"享界", r"尊界", r"岚图",
+            r"方程豹", r"极越", r"坦克", r"捷途", r"沃尔沃", r"雷克萨斯", r"凯迪拉克",
         ]
 
         has_auto_signal = any(re.search(pat, text_lower) for pat in auto_domain_patterns)

@@ -287,3 +287,38 @@ def test_parent_child_retriever_evict_document():
     assert len(retriever.child_index.chunks) == 1
     assert retriever.child_index.chunks[0].chunk_id == "c_b1"
 
+
+def test_simple_vector_index_add_chunks_with_partial_or_missing_embeddings():
+    """Verify that chunks added when embedding fails maintain strict 1-to-1 matrix correspondence and safe eviction."""
+    class FlakyEmbedModel:
+        def __init__(self):
+            self.fail = False
+
+        def encode(self, texts):
+            if self.fail:
+                raise RuntimeError("Batch embedding failed")
+            return [[1.0, 0.0] for _ in range(len(texts))]
+
+    model = FlakyEmbedModel()
+    index = SimpleVectorIndex(embedding_model=model)
+
+    # Batch 1: success
+    chunks1 = [Chunk(chunk_id="c_1", content="Chunk 1", chunk_type=ChunkType.CHILD)]
+    index.add_chunks(chunks1)
+    assert len(index.chunks) == 1
+    assert index._norm_matrix.shape == (1, 2)
+
+    # Batch 2: fails to embed -> must pad safely
+    model.fail = True
+    chunks2 = [Chunk(chunk_id="c_2", content="Chunk 2", chunk_type=ChunkType.CHILD)]
+    index.add_chunks(chunks2)
+    assert len(index.chunks) == 2
+    assert index._norm_matrix.shape == (2, 2)
+
+    # Evict chunk 2 safely
+    evicted = index.evict(["c_2"])
+    assert evicted == 1
+    assert len(index.chunks) == 1
+    assert index._norm_matrix.shape == (1, 2)
+
+

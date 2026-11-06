@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
 from src.filter.vehicle_db import VehicleDB
+from src.rag.vector_store import generate_vehicle_doc_id
 from src.retrieval.hybrid_pipeline import HybridPipeline
 
 logger = logging.getLogger(__name__)
@@ -346,10 +347,26 @@ class IncrementalIngestionPipeline:
                                     )
                             except Exception as emb_err:
                                 logger.warning(f"Failed to generate embedding for {patch.car_model}: {emb_err}")
+                        trim = str(
+                            patch.data.get("trim")
+                            or patch.data.get("trim_name")
+                            or patch.data.get("version")
+                            or patch.data.get("config_name")
+                            or ""
+                        ).strip()
+                        doc_id = patch.data.get("doc_id") or (
+                            generate_vehicle_doc_id(patch.car_model, trim=trim) if trim else patch.car_model
+                        )
+                        vs_meta = dict(patch.data.get("metadata", {}))
+                        if "car_model" not in vs_meta:
+                            vs_meta["car_model"] = patch.car_model
+                        if trim and "trim" not in vs_meta:
+                            vs_meta["trim"] = trim
+
                         vector_store.upsert_document(
-                            doc_id=patch.car_model,
-                            text=str(patch.data.get("key_details", "")),
-                            metadata=patch.data.get("metadata", {}),
+                            doc_id=doc_id,
+                            text=str(patch.data.get("key_details", "")) or patch.car_model,
+                            metadata=vs_meta,
                             embedding=emb,
                         )
 

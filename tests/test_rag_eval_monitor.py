@@ -75,4 +75,7 @@ def test_automotive_query_with_leisure_keywords_not_flagged_ood():
     ood_alerts = [a for a in alerts if a.alert_type == "OUT_OF_DOMAIN_DRIFT"]
     assert len(ood_alerts) == 0
     assert not monitor._detect_out_of_domain(query)
+    assert not monitor._detect_out_of_domain("阿维塔12支持自驾旅游路线规划吗")
+    assert not monitor._detect_out_of_domain("智己LS6对外放电支持户外吃火锅吗")
+    assert not monitor._detect_out_of_domain("深蓝S7后备箱装得下户外烧烤架吗")
 

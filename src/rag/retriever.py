@@ -36,6 +36,11 @@ class VehicleRetriever:
         """
         self.embedding_model = embedding_model
         self.vector_store = vector_store
+        if self.vector_store and not getattr(self.vector_store, "embedding_model", None):
+            try:
+                self.vector_store.embedding_model = embedding_model
+            except Exception:
+                pass
         self.similarity_threshold = similarity_threshold
         self.price_tolerance = price_tolerance
 

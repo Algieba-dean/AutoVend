@@ -195,11 +195,15 @@ class SimpleVectorIndex:
 
             updated_chunks = list(self.chunks) + new_chunks
 
-            if new_norm_embeds is not None:
+            if new_norm_embeds is not None and len(new_norm_embeds) == len(new_chunks):
                 if self._norm_matrix is None or len(self._norm_matrix) == 0:
                     updated_matrix = new_norm_embeds
                 else:
                     updated_matrix = np.vstack([self._norm_matrix, new_norm_embeds])
+            elif self._norm_matrix is not None:
+                dim = self._norm_matrix.shape[1]
+                pad_matrix = np.zeros((len(new_chunks), dim), dtype=np.float32)
+                updated_matrix = np.vstack([self._norm_matrix, pad_matrix])
             else:
                 updated_matrix = self._norm_matrix
 
@@ -230,8 +234,12 @@ class SimpleVectorIndex:
             if removed_count == 0:
                 return 0
 
-            if self._norm_matrix is not None and len(keep_indices) > 0:
-                updated_matrix = self._norm_matrix[keep_indices]
+            if self._norm_matrix is not None:
+                valid_keep = [i for i in keep_indices if i < len(self._norm_matrix)]
+                if valid_keep:
+                    updated_matrix = self._norm_matrix[valid_keep]
+                else:
+                    updated_matrix = None
             else:
                 updated_matrix = None
 
@@ -373,9 +381,11 @@ class ParentChildRetriever:
             parents = chunk_dict.get("parents", [])
             children = chunk_dict.get("children", [])
 
-            # Store parents
+            # Store parents via Copy-on-Write dictionary snapshot
+            new_store = dict(self.parent_store)
             for p in parents:
-                self.parent_store[p.chunk_id] = p
+                new_store[p.chunk_id] = p
+            self.parent_store = new_store
 
             # Index children
             self.child_index.add_chunks(children)
@@ -398,6 +408,7 @@ class ParentChildRetriever:
         """
         with self._write_lock:
             parent_ids_to_remove = set()
+            new_parent_store = dict(self.parent_store)
             for pid, p in list(self.parent_store.items()):
                 if (
                     pid == doc_id
@@ -406,7 +417,8 @@ class ParentChildRetriever:
                     or p.metadata.get("car_model") == doc_id
                 ):
                     parent_ids_to_remove.add(pid)
-                    self.parent_store.pop(pid, None)
+                    new_parent_store.pop(pid, None)
+            self.parent_store = new_parent_store
 
             child_ids_to_remove = [
                 c.chunk_id
@@ -515,12 +527,21 @@ def vectorized_cosine_search(
     """
     Vectorized cosine similarity search using NumPy matrix multiplication.
     doc_matrix shape: (N, D), query_vec shape: (D,)
-    Assumes query_vec and doc_matrix rows are unit-norm (pre-normalized).
+    Safely computes cosine similarity for unit or unnormalized inputs, preventing NaN/RuntimeWarning on zero-vectors.
     Returns list of (index, similarity_score) sorted descending by similarity.
     """
     if doc_matrix.size == 0 or query_vec.size == 0:
         return []
-    sims = np.dot(doc_matrix, query_vec)
+    q_norm = np.linalg.norm(query_vec)
+    if q_norm < 1e-9:
+        return []
+
+    doc_norms = np.linalg.norm(doc_matrix, axis=1)
+    denom = doc_norms * q_norm
+    denom = np.where(denom == 0, 1.0, denom)
+    sims = np.dot(doc_matrix, query_vec) / denom
+    sims = np.where(doc_norms < 1e-9, 0.0, sims)
+
     n_docs = len(sims)
     k = min(top_k, n_docs)
     if k <= 0:

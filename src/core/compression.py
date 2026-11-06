@@ -79,6 +79,11 @@ class ContextCompressor:
         if not text:
             return ""
 
+        # Markdown table separator rows (e.g. |---|---|) should never be altered
+        trimmed = text.strip()
+        if re.match(r"^\|(?:\s*:?-+:?\s*\|)+$", trimmed):
+            return trimmed
+
         # Check which fluff terms the user specifically queried about
         query_lower = query_text.lower()
         active_query_fluff = [
@@ -93,15 +98,23 @@ class ContextCompressor:
 
             # Grammar-preserving regex: handle optional modifiers before and after
             # e.g., "搭载了华为被业界誉为遥遥领先的鸿蒙座舱" -> "搭载了华为鸿蒙座舱"
+            # e.g., "百公里加速3.8秒，遥遥领先于同级竞品" -> "百公里加速3.8秒"
             regex = (
                 rf"(?:被[^\s，。、]{{1,10}}(?:誉为|称为|评为|冠以)|堪称|号称|自诩)?\s*"
                 rf"{pattern}\s*"
-                rf"(?:的|之称|级别|体验)?(?:同级)?(?:[!！，,。]*)?"
+                rf"(?:的|之称|级别|体验)?\s*(?:同级)?\s*(?:于[^\s，。、]{{1,10}})?(?:[!！，,。]*)?"
             )
             cleaned = re.sub(regex, "", cleaned)
 
-        # Clean double spaces, dangling punctuation, or messy punctuation
-        cleaned = re.sub(r"[,，、\s]{2,}", "，", cleaned).strip("，, 。.；; \t\n")
+        # Clean duplicate Chinese/English punctuation without converting whitespace into commas
+        cleaned = re.sub(r"[,，、]{2,}", "，", cleaned)
+        cleaned = re.sub(r"[。\.]{2,}", "。", cleaned)
+        cleaned = re.sub(r"[;；]{2,}", "；", cleaned)
+        # Deduplicate multiple consecutive spaces without converting them to commas
+        cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
+        # Clean dangling punctuation before sentence-ending punctuation (e.g. "，。" -> "。")
+        cleaned = re.sub(r"[,，、；;]\s*([。！？!?])", r"\1", cleaned)
+        cleaned = cleaned.strip("，, 。.；; \t\n")
         return cleaned
 
     @classmethod
@@ -152,8 +165,11 @@ class ContextCompressor:
         score = 0.0
 
         # Structured Markdown Table bonus: tables are dense verified technical specifications
+        is_table_separator = bool(re.match(r"^\|(?:\s*:?-+:?\s*\|)+$", sentence.strip()))
         is_table_row = (sentence.strip().startswith("|") and sentence.strip().endswith("|")) or sentence.count("|") >= 2
-        if is_table_row:
+        if is_table_separator:
+            score += 3.0  # Preserve table markdown structure integrity
+        elif is_table_row:
             score += 2.0
 
         # Base factual signal: presence of concrete technical metrics

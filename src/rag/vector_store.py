@@ -59,6 +59,7 @@ class ChromaVectorStore:
         persist_directory: Optional[str] = None,
         collection_name: Optional[str] = None,
         distance_metric: str = "cosine",
+        embedding_model: Optional[Any] = None,
     ):
         """
         初始化向量存储
@@ -67,10 +68,12 @@ class ChromaVectorStore:
             persist_directory: 持久化目录
             collection_name: 集合名称
             distance_metric: 距离度量方式 (cosine, euclidean, manhattan)
+            embedding_model: 可选的绑定文本嵌入模型
         """
         self.persist_directory = Path(persist_directory or config.chroma_persist_dir)
         self.collection_name = collection_name or config.chroma_collection_name
         self.distance_metric = distance_metric
+        self.embedding_model = embedding_model
 
         self.logger = get_logger(f"{self.__class__.__module__}.{self.__class__.__name__}")
 
@@ -401,6 +404,16 @@ class ChromaVectorStore:
                 except Exception as emb_err:
                     self.logger.warning(f"生成嵌入向量失败 ({doc_id}): {emb_err}")
 
+            if embedding is None:
+                try:
+                    from src.rag.embeddings import BGEEmbeddingModel
+                    bge = BGEEmbeddingModel()
+                    if not getattr(bge, "is_degraded", False):
+                        embedding = bge.get_text_embedding(text)
+                        self.embedding_model = bge
+                except Exception:
+                    pass
+
             clean_metadata: Dict[str, Any] = {}
             if metadata:
                 for k, v in metadata.items():
@@ -418,8 +431,11 @@ class ChromaVectorStore:
             }
             if embedding is not None:
                 kwargs["embeddings"] = [embedding]
+            elif getattr(self.collection, "_embedding_function", None) is not None:
+                # Let collection native embedding function infer the dense vector
+                pass
             else:
-                dim = 1024
+                dim = getattr(self.embedding_model, "embed_dimension", 1024) if hasattr(self, "embedding_model") and self.embedding_model else 1024
                 if self.collection:
                     try:
                         peek = self.collection.peek(limit=1)
@@ -443,12 +459,18 @@ class ChromaVectorStore:
     def delete_document(self, doc_id: str) -> None:
         """
         根据 ID 删除文档（对齐 Ingestion Pipeline 契约）。
+        同时安全清除以该 car_model 为主键的多款型关联配置。
 
         Args:
-            doc_id: 文档ID
+            doc_id: 文档ID或车型名称
         """
         try:
             self.collection.delete(ids=[doc_id])
+            try:
+                # Also delete records that match doc_id by car_model attribute
+                self.collection.delete(where={"car_model": doc_id})
+            except Exception:
+                pass
             self.stats["total_documents"] = self.collection.count()
             self.logger.info(f"已删除向量文档: {doc_id}")
         except Exception as e:

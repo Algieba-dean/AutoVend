@@ -123,6 +123,25 @@ class TestContextCompressionAndPruning:
         assert "遥遥领先" in cleaned  # Kept as key search evidence
         assert "双Orin-X芯片" in cleaned
 
+    def test_markdown_table_formatting_and_spaces_preserved_without_comma_injection(self):
+        """Markdown tables with alignment whitespace must NEVER have commas injected."""
+        text = "| Model 3   | 600km   | 24.59万   |"
+        cleaned = ContextCompressor.clean_marketing_fluff(text)
+        assert "，" not in cleaned
+        assert "| Model 3" in cleaned
+        assert "600km" in cleaned
+
+    def test_markdown_table_separator_and_structure_preserved(self):
+        """Markdown table separator lines (e.g. |---|---|) must be preserved exactly."""
+        table = (
+            "| 车型 | 续航 |\n"
+            "|:---|---:|\n"
+            "| 小米SU7 | 700km |"
+        )
+        compressed = ContextCompressor.compress_snippet(table, query_text="小米SU7续航", max_length=200)
+        assert "|:---|---:|" in compressed.compressed_text
+        assert "| 小米SU7 | 700km |" in compressed.compressed_text
+
 
 
 class TestTabularSpecReranking:
@@ -268,6 +287,22 @@ class TestRefactoredArchitectureSolutions:
         assert pytest.approx(ranked[0][1], 0.01) == 1.0
         assert ranked[1][0] == 2
         assert pytest.approx(ranked[1][1], 0.01) == 0.707
+
+        # Test unnormalized vectors and all-zero vectors without NaN or RuntimeWarning
+        q_unnorm = np.array([5.0, 0.0, 0.0], dtype=np.float32)
+        m_with_zero = np.array(
+            [
+                [0.0, 0.0, 0.0],  # zero vector
+                [10.0, 0.0, 0.0], # unnormalized vector in same direction
+            ],
+            dtype=np.float32,
+        )
+        ranked_unnorm = vectorized_cosine_search(q_unnorm, m_with_zero, top_k=2)
+        assert len(ranked_unnorm) == 2
+        assert ranked_unnorm[0][0] == 1
+        assert pytest.approx(ranked_unnorm[0][1], 0.01) == 1.0
+        assert ranked_unnorm[1][0] == 0
+        assert pytest.approx(ranked_unnorm[1][1], 0.01) == 0.0
 
     def test_entity_scoped_context_isolation(self):
         from src.ingestion.hierarchical_chunker import Chunk, ChunkType

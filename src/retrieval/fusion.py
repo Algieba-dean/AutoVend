@@ -117,6 +117,7 @@ def reciprocal_rank_fusion(
     k: int = DEFAULT_K,
     weights: Optional[Sequence[float]] = None,
     top_k: Optional[int] = None,
+    normalize: bool = False,
 ) -> List[Tuple[str, float]]:
     """
     Fuse ranked id lists into one ranking.
@@ -126,6 +127,8 @@ def reciprocal_rank_fusion(
         k: Rank damping constant.
         weights: Optional per-retriever weight, same order as `rankings`.
         top_k: Truncate the fused ranking.
+        normalize: If True, normalizes fused scores strictly to [0.0, 1.0] based on
+                   the theoretical maximum possible RRF score: sum(weights) / (k + 1.0).
 
     Returns:
         (id, fused_score) pairs, best first. Ties break on the id so the output
@@ -141,6 +144,11 @@ def reciprocal_rank_fusion(
     for ranking, weight in zip(ranking_list, weights):
         for rank, item_id in enumerate(ranking, start=1):
             scores[item_id] = scores.get(item_id, 0.0) + weight / (k + rank)
+
+    if normalize and scores:
+        max_possible = sum(weights) / (k + 1.0)
+        if max_possible > 0:
+            scores = {item_id: min(1.0, max(0.0, s / max_possible)) for item_id, s in scores.items()}
 
     fused = sorted(scores.items(), key=lambda pair: (-pair[1], pair[0]))
     return fused[:top_k] if top_k else fused
