@@ -70,6 +70,9 @@ class ContextCompressor:
     prioritizing verifiable technical specifications aligned with query intent.
     """
 
+    # TOY IMPLEMENTATION: Hardcoded regex stripping of subjective marketing superlatives.
+    # Fragile and brittle against varied natural phrasing; grammar-preserving regex only covers hand-picked patterns.
+    # In production, move extraction/sanitization offline during ingestion using an LLM or proper dependency parsing.
     @classmethod
     def clean_marketing_fluff(cls, text: str, query_text: str = "") -> str:
         """
@@ -151,6 +154,9 @@ class ContextCompressor:
 
         return sentences
 
+    # TOY IMPLEMENTATION: Hardcoded heuristic score adder (+1.5, +2.0, -1.0) based on raw regex matches.
+    # Lacks general semantic validity in production, prone to context rupture and biased sentence selection.
+    # Replace in production with structured DB spec injection or perplexity-based compression (e.g., LLMLingua).
     @classmethod
     def score_sentence(
         cls,

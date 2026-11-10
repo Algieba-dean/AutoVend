@@ -274,7 +274,8 @@ class SemanticQueryCache:
                             best_sim = sim
                             best_key = cached_key
                     if best_sim >= self.similarity_threshold and best_key in self._exact_cache:
-                        # 工业级实体一致性校验，确认无跨车型语义漂移
+                        # TOY IMPLEMENTATION: Hardcoded regex list of popular EV/luxury models to guard against cross-model cache drift.
+                        # Brittle hand-crafted regex; in production, validate against actual DB vehicle catalog / NER.
                         def _extract_query_entities(txt: str) -> set:
                             try:
                                 idx = FastSpecIndex._instance
