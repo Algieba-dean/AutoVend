@@ -60,6 +60,9 @@ NATIONAL_STANDARDS_MAPPING: Dict[str, Dict[str, Any]] = {
 }
 
 
+# TOY IMPLEMENTATION: Hardcoded static dictionary of 15 handpicked electric/hybrid models.
+# Does NOT connect to any real-time MIIT (工信部) regulatory database or public API.
+# In production, replace with real-time web crawlers or official MIIT homologation data feeds.
 MIIT_VEHICLE_DATABASE: Dict[str, MIITVehicleDeclaration] = {
     "小米SU7 Ultra": MIITVehicleDeclaration(
         car_model="小米SU7 Ultra",

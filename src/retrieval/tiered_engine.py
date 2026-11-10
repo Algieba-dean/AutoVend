@@ -38,6 +38,9 @@ class SpecIntentClassifier:
     preventing P99 latency cliffs caused by fragile single regexes.
     """
 
+    # TOY IMPLEMENTATION: Massive hand-crafted regex patterns and colloquial spoken templates for 17 car specs.
+    # High maintenance burden, prone to omission and false positives on natural spoken language.
+    # In production, train an SLU / intent-slot extraction model or fine-tuned zero-shot intent classifier.
     PRIMARY_PATTERNS: List[Tuple[re.Pattern, str, str]] = [
         (re.compile(r"零百|百公里加速|0-100|几秒破百|加速|提速|起步|推背|冲刺|动力响应"), "acceleration_0_100", "0-100km/h加速"),
         (re.compile(r"极速|最高时速|最高车速|能跑多快|封顶时速|最快跑|限速|顶格时速|车速上限"), "max_speed", "最高车速"),
@@ -275,7 +278,9 @@ class SemanticQueryCache:
                             best_key = cached_key
                     if best_sim >= self.similarity_threshold and best_key in self._exact_cache:
                         # TOY IMPLEMENTATION: Hardcoded regex list of popular EV/luxury models to guard against cross-model cache drift.
-                        # Brittle hand-crafted regex; in production, validate against actual DB vehicle catalog / NER.
+                        # Brittle hand-crafted regex tailored for presentation demos.
+                        # PRODUCTION REPLACEMENT: Extract vehicle entities using Trie-based automaton from VehicleDB / FastSpecIndex,
+                        # and verify set intersection of canonical brand/model IDs rather than raw hardcoded regex.
                         def _extract_query_entities(txt: str) -> set:
                             try:
                                 idx = FastSpecIndex._instance

@@ -36,7 +36,9 @@ class QueryTransformationEngine:
         rewritten = query_text.strip()
 
         # TOY IMPLEMENTATION: Hardcoded regex capturing a small set of well-known Chinese EV/ICE vehicle brands.
-        # Fails to generalize to broader, newer, or niche models. In production, replace with proper NER model.
+        # Fails to generalize to broader, newer, or niche models.
+        # PRODUCTION REPLACEMENT: Replace with a fine-tuned token classification / Named Entity Recognition (NER) model
+        # (e.g. RoBERTa-NER on automotive domain entities), combined with dynamic lookup in the VehicleDB SQLite catalog.
         # Pronoun coreference resolution heuristic with entity isolation
         pronouns = [
             "刚才提到的那款车",
@@ -181,7 +183,9 @@ class QueryTransformationEngine:
             rewritten = rewritten.replace(f, "")
 
         # TOY IMPLEMENTATION: Hardcoded scenario intent keyword mappings.
-        # Brittle handcrafted heuristics tailored for specific demo scenarios; replace with semantic classifier in production.
+        # Brittle handcrafted heuristics tailored for specific demo scenarios.
+        # PRODUCTION REPLACEMENT: Deploy a zero-shot intent classifier (e.g. BGE-reranker or NLI zero-shot classification),
+        # or an offline automotive ontology/knowledge-graph query expansion engine with embedding-based scenario similarity.
         implicit_mappings = [
             (r"(?:二胎|二孩|三代同堂|全家老小)", "大空间 6座 7座 舒适座椅"),
             (r"(?:跑长途|自驾游|高速长距离)", "长续航 快充 800V 辅助驾驶"),

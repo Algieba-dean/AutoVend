@@ -23,6 +23,9 @@ from src.search.sanitizer import SearchSanitizer
 
 # TOY IMPLEMENTATION: Hardcoded mock intelligence database written for deterministic CI/demos.
 # Manually crafted for top Chinese & global vehicle models; not a real-time web/market crawler.
+# PRODUCTION REPLACEMENT: Replace with a distributed web scraper worker pool (Scrapy / Playwright on Celery)
+# integrating real automotive market feeds (e.g., Autohome, Dongchedi, CPCA sales volume APIs)
+# and store in a partitioned caching database (Redis / PostgreSQL) with TTL-based freshness invalidation.
 # High-fidelity automotive intelligence repository for mainstream Chinese & global vehicles
 MOCK_AUTOMOTIVE_DATABASE: Dict[str, Dict[str, any]] = {
     "小米su7": {

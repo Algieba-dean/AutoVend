@@ -18,6 +18,11 @@ from src.truth_engine.models import (
     InfotainmentReliability,
 )
 
+# TOY IMPLEMENTATION: Hardcoded dictionaries of internet controversies, hot topics, and handpicked test records.
+# Not connected to real vehicle telematics (FOTA), 12365 recall notices, or CheZhiWang complaint databases.
+# PRODUCTION REPLACEMENT: Ingest structured defect and complaint data via ETL pipelines from official
+# SAMR (State Administration for Market Regulation 质检总局) defect recall announcements,
+# C-NCAP/C-IASI crash test XML/PDF reports, and verified vehicle owner telematics anomaly clusters.
 INFOTAINMENT_RELIABILITY_DB: Dict[str, InfotainmentReliability] = {
     "小米SU7": InfotainmentReliability(
         car_model="小米SU7",

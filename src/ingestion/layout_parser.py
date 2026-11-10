@@ -1019,6 +1019,9 @@ class OCROrientationDetector:
 class ReadingOrderSorter:
     """
     Reconstructs natural reading order for dual-column and multi-column documents
+    # TOY IMPLEMENTATION: Hardcoded geometric coordinate ratio heuristics (55% / 40% page width)
+    # for detecting spanning tables. Fails on multi-column layouts, sidebars, or slides.
+    # In production, replace with proper visual layout models (LayoutLMv3, Table-Transformer, or Docling).
     using heuristic geometric banding and horizontal X-coordinate clustering.
 
     Algorithm Architecture:

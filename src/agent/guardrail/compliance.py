@@ -15,6 +15,9 @@ COMPLIANCE_FALLBACK_RESPONSE = (
     "我建议为您预约就近的官方授权 4S 体验中心，由专属产品专家为您出具精准的现场合同报价单。所有开票及过户流程严格遵循国家税法规定。"
 )
 
+# TOY IMPLEMENTATION: Hardcoded keyword string matching blacklist for sales and legal compliance.
+# Completely blind to evasion tricks, homophones, or conversational rephrasing (e.g., "保你不死", "全网至低").
+# In production, replace with a dedicated compliance guardrail LLM, NeMo Guardrails, or semantic moderation classifier.
 PROHIBITED_COMPLIANCE_KEYWORDS: List[str] = [
     "保证全网最低价",
     "保证全国最低价",

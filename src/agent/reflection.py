@@ -48,6 +48,9 @@ _PROMPT_LEAK_FAST_CHECK = re.compile(
     "|".join(f"(?:{p})" for p in PROMPT_LEAK_PATTERNS), re.IGNORECASE
 )
 
+# TOY IMPLEMENTATION: Hardcoded regex patterns for detecting numerical parameter hallucinations.
+# Only inspects specific patterns (km, s破百); misses arbitrary hallucinated features or trims.
+# In production, replace with NLI (Natural Language Inference) models or automated evidence verification against DB specs.
 _RANGE_CLAIM_PATTERN = re.compile(r"(\d{3,4})\s*(?:km|公里|公里续航|km续航)", re.IGNORECASE)
 _ACC_CLAIM_PATTERN = re.compile(r"(\d(?:\.\d)?)\s*(?:秒破百|秒级破百|s破百)", re.IGNORECASE)
 _DIGIT_PATTERN = re.compile(r"(\d+)")

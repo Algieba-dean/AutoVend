@@ -92,6 +92,9 @@ class RankRefiner:
     5. Dynamic attribute weighting based on query intent.
     """
 
+    # TOY IMPLEMENTATION: Hardcoded attribute bonus/penalty weights (+0.20 brand, +0.15 powertrain, -0.20 mismatch, etc.).
+    # While continuous price decay is sound, the static linear arithmetic sum of heuristic penalties lacks probabilistic grounding.
+    # In production, train a multi-task tabular ranker (e.g., GBDT / LambdaMART / CatBoost) to learn optimal spec weights.
     @classmethod
     def calculate_spec_score(
         cls,

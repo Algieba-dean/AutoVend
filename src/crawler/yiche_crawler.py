@@ -18,6 +18,8 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+# TOY IMPLEMENTATION: Hardcoded URL slug mappings for a single brand (BYD) instead of an autonomous directory crawler.
+# In production, replace with full brand-model tree exploration and dynamic series discovery.
 # Common BYD Series Slugs mapping on Yiche
 BYD_DEFAULT_SERIALS = {
     "han": "汉",

@@ -32,6 +32,9 @@ class Battlecard(BaseModel):
         )
 
 
+# TOY IMPLEMENTATION: Hardcoded static sales battlecard list covering only a few top models (Tesla, Li Auto, AITO, etc.).
+# Not synced with competitive market changes, pricing adjustments, or new vehicle launches.
+# In production, battlecards should be dynamically managed in a CMS/knowledge base with real-time updates.
 # Comprehensive automotive battlecard registry
 BATTLECARDS_REGISTRY: List[Battlecard] = [
     Battlecard(

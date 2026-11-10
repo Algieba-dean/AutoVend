@@ -138,7 +138,9 @@ class RAGEvalMonitor:
 
         text_lower = text.lower()
 
-        # Automotive domain signals (entities, categories, features, purchase intent)
+        # TOY IMPLEMENTATION: Hardcoded keyword matching lists for automotive signal and OOD topics.
+        # Rigid keyword checking; cannot properly understand semantic domain boundaries.
+        # In production, replace with an embedding-based OOD classifier, Mahalanobis distance on embeddings, or small intent classifier.
         auto_domain_patterns = [
             r"车", r"suv", r"mpv", r"轿车", r"跑车", r"越野", r"皮卡", r"旅行车", r"轿跑", r"猎装", r"掀背", r"跨界",
             r"买车", r"购车", r"选车", r"提车", r"落地", r"预算", r"配置", r"车型", r"车系", r"款型", r"标配", r"选装",
