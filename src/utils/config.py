@@ -76,7 +76,51 @@ class Config(BaseSettings):
     # non-empty bearer token, so this is a placeholder rather than a secret.
     local_llm_api_key: str = "local"
 
-    # Vector Database Configuration
+    # Vector Database Configuration (pgvector primary, chroma legacy fallback)
+    vector_store_backend: str = Field(
+        default="pgvector",
+        validation_alias=AliasChoices("VECTOR_STORE_BACKEND"),
+    )
+    pgvector_dsn: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("PGVECTOR_DSN", "DATABASE_URL", "POSTGRES_DSN"),
+    )
+    pgvector_host: str = Field(
+        default="localhost",
+        validation_alias=AliasChoices("PGVECTOR_HOST", "POSTGRES_HOST"),
+    )
+    pgvector_port: int = Field(
+        default=5432,
+        validation_alias=AliasChoices("PGVECTOR_PORT", "POSTGRES_PORT"),
+    )
+    pgvector_user: str = Field(
+        default="autovend",
+        validation_alias=AliasChoices("PGVECTOR_USER", "POSTGRES_USER"),
+    )
+    pgvector_password: str = Field(
+        default="autovend",
+        validation_alias=AliasChoices("PGVECTOR_PASSWORD", "POSTGRES_PASSWORD"),
+    )
+    pgvector_database: str = Field(
+        default="autovend",
+        validation_alias=AliasChoices("PGVECTOR_DATABASE", "POSTGRES_DB"),
+    )
+    pgvector_table_name: str = Field(
+        default="vehicle_knowledge",
+        validation_alias=AliasChoices("PGVECTOR_TABLE_NAME", "CHROMA_COLLECTION_NAME"),
+    )
+    pgvector_embed_dim: int = Field(
+        default=1024,
+        validation_alias=AliasChoices("PGVECTOR_EMBED_DIM"),
+    )
+    pgvector_hnsw_m: int = 16
+    pgvector_hnsw_ef_construction: int = 64
+    pgvector_allow_memory_fallback: Optional[bool] = Field(
+        default=None,
+        validation_alias=AliasChoices("PGVECTOR_ALLOW_MEMORY_FALLBACK"),
+    )
+
+    # Legacy ChromaDB configuration (kept for backwards compatibility)
     chroma_persist_dir: str = "./data/chroma_db"
     chroma_collection_name: str = "vehicle_knowledge"
 
@@ -170,6 +214,16 @@ class Config(BaseSettings):
     def chroma_path(self) -> Path:
         """ChromaDB存储路径"""
         return Path(self.chroma_persist_dir)
+
+    @property
+    def pgvector_connection_string(self) -> str:
+        """PostgreSQL/pgvector 连接字符串（优先使用显式 DSN）。"""
+        if self.pgvector_dsn:
+            return self.pgvector_dsn
+        return (
+            f"postgresql://{self.pgvector_user}:{self.pgvector_password}"
+            f"@{self.pgvector_host}:{self.pgvector_port}/{self.pgvector_database}"
+        )
 
 
 # 全局配置实例

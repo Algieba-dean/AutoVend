@@ -64,19 +64,24 @@ async def lifespan(app: FastAPI):
     # storage) stays exercisable. Failing at first-token time instead would
     # make a missing key look like a runtime bug.
     if OPENAI_API_KEY or _local_llm_configured():
+        from src.llm.langchain_adapter import build_langchain_llms
         from src.llm.llamaindex_adapter import build_agent_llms
         from src.llm.router import build_default_router
 
         router = build_default_router()
         app.state.llm_router = router
         extraction_llm, generation_llm = build_agent_llms(router)
-        logger.info(f"LLM routing: {router.describe()}")
+        lc_extraction_llm, lc_generation_llm = build_langchain_llms(router)
+        logger.info(f"LLM routing (LangChain + LlamaIndex): {router.describe()}")
         agent = SalesAgent(
             llm=extraction_llm,
             generation_llm=generation_llm,
             enable_tool_planning=True,
             use_unified_extraction=True,
         )
+        # Attach LangChain RoutedChatModels to the LangGraph engine
+        agent.langgraph.extraction_chat_model = lc_extraction_llm
+        agent.langgraph.generation_chat_model = lc_generation_llm
     else:
         from llama_index.core.llms import MockLLM
 
@@ -152,6 +157,9 @@ async def lifespan(app: FastAPI):
 
         pipeline = build_default_pipeline(llm_router=getattr(app.state, "llm_router", None))
         chat.set_pipeline(pipeline)
+        from src.retrieval.langchain_retriever import LlamaIndexHybridRetriever
+
+        agent.langgraph.retriever = LlamaIndexHybridRetriever(pipeline=pipeline)
         from src.rag_service.service import RAGService
 
         rag_service = RAGService(pipeline=pipeline, db=pipeline.db)
@@ -186,7 +194,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 # Create FastAPI app
 app = FastAPI(
     title="AutoVend API",
-    description="LlamaIndex-based intelligent automotive sales assistant API",
+    description="LangGraph + LangChain + LlamaIndex intelligent automotive sales assistant API",
     version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc",

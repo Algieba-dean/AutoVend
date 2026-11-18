@@ -8,6 +8,7 @@ import argparse
 import sys
 import time
 from pathlib import Path
+from typing import List
 
 # 添加项目根目录到Python路径
 project_root = Path(__file__).parent.parent
@@ -18,7 +19,7 @@ from src.models.query import Query
 from src.rag.embeddings import BGEEmbeddingModel
 from src.rag.index_builder import IndexBuilder
 from src.rag.retriever import VehicleRetriever
-from src.rag.vector_store import ChromaVectorStore
+from src.rag.vector_store import create_vector_store
 from src.utils.config import config
 from src.utils.logger import get_logger, setup_logging
 
@@ -159,7 +160,7 @@ def search_command(args) -> None:
         else:
             # 兼容老版纯向量检索
             embedding_model = BGEEmbeddingModel()
-            vector_store = ChromaVectorStore()
+            vector_store = create_vector_store(embedding_model=embedding_model)
             retriever = VehicleRetriever(
                 embedding_model=embedding_model,
                 vector_store=vector_store,
@@ -227,15 +228,21 @@ def status_command(args) -> None:
 
     try:
         # 检查索引状态
-        vector_store = ChromaVectorStore()
+        vector_store = create_vector_store()
         collection_info = vector_store.get_collection_info()
 
         logger.info("📊 AutoVend RAG 系统状态")
         logger.info("=" * 50)
-        logger.info(f"集合名称: {collection_info.get('name', '未知')}")
+        logger.info(f"向量后端: {collection_info.get('backend', config.vector_store_backend)}")
+        if "mode" in collection_info:
+            logger.info(f"运行模式: {collection_info['mode']}")
+        logger.info(f"集合/表名: {collection_info.get('name', '未知')}")
         logger.info(f"文档数量: {collection_info.get('count', 0)}")
         logger.info(f"距离度量: {collection_info.get('distance_metric', '未知')}")
-        logger.info(f"存储目录: {collection_info.get('persist_directory', '未知')}")
+        if "persist_directory" in collection_info:
+            logger.info(f"存储目录: {collection_info['persist_directory']}")
+        elif "embed_dim" in collection_info:
+            logger.info(f"向量维度: {collection_info['embed_dim']}")
 
         # 检查数据目录
         data_path = Path(config.vehicle_data_dir)

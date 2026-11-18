@@ -11,7 +11,6 @@ from typing import Any, Dict, List, Optional, Tuple
 from src.models.query import MatchScore, Query, SearchResponse, SearchResult
 from src.models.vehicle import Vehicle
 from src.rag.embeddings import BGEEmbeddingModel
-from src.rag.vector_store import ChromaVectorStore
 from src.utils.logger import get_logger, log_performance
 
 
@@ -21,7 +20,7 @@ class VehicleRetriever:
     def __init__(
         self,
         embedding_model: BGEEmbeddingModel,
-        vector_store: ChromaVectorStore,
+        vector_store: Any,
         similarity_threshold: float = 0.7,
         price_tolerance: float = 0.2,
     ):

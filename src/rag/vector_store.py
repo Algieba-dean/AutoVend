@@ -570,3 +570,49 @@ class ChromaVectorStore:
     # 一行表达式内部自己把自己弄坏。
     #
     # PersistentClient 的生命周期由进程管理，不需要显式关闭。
+
+
+def create_vector_store(
+    backend: Optional[str] = None,
+    **kwargs: Any,
+) -> Any:
+    """
+    向量存储工厂方法。
+
+    根据 `VECTOR_STORE_BACKEND`（默认 ``pgvector``）创建对应的向量存储实例：
+    - ``pgvector``: 返回 ``PgVectorStore``（不可达时自动降级到内存向量存储）
+    - ``chroma``: 返回 ``ChromaVectorStore``
+    """
+    selected = (backend or config.vector_store_backend or "pgvector").strip().lower()
+    if selected in ("pgvector", "postgres", "postgresql"):
+        from src.rag.pgvector_store import PgVectorStore
+
+        pg_kwargs: Dict[str, Any] = {}
+        if "collection_name" in kwargs and kwargs["collection_name"] is not None:
+            pg_kwargs["table_name"] = kwargs["collection_name"]
+        for key in (
+            "dsn",
+            "table_name",
+            "embed_dim",
+            "distance_metric",
+            "embedding_model",
+            "hnsw_m",
+            "hnsw_ef_construction",
+            "allow_memory_fallback",
+            "connection",
+        ):
+            if key in kwargs and kwargs[key] is not None:
+                pg_kwargs[key] = kwargs[key]
+        return PgVectorStore(**pg_kwargs)
+
+    if selected == "chroma":
+        chroma_kwargs: Dict[str, Any] = {}
+        for key in ("persist_directory", "collection_name", "distance_metric", "embedding_model"):
+            if key in kwargs and kwargs[key] is not None:
+                chroma_kwargs[key] = kwargs[key]
+        return ChromaVectorStore(**chroma_kwargs)
+
+    raise ValueError(f"Unsupported vector store backend: {selected!r}")
+
+
+get_vector_store = create_vector_store

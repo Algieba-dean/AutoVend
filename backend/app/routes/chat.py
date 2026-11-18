@@ -41,7 +41,10 @@ from backend.app.models.schemas import (
 from backend.app.models.storage import FileStorage
 from src.agent.sales_agent import SalesAgent
 from src.agent.schemas import SessionState, Stage, UserProfile
-from src.agent.storage.distributed_session import get_distributed_session_store
+from src.agent.storage.distributed_session import (
+    SessionLockTimeoutError,
+    get_distributed_session_store,
+)
 from src.mlops import (
     alert_manager,
     deployment_router,
@@ -121,13 +124,35 @@ def _get_session_lock(session_id: str):
     return _session_locks[session_id]
 
 
+def _read_agent_messages(session_id: str, agent: SalesAgent) -> list[dict]:
+    """Read message history from LangGraph checkpointer first, falling back to agent.memory."""
+    if hasattr(agent, "langgraph"):
+        try:
+            snap = agent.langgraph.get_graph_state(session_id)
+            if snap is not None and getattr(snap, "values", None):
+                lg_msgs = snap.values.get("messages") or []
+                if lg_msgs:
+                    out = []
+                    for msg in lg_msgs:
+                        msg_type = getattr(msg, "type", "")
+                        if msg_type == "tool":
+                            continue
+                        if msg_type == "ai" and getattr(msg, "tool_calls", None) and not msg.content:
+                            continue
+                        role = "user" if msg_type == "human" else "assistant"
+                        content = msg.content if isinstance(msg.content, str) else str(msg.content)
+                        out.append({"role": role, "content": content})
+                    return out
+        except Exception:
+            pass
+    memory = getattr(agent, "memory", None)
+    history = memory.get_history(session_id) if memory is not None else []
+    return [{"role": message.role.value, "content": message.content or ""} for message in history]
+
+
 def _session_payload(state: SessionState, agent: SalesAgent) -> dict:
     """Serialize structured state and the bounded conversation transcript."""
-    memory = getattr(agent, "memory", None)
-    history = memory.get_history(state.session_id) if memory is not None else []
-    messages = [
-        {"role": message.role.value, "content": message.content or ""} for message in history
-    ]
+    messages = _read_agent_messages(state.session_id, agent)
     return {
         "version": 1,
         "state": state.model_dump(mode="json"),
@@ -152,13 +177,18 @@ def _restore_session(session_id: str, agent: SalesAgent) -> Optional[SessionStat
         state_data = data.get("state", data)
         state = SessionState.model_validate(state_data)
         agent.clear_session(session_id)
+        restored_pairs = []
         for message in data.get("messages", []):
             role = str(message.get("role", ""))
             content = str(message.get("content", ""))
             if role == "user":
                 agent.memory.add_user_message(session_id, content)
+                restored_pairs.append(("user", content))
             elif role == "assistant":
                 agent.memory.add_assistant_message(session_id, content)
+                restored_pairs.append(("assistant", content))
+        if hasattr(agent, "langgraph"):
+            agent.langgraph.hydrate_history(session_id, restored_pairs, session_state=state)
         logger.info(f"[{session_id}] restored persisted session at {state.stage.value}")
         return state
     except Exception as exc:
@@ -170,12 +200,24 @@ def set_agent(agent: SalesAgent) -> None:
     """Inject the SalesAgent instance (called from main.py on startup)."""
     global _agent
     _agent = agent
+    if _pipeline is not None and agent is not None and hasattr(agent, "langgraph"):
+        if agent.langgraph.retriever is None:
+            from src.retrieval.langchain_retriever import LlamaIndexHybridRetriever
+
+            agent.langgraph.retriever = LlamaIndexHybridRetriever(pipeline=_pipeline)
 
 
 def set_pipeline(pipeline) -> None:
     """Inject the hybrid retrieval pipeline (called from main.py on startup)."""
     global _pipeline
     _pipeline = pipeline
+    if _agent is not None and hasattr(_agent, "langgraph"):
+        if pipeline is not None:
+            from src.retrieval.langchain_retriever import LlamaIndexHybridRetriever
+
+            _agent.langgraph.retriever = LlamaIndexHybridRetriever(pipeline=pipeline)
+        else:
+            _agent.langgraph.retriever = None
 
 
 def set_semantic_router(semantic_router) -> None:
@@ -438,24 +480,27 @@ async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
                     decision is not None and decision.intent in EXTRACTION_SKIP_INTENTS and not pii_found
                 )
 
-                if skip_extraction:
-                    state = agent.remember(state, safe_message)
-                    logger.info(
-                        f"[{session_id}] semantic fast-path: {decision.intent} "
-                        f"(score={decision.score:.3f}) — extraction skipped"
-                    )
-                else:
-                    state = agent.observe(state, safe_message)
-
                 # Interrupt: the customer contradicted a constraint they had already given.
                 # Roll back along a legal backward edge before retrieval runs.
                 if decision is not None and decision.intent == INTERRUPT_INTENT:
                     state = _rollback_on_constraint_change(state, decision)
 
-                # Vehicle retrieval (backend concern — results passed back to the agent)
-                retrieved_cars = _retrieve_cars(state, user_query=request.message)
-
-                result = agent.respond(state, retrieved_cars)
+                # Vehicle retrieval runs inside LangGraph after extract_slots + arbitrate_stage
+                if hasattr(agent, "arun_graph_turn"):
+                    result = await agent.arun_graph_turn(
+                        state,
+                        safe_message,
+                        skip_extraction=skip_extraction,
+                    )
+                    retrieved_cars = result.session_state.matched_cars
+                else:
+                    # Fallback for custom/mock agent test doubles without LangGraph methods
+                    if skip_extraction:
+                        state = agent.remember(state, safe_message)
+                    else:
+                        state = agent.observe(state, safe_message)
+                    retrieved_cars = _retrieve_cars(state, user_query=request.message)
+                    result = agent.respond(state, retrieved_cars)
 
                 # Restore real values before anything is stored or shown.
                 _unmask_state(result.session_state, session_id)
@@ -604,22 +649,32 @@ async def send_message_stream(request: ChatRequest, raw_request: Request):
             and not pii_found
         )
 
-        if skip_extraction:
-            state = agent.remember(state, safe_message)
-        else:
-            state = agent.observe(state, safe_message)
-
         if decision is not None and decision.intent == INTERRUPT_INTENT:
             state = _rollback_on_constraint_change(state, decision)
 
-        retrieved_cars = _retrieve_cars(state, user_query=request.message)
-
         async def sse_event_publisher():
             pii_chunk_buffer = ""
-            last_emitted_state = state
+            current_state = state
+            last_emitted_state = current_state
+            use_langgraph_stream = hasattr(agent, "astream_graph_turn")
             try:
-                # Battle 1: Native async generator streaming with zero threadpool blocking
-                async for event_type, data in agent.respond_stream(state, retrieved_cars):
+                if use_langgraph_stream:
+                    stream_gen = agent.astream_graph_turn(
+                        current_state,
+                        safe_message,
+                        skip_extraction=skip_extraction,
+                    )
+                else:
+                    current_state = (
+                        agent.remember(current_state, safe_message)
+                        if skip_extraction
+                        else agent.observe(current_state, safe_message)
+                    )
+                    fallback_cars = _retrieve_cars(current_state, user_query=request.message)
+                    stream_gen = agent.respond_stream(current_state, fallback_cars)
+
+                # LangGraph + LangChain async token streaming
+                async for event_type, data in stream_gen:
                     # Client disconnect cancellation propagation
                     if raw_request is not None and await raw_request.is_disconnected():
                         logger.warning(
@@ -694,10 +749,11 @@ async def send_message_stream(request: ChatRequest, raw_request: Request):
                     deployment_router.record_turn_metric(
                         session_id, variant="baseline", success=True, latency_s=duration_s
                     )
+                    final_cars = final_state.matched_cars if final_state else []
                     semantic_drift_detector.record_production_query(
                         intent=curr_stage,
-                        retrieval_hit=bool(retrieved_cars),
-                        retrieval_top1_score=0.85 if retrieved_cars else 0.0,
+                        retrieval_hit=bool(final_cars),
+                        retrieval_top1_score=0.85 if final_cars else 0.0,
                     )
                 except Exception as save_err:
                     logger.error(f"Error persisting session {session_id} on stream completion: {save_err}")
@@ -766,14 +822,14 @@ async def get_messages(session_id: str):
     if state is None:
         raise HTTPException(status_code=404, detail="Session not found.")
 
-    history = agent.memory.get_history(session_id)
+    raw_msgs = _read_agent_messages(session_id, agent)
     messages = []
-    for msg in history:
+    for idx, msg in enumerate(raw_msgs):
         messages.append(
             {
-                "message_id": f"msg_{id(msg)}",
-                "sender_type": "user" if msg.role.value == "user" else "system",
-                "content": msg.content,
+                "message_id": f"msg_{idx}_{session_id}",
+                "sender_type": "user" if msg["role"] == "user" else "system",
+                "content": msg["content"],
             }
         )
 
@@ -804,3 +860,35 @@ async def end_session(session_id: str):
     agent.clear_session(session_id)
     FileStorage.delete_session(session_id)
     return {"message": "Session ended successfully.", "session_id": session_id}
+
+
+@router.get("/graph")
+async def get_agent_graph():
+    """Inspect the compiled LangGraph StateGraph topology (Mermaid + node list)."""
+    agent = _get_agent()
+    lg = agent.langgraph
+    graph_obj = lg.graph.get_graph()
+    return {
+        "engine": "langgraph",
+        "orchestration": "LangGraph StateGraph + LangChain LCEL + LlamaIndex HybridRetriever",
+        "nodes": list(graph_obj.nodes.keys()),
+        "mermaid": lg.get_graph_mermaid(),
+    }
+
+
+@router.get("/session/{session_id}/checkpoint")
+async def get_session_checkpoint(session_id: str):
+    """Inspect the LangGraph checkpointer state snapshot for a session thread."""
+    agent = _get_agent()
+    snap = agent.langgraph.get_graph_state(session_id)
+    if snap is None or not getattr(snap, "values", None):
+        raise HTTPException(status_code=404, detail="Checkpoint not found for session.")
+    sess = snap.values.get("session_state")
+    msgs = snap.values.get("messages") or []
+    return {
+        "session_id": session_id,
+        "checkpoint_next": list(getattr(snap, "next", ()) or ()),
+        "message_count": len(msgs),
+        "stage": sess.stage.value if sess else None,
+        "matched_cars_count": len(sess.matched_cars) if sess else 0,
+    }

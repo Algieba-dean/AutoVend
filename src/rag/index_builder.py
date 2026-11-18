@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 from src.models.vehicle import Vehicle
 from src.rag.data_loader import VehicleDataLoader
 from src.rag.embeddings import BGEEmbeddingModel, EmbeddingInferenceError
-from src.rag.vector_store import ChromaVectorStore
+from src.rag.vector_store import create_vector_store
 from src.utils.config import config
 from src.utils.logger import get_logger, log_performance
 
@@ -75,8 +75,10 @@ class IndexBuilder:
         # 初始化组件
         self.data_loader = VehicleDataLoader(self.data_dir)
         self.embedding_model = BGEEmbeddingModel()
-        self.vector_store = ChromaVectorStore(
-            persist_directory=self.persist_directory, collection_name=self.collection_name
+        self.vector_store = create_vector_store(
+            persist_directory=self.persist_directory,
+            collection_name=self.collection_name,
+            embedding_model=self.embedding_model,
         )
 
         # 构建统计

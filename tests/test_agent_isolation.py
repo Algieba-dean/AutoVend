@@ -11,7 +11,7 @@ import ast
 from pathlib import Path
 
 AGENT_DIR = Path(__file__).resolve().parent.parent / "src" / "agent"
-FORBIDDEN_PREFIXES = ("backend", "fastapi", "chromadb")
+FORBIDDEN_PREFIXES = ("backend", "fastapi", "chromadb", "pgvector", "psycopg", "psycopg2", "sqlalchemy")
 
 
 def _get_all_python_files(directory: Path):
@@ -61,7 +61,13 @@ class TestAgentImportIsolation:
         allowed_prefixes = (
             "src.agent",
             "src.core",
+            "src.llm",
             "src.privacy",
+            "src.retrieval",
+            "langgraph",
+            "langchain",
+            "langchain_core",
+            "langchain_openai",
             "uuid",
             "hashlib",
             "pydantic",

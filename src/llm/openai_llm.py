@@ -13,10 +13,12 @@ one can share a TTFT while differing tenfold end to end.
 
 import json
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncIterator, Dict, List, Optional
 
+import httpx
 import requests
 import urllib3
+from openai import AsyncOpenAI
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -61,6 +63,18 @@ class OpenAILLM(BaseLLM):
         # Populated after every call, read by the telemetry layer.
         self.last_usage: Optional[Dict[str, int]] = None
         self.last_ttft_s: Optional[float] = None
+        self._async_client: Optional[AsyncOpenAI] = None
+
+    def _get_async_client(self) -> AsyncOpenAI:
+        """Lazily create an AsyncOpenAI client for native async calls."""
+        if self._async_client is None:
+            self._async_client = AsyncOpenAI(
+                api_key=self.api_key or "empty",
+                base_url=self.base_url,
+                timeout=self.timeout,
+                http_client=httpx.AsyncClient(verify=False, timeout=self.timeout),
+            )
+        return self._async_client
 
     def _create_session(self) -> requests.Session:
         """Create a requests session with retry strategy"""
@@ -108,15 +122,62 @@ class OpenAILLM(BaseLLM):
             "User-Agent": "AutoVend/1.0",
         }
 
-    def _payload(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
-        payload = {
+    def _payload(self, messages: List[Dict[str, Any]], **kwargs) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {
             "messages": messages,
             "model": self.model,
             "max_tokens": kwargs.get("max_tokens", 1000),
             "temperature": kwargs.get("temperature", 0.7),
         }
+        if kwargs.get("tools"):
+            payload["tools"] = kwargs["tools"]
+        if kwargs.get("tool_choice") is not None:
+            payload["tool_choice"] = kwargs["tool_choice"]
         payload.update(self.extra_body)
         return payload
+
+    @staticmethod
+    def _normalize_tool_calls(raw_calls: Any) -> List[Dict[str, Any]]:
+        """Convert OpenAI `message.tool_calls` into LangChain `ToolCall` dicts."""
+        normalized: List[Dict[str, Any]] = []
+        for idx, tc in enumerate(raw_calls or []):
+            if isinstance(tc, dict):
+                tc_id = tc.get("id") or f"call_{idx}"
+                fn = tc.get("function") or {}
+                name = fn.get("name", "")
+                raw_args = fn.get("arguments", "{}")
+            else:
+                tc_id = getattr(tc, "id", None) or f"call_{idx}"
+                fn = getattr(tc, "function", None)
+                name = getattr(fn, "name", "") if fn else ""
+                raw_args = getattr(fn, "arguments", "{}") if fn else "{}"
+            try:
+                args = json.loads(raw_args) if isinstance(raw_args, str) else dict(raw_args or {})
+            except json.JSONDecodeError:
+                args = {"raw": raw_args}
+            if name:
+                normalized.append({"name": name, "args": args, "id": tc_id})
+        return normalized
+
+    def chat_message(self, messages: List[Dict[str, Any]], **kwargs) -> Dict[str, Any]:
+        """Blocking chat returning both `content` and `tool_calls` (for LangChain `bind_tools`)."""
+        self.last_usage = None
+        self.last_ttft_s = None
+        response = self.session.post(
+            f"{self.base_url}/chat/completions",
+            headers=self._headers(),
+            json=self._payload(messages, **kwargs),
+            timeout=self.timeout,
+        )
+        if response.status_code != 200:
+            raise Exception(f"API Error: {response.status_code} - {response.text}")
+        result = response.json()
+        self.last_usage = result.get("usage")
+        msg = (result.get("choices") or [{}])[0].get("message") or {}
+        return {
+            "content": msg.get("content") or "",
+            "tool_calls": self._normalize_tool_calls(msg.get("tool_calls")),
+        }
 
     def _chat_blocking(self, messages: List[Dict[str, str]], **kwargs) -> str:
         try:
@@ -227,3 +288,75 @@ class OpenAILLM(BaseLLM):
             return response.status_code == 200
         except Exception:
             return False
+
+    async def achat_message(self, messages: List[Dict[str, Any]], **kwargs) -> Dict[str, Any]:
+        """Native async chat completion returning both `content` and `tool_calls`."""
+        self.last_usage = None
+        self.last_ttft_s = None
+        client = self._get_async_client()
+        create_kwargs: Dict[str, Any] = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": kwargs.get("max_tokens", 1000),
+            "temperature": kwargs.get("temperature", 0.7),
+            "stream": False,
+        }
+        if kwargs.get("tools"):
+            create_kwargs["tools"] = kwargs["tools"]
+        if kwargs.get("tool_choice") is not None:
+            create_kwargs["tool_choice"] = kwargs["tool_choice"]
+        if self.extra_body:
+            create_kwargs["extra_body"] = self.extra_body
+        resp = await client.chat.completions.create(**create_kwargs)
+        if resp.usage:
+            self.last_usage = {
+                "prompt_tokens": getattr(resp.usage, "prompt_tokens", 0) or 0,
+                "completion_tokens": getattr(resp.usage, "completion_tokens", 0) or 0,
+            }
+        if not resp.choices:
+            return {"content": "", "tool_calls": []}
+        msg = resp.choices[0].message
+        return {
+            "content": msg.content or "",
+            "tool_calls": self._normalize_tool_calls(getattr(msg, "tool_calls", None)),
+        }
+
+    async def achat(self, messages: List[Dict[str, Any]], **kwargs) -> str:
+        """Native async chat completion via AsyncOpenAI."""
+        res = await self.achat_message(messages, **kwargs)
+        return res["content"]
+
+    async def astream_chat(self, messages: List[Dict[str, Any]], **kwargs) -> AsyncIterator[str]:
+        """Native async streaming chat completion via AsyncOpenAI."""
+        self.last_usage = None
+        self.last_ttft_s = None
+        client = self._get_async_client()
+        create_kwargs: Dict[str, Any] = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": kwargs.get("max_tokens", 1000),
+            "temperature": kwargs.get("temperature", 0.7),
+            "stream": True,
+            "stream_options": {"include_usage": True},
+        }
+        if kwargs.get("tools"):
+            create_kwargs["tools"] = kwargs["tools"]
+        if kwargs.get("tool_choice") is not None:
+            create_kwargs["tool_choice"] = kwargs["tool_choice"]
+        if self.extra_body:
+            create_kwargs["extra_body"] = self.extra_body
+        started = time.perf_counter()
+        stream = await client.chat.completions.create(**create_kwargs)
+        async for event in stream:
+            if getattr(event, "usage", None):
+                self.last_usage = {
+                    "prompt_tokens": getattr(event.usage, "prompt_tokens", 0) or 0,
+                    "completion_tokens": getattr(event.usage, "completion_tokens", 0) or 0,
+                }
+            for choice in getattr(event, "choices", None) or []:
+                delta = getattr(choice, "delta", None)
+                piece = getattr(delta, "content", None) if delta else None
+                if piece:
+                    if self.last_ttft_s is None:
+                        self.last_ttft_s = time.perf_counter() - started
+                    yield piece

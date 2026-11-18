@@ -27,6 +27,10 @@ OPENAI_MODEL: str = config.llm_model
 OPENAI_URL: str = config.llm_base_url
 
 EMBEDDING_MODEL: str = config.embedding_model
+VECTOR_STORE_BACKEND: str = config.vector_store_backend
+PGVECTOR_DSN: str = config.pgvector_connection_string
+PGVECTOR_TABLE_NAME: str = config.pgvector_table_name
+PGVECTOR_EMBED_DIM: int = config.pgvector_embed_dim
 CHROMA_PERSIST_DIR: str = config.chroma_persist_dir
 CHROMA_COLLECTION_NAME: str = config.chroma_collection_name
 VEHICLE_DATA_DIR: str = config.vehicle_data_dir

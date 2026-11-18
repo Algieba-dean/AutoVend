@@ -117,6 +117,8 @@ class HybridPipeline:
         query_text: str,
         top_k: int = 10,
         use_llm_fallback: bool = True,
+        explicit_conditions: Optional[Dict[str, Any]] = None,
+        implicit_needs: Optional[Dict[str, Any]] = None,
     ) -> HybridPipelineResult:
         """
         执行混合检索
@@ -125,6 +127,8 @@ class HybridPipeline:
             query_text: 用户自然语言查询
             top_k: 返回结果数
             use_llm_fallback: 是否启用 LLM fallback
+            explicit_conditions: 结构化显式约束（直接透传至 FilterEngine，跳过自然语言二次解析）
+            implicit_needs: 结构化隐式需求偏好
 
         Returns:
             HybridPipelineResult 包含完整的管道执行信息
@@ -133,8 +137,15 @@ class HybridPipeline:
         result = HybridPipelineResult()
         self.ensure_db_loaded()
 
-        # ---- Phase 1: 意图解析 ----
-        parsed = self._parse_intent(query_text, use_llm_fallback, result)
+        # ---- Phase 1: 意图解析 / 结构化槽位直通 ----
+        structured = self._slots_to_conditions(explicit_conditions, implicit_needs)
+        if structured:
+            parsed = structured
+            result.parsed_conditions = structured
+            result.parse_method = "structured_slots"
+            result.matched_keywords = [str(v) for v in structured.values() if isinstance(v, str)]
+        else:
+            parsed = self._parse_intent(query_text, use_llm_fallback, result)
 
         # ---- Phase 2: SQLite 粗筛 ----
         filter_result = self._coarse_filter(parsed, result)
@@ -149,6 +160,39 @@ class HybridPipeline:
             f"耗时 {result.total_time:.3f}s"
         )
         return result
+
+    def _slots_to_conditions(
+        self,
+        explicit_conditions: Optional[Dict[str, Any]],
+        implicit_needs: Optional[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """Convert structured ExplicitNeeds/ImplicitNeeds dicts directly into FilterEngine conditions."""
+        conditions: Dict[str, Any] = {}
+        if explicit_conditions:
+            b_min = explicit_conditions.get("budget_min")
+            b_max = explicit_conditions.get("budget_max")
+            for k, v in explicit_conditions.items():
+                if k in ("budget_min", "budget_max"):
+                    continue
+                if v is None or not str(v).strip():
+                    continue
+                target_key = "powertrain_type" if k == "power_type" else k
+                if target_key == "price" and isinstance(v, str):
+                    parsed_price = self.query_parser.parse(f"预算{v}").conditions.get("price")
+                    conditions["price"] = parsed_price if parsed_price is not None else v
+                else:
+                    conditions[target_key] = v
+            if b_min is not None and b_max is not None:
+                conditions["price"] = {"op": "between", "min": float(b_min), "max": float(b_max)}
+            elif b_max is not None:
+                conditions["price"] = {"op": "lte", "value": float(b_max)}
+            elif b_min is not None:
+                conditions["price"] = {"op": "gte", "value": float(b_min)}
+        if implicit_needs:
+            for k, v in implicit_needs.items():
+                if v is not None and str(v).strip() and k not in conditions:
+                    conditions[k] = v
+        return conditions
 
     # ------------------------------------------------------------------
     # Phase 1: 意图解析
@@ -503,7 +547,7 @@ def build_default_pipeline(
     from src.filter.llm_parser import LLMParser
     from src.rag.embeddings import BGEEmbeddingModel
     from src.rag.retriever import VehicleRetriever
-    from src.rag.vector_store import ChromaVectorStore
+    from src.rag.vector_store import create_vector_store
 
     registry = LabelRegistry()
     db = VehicleDB(registry=registry)
@@ -516,7 +560,7 @@ def build_default_pipeline(
         else:
             retriever = VehicleRetriever(
                 emb,
-                ChromaVectorStore(),
+                create_vector_store(embedding_model=emb),
                 similarity_threshold=similarity_threshold,
                 price_tolerance=price_tolerance,
             )

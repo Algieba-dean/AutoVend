@@ -1139,6 +1139,32 @@ class CrossPageTableStitcher:
        per-column width arrays and evaluates the mean squared difference (variance) between
        consecutive tables to verify column geometry alignment.
     4. Header Consistency & Deduplication: Eliminates repeated continuation headers on subsequent pages.
+
+    TODO(architecture-evolution): Address Hardcoded Physical Point Coordinate Limitations
+    --------------------------------------------------------------------------------------
+    Current Limitation:
+      The current heuristic relies on fixed point thresholds (e.g., 25.0 pt margin difference,
+      RMS variance <= 625.0, bottom >= 0.35 * page_height). In production, this heuristic can lead
+      to false positives or missed merges under the following scenarios:
+      - Duplex Margin Shift: Odd/even page margins differ (e.g. 40pt vs 70pt for binding gutters).
+      - Mixed Page Geometry: A4 portrait transitioning into A4 landscape/A3 large tables.
+      - Diagram/Annotation Interleaving: Interleaving figures/diagrams between disjoint tables.
+
+    Recommended Phased Roadmap:
+      1. Normalized Relative Coordinates:
+         Compute relative margins against effective page content bounding boxes (page_content_left)
+         rather than raw page origin (x=0) to neutralize binding gutter shifts.
+      2. Relative Column Ratio Vector & Cosine Similarity:
+         Convert column widths into normalized ratio vectors: W = [w_i / sum(w)].
+         Evaluate cosine similarity (CosineSim(W_curr, W_next) >= 0.98) instead of absolute pt variance,
+         making alignment invariant to DPI, scale, or orientation changes.
+      3. Semantic Continuity Signals:
+         - Detect monotonic index sequence continuation (e.g., Row #24 on Page N -> Row #25 on Page N+1).
+         - Capture continuation keywords ('(续)', '(续表)', 'Continued', 'Table X (Cont.)').
+      4. Hybrid Fast-Filter + LLM Edge Critic:
+         For ambiguous boundary cases (grey-zone confidence), sample the last 2 rows of Page N and
+         first 2 rows of Page N+1 to run a low-cost LLM/small-model validation prompt.
+         Where possible, prioritize IBM Docling's native TableFormer multi-page tracking.
     """
 
     @classmethod

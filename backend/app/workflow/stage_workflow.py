@@ -1,20 +1,14 @@
 """
-Core conversation workflow engine.
+Core conversation workflow engine backed by LangGraph + LangChain + LlamaIndex.
 
-Orchestrates the full conversation flow:
-1. Receive user message
-2. Extract information (profile, needs, reservation) based on current stage
-3. Determine stage transition
-4. Retrieve vehicles if in needs/selection stage
-5. Generate response
-6. Update memory and session state
+Orchestrates the full conversation flow via `LangGraphSalesAgent` (`StateGraph` +
+`MemorySaver` checkpointer) and `LlamaIndexHybridRetriever` (LangChain `BaseRetriever`
+wrapping LlamaIndex / HybridPipeline).
 """
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
-from llama_index.core.llms import LLM
+from typing import Any, Dict, Optional
 
 from backend.app.models.schemas import (
     ChatMessage,
@@ -25,20 +19,15 @@ from backend.app.models.schemas import (
     UserProfile,
     VehicleNeeds,
 )
-from backend.app.rag.query_engine import format_retrieval_results, retrieve_vehicles
-from src.agent.extractors.implicit_deductor import deduce_implicit_needs
-from src.agent.extractors.needs_extractor import extract_explicit_needs
-from src.agent.extractors.profile_extractor import extract_profile
-from src.agent.extractors.reservation_extractor import extract_reservation
-from src.agent.memory import ChatMemoryManager
-from src.agent.response_generator import generate_response
-from src.agent.stages import determine_next_stage
+from src.agent.langgraph_agent import LangGraphSalesAgent
+from src.agent.schemas import SessionState as AgentSessionState
+from src.retrieval.langchain_retriever import LlamaIndexHybridRetriever
 
 logger = logging.getLogger(__name__)
 
 
 class SessionState:
-    """Holds all mutable state for a single conversation session."""
+    """Backward-compatible mutable session state wrapper for StageWorkflow."""
 
     def __init__(
         self,
@@ -50,12 +39,11 @@ class SessionState:
         self.previous_stage = ""
         self.profile = profile or UserProfile()
         self.needs = VehicleNeeds()
-        self.matched_cars: List[Dict[str, Any]] = []
+        self.matched_cars: list[Dict[str, Any]] = []
         self.reservation = ReservationInfo()
         self.created_at = datetime.now(timezone.utc).isoformat()
 
     def to_dict(self) -> Dict[str, Any]:
-        """Serialize session state for API response / persistence."""
         return {
             "session_id": self.session_id,
             "stage": self.stage.value,
@@ -67,50 +55,81 @@ class SessionState:
             "created_at": self.created_at,
         }
 
+    def to_agent_state(self) -> AgentSessionState:
+        return AgentSessionState(
+            session_id=self.session_id,
+            stage=self.stage,
+            previous_stage=self.previous_stage,
+            profile=self.profile,
+            needs=self.needs,
+            matched_cars=self.matched_cars,
+            reservation=self.reservation,
+            created_at=self.created_at,
+        )
+
+    def sync_from_agent_state(self, agent_state: AgentSessionState) -> None:
+        self.stage = agent_state.stage
+        self.previous_stage = agent_state.previous_stage
+        self.profile = agent_state.profile
+        self.needs = agent_state.needs
+        self.matched_cars = agent_state.matched_cars
+        self.reservation = agent_state.reservation
+
 
 class StageWorkflow:
     """
-    Main conversation workflow engine.
+    Main conversation workflow engine powered by LangGraph StateGraph.
 
-    Manages session states, drives extraction/retrieval/generation
-    pipeline per message, and handles stage transitions.
+    Preserves the synchronous session API while delegating state transitions,
+    slot extraction, LlamaIndex retrieval, plugin execution, and LangChain
+    response generation to `LangGraphSalesAgent`.
     """
 
     def __init__(
         self,
-        llm: LLM,
+        llm: Any,
         vehicle_index=None,
+        use_unified_extraction: bool = False,
     ):
-        """
-        Args:
-            llm: LLM instance for extraction and generation.
-            vehicle_index: VectorStoreIndex for vehicle retrieval.
-                          Can be None if not yet built (retrieval will be skipped).
-        """
         self.llm = llm
         self.vehicle_index = vehicle_index
-        self.memory = ChatMemoryManager()
-        self._sessions: Dict[str, SessionState] = {}
+        retriever = (
+            LlamaIndexHybridRetriever(llama_index=vehicle_index)
+            if vehicle_index is not None
+            else None
+        )
+        self.graph_agent = LangGraphSalesAgent(
+            llm=llm,
+            retriever=retriever,
+            use_unified_extraction=use_unified_extraction,
+        )
 
     def create_session(
         self,
         session_id: str,
         profile: Optional[UserProfile] = None,
     ) -> SessionState:
-        """Create a new conversation session."""
-        state = SessionState(session_id, profile)
-        self._sessions[session_id] = state
+        """Create a new conversation session in the LangGraph checkpointer."""
+        state = SessionState(session_id=session_id, profile=profile or UserProfile())
+        self.graph_agent.hydrate_history(session_id, [], session_state=state.to_agent_state())
         logger.info(f"Session created: {session_id}")
         return state
 
     def get_session(self, session_id: str) -> Optional[SessionState]:
-        """Get an existing session state."""
-        return self._sessions.get(session_id)
+        """Get an existing session state from the LangGraph checkpointer."""
+        snap = self.graph_agent.get_graph_state(session_id)
+        if snap is None or not getattr(snap, "values", None):
+            return None
+        agent_state = snap.values.get("session_state")
+        if agent_state is None:
+            return None
+        wrapper = SessionState(session_id=session_id)
+        wrapper.sync_from_agent_state(agent_state)
+        return wrapper
 
     def end_session(self, session_id: str) -> None:
         """End and clean up a session."""
-        self._sessions.pop(session_id, None)
-        self.memory.clear_session(session_id)
+        self.graph_agent.clear_session(session_id)
         logger.info(f"Session ended: {session_id}")
 
     def process_message(
@@ -118,73 +137,16 @@ class StageWorkflow:
         session_id: str,
         user_message: str,
     ) -> ChatResponse:
-        """
-        Process a user message through the full workflow pipeline.
-
-        Pipeline:
-        1. Get/create session state
-        2. Add user message to memory
-        3. Extract information based on current stage
-        4. Determine stage transition
-        5. Retrieve vehicles if applicable
-        6. Generate response
-        7. Add response to memory
-        8. Return structured ChatResponse
-
-        Args:
-            session_id: The session identifier.
-            user_message: The user's message text.
-
-        Returns:
-            ChatResponse with message, response, stage, profile, needs, etc.
-        """
-        # 1. Get or create session
-        state = self._sessions.get(session_id)
-        if state is None:
-            state = self.create_session(session_id)
-
-        # 2. Add user message to memory
-        self.memory.add_user_message(session_id, user_message)
-        conversation_text = self.memory.get_history_as_text(session_id)
-
-        # 3. Extract information based on current stage
-        state = self._extract_information(state, conversation_text)
-
-        # 4. Determine stage transition
-        old_stage = state.stage
-        state.previous_stage = old_stage.value
-        state.stage = determine_next_stage(
-            state.stage,
-            state.profile,
-            state.needs,
-            state.matched_cars,
-            state.reservation,
+        """Process a user message through the LangGraph StateGraph pipeline."""
+        existing = self.get_session(session_id)
+        result = self.graph_agent.invoke_turn(
+            session_id=session_id,
+            user_message=user_message,
+            session_state=existing.to_agent_state() if existing is not None else None,
         )
+        updated_state = result.session_state
 
-        if state.stage != old_stage:
-            logger.info(f"[{session_id}] Stage transition: {old_stage.value} → {state.stage.value}")
-
-        # 5. Retrieve vehicles if in needs/selection stage
-        if state.stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
-            state = self._retrieve_vehicles(state)
-
-        # 6. Generate response
-        response_text = generate_response(
-            self.llm,
-            state.stage,
-            conversation_text,
-            state.profile,
-            state.needs,
-            state.matched_cars,
-            state.reservation,
-        )
-
-        # 7. Add response to memory
-        self.memory.add_assistant_message(session_id, response_text)
-
-        # 8. Build and return ChatResponse
         now = datetime.now(timezone.utc).isoformat()
-
         user_msg = ChatMessage(
             message_id=f"msg_{datetime.now().timestamp()}",
             sender_type="user",
@@ -193,12 +155,11 @@ class StageWorkflow:
             timestamp=now,
             status="delivered",
         )
-
         assistant_msg = ChatMessage(
             message_id=f"msg_{datetime.now().timestamp()}",
             sender_type="system",
             sender_id="AutoVend",
-            content=response_text,
+            content=result.response_text,
             timestamp=now,
             status="delivered",
         )
@@ -207,87 +168,11 @@ class StageWorkflow:
             message=user_msg,
             response=assistant_msg,
             stage=StageInfo(
-                previous_stage=state.previous_stage,
-                current_stage=state.stage.value,
+                previous_stage=updated_state.previous_stage,
+                current_stage=updated_state.stage.value,
             ),
-            profile=state.profile,
-            needs=state.needs,
-            matched_car_models=state.matched_cars,
-            reservation_info=state.reservation,
+            profile=updated_state.profile,
+            needs=updated_state.needs,
+            matched_car_models=updated_state.matched_cars,
+            reservation_info=updated_state.reservation,
         )
-
-    def _extract_information(self, state: SessionState, conversation_text: str) -> SessionState:
-        """Run extractors relevant to the current stage."""
-        stage = state.stage
-
-        # Profile extraction: active during welcome and profile_analysis
-        if stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS):
-            state.profile = extract_profile(self.llm, conversation_text, state.profile)
-
-        # Needs extraction: active during needs_analysis and car_selection
-        if stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
-            state.needs.explicit = extract_explicit_needs(
-                self.llm, conversation_text, state.needs.explicit
-            )
-            state.needs.implicit = deduce_implicit_needs(
-                self.llm, state.profile, state.needs.explicit, state.needs.implicit
-            )
-
-        # Reservation extraction: active during reservation stages
-        if stage in (Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION):
-            state.reservation = extract_reservation(self.llm, conversation_text, state.reservation)
-
-        return state
-
-    def _retrieve_vehicles(self, state: SessionState) -> SessionState:
-        """Retrieve matching vehicles from the RAG index."""
-        if self.vehicle_index is None:
-            logger.warning("Vehicle index not available, skipping retrieval.")
-            return state
-
-        # Build query from explicit needs
-        explicit = state.needs.explicit
-        query_parts = []
-        if explicit.vehicle_category_bottom:
-            query_parts.append(explicit.vehicle_category_bottom)
-        if explicit.powertrain_type:
-            query_parts.append(explicit.powertrain_type)
-        if explicit.design_style:
-            query_parts.append(explicit.design_style)
-        if explicit.brand:
-            query_parts.append(f"{explicit.brand} brand")
-
-        # Add implicit needs for semantic richness
-        implicit = state.needs.implicit
-        if implicit.comfort_level:
-            query_parts.append(f"{implicit.comfort_level} comfort")
-        if implicit.family_friendliness:
-            query_parts.append(f"{implicit.family_friendliness} family friendliness")
-
-        if not query_parts:
-            query_parts.append("recommend a good vehicle")
-
-        query = " ".join(query_parts)
-
-        # Build metadata filters from exact-match fields
-        filters = {}
-        if explicit.brand:
-            filters["brand"] = explicit.brand
-        if explicit.price:
-            filters["price"] = explicit.price
-        if explicit.powertrain_type:
-            filters["powertrain_type"] = explicit.powertrain_type
-
-        try:
-            results = retrieve_vehicles(
-                self.vehicle_index,
-                query=query,
-                metadata_filters=filters if filters else None,
-                top_k=5,
-            )
-            state.matched_cars = format_retrieval_results(results)
-            logger.info(f"Retrieved {len(state.matched_cars)} matching vehicles.")
-        except Exception as e:
-            logger.error(f"Vehicle retrieval failed: {e}")
-
-        return state

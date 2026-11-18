@@ -6,14 +6,35 @@ LLM round-trips for explicit and implicit needs.
 """
 
 import logging
-from typing import Optional
+from typing import Any, Optional
 
-from llama_index.core.llms import LLM
+from langchain_core.messages import HumanMessage
+from pydantic import BaseModel, Field, model_validator
 
-from src.agent.extractors.base import parse_llm_json
+from src.agent.extractors.base import merge_model
 from src.agent.schemas import ExplicitNeeds, ImplicitNeeds, UserProfile, VehicleNeeds
+from src.llm.langchain_adapter import ensure_chat_model
 
 logger = logging.getLogger(__name__)
+
+
+class _CombinedNeedsPayload(BaseModel):
+    explicit: ExplicitNeeds = Field(default_factory=ExplicitNeeds)
+    implicit: ImplicitNeeds = Field(default_factory=ImplicitNeeds)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _recover_flat_fields(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        if "explicit" not in data and "implicit" not in data:
+            explicit_fields = ExplicitNeeds.model_fields
+            implicit_fields = ImplicitNeeds.model_fields
+            return {
+                "explicit": {k: v for k, v in data.items() if k in explicit_fields},
+                "implicit": {k: v for k, v in data.items() if k in implicit_fields},
+            }
+        return data
 
 COMBINED_NEEDS_PROMPT = """You are a vehicle needs extraction assistant for an automotive sales system.
 
@@ -67,22 +88,14 @@ Merge new information with existing values. Keep existing values unless user pro
 
 
 def extract_combined_needs(
-    llm: LLM,
+    llm: Any,
     conversation: str,
     user_profile: UserProfile,
     current_needs: Optional[VehicleNeeds] = None,
 ) -> VehicleNeeds:
     """
-    Extract both explicit and implicit needs in a single LLM call.
-
-    Args:
-        llm: The LLM instance.
-        conversation: Conversation text.
-        user_profile: Current user profile for implicit deduction.
-        current_needs: Existing VehicleNeeds to merge with.
-
-    Returns:
-        Updated VehicleNeeds with both explicit and implicit fields.
+    Extract both explicit and implicit needs in a single LLM call
+    via LangChain `with_structured_output(_CombinedNeedsPayload)`.
     """
     if current_needs is None:
         current_needs = VehicleNeeds()
@@ -95,25 +108,12 @@ def extract_combined_needs(
     )
 
     try:
-        response = llm.complete(prompt)
-        parsed = parse_llm_json(response.text)
+        chat_model = ensure_chat_model(llm)
+        structured_llm = chat_model.with_structured_output(_CombinedNeedsPayload)
+        parsed: _CombinedNeedsPayload = structured_llm.invoke([HumanMessage(content=prompt)])
 
-        explicit_data = parsed.get("explicit", {})
-        implicit_data = parsed.get("implicit", {})
-
-        # Some otherwise capable models flatten the requested wrapper and return
-        # the fields directly. Silently discarding that valid extraction leaves
-        # the stage machine stuck, so recover fields by their target schema.
-        if "explicit" not in parsed and "implicit" not in parsed:
-            explicit_fields = ExplicitNeeds.model_fields
-            implicit_fields = ImplicitNeeds.model_fields
-            explicit_data = {key: value for key, value in parsed.items() if key in explicit_fields}
-            implicit_data = {key: value for key, value in parsed.items() if key in implicit_fields}
-
-        from src.agent.extractors.base import merge_model
-
-        new_explicit = merge_model(current_needs.explicit, explicit_data)
-        new_implicit = merge_model(current_needs.implicit, implicit_data)
+        new_explicit = merge_model(current_needs.explicit, parsed.explicit.model_dump())
+        new_implicit = merge_model(current_needs.implicit, parsed.implicit.model_dump())
 
         return VehicleNeeds(explicit=new_explicit, implicit=new_implicit)
 

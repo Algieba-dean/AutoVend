@@ -177,9 +177,38 @@ class HybridRouter:
         """Run a completion for `task` on whichever backend it routes to."""
         return self._invoke(task, "complete", prompt, **kwargs)
 
-    def chat(self, task: Task, messages: List[Dict[str, str]], **kwargs) -> str:
+    def chat(self, task: Task, messages: List[Dict[str, Any]], **kwargs) -> str:
         """Run a chat completion for `task`."""
         return self._invoke(task, "chat", messages, **kwargs)
+
+    def chat_message(self, task: Task, messages: List[Dict[str, Any]], **kwargs) -> Dict[str, Any]:
+        """Run a chat completion returning `{"content": str, "tool_calls": list}`."""
+        plan = self.plan_for(task)
+        last_error: Optional[Exception] = None
+        for index, (backend, route) in enumerate(plan):
+            model = getattr(backend, "model", "unknown")
+            try:
+                with telemetry.measure(task.value, route, model) as record:
+                    if hasattr(backend, "chat_message"):
+                        result = backend.chat_message(messages, **kwargs)
+                    else:
+                        result = {"content": backend.chat(messages, **kwargs), "tool_calls": []}
+                    usage = getattr(backend, "last_usage", None)
+                    if usage:
+                        record.prompt_tokens = usage.get("prompt_tokens", 0)
+                        record.completion_tokens = usage.get("completion_tokens", 0)
+                    record.ttft_s = getattr(backend, "last_ttft_s", None)
+                    return result
+            except Exception as exc:
+                last_error = exc
+                remaining = len(plan) - index - 1
+                logger.warning(
+                    f"{route.value} backend '{model}' failed during chat_message for {task.value} ({exc}); "
+                    + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
+                )
+                if route is Route.LOCAL:
+                    self._local_healthy = False
+        raise last_error if last_error else RuntimeError("No backend produced a result.")
 
     def stream_chat(self, task: Task, messages: List[Dict[str, str]], **kwargs):
         """Stream token chunks for `task` dynamically."""
@@ -201,6 +230,108 @@ class HybridRouter:
                 remaining = len(plan) - index - 1
                 logger.warning(
                     f"{route.value} backend '{model}' failed during stream_chat for {task.value} ({exc}); "
+                    + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
+                )
+                if route is Route.LOCAL:
+                    self._local_healthy = False
+
+        if last_error:
+            raise last_error
+
+    async def achat_message(self, task: Task, messages: List[Dict[str, Any]], **kwargs) -> Dict[str, Any]:
+        """Run an async chat completion returning `{"content": str, "tool_calls": list}`."""
+        plan = self.plan_for(task)
+        last_error: Optional[Exception] = None
+
+        for index, (backend, route) in enumerate(plan):
+            model = getattr(backend, "model", "unknown")
+            try:
+                with telemetry.measure(task.value, route, model) as record:
+                    if hasattr(backend, "achat_message"):
+                        result = await backend.achat_message(messages, **kwargs)
+                    elif hasattr(backend, "achat"):
+                        result = {"content": await backend.achat(messages, **kwargs), "tool_calls": []}
+                    else:
+                        result = {"content": backend.chat(messages, **kwargs), "tool_calls": []}
+                    usage = getattr(backend, "last_usage", None)
+                    if usage:
+                        record.prompt_tokens = usage.get("prompt_tokens", 0)
+                        record.completion_tokens = usage.get("completion_tokens", 0)
+                    record.ttft_s = getattr(backend, "last_ttft_s", None)
+                    return result
+            except Exception as exc:
+                last_error = exc
+                remaining = len(plan) - index - 1
+                logger.warning(
+                    f"{route.value} backend '{model}' failed during achat_message for {task.value} ({exc}); "
+                    + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
+                )
+                if route is Route.LOCAL:
+                    self._local_healthy = False
+
+        raise last_error if last_error else RuntimeError("No backend produced a result.")
+
+    async def achat(self, task: Task, messages: List[Dict[str, str]], **kwargs) -> str:
+        """Run an async chat completion for `task` with automatic fallback."""
+        plan = self.plan_for(task)
+        last_error: Optional[Exception] = None
+
+        for index, (backend, route) in enumerate(plan):
+            model = getattr(backend, "model", "unknown")
+            try:
+                with telemetry.measure(task.value, route, model) as record:
+                    if hasattr(backend, "achat"):
+                        result = await backend.achat(messages, **kwargs)
+                    else:
+                        result = backend.chat(messages, **kwargs)
+                    usage = getattr(backend, "last_usage", None)
+                    if usage:
+                        record.prompt_tokens = usage.get("prompt_tokens", 0)
+                        record.completion_tokens = usage.get("completion_tokens", 0)
+                    record.ttft_s = getattr(backend, "last_ttft_s", None)
+                    return result
+            except Exception as exc:
+                last_error = exc
+                remaining = len(plan) - index - 1
+                logger.warning(
+                    f"{route.value} backend '{model}' failed during achat for {task.value} ({exc}); "
+                    + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
+                )
+                if route is Route.LOCAL:
+                    self._local_healthy = False
+
+        raise last_error if last_error else RuntimeError("No backend produced a result.")
+
+    async def astream_chat(self, task: Task, messages: List[Dict[str, str]], **kwargs):
+        """Stream token chunks asynchronously for `task`."""
+        plan = self.plan_for(task)
+        last_error: Optional[Exception] = None
+
+        for index, (backend, route) in enumerate(plan):
+            try:
+                if hasattr(backend, "astream_chat"):
+                    async for token in backend.astream_chat(messages, **kwargs):
+                        yield token
+                    return
+                if hasattr(backend, "chat_stream_tokens"):
+                    for token in backend.chat_stream_tokens(messages, **kwargs):
+                        yield token
+                    return
+                if hasattr(backend, "stream_chat"):
+                    for token in backend.stream_chat(messages, **kwargs):
+                        yield token
+                    return
+                if hasattr(backend, "achat"):
+                    yield await backend.achat(messages, **kwargs)
+                    return
+                yield backend.chat(messages, **kwargs)
+                return
+            except Exception as exc:
+                last_error = exc
+                model = getattr(backend, "model", "?")
+                remaining = len(plan) - index - 1
+                logger.warning(
+                    f"{route.value} backend '{model}' failed during astream_chat for {task.value} ({exc}); "
                     + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
                 )
                 if route is Route.LOCAL:

@@ -70,9 +70,10 @@ def _build_dense() -> SystemFn:
     from src.models.query import Query
     from src.rag.embeddings import BGEEmbeddingModel
     from src.rag.retriever import VehicleRetriever
-    from src.rag.vector_store import ChromaVectorStore
+    from src.rag.vector_store import create_vector_store
 
-    retriever = VehicleRetriever(BGEEmbeddingModel(), ChromaVectorStore(), similarity_threshold=0.0)
+    emb = BGEEmbeddingModel()
+    retriever = VehicleRetriever(emb, create_vector_store(embedding_model=emb), similarity_threshold=0.0)
 
     def run(query_text: str, top_k: int) -> List[str]:
         response = retriever.search(Query(text=query_text, top_k=top_k))

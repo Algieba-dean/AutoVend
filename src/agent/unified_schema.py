@@ -6,8 +6,9 @@ are unified in a single turn, eliminating 5-6 serial LLM round trips.
 Supports explicit retraction of fields (avoiding monotonic lock-in bugs).
 """
 
-from typing import List, Optional
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, model_validator
 
 from src.agent.schemas import SessionState
 
@@ -17,6 +18,20 @@ class UpdateSessionSlotsTool(BaseModel):
     当客户在交谈中透露了个人背景、车型诉求、预算、或试驾意愿时调用。
     所有字段支持明确的 None 与清空机制，彻底解决单调覆盖无法反悔的缺陷。
     """
+
+    @model_validator(mode="before")
+    @classmethod
+    def _flatten_nested_sections(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        flattened: Dict[str, Any] = dict(data)
+        for section in ("profile", "needs", "explicit_needs", "explicit", "implicit", "reservation"):
+            sub = data.get(section)
+            if isinstance(sub, dict):
+                for k, v in sub.items():
+                    if k not in flattened or flattened[k] is None:
+                        flattened[k] = v
+        return flattened
 
     # 1. 用户画像与偏好
     name: Optional[str] = Field(None, description="客户姓名或称谓")

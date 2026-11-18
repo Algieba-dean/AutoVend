@@ -82,23 +82,21 @@ def extract_with_llm(
     max_retries: int = 2,
 ) -> T:
     """
-    Generic extraction: call LLM, parse JSON, merge into model.
+    Generic extraction via LangChain `chat_model.with_structured_output(type(current))`.
 
-    Retries up to max_retries times on JSON parse failures.
-
-    Args:
-        llm: LLM instance with .complete() method.
-        prompt: Formatted prompt string.
-        current: Current Pydantic model to merge into.
-        max_retries: Maximum number of attempts (default 2).
-
-    Returns:
-        Updated model instance, or current if extraction fails.
+    Retries up to max_retries times on validation/parse failures.
     """
+    from langchain_core.messages import HumanMessage
+
+    from src.llm.langchain_adapter import ensure_chat_model
+
+    chat_model = ensure_chat_model(llm)
+    structured_llm = chat_model.with_structured_output(type(current))
+
     for attempt in range(max_retries):
         try:
-            response = llm.complete(prompt)
-            extracted = parse_llm_json(response.text)
+            parsed = structured_llm.invoke([HumanMessage(content=prompt)])
+            extracted = parsed.model_dump() if isinstance(parsed, BaseModel) else dict(parsed)
             return merge_model(current, extracted)
         except Exception as e:
             logger.warning(f"Extraction attempt {attempt + 1}/{max_retries} failed: {e}")

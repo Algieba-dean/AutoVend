@@ -72,14 +72,15 @@ def collect_rankings(
     from src.models.query import Query
     from src.rag.embeddings import BGEEmbeddingModel
     from src.rag.retriever import VehicleRetriever
-    from src.rag.vector_store import ChromaVectorStore
+    from src.rag.vector_store import create_vector_store
     from src.retrieval.bm25_index import BM25Index
 
     registry = LabelRegistry()
     db = VehicleDB(registry=registry)
     engine = FilterEngine(db=db, registry=registry)
     parser = QueryParser(registry=registry)
-    retriever = VehicleRetriever(BGEEmbeddingModel(), ChromaVectorStore(), similarity_threshold=0.0)
+    emb = BGEEmbeddingModel()
+    retriever = VehicleRetriever(emb, create_vector_store(embedding_model=emb), similarity_threshold=0.0)
     sparse = BM25Index.load_or_build()
 
     collected: List[QueryRankings] = []

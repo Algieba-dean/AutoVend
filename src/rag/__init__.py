@@ -7,15 +7,25 @@ RAG检索系统模块
 from .data_loader import VehicleDataLoader
 from .embeddings import BGEEmbeddingModel, EmbeddingDegradedError, EmbeddingInferenceError
 from .index_builder import IndexBuilder, IndexDLQ
+from .pgvector_store import PgVectorStore
 from .retriever import VehicleRetriever
-from .vector_store import ChromaVectorStore, extract_vehicle_trim, generate_vehicle_doc_id
+from .vector_store import (
+    ChromaVectorStore,
+    create_vector_store,
+    extract_vehicle_trim,
+    generate_vehicle_doc_id,
+    get_vector_store,
+)
 
 __all__ = [
     "VehicleDataLoader",
     "BGEEmbeddingModel",
     "EmbeddingInferenceError",
     "EmbeddingDegradedError",
+    "PgVectorStore",
     "ChromaVectorStore",
+    "create_vector_store",
+    "get_vector_store",
     "VehicleRetriever",
     "IndexBuilder",
     "IndexDLQ",

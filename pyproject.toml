@@ -5,12 +5,23 @@ description = "Intelligent automotive sales assistant — hybrid retrieval (stru
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    # LangGraph & LangChain orchestration
+    "langgraph>=0.2.0",
+    "langgraph-checkpoint-postgres>=2.0.0",
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
     # LlamaIndex core
     "llama-index-core>=0.11.0",
     "llama-index-llms-openai-like>=0.2.0",
     "llama-index-embeddings-huggingface>=0.3.0",
+    "llama-index-vector-stores-postgres>=0.2.0",
     "llama-index-vector-stores-chroma>=0.2.0",
-    # Vector database
+    # Vector database (pgvector primary, chromadb legacy fallback)
+    "pgvector>=0.3.0",
+    "psycopg[binary]>=3.1.0",
+    "psycopg-pool>=3.2.0",
+    "sqlalchemy>=2.0.0",
     "chromadb>=0.5.0",
     # Embeddings - BGE-M3 support
     "sentence-transformers>=2.2.0",

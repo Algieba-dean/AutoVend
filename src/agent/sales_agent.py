@@ -27,7 +27,6 @@ from src.agent.reflection import reflect_and_guard
 from src.agent.response_generator import (
     _build_stage_prompt,
     generate_response,
-    generate_response_stream,
 )
 from src.agent.schemas import (
     AgentInput,
@@ -130,6 +129,77 @@ class SalesAgent:
         self.plugin_pipeline = plugin_pipeline or AgentPluginPipeline()
         self.use_unified_extraction = use_unified_extraction
         self.memory = ChatMemoryManager()
+        self._langgraph_agent: Optional[Any] = None
+
+    @property
+    def langgraph(self):
+        """Lazily constructed `LangGraphSalesAgent` backed by LangGraph + LangChain."""
+        if self._langgraph_agent is None:
+            from src.agent.langgraph_agent import LangGraphSalesAgent
+
+            self._langgraph_agent = LangGraphSalesAgent(
+                llm=self.llm,
+                generation_llm=self.generation_llm,
+                circuit_breaker=self.circuit_breaker,
+                plugin_pipeline=self.plugin_pipeline,
+                use_unified_extraction=self.use_unified_extraction,
+            )
+        return self._langgraph_agent
+
+    def run_graph_turn(
+        self,
+        state: SessionState,
+        user_message: str,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        skip_extraction: bool = False,
+        propose_with_llm: bool = False,
+    ) -> AgentResult:
+        """Execute a full conversation turn via the LangGraph StateGraph."""
+        return self.langgraph.invoke_turn(
+            session_id=state.session_id,
+            user_message=user_message,
+            session_state=state,
+            retrieved_cars=retrieved_cars,
+            skip_extraction=skip_extraction,
+            propose_with_llm=propose_with_llm,
+        )
+
+    async def arun_graph_turn(
+        self,
+        state: SessionState,
+        user_message: str,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        skip_extraction: bool = False,
+        propose_with_llm: bool = False,
+    ) -> AgentResult:
+        """Execute a full conversation turn asynchronously via the LangGraph StateGraph."""
+        return await self.langgraph.ainvoke_turn(
+            session_id=state.session_id,
+            user_message=user_message,
+            session_state=state,
+            retrieved_cars=retrieved_cars,
+            skip_extraction=skip_extraction,
+            propose_with_llm=propose_with_llm,
+        )
+
+    async def astream_graph_turn(
+        self,
+        state: SessionState,
+        user_message: str,
+        retrieved_cars: Optional[List[Dict[str, Any]]] = None,
+        skip_extraction: bool = False,
+        propose_with_llm: bool = False,
+    ) -> AsyncGenerator[Tuple[str, Any], None]:
+        """Stream a conversation turn via LangGraph + LangChain `.astream()`."""
+        async for ev in self.langgraph.astream_turn(
+            session_id=state.session_id,
+            user_message=user_message,
+            session_state=state,
+            retrieved_cars=retrieved_cars,
+            skip_extraction=skip_extraction,
+            propose_with_llm=propose_with_llm,
+        ):
+            yield ev
 
     def remember(self, state: SessionState, user_message: str) -> SessionState:
         """
@@ -663,10 +733,12 @@ class SalesAgent:
         return self.respond(state, agent_input.retrieved_cars)
 
     def clear_session(self, session_id: str) -> None:
-        """Clear memory and circuit breaker state for a session."""
+        """Clear memory, circuit breaker state, and LangGraph checkpoint for a session."""
         self.memory.clear_session(session_id)
         self.circuit_breaker.reset_session(session_id)
         default_circuit_breaker.reset_session(session_id)
+        if self._langgraph_agent is not None:
+            self._langgraph_agent.clear_session(session_id)
 
     def get_history_text(self, session_id: str) -> str:
         """Get formatted conversation history for a session."""

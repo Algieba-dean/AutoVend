@@ -123,8 +123,19 @@ class RAGService(BaseRAGService):
                 search_summary=summary,
             )
 
-        # Search via hybrid pipeline
-        pipeline_result = self.pipeline.search(query_text, top_k=request.top_k * 2)
+        # Search via hybrid pipeline (passthrough structured slots directly)
+        import inspect
+
+        search_sig = inspect.signature(self.pipeline.search)
+        if "explicit_conditions" in search_sig.parameters:
+            pipeline_result = self.pipeline.search(
+                query_text,
+                top_k=request.top_k * 2,
+                explicit_conditions=request.explicit_needs or None,
+                implicit_needs=request.implicit_needs or None,
+            )
+        else:
+            pipeline_result = self.pipeline.search(query_text, top_k=request.top_k * 2)
         raw_cars = hybrid_result_to_cars(pipeline_result, limit=request.top_k * 2)
 
         # Convert to VehicleSearchResult models
