@@ -205,7 +205,7 @@ class TestLangChainTools:
         ServiceContainer.register_rag_service(_DummyRAG())
         try:
             tools = get_autovend_tools()
-            assert len(tools) == 3
+            assert len(tools) == 6
 
             search_out = json.loads(search_vehicles_tool.invoke({"query": "家用SUV", "brand": "理想"}))
             assert search_out["total_count"] == 1
@@ -596,7 +596,8 @@ class TestArchitectureRefactorFeatures:
         assert isinstance(msgs[1], HumanMessage)
         assert isinstance(msgs[2], AIMessage)
         assert isinstance(msgs[3], HumanMessage)
-        assert msgs[3].content == "预算25万"
+        assert msgs[3].content.endswith("预算25万")
+        assert "张三" not in msgs[0].content
 
     @pytest.mark.asyncio
     async def test_routed_chat_model_uses_native_async_backend(self):

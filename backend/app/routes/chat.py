@@ -24,8 +24,9 @@ import asyncio
 import logging
 import time
 import uuid
+from collections.abc import MutableMapping
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Dict, Iterator, Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from fastapi.responses import StreamingResponse
@@ -45,6 +46,8 @@ from src.agent.storage.distributed_session import (
     SessionLockTimeoutError,
     get_distributed_session_store,
 )
+from src.core.agentops import extract_real_top1_score
+from src.core.long_term_memory import LongTermMemoryStore
 from src.mlops import (
     alert_manager,
     deployment_router,
@@ -81,8 +84,104 @@ _pipeline = None
 _semantic_router = None
 _pii = None
 
-# In-memory session state store (session_id → SessionState)
-_sessions: Dict[str, SessionState] = {}
+class _CheckpointerSessionProxy(MutableMapping[str, SessionState]):
+    """
+    Single-source-of-truth session mapping backed by LangGraph's checkpointer.
+
+    Maintains a minimal fallback dict only when `_agent` is None or is a mock
+    without `.langgraph`, preventing state split-brain in production.
+    """
+
+    def __init__(self) -> None:
+        self._fallback: Dict[str, SessionState] = {}
+        self._known_ids: set[str] = set()
+
+    def _langgraph(self):
+        if _agent is not None and hasattr(_agent, "langgraph"):
+            try:
+                return _agent.langgraph
+            except Exception:
+                return None
+        return None
+
+    def __getitem__(self, session_id: str) -> SessionState:
+        lg = self._langgraph()
+        if lg is not None:
+            try:
+                snap = lg.get_graph_state(session_id)
+                if snap is not None and getattr(snap, "values", None):
+                    sess = snap.values.get("session_state")
+                    if sess is not None:
+                        return sess
+            except Exception:
+                pass
+        if session_id in self._fallback:
+            return self._fallback[session_id]
+        raise KeyError(session_id)
+
+    def __setitem__(self, session_id: str, state: SessionState) -> None:
+        self._known_ids.add(session_id)
+        lg = self._langgraph()
+        if lg is not None:
+            lg.hydrate_history(session_id, [], session_state=state)
+            self._fallback.pop(session_id, None)
+        else:
+            self._fallback[session_id] = state
+
+    def __delitem__(self, session_id: str) -> None:
+        existed = session_id in self
+        self._known_ids.discard(session_id)
+        self._fallback.pop(session_id, None)
+        lg = self._langgraph()
+        if lg is not None:
+            lg.clear_session(session_id)
+        if not existed:
+            raise KeyError(session_id)
+
+    def _all_keys(self) -> list[str]:
+        keys = set(self._fallback.keys())
+        lg = self._langgraph()
+        if lg is not None:
+            storage = getattr(lg.checkpointer, "storage", None)
+            if isinstance(storage, dict):
+                for sid in storage.keys():
+                    try:
+                        snap = lg.get_graph_state(sid)
+                        if snap is not None and getattr(snap, "values", None) and snap.values.get("session_state") is not None:
+                            keys.add(sid)
+                    except Exception:
+                        pass
+            else:
+                for sid in list(self._known_ids):
+                    try:
+                        snap = lg.get_graph_state(sid)
+                        if snap is not None and getattr(snap, "values", None) and snap.values.get("session_state") is not None:
+                            keys.add(sid)
+                    except Exception:
+                        pass
+        return list(keys)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._all_keys())
+
+    def __len__(self) -> int:
+        return len(self._all_keys())
+
+    def clear(self) -> None:
+        self._fallback.clear()
+        lg = self._langgraph()
+        if lg is not None:
+            storage = getattr(lg.checkpointer, "storage", None)
+            if isinstance(storage, dict):
+                for sid in list(storage.keys()):
+                    lg.clear_session(sid)
+            for sid in list(self._known_ids):
+                lg.clear_session(sid)
+        self._known_ids.clear()
+
+
+# Session state view (delegates to LangGraph checkpointer when available)
+_sessions: MutableMapping[str, SessionState] = _CheckpointerSessionProxy()
 
 # Per-session async locks to prevent concurrent turn race conditions
 _session_locks: Dict[str, "asyncio.Lock"] = {}
@@ -182,13 +281,17 @@ def _restore_session(session_id: str, agent: SalesAgent) -> Optional[SessionStat
             role = str(message.get("role", ""))
             content = str(message.get("content", ""))
             if role == "user":
-                agent.memory.add_user_message(session_id, content)
                 restored_pairs.append(("user", content))
             elif role == "assistant":
-                agent.memory.add_assistant_message(session_id, content)
                 restored_pairs.append(("assistant", content))
         if hasattr(agent, "langgraph"):
             agent.langgraph.hydrate_history(session_id, restored_pairs, session_state=state)
+        elif getattr(agent, "memory", None) is not None:
+            for role, content in restored_pairs:
+                if role == "user":
+                    agent.memory.add_user_message(session_id, content)
+                else:
+                    agent.memory.add_assistant_message(session_id, content)
         logger.info(f"[{session_id}] restored persisted session at {state.stage.value}")
         return state
     except Exception as exc:
@@ -520,18 +623,22 @@ async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
                 # Record MLOps telemetry & observability
                 duration_s = time.time() - turn_start_time
                 curr_stage = result.session_state.stage.value
+                routing_decision = deployment_router.decide_route(session_id)
                 span.end(status_code="OK")
                 prometheus_exporter.inc_counter("autovend_requests_total", labels={"stage": curr_stage})
                 prometheus_exporter.observe_histogram(
                     "autovend_latency_seconds", duration_s, labels={"stage": curr_stage}
                 )
                 deployment_router.record_turn_metric(
-                    session_id, variant="baseline", success=True, latency_s=duration_s
+                    session_id,
+                    variant=routing_decision.target_variant,
+                    success=True,
+                    latency_s=duration_s,
                 )
                 semantic_drift_detector.record_production_query(
                     intent=curr_stage,
                     retrieval_hit=bool(retrieved_cars),
-                    retrieval_top1_score=0.85 if retrieved_cars else 0.0,
+                    retrieval_top1_score=extract_real_top1_score(retrieved_cars),
                 )
 
                 # Build API response
@@ -570,8 +677,12 @@ async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
                 curr_stage = state.stage.value if state else "unknown"
                 span.end(status_code="ERROR", status_message=str(exc))
                 prometheus_exporter.inc_counter("autovend_errors_total", labels={"stage": curr_stage})
+                routing_decision = deployment_router.decide_route(session_id)
                 deployment_router.record_turn_metric(
-                    session_id, variant="baseline", success=False, latency_s=duration_s
+                    session_id,
+                    variant=routing_decision.target_variant,
+                    success=False,
+                    latency_s=duration_s,
                 )
                 dlq_replay_engine.enqueue_failed_task(
                     task_type="agent_turn",
@@ -747,13 +858,16 @@ async def send_message_stream(request: ChatRequest, raw_request: Request):
                         "autovend_latency_seconds", duration_s, labels={"stage": curr_stage}
                     )
                     deployment_router.record_turn_metric(
-                        session_id, variant="baseline", success=True, latency_s=duration_s
+                        session_id,
+                        variant=deployment_router.decide_route(session_id).target_variant,
+                        success=True,
+                        latency_s=duration_s,
                     )
                     final_cars = final_state.matched_cars if final_state else []
                     semantic_drift_detector.record_production_query(
                         intent=curr_stage,
                         retrieval_hit=bool(final_cars),
-                        retrieval_top1_score=0.85 if final_cars else 0.0,
+                        retrieval_top1_score=extract_real_top1_score(final_cars),
                     )
                 except Exception as save_err:
                     logger.error(f"Error persisting session {session_id} on stream completion: {save_err}")
@@ -848,14 +962,27 @@ async def get_messages(session_id: str):
 
 
 @router.put("/session/{session_id}/end")
-async def end_session(session_id: str):
-    """End a chat session."""
+async def end_session(session_id: str, background_tasks: BackgroundTasks):
+    """End a chat session and asynchronously persist long-term user memory."""
     agent = _get_agent()
 
-    state = _sessions.pop(session_id, None) or _restore_session(session_id, agent)
+    state = _sessions.get(session_id) or _restore_session(session_id, agent)
     if state is None:
         raise HTTPException(status_code=404, detail="Session not found.")
 
+    user_key = state.profile.phone_number or session_id
+    try:
+        conv_text = agent.get_history_text(session_id) if hasattr(agent, "get_history_text") else ""
+    except Exception:
+        conv_text = ""
+    background_tasks.add_task(
+        LongTermMemoryStore.get_instance().aextract_and_save,
+        user_key,
+        state,
+        conv_text,
+    )
+
+    _sessions.pop(session_id, None)
     _prev_explicit.pop(session_id, None)
     agent.clear_session(session_id)
     FileStorage.delete_session(session_id)

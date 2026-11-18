@@ -19,7 +19,6 @@ from src.agent.circuit_breaker import AgentCircuitBreaker, default_circuit_break
 from src.agent.extractors.combined_needs_extractor import extract_combined_needs
 from src.agent.extractors.profile_extractor import extract_profile
 from src.agent.extractors.reservation_extractor import extract_reservation
-from src.agent.memory import ChatMemoryManager
 from src.agent.patches import StatePatch, diff, format_for_prompt, snapshot
 from src.agent.plugins.pipeline import AgentPluginPipeline
 from src.agent.reconciliation import reconcile_constraints
@@ -85,6 +84,101 @@ def _record_patches(state: SessionState, before: Dict[str, Any], source: str) ->
     logger.info(f"[{state.session_id}] {len(patches)} patch(es): {state.last_patch}")
 
 
+class _CheckpointerMemoryProxy:
+    """
+    Single-source-of-truth memory adapter backed by LangGraph's checkpointer.
+
+    Preserves the `ChatMemoryManager` API for backward compatibility without
+    maintaining a separate in-memory message buffer.
+    """
+
+    def __init__(self, get_langgraph_fn):
+        self._get_langgraph = get_langgraph_fn
+
+    def add_message(self, session_id: str, role: MessageRole, content: str) -> None:
+        lg = self._get_langgraph()
+        role_str = "user" if role == MessageRole.USER else "assistant"
+        lg.hydrate_history(session_id, [(role_str, content)])
+
+    def add_user_message(self, session_id: str, content: str) -> None:
+        self.add_message(session_id, MessageRole.USER, content)
+
+    async def aadd_user_message(self, session_id: str, content: str) -> None:
+        self.add_user_message(session_id, content)
+
+    def add_assistant_message(self, session_id: str, content: str) -> None:
+        self.add_message(session_id, MessageRole.ASSISTANT, content)
+
+    async def aadd_assistant_message(self, session_id: str, content: str) -> None:
+        self.add_assistant_message(session_id, content)
+
+    def get_history(self, session_id: str) -> List[ChatMessage]:
+        lg = self._get_langgraph()
+        try:
+            snap = lg.get_graph_state(session_id)
+        except Exception:
+            return []
+        if snap is None or not getattr(snap, "values", None):
+            return []
+        lc_msgs = snap.values.get("messages") or []
+        out: List[ChatMessage] = []
+        for msg in lc_msgs:
+            msg_type = getattr(msg, "type", "")
+            if msg_type == "tool":
+                continue
+            if msg_type == "ai" and getattr(msg, "tool_calls", None) and not msg.content:
+                continue
+            role = MessageRole.USER if msg_type == "human" else MessageRole.ASSISTANT
+            content = msg.content if isinstance(msg.content, str) else str(msg.content)
+            out.append(ChatMessage(role=role, content=content))
+        return out
+
+    def get_history_as_text(
+        self,
+        session_id: str,
+        summary_history: Optional[List[Dict[str, Any]]] = None,
+    ) -> str:
+        history = self.get_history(session_id)
+        lines: List[str] = []
+        if summary_history:
+            lines.append("=== 历史对话增量与高阶归档摘要 ===")
+            for item in summary_history:
+                start_t = item.get("start_turn", "?")
+                end_t = item.get("end_turn", "?")
+                summary = item.get("summary", "")
+                stage_tag = f" [阶段: {item['stage']}]" if item.get("stage") else ""
+                tier_tag = " [高阶总结]" if item.get("is_hierarchical") else ""
+                lines.append(f"• [第 {start_t}-{end_t} 轮归档{tier_tag}{stage_tag}]: {summary}")
+            lines.append("=== 最新对话上下文 ===")
+
+        for msg in history:
+            role = "User" if msg.role == MessageRole.USER else "Assistant"
+            lines.append(f"{role}: {msg.content}")
+        return "\n".join(lines)
+
+    def clear_session(self, session_id: str) -> None:
+        lg = self._get_langgraph()
+        lg.clear_session(session_id)
+
+    def has_session(self, session_id: str) -> bool:
+        lg = self._get_langgraph()
+        try:
+            snap = lg.get_graph_state(session_id)
+        except Exception:
+            return False
+        if snap is None or not getattr(snap, "values", None):
+            return False
+        return bool(snap.values.get("messages") or snap.values.get("session_state"))
+
+    @property
+    def active_sessions(self) -> List[str]:
+        lg = self._get_langgraph()
+        storage = getattr(lg.checkpointer, "storage", None)
+        if isinstance(storage, dict):
+            return list(storage.keys())
+        return []
+
+
 class SalesAgent:
     """
     Pure AI conversation agent for automotive sales.
@@ -128,8 +222,8 @@ class SalesAgent:
         self.circuit_breaker = circuit_breaker or AgentCircuitBreaker()
         self.plugin_pipeline = plugin_pipeline or AgentPluginPipeline()
         self.use_unified_extraction = use_unified_extraction
-        self.memory = ChatMemoryManager()
         self._langgraph_agent: Optional[Any] = None
+        self.memory = _CheckpointerMemoryProxy(lambda: self.langgraph)
 
     @property
     def langgraph(self):

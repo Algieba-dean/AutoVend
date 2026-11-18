@@ -815,11 +815,78 @@ class DatasetRegistry:
         return current_hash == ver.sha256_hash
 
 
+@dataclass
+class ArtifactBundleVersion:
+    """Four-in-one version bundle: Prompt + Graph Topology + Model Routing Policy + pgvector Index."""
+
+    bundle_version: str
+    prompt_version: str
+    graph_topology_version: str
+    model_routing_policy: str
+    pgvector_index_version: str
+    created_at: float = field(default_factory=time.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+class ArtifactBundleRegistry:
+    """Computes and tracks immutable 4-in-1 `artifact_bundle_version` identifiers."""
+
+    def __init__(self, storage_dir: Optional[Path] = None):
+        self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_MLOPS_STORAGE / "bundles"
+        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self._lock = threading.RLock()
+        self._current: Optional[ArtifactBundleVersion] = None
+
+    def register_bundle(
+        self,
+        prompt_version: str,
+        graph_topology_version: str,
+        model_routing_policy: str,
+        pgvector_index_version: str,
+    ) -> ArtifactBundleVersion:
+        raw = f"{prompt_version}|{graph_topology_version}|{model_routing_policy}|{pgvector_index_version}"
+        digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12]
+        bundle_id = f"bundle-{digest}"
+        bundle = ArtifactBundleVersion(
+            bundle_version=bundle_id,
+            prompt_version=prompt_version,
+            graph_topology_version=graph_topology_version,
+            model_routing_policy=model_routing_policy,
+            pgvector_index_version=pgvector_index_version,
+        )
+        with self._lock:
+            self._current = bundle
+            try:
+                (self.storage_dir / f"{bundle_id}.json").write_text(
+                    json.dumps(bundle.to_dict(), ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+            except Exception:
+                pass
+        return bundle
+
+    def get_current(self) -> ArtifactBundleVersion:
+        with self._lock:
+            if self._current is not None:
+                return self._current
+            active_prompt = prompt_registry.get_active_prompt("response_generation_welcome")
+            p_ver = active_prompt.version if active_prompt else "v1.0.0"
+            return self.register_bundle(
+                prompt_version=p_ver,
+                graph_topology_version="langgraph-crag-audit-v1",
+                model_routing_policy="hybrid-local-control-cloud-synthesis-v1",
+                pgvector_index_version="pgvector-hnsw-v1",
+            )
+
+
 # Global Singletons
 experiment_tracker = ExperimentTracker()
 prompt_registry = PromptRegistry()
 model_registry = ModelRegistry()
 dataset_registry = DatasetRegistry()
+artifact_bundle_registry = ArtifactBundleRegistry()
 
 # Bootstrap default enterprise production artifacts
 try:

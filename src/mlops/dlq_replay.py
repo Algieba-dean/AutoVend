@@ -245,6 +245,39 @@ class DLQReplayEngine:
             self._save_tasks()
             return len(resolved_keys)
 
+    def export_to_eval_dataset(
+        self,
+        output_path: Optional[Path] = None,
+        task_types: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Promote captured DLQ failure cases into a golden evaluation dataset
+        for `src/eval/` regression testing and release gating.
+        """
+        with self._lock:
+            items: List[Dict[str, Any]] = []
+            for task in self._tasks.values():
+                if task_types and task.task_type not in task_types:
+                    continue
+                items.append(
+                    {
+                        "id": task.task_id,
+                        "category": task.task_type,
+                        "error_category": task.error_category,
+                        "session_id": task.payload.get("session_id", ""),
+                        "checkpoint_id": task.payload.get("checkpoint_id", ""),
+                        "user_message": task.payload.get("user_message", ""),
+                        "stage": task.payload.get("stage", ""),
+                        "context_snapshot": task.payload.get("context_snapshot", {}),
+                        "expected_behavior": f"Resolve {task.error_category}: {task.error_message[:120]}",
+                    }
+                )
+        if output_path is not None:
+            out_p = Path(output_path)
+            out_p.parent.mkdir(parents=True, exist_ok=True)
+            out_p.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8")
+        return items
+
     def _load_tasks(self) -> None:
         if not self.tasks_file.exists():
             return

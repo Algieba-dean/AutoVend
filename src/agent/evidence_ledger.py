@@ -8,9 +8,9 @@ before allowing Agent to claim task completion or confirm test drive reservation
 
 import logging
 import re
-from typing import Any, List, Tuple
+from typing import Any, Dict, List, Tuple
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +18,13 @@ logger = logging.getLogger(__name__)
 class VerificationEvidence(BaseModel):
     """A classified ground-truth verification fact."""
 
-    evidence_type: str  # e.g., "PHONE_VALIDATED", "CAR_MODEL_VERIFIED", "STORE_VERIFIED"
+    evidence_type: str  # e.g., "PHONE_VALIDATED", "CAR_MODEL_VERIFIED", "STORE_VERIFIED", "VEHICLE_RETRIEVED"
     target_value: str
     verified: bool = False
     details: str = ""
+    anchor_id: str = ""
+    source: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class VerificationEvidenceLedger:
@@ -193,4 +196,64 @@ class VerificationEvidenceLedger:
                 missing_reasons.append("证据账本缺失已核验的4S门店凭证 (STORE_VERIFIED)")
 
         return len(missing_reasons) == 0, missing_reasons
+
+    def record_retrieved_vehicles(
+        self, matched_cars: List[Dict[str, Any]], source: str = "rag_retrieval"
+    ) -> List[Dict[str, Any]]:
+        """
+        Bind retrieved vehicles to immutable evidence anchors in the ledger.
+
+        Returns the enriched `matched_cars` list with `evidence_anchor` attached.
+        """
+        enriched: List[Dict[str, Any]] = []
+        for idx, car in enumerate(matched_cars or []):
+            if not isinstance(car, dict):
+                continue
+            model_name = str(car.get("car_model") or "").strip()
+            if not model_name:
+                enriched.append(car)
+                continue
+            slug = re.sub(r"[^a-zA-Z0-9\u4e00-\u9fff]+", "_", model_name)[:24]
+            anchor_id = f"EVD-{idx + 1:02d}-{slug}"
+            meta = car.get("metadata") if isinstance(car.get("metadata"), dict) else {}
+            price_val = car.get("price") or car.get("price_wan") or car.get("msrp_wan") or meta.get("price")
+            range_val = (
+                car.get("electric_range")
+                or car.get("pure_electric_range")
+                or car.get("cltc_range")
+                or meta.get("electric_range")
+            )
+            self.evidences.append(
+                VerificationEvidence(
+                    evidence_type="VEHICLE_RETRIEVED",
+                    target_value=model_name,
+                    verified=True,
+                    anchor_id=anchor_id,
+                    source=source,
+                    details=f"价格={price_val or '未知'}, 续航={range_val or '未知'}",
+                    metadata={
+                        "price": price_val,
+                        "electric_range": range_val,
+                        "powertrain_type": car.get("powertrain_type") or meta.get("powertrain_type"),
+                    },
+                )
+            )
+            car_copy = dict(car)
+            car_copy["evidence_anchor"] = anchor_id
+            enriched.append(car_copy)
+        return enriched
+
+    def get_anchors_summary(self) -> List[Dict[str, Any]]:
+        """Return compact summary of verified vehicle anchors for audit/prompt binding."""
+        return [
+            {
+                "anchor_id": e.anchor_id,
+                "car_model": e.target_value,
+                "source": e.source,
+                "details": e.details,
+                "metadata": e.metadata,
+            }
+            for e in self.evidences
+            if e.evidence_type == "VEHICLE_RETRIEVED" and e.verified
+        ]
 

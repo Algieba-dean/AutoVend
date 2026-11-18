@@ -351,6 +351,47 @@ class AlertManager:
                 description="Semantic embedding drift centroid distance breached 0.20",
             )
         )
+        # Agent Business SLO rules
+        self.add_rule(
+            AlertRule(
+                name="CRAGRewriteRateHigh",
+                metric_key="crag_rewrite_rate",
+                operator=">",
+                threshold=0.30,
+                severity=AlertSeverity.WARNING,
+                description="CRAG query rewrite rate exceeded 30%",
+            )
+        )
+        self.add_rule(
+            AlertRule(
+                name="AuditorRejectRateHigh",
+                metric_key="auditor_reject_rate",
+                operator=">",
+                threshold=0.15,
+                severity=AlertSeverity.CRITICAL,
+                description="Anti-hallucination auditor reject rate exceeded 15%",
+            )
+        )
+        self.add_rule(
+            AlertRule(
+                name="ZeroHitRateHigh",
+                metric_key="zero_hit_rate",
+                operator=">",
+                threshold=0.10,
+                severity=AlertSeverity.WARNING,
+                description="RAG zero-hit rate exceeded 10%",
+            )
+        )
+        self.add_rule(
+            AlertRule(
+                name="CircuitBreakerTripRateHigh",
+                metric_key="circuit_breaker_trip_rate",
+                operator=">",
+                threshold=0.05,
+                severity=AlertSeverity.CRITICAL,
+                description="Agent anti-loop circuit breaker trip rate exceeded 5%",
+            )
+        )
 
     def add_rule(self, rule: AlertRule) -> None:
         with self._lock:

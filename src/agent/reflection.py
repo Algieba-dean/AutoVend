@@ -8,6 +8,7 @@ Inspects generated response text for parameter hallucinations against RAG ground
 import logging
 import re
 from typing import Any, Dict, List, Optional, Tuple
+
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -245,3 +246,63 @@ def reflect_and_guard(
     if report.warnings:
         logger.warning(f"Self-reflection triggered warnings: {report.warnings}")
     return report.sanitized_text, report.warnings
+
+
+_PRICE_CLAIM_RE = re.compile(r"(?:售价|指导价|裸车价|落地价|报价|只要|仅需|约)\s*(\d{1,3}(?:\.\d{1,2})?)\s*万(?:元)?")
+
+
+def audit_response_against_evidence(
+    response_text: str,
+    matched_cars: Optional[List[Dict[str, Any]]] = None,
+    evidence_anchors: Optional[List[Dict[str, Any]]] = None,
+) -> ReflectionReport:
+    """
+    Audit generated reply against retrieved vehicles and evidence ledger anchors
+    for price, range, and policy/compliance consistency.
+    """
+    report = ReflectionGate.evaluate(response_text, matched_cars)
+    cars = matched_cars or []
+    if not cars or not response_text:
+        return report
+
+    # Extract known prices (in 万元) from matched_cars & evidence_anchors
+    known_prices: List[float] = []
+    for car in cars:
+        if not isinstance(car, dict):
+            continue
+        meta = car.get("metadata") if isinstance(car.get("metadata"), dict) else {}
+        for key in ("price_wan", "msrp_wan", "price"):
+            val = car.get(key) if car.get(key) is not None else meta.get(key)
+            if val is not None:
+                m = re.search(r"(\d+(?:\.\d+)?)", str(val))
+                if m:
+                    num = float(m.group(1))
+                    if num > 1000:
+                        num = num / 10000.0
+                    if 1.0 <= num <= 500.0:
+                        known_prices.append(num)
+    for anchor in evidence_anchors or []:
+        meta = anchor.get("metadata") if isinstance(anchor, dict) else {}
+        if isinstance(meta, dict) and meta.get("price"):
+            m = re.search(r"(\d+(?:\.\d+)?)", str(meta["price"]))
+            if m:
+                num = float(m.group(1))
+                if num > 1000:
+                    num = num / 10000.0
+                if 1.0 <= num <= 500.0:
+                    known_prices.append(num)
+
+    if known_prices:
+        min_p = min(known_prices)
+        max_p = max(known_prices)
+        for claimed_str in _PRICE_CLAIM_RE.findall(response_text):
+            claimed = float(claimed_str)
+            # Allow reasonable drive-away / discount variance (±35%)
+            if claimed < min_p * 0.65 or claimed > max_p * 1.45:
+                report.hallucination_detected = True
+                report.warnings.append(
+                    f"可能存在价格幻觉: 回复提及 {claimed:.2f} 万元，与证据账本已知车型价格区间 ({min_p:.2f}~{max_p:.2f} 万元) 存在较大偏差"
+                )
+                report.grounding_score = max(0.0, round(report.grounding_score - 0.35, 2))
+
+    return report

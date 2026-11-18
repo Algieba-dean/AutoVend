@@ -35,6 +35,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from src.llm.base_llm import BaseLLM
+from src.llm.cost_ledger import AgentNodeRole, cost_ledger
 from src.llm.telemetry import Route, telemetry
 from src.utils.config import config
 from src.utils.logger import get_logger
@@ -66,6 +67,32 @@ class Task(str, Enum):
 
 #: Tasks served locally when a local backend is up. Everything else goes cloud.
 LOCAL_TASKS = frozenset({Task.QUERY_PARSE, Task.EXTRACTION})
+
+
+def _record_to_cost_ledger(
+    task: Task, route: Route, model: str, usage: Optional[Dict[str, Any]]
+) -> None:
+    """Attribute token usage & cost to the active node role in CostLedger."""
+    pt = int((usage or {}).get("prompt_tokens", 0) or 0)
+    ct = int((usage or {}).get("completion_tokens", 0) or 0)
+    default_role = {
+        Task.QUERY_PARSE: AgentNodeRole.EXTRACTOR,
+        Task.EXTRACTION: AgentNodeRole.EXTRACTOR,
+        Task.RESPONSE_GENERATION: AgentNodeRole.GENERATOR,
+        Task.JUDGE: AgentNodeRole.AUDITOR,
+    }.get(task, AgentNodeRole.OTHER)
+    # If node_cost_context is active (not OTHER), cost_ledger.record_usage uses it if node_role=None
+    from src.llm.cost_ledger import _CURRENT_NODE_ROLE
+
+    active_role = _CURRENT_NODE_ROLE.get()
+    resolved_role = active_role if active_role != AgentNodeRole.OTHER else default_role
+    cost_ledger.record_usage(
+        node_role=resolved_role,
+        prompt_tokens=pt,
+        completion_tokens=ct,
+        route=route,
+        model=model,
+    )
 
 
 class HybridRouter:
@@ -116,12 +143,13 @@ class HybridRouter:
         """
         wants_local = task in self.local_tasks
         local_available = self._local_available()
+        over_budget = not cost_ledger.check_budget()
 
         plan: List[tuple] = []
-        if wants_local and local_available:
+        if (wants_local or over_budget) and local_available:
             plan.append((self.local, Route.LOCAL))
         plan.extend((backend, Route.CLOUD) for backend in self.cloud_chain)
-        if not wants_local and local_available:
+        if not wants_local and not over_budget and local_available:
             # Last resort for synthesis: a weaker local answer beats no answer.
             plan.append((self.local, Route.LOCAL))
 
@@ -197,6 +225,7 @@ class HybridRouter:
                     if usage:
                         record.prompt_tokens = usage.get("prompt_tokens", 0)
                         record.completion_tokens = usage.get("completion_tokens", 0)
+                    _record_to_cost_ledger(task, route, model, usage)
                     record.ttft_s = getattr(backend, "last_ttft_s", None)
                     return result
             except Exception as exc:
@@ -257,6 +286,7 @@ class HybridRouter:
                     if usage:
                         record.prompt_tokens = usage.get("prompt_tokens", 0)
                         record.completion_tokens = usage.get("completion_tokens", 0)
+                    _record_to_cost_ledger(task, route, model, usage)
                     record.ttft_s = getattr(backend, "last_ttft_s", None)
                     return result
             except Exception as exc:
@@ -288,6 +318,7 @@ class HybridRouter:
                     if usage:
                         record.prompt_tokens = usage.get("prompt_tokens", 0)
                         record.completion_tokens = usage.get("completion_tokens", 0)
+                    _record_to_cost_ledger(task, route, model, usage)
                     record.ttft_s = getattr(backend, "last_ttft_s", None)
                     return result
             except Exception as exc:
@@ -369,6 +400,7 @@ class HybridRouter:
             if usage:
                 record.prompt_tokens = usage.get("prompt_tokens", 0)
                 record.completion_tokens = usage.get("completion_tokens", 0)
+            _record_to_cost_ledger(task, route, model, usage)
             record.ttft_s = getattr(backend, "last_ttft_s", None)
             return result
 

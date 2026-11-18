@@ -41,6 +41,8 @@ from src.mlops.observability import (
     prometheus_exporter,
 )
 from src.mlops.registry import (
+    ArtifactBundleRegistry,
+    ArtifactBundleVersion,
     DatasetRegistry,
     DatasetVersion,
     ExperimentTracker,
@@ -51,6 +53,7 @@ from src.mlops.registry import (
     PromptStatus,
     PromptVersion,
     RunRecord,
+    artifact_bundle_registry,
     dataset_registry,
     experiment_tracker,
     model_registry,
@@ -73,6 +76,9 @@ __all__ = [
     "DatasetRegistry",
     "DatasetVersion",
     "dataset_registry",
+    "ArtifactBundleRegistry",
+    "ArtifactBundleVersion",
+    "artifact_bundle_registry",
     # Drift
     "SemanticDriftDetector",
     "DriftReport",
