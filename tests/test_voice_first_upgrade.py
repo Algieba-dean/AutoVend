@@ -338,3 +338,133 @@ def test_p2_barge_in_commit_spoken_text_updates_checkpointer():
     assert len(ai_msgs) == 1
     assert ai_msgs[-1].content == "推荐您看小米SU7 [interrupted]"
     assert ai_msgs[-1].additional_kwargs.get("interrupted") is True
+
+
+def test_p1_write_tool_staging_and_0llm_affirm_e2e():
+    """LLM calling manage_test_drive stages pending_action (not executed); next '好的' executes with 0 LLM."""
+
+    class _StageBookingFakeLLM(_CountingFakeChatModel):
+        def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+            self.call_count += 1
+            self.shared_calls[0] += 1
+            if self.shared_calls[0] == 1:
+                return ChatResult(
+                    generations=[
+                        ChatGeneration(
+                            message=AIMessage(
+                                content="",
+                                tool_calls=[
+                                    {
+                                        "name": "manage_test_drive",
+                                        "args": {
+                                            "action": "create",
+                                            "car_model": "小米SU7",
+                                            "reservation_date": "2026-11-30",
+                                            "reservation_time": "14:00",
+                                            "reservation_location": "AutoVend朝阳4S店",
+                                            "test_driver": "李四",
+                                            "phone_number": "13900139000",
+                                        },
+                                        "id": "call_td_1",
+                                    }
+                                ],
+                            )
+                        )
+                    ]
+                )
+            return ChatResult(
+                generations=[
+                    ChatGeneration(
+                        message=AIMessage(
+                            content="帮您约周六下午两点去朝阳4S店试驾小米SU7，确认提交吗？"
+                        )
+                    )
+                ]
+            )
+
+    gen_llm = _StageBookingFakeLLM()
+    bg_llm = _CountingFakeChatModel()
+    agent = LangGraphSalesAgent(
+        llm=bg_llm, generation_llm=gen_llm, checkpointer=MemorySaver(), voice_mode=True
+    )
+    sess = SessionState(session_id="stage-affirm-e2e")
+
+    res1 = agent.invoke_turn(
+        "stage-affirm-e2e",
+        "帮我约11月30日下午2点去朝阳4S店试驾小米SU7，李四，13900139000",
+        session_state=sess,
+        voice_mode=True,
+    )
+    assert res1.session_state.pending_action is not None
+    assert res1.session_state.pending_action["tool_name"] == "manage_test_drive"
+    calls_before_affirm = gen_llm.shared_calls[0]
+
+    res2 = agent.invoke_turn("stage-affirm-e2e", "好的，确认", voice_mode=True)
+    assert gen_llm.shared_calls[0] == calls_before_affirm
+    assert "约好了" in res2.response_text
+    assert res2.session_state.pending_action is None
+
+
+def test_p0_pending_correction_injected_and_cleared():
+    """pending_correction is injected into voice prompt and cleared after reply generation."""
+    llm = _CountingFakeChatModel(reply_text="抱歉更正一下，小米SU7标准版续航是700公里。")
+    agent = LangGraphSalesAgent(llm=llm, checkpointer=MemorySaver(), voice_mode=True)
+    sess = SessionState(
+        session_id="corr-test",
+        pending_correction="上轮报价偏差，需口语更正续航参数",
+    )
+
+    msgs = build_reply_messages(
+        stage=Stage.CAR_SELECTION,
+        conversation_history="user: 那续航多少",
+        profile=sess.profile,
+        needs=sess.needs,
+        matched_cars=[],
+        reservation=sess.reservation,
+        voice_mode=True,
+        pending_correction=sess.pending_correction,
+    )
+    assert "上轮口语纠偏任务" in str(msgs[-1].content)
+
+    res = agent.invoke_turn("corr-test", "那续航多少", session_state=sess, voice_mode=True)
+    assert res.session_state.pending_correction is None
+
+
+def test_p2_commit_spoken_text_fastapi_route():
+    """POST /api/voice/commit_spoken_text updates checkpointer via VoicePipeline."""
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from backend.app.routes import voice as voice_routes
+    from src.agent.sales_agent import SalesAgent
+    from src.agent.voice.pipeline import VoicePipeline
+
+    llm = _CountingFakeChatModel(reply_text="推荐您看小米SU7，续航七百公里。")
+    sales_agent = SalesAgent(llm=llm, checkpointer=MemorySaver(), voice_mode=True)
+    sales_agent.run_graph_turn(
+        SessionState(session_id="http-barge-1"), "推荐个纯电车", voice_mode=True
+    )
+
+    mock_pipeline = VoicePipeline(agent=sales_agent)
+    prev_pipeline = voice_routes._pipeline
+    voice_routes.set_voice_pipeline(mock_pipeline)
+    try:
+        app = FastAPI()
+        app.include_router(voice_routes.router)
+        client = TestClient(app)
+        resp = client.post(
+            "/api/voice/commit_spoken_text",
+            json={
+                "session_id": "http-barge-1",
+                "turn_id": 1,
+                "spoken_text": "推荐您看小米SU7",
+                "interrupted": True,
+            },
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["updated"] is True
+        assert data["content"] == "推荐您看小米SU7 [interrupted]"
+    finally:
+        voice_routes._pipeline = prev_pipeline
+

@@ -372,7 +372,7 @@ class VoicePipeline:
         punctuation_regex = re.compile(r"([。！？!?\n;；]|(?<=[\u4e00-\u9fa5]{10})[，,])")
 
         async for item in self.agent.astream_graph_turn(
-            session_state, text, retrieved_cars=retrieved_cars
+            session_state, text, retrieved_cars=retrieved_cars, voice_mode=True
         ):
             kind = item[0]
             if kind == "metadata":

@@ -15,6 +15,7 @@ from langgraph.prebuilt import ToolNode
 
 from src.agent.events import (
     AnyDialogueEvent,
+    SlotUpdated,
     SystemNoteAdded,
     SystemNotesCleared,
     diff_to_events,
@@ -173,6 +174,14 @@ def finalize_generation_output(
         )
     sess.system_notes = []
     if sess.pending_correction:
+        clear_events.append(
+            SlotUpdated(
+                turn_id=int(getattr(sess, "turn_count", 0)),
+                source="finalize_generation",
+                field_path="pending_correction",
+                value=None,
+            )
+        )
         sess.pending_correction = None
 
     return {
@@ -352,6 +361,20 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
             from src.agent.voice_skills import format_pending_action_oral_prompt
 
             action_kind = t_args.get("action", "create")
+            if sess is not None:
+                if not t_args.get("phone_number") and sess.profile.phone_number:
+                    t_args["phone_number"] = sess.profile.phone_number
+                if not t_args.get("test_driver") and sess.profile.name:
+                    t_args["test_driver"] = sess.profile.name
+                if not t_args.get("reservation_location") and sess.reservation.reservation_location:
+                    t_args["reservation_location"] = sess.reservation.reservation_location
+                if not t_args.get("reservation_date") and sess.reservation.reservation_date:
+                    t_args["reservation_date"] = sess.reservation.reservation_date
+                if not t_args.get("reservation_time") and sess.reservation.reservation_time:
+                    t_args["reservation_time"] = sess.reservation.reservation_time
+                if not t_args.get("car_model") and sess.reservation.car_model:
+                    t_args["car_model"] = sess.reservation.car_model
+
             if action_kind in ("create", "reschedule"):
                 ledger = VerificationEvidenceLedger()
                 phone_ok = ledger.verify_phone_number(str(t_args.get("phone_number") or ""))
@@ -361,6 +384,8 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
                     str(t_args.get("reservation_time") or ""),
                 )
                 can_ok, missing = ledger.can_confirm_reservation()
+                if not dt_ok and "DATE_TIME_MISSING" not in missing:
+                    missing.append("DATE_TIME_MISSING")
                 if not (phone_ok and store_ok and dt_ok and can_ok):
                     staged_msgs.append(
                         ToolMessage(
@@ -670,12 +695,17 @@ def _schedule_async_hallucination_audit(
             if not report.is_clean and report.warnings:
                 correction = "; ".join(report.warnings)[:200]
                 if hasattr(agent, "graph") and hasattr(agent.graph, "update_state"):
+                    cfg = {"configurable": {"thread_id": sess.session_id}}
                     updated = sess.model_copy(deep=True)
+                    try:
+                        snap = agent.graph.get_state(cfg)
+                        latest = (getattr(snap, "values", None) or {}).get("session_state")
+                        if isinstance(latest, SessionState):
+                            updated = latest.model_copy(deep=True)
+                    except Exception:
+                        pass
                     updated.pending_correction = correction
-                    agent.graph.update_state(
-                        {"configurable": {"thread_id": sess.session_id}},
-                        {"session_state": updated},
-                    )
+                    agent.graph.update_state(cfg, {"session_state": updated})
         except Exception as exc:
             logger.debug(f"[{sess.session_id}] Async hallucination audit failed: {exc}")
 

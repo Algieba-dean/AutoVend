@@ -359,10 +359,20 @@ def _schedule_async_slot_extraction(
                 ext_model, conversation_text, sess_snapshot.model_copy(deep=True)
             )
             if hasattr(agent, "graph") and hasattr(agent.graph, "update_state"):
-                agent.graph.update_state(
-                    {"configurable": {"thread_id": session_id}},
-                    {"session_state": updated_sess},
-                )
+                cfg = {"configurable": {"thread_id": session_id}}
+                merged = updated_sess
+                try:
+                    snap = agent.graph.get_state(cfg)
+                    latest = (getattr(snap, "values", None) or {}).get("session_state")
+                    if isinstance(latest, SessionState):
+                        merged = latest.model_copy(deep=True)
+                        merged.profile = updated_sess.profile
+                        merged.needs = updated_sess.needs
+                        merged.reservation = updated_sess.reservation
+                        merged.preferences = updated_sess.preferences
+                except Exception:
+                    pass
+                agent.graph.update_state(cfg, {"session_state": merged})
         except Exception as exc:
             logger.debug(f"[{session_id}] Async background slot extraction failed: {exc}")
 
