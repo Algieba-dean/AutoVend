@@ -54,6 +54,16 @@ class ServiceContainer:
         return cls._rag_service
 
     @classmethod
+    def get_semantic_router(cls) -> Optional[Any]:
+        """Retrieve process-wide SemanticRouter via core bridge (keeps src.agent isolated)."""
+        try:
+            from src.semantic_router.router import get_router
+
+            return get_router()
+        except Exception:
+            return None
+
+    @classmethod
     def reset(cls) -> None:
         """Reset container state (used in unit testing)."""
         cls._instances.clear()

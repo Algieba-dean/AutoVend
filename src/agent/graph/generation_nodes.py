@@ -128,6 +128,9 @@ def build_generation_inputs(state: AgentGraphState) -> Tuple[SessionState, List[
         messages=dialogue_msgs,
         preferences=sess.preferences,
         pending_confirmation=sess.pending_confirmation,
+        voice_mode=bool(state.get("voice_mode", False)),
+        active_skill_prompt=state.get("active_skill_prompt") or None,
+        pending_correction=sess.pending_correction,
     )
     prompt_msgs.extend(trailing_tool_msgs)
     return sess, prompt_msgs
@@ -138,12 +141,15 @@ def finalize_generation_output(
 ) -> Dict[str, Any]:
     tool_calls = getattr(ai_msg, "tool_calls", None) or []
     iters = int(state.get("tool_iterations", 0))
+    llm_calls = int(state.get("llm_call_count", 0)) + 1
+    max_hops = 1 if state.get("voice_mode") else agent.budget_config.max_tool_iterations
     trace = [*list(state.get("execution_trace") or []), "generate_reply"]
     step = int(state.get("step_count", 0)) + 1
-    if tool_calls and iters < agent.budget_config.max_tool_iterations:
+    if tool_calls and iters < max_hops:
         return {
             "messages": [ai_msg],
             "tool_iterations": iters + 1,
+            "llm_call_count": llm_calls,
             "step_count": step,
             "execution_trace": trace,
         }
@@ -151,6 +157,10 @@ def finalize_generation_output(
     raw_text = ai_msg.content if isinstance(ai_msg.content, str) else str(ai_msg.content)
     post_ctx = agent.hook_manager.run_post_response(sess.session_id, raw_text)
     reply = post_ctx.sanitized_response or _fallback_response(sess.stage, sess.profile)
+    if state.get("voice_mode"):
+        from src.agent.graph.streaming import clean_voice_text
+
+        reply = clean_voice_text(reply) or reply
     plugin_context = state.get("plugin_context", {})
     reply = agent.plugin_pipeline.run_after_response(reply, plugin_context)
     clear_events: List[AnyDialogueEvent] = []
@@ -162,18 +172,34 @@ def finalize_generation_output(
             )
         )
     sess.system_notes = []
+    if sess.pending_correction:
+        sess.pending_correction = None
 
     return {
         "events": clear_events,
         "session_state": sess,
         "response_text": reply,
         "messages": [AIMessage(content=reply)],
+        "llm_call_count": llm_calls,
         "step_count": step,
         "execution_trace": trace,
     }
 
 
 def node_generate_reply_sync(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
+    direct_reply = state.get("direct_response_text")
+    if direct_reply:
+        sess = state["session_state"].model_copy(deep=True)
+        sess.system_notes = []
+        return {
+            "session_state": sess,
+            "response_text": direct_reply,
+            "messages": [AIMessage(content=direct_reply)],
+            "llm_call_count": int(state.get("llm_call_count", 0)),
+            "step_count": int(state.get("step_count", 0)) + 1,
+            "execution_trace": [*list(state.get("execution_trace") or []), "generate_reply_0llm"],
+        }
+
     sess, prompt_msgs = build_generation_inputs(state)
     within_budget, reason = check_step_budget(int(state.get("step_count", 0)), agent.budget_config)
     if not within_budget:
@@ -183,7 +209,8 @@ def node_generate_reply_sync(agent: Any, state: AgentGraphState) -> Dict[str, An
         return {"budget_exhausted": True, "degrade_reason": "cost_ledger_budget_exceeded"}
     with node_cost_context(sess.session_id, AgentNodeRole.GENERATOR):
         try:
-            runnable = agent._get_generation_runnable()
+            skill_tools = state.get("active_skill_tools") if state.get("voice_mode") else None
+            runnable = agent._get_generation_runnable(tool_names=skill_tools)
             timeout_s = float(getattr(agent.budget_config, "per_node_timeout_s", 0.0) or 0.0)
             if timeout_s > 0:
                 fut = agent._sync_executor.submit(runnable.invoke, prompt_msgs)
@@ -209,6 +236,19 @@ def node_generate_reply_sync(agent: Any, state: AgentGraphState) -> Dict[str, An
 
 
 async def node_generate_reply_async(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
+    direct_reply = state.get("direct_response_text")
+    if direct_reply:
+        sess = state["session_state"].model_copy(deep=True)
+        sess.system_notes = []
+        return {
+            "session_state": sess,
+            "response_text": direct_reply,
+            "messages": [AIMessage(content=direct_reply)],
+            "llm_call_count": int(state.get("llm_call_count", 0)),
+            "step_count": int(state.get("step_count", 0)) + 1,
+            "execution_trace": [*list(state.get("execution_trace") or []), "generate_reply_0llm"],
+        }
+
     sess, prompt_msgs = build_generation_inputs(state)
     within_budget, reason = check_step_budget(int(state.get("step_count", 0)), agent.budget_config)
     if not within_budget:
@@ -218,7 +258,8 @@ async def node_generate_reply_async(agent: Any, state: AgentGraphState) -> Dict[
         return {"budget_exhausted": True, "degrade_reason": "cost_ledger_budget_exceeded"}
     with node_cost_context(sess.session_id, AgentNodeRole.GENERATOR):
         try:
-            runnable = agent._get_generation_runnable()
+            skill_tools = state.get("active_skill_tools") if state.get("voice_mode") else None
+            runnable = agent._get_generation_runnable(tool_names=skill_tools)
             timeout_s = float(getattr(agent.budget_config, "per_node_timeout_s", 0.0) or 0.0)
             if timeout_s > 0:
                 try:
@@ -252,7 +293,8 @@ def route_after_generate(
     if messages:
         last = messages[-1]
         if isinstance(last, AIMessage) and getattr(last, "tool_calls", None):
-            if int(state.get("tool_iterations", 0)) <= agent.budget_config.max_tool_iterations:
+            max_hops = 1 if state.get("voice_mode") else agent.budget_config.max_tool_iterations
+            if int(state.get("tool_iterations", 0)) <= max_hops:
                 return "tools"
     return "audit_hallucination"
 
@@ -266,7 +308,10 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
     tool_calls = getattr(last_msg, "tool_calls", None) or []
 
     blocked_msgs: List[ToolMessage] = []
+    staged_msgs: List[ToolMessage] = []
+    staged_pending_action: Any = None
     allowed_calls = []
+    voice_mode = bool(state.get("voice_mode"))
     for tc in tool_calls:
         t_name = tc.get("name", "") if isinstance(tc, dict) else getattr(tc, "name", "")
         t_args = dict(tc.get("args", {}) if isinstance(tc, dict) else getattr(tc, "args", {}) or {})
@@ -298,14 +343,77 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
                     name=t_name,
                 )
             )
+        elif (
+            voice_mode
+            and contract.needsApproval
+            and not (t_name == "manage_test_drive" and t_args.get("action") == "query")
+        ):
+            from src.agent.evidence_ledger import VerificationEvidenceLedger
+            from src.agent.voice_skills import format_pending_action_oral_prompt
+
+            action_kind = t_args.get("action", "create")
+            if action_kind in ("create", "reschedule"):
+                ledger = VerificationEvidenceLedger()
+                phone_ok = ledger.verify_phone_number(str(t_args.get("phone_number") or ""))
+                store_ok = ledger.verify_4s_store(str(t_args.get("reservation_location") or ""))
+                dt_ok = ledger.verify_date_time(
+                    str(t_args.get("reservation_date") or ""),
+                    str(t_args.get("reservation_time") or ""),
+                )
+                can_ok, missing = ledger.can_confirm_reservation()
+                if not (phone_ok and store_ok and dt_ok and can_ok):
+                    staged_msgs.append(
+                        ToolMessage(
+                            content=_json.dumps(
+                                {
+                                    "staged": False,
+                                    "error_code": "MISSING_REQUIRED_SLOTS",
+                                    "missing_or_invalid": missing,
+                                    "instruction": "请先用口语向客户补全或核对手机号、门店和试驾时间。",
+                                },
+                                ensure_ascii=False,
+                            ),
+                            tool_call_id=t_id,
+                            name=t_name,
+                        )
+                    )
+                    continue
+
+            staged_pending_action = {"tool_name": t_name, "args": t_args}
+            oral_prompt = format_pending_action_oral_prompt(t_name, t_args)
+            staged_msgs.append(
+                ToolMessage(
+                    content=_json.dumps(
+                        {
+                            "staged": True,
+                            "oral_prompt": oral_prompt,
+                            "instruction": "已暂存写操作，请用口语复述关键信息并请客户确认，不要使用卡片或列表。",
+                        },
+                        ensure_ascii=False,
+                    ),
+                    tool_call_id=t_id,
+                    name=t_name,
+                )
+            )
         else:
             allowed_calls.append(tc)
 
     trace = [*list(state.get("execution_trace") or []), "tools"]
     step = int(state.get("step_count", 0)) + 1
 
-    if blocked_msgs and not allowed_calls:
-        return {"messages": blocked_msgs, "step_count": step, "execution_trace": trace}
+    if staged_pending_action is not None and sess is not None:
+        sess = sess.model_copy(deep=True)
+        sess.pending_action = staged_pending_action
+
+    if (blocked_msgs or staged_msgs) and not allowed_calls:
+        ret: Dict[str, Any] = {
+            "messages": [*blocked_msgs, *staged_msgs],
+            "step_count": step,
+            "execution_trace": trace,
+        }
+        if sess is not None and staged_pending_action is not None:
+            ret["session_state"] = sess
+        return ret
 
     call_args_by_id: Dict[str, Any] = {}
     for tc in allowed_calls:
@@ -420,11 +528,14 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
             )
         else:
             bounded_msgs.append(msg)
-    return {
-        "messages": [*blocked_msgs, *bounded_msgs],
+    final_ret: Dict[str, Any] = {
+        "messages": [*blocked_msgs, *staged_msgs, *bounded_msgs],
         "step_count": step,
         "execution_trace": trace,
     }
+    if sess is not None and staged_pending_action is not None:
+        final_ret["session_state"] = sess
+    return final_ret
 
 
 def node_audit_hallucination(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
@@ -447,6 +558,17 @@ def node_audit_hallucination(agent: Any, state: AgentGraphState) -> Dict[str, An
             details={"violations": outbound_guard.violations},
         )
         reply = outbound_guard.guarded_text
+
+    if state.get("voice_mode"):
+        # Voice-First: sync compliance guard already ran above; offload heavy hallucination audit to async
+        _schedule_async_hallucination_audit(agent, sess, reply, anchors)
+        return {
+            "audit_passed": True,
+            "response_text": reply,
+            "critic_feedback": None,
+            "step_count": step,
+            "execution_trace": trace,
+        }
 
     with node_cost_context(sess.session_id, AgentNodeRole.AUDITOR):
         report = audit_response_against_evidence(
@@ -526,6 +648,43 @@ def node_audit_hallucination(agent: Any, state: AgentGraphState) -> Dict[str, An
         "step_count": step,
         "execution_trace": trace,
     }
+
+
+def _schedule_async_hallucination_audit(
+    agent: Any,
+    sess: SessionState,
+    reply: str,
+    anchors: List[Dict[str, Any]],
+) -> None:
+    """Run hallucination audit asynchronously after voice emission; write `pending_correction` on mismatch."""
+    auditor_llm = getattr(agent, "auditor_chat_model", None)
+
+    def _bg_audit() -> None:
+        try:
+            report = audit_response_against_evidence(
+                reply,
+                matched_cars=sess.matched_cars,
+                evidence_anchors=anchors,
+                auditor_llm=auditor_llm,
+            )
+            if not report.is_clean and report.warnings:
+                correction = "; ".join(report.warnings)[:200]
+                if hasattr(agent, "graph") and hasattr(agent.graph, "update_state"):
+                    updated = sess.model_copy(deep=True)
+                    updated.pending_correction = correction
+                    agent.graph.update_state(
+                        {"configurable": {"thread_id": sess.session_id}},
+                        {"session_state": updated},
+                    )
+        except Exception as exc:
+            logger.debug(f"[{sess.session_id}] Async hallucination audit failed: {exc}")
+
+    executor = getattr(agent, "_sync_executor", None)
+    if executor is not None:
+        try:
+            executor.submit(_bg_audit)
+        except Exception:
+            pass
 
 
 def route_after_audit(

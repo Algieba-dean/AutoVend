@@ -219,6 +219,87 @@ def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
             new_events.extend(confirm_events)
             projected = project_state([*existing_events, *new_events], base_state=base_sess)
 
+    voice_mode = bool(state.get("voice_mode", getattr(agent, "voice_mode", False)))
+    active_skill = "general_chat"
+    active_skill_prompt = ""
+    active_skill_tools: List[str] = []
+    skill_needs_retrieval = False
+    direct_response_text = None
+    async_extraction_scheduled = False
+
+    if voice_mode:
+        from src.agent.voice_skills import execute_pending_action, route_voice_skill
+
+        sem_decision = state.get("semantic_route")
+        if sem_decision is None:
+            try:
+                from src.core.container import ServiceContainer
+
+                router = ServiceContainer.get_semantic_router()
+                if router is not None:
+                    sem_decision = router.classify(effective_message)
+            except Exception:
+                sem_decision = None
+
+        skill_route = route_voice_skill(
+            effective_message,
+            semantic_decision=sem_decision,
+            session_state=projected,
+        )
+        active_skill = skill_route.skill.name
+        active_skill_prompt = skill_route.skill.prompt_snippet
+        active_skill_tools = list(skill_route.skill.tool_names)
+        skill_needs_retrieval = skill_route.skill.needs_retrieval
+
+        if projected.pending_action:
+            if skill_route.is_affirm:
+                _ok, spoken_reply, _payload = execute_pending_action(projected.pending_action)
+                before_pa = projected.model_copy(deep=True)
+                projected.pending_action = None
+                pa_events = diff_to_events(
+                    before_pa, projected, turn_id=new_turn, source="voice_affirm_execute"
+                )
+                new_events.extend(pa_events)
+                projected = project_state([*existing_events, *new_events], base_state=base_sess)
+                direct_response_text = spoken_reply
+            elif skill_route.is_reject:
+                before_pa = projected.model_copy(deep=True)
+                projected.pending_action = None
+                projected.system_notes.append("客户取消了刚才的待确认操作，请简短口语询问如何调整。")
+                pa_events = diff_to_events(
+                    before_pa, projected, turn_id=new_turn, source="voice_reject_pending"
+                )
+                new_events.extend(pa_events)
+                projected = project_state([*existing_events, *new_events], base_state=base_sess)
+
+        # Lightweight <1ms entity merge so hot-path pre-retrieval works without waiting for extract_slots LLM
+        if skill_route.entities and direct_response_text is None:
+            before_ent = projected.model_copy(deep=True)
+            ent = skill_route.entities
+            if ent.get("budget_max") is not None:
+                projected.needs.explicit.budget_max = float(ent["budget_max"])
+            if ent.get("budget_min") is not None:
+                projected.needs.explicit.budget_min = float(ent["budget_min"])
+            if ent.get("powertrain_type"):
+                projected.needs.explicit.powertrain_type = str(ent["powertrain_type"])
+            if ent.get("brands") and not projected.needs.explicit.brand:
+                projected.needs.explicit.brand = str(ent["brands"][0])
+            if ent.get("phone_number"):
+                projected.profile.phone_number = str(ent["phone_number"])
+            if ent.get("store_name"):
+                projected.reservation.reservation_location = str(ent["store_name"])
+            ent_events = diff_to_events(
+                before_ent, projected, turn_id=new_turn, source="voice_lightweight_entity"
+            )
+            if ent_events:
+                new_events.extend(ent_events)
+                projected = project_state([*existing_events, *new_events], base_state=base_sess)
+
+        # Schedule async background slot extraction (non-blocking cold path)
+        if not state.get("skip_extraction") and direct_response_text is None:
+            _schedule_async_slot_extraction(agent, projected.session_id, conversation_text, projected)
+            async_extraction_scheduled = True
+
     return {
         "messages": [new_msg],
         "events": new_events,
@@ -247,14 +328,56 @@ def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
         "policy_veto_log": [],
         "last_extraction_confidence": None,
         "last_ambiguous_fields": [],
+        "voice_mode": voice_mode,
+        "active_skill": active_skill,
+        "active_skill_prompt": active_skill_prompt,
+        "active_skill_tools": active_skill_tools,
+        "skill_needs_retrieval": skill_needs_retrieval,
+        "direct_response_text": direct_response_text,
+        "async_extraction_scheduled": async_extraction_scheduled,
+        "llm_call_count": 0,
         "execution_trace": ["guard_and_route"],
     }
+
+
+def _schedule_async_slot_extraction(
+    agent: Any,
+    session_id: str,
+    conversation_text: str,
+    sess_snapshot: SessionState,
+) -> None:
+    """Fire-and-forget background slot extraction for Voice-First cold path."""
+    ext_model = getattr(agent, "extraction_chat_model", None)
+    if ext_model is None or "Mock" in type(ext_model).__name__:
+        return
+
+    def _bg_extract() -> None:
+        try:
+            from src.agent.extractors.unified_extractor import extract_unified_slots
+
+            updated_sess, _ = extract_unified_slots(
+                ext_model, conversation_text, sess_snapshot.model_copy(deep=True)
+            )
+            if hasattr(agent, "graph") and hasattr(agent.graph, "update_state"):
+                agent.graph.update_state(
+                    {"configurable": {"thread_id": session_id}},
+                    {"session_state": updated_sess},
+                )
+        except Exception as exc:
+            logger.debug(f"[{session_id}] Async background slot extraction failed: {exc}")
+
+    executor = getattr(agent, "_sync_executor", None)
+    if executor is not None:
+        try:
+            executor.submit(_bg_extract)
+        except Exception:
+            pass
 
 
 def route_after_guard(
     state: AgentGraphState,
 ) -> Literal["extract_slots", "arbitrate_stage"]:
-    if state.get("skip_extraction"):
+    if state.get("skip_extraction") or state.get("voice_mode"):
         return "arbitrate_stage"
     return "extract_slots"
 
@@ -362,6 +485,31 @@ def node_arbitrate_stage(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
     last_user_msg = state.get("safe_message") or state.get("user_message", "")
     old_stage = sess.stage
     turn_id = int(getattr(sess, "turn_count", 0))
+
+    if state.get("voice_mode"):
+        # Goal-Oriented zero-extra-latency path: cancel 7-stage serial lock, keep P4 safety guardrail
+        p4_guardrail = evaluate_guardrail_policy(
+            sess,
+            last_user_msg,
+            injection_detected=bool(state.get("injection_detected", False)),
+            circuit_breaker_trip=None,
+            turn_id=turn_id,
+        )
+        arb_res = arbitrate_policies([p4_guardrail], current_stage=old_stage)
+        projected = project_state([*existing_events, *arb_res.events], base_state=base_sess)
+        projected.previous_stage = old_stage.value
+        trace = [*list(state.get("execution_trace") or []), "arbitrate_stage"]
+        return {
+            "events": arb_res.events,
+            "session_state": projected,
+            "stage_changed": arb_res.stage_changed,
+            "topic_intent": state.get("active_skill") or "normal",
+            "hitl_triggered": arb_res.hitl_triggered,
+            "hitl_decision": arb_res.hitl_decision,
+            "policy_veto_log": arb_res.veto_log,
+            "step_count": int(state.get("step_count", 0)) + 1,
+            "execution_trace": trace,
+        }
 
     from src.agent.turn_classifier import classify_turn_intent
 
@@ -519,6 +667,12 @@ def route_after_arbitrate(
     """Route to HITL handoff if triggered, else retrieve vehicles or run plugins."""
     if state.get("hitl_triggered"):
         return "hitl_handoff"
+    if state.get("direct_response_text"):
+        return "run_plugins_and_subdag"
+    if state.get("voice_mode"):
+        if state.get("retrieved_cars") or state.get("skill_needs_retrieval"):
+            return "retrieve_vehicles"
+        return "run_plugins_and_subdag"
     if state.get("retrieved_cars"):
         return "retrieve_vehicles"
     if state.get("topic_intent") == UserDialogueIntent.SPEC_COMPARISON.value:

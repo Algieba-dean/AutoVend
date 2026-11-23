@@ -13,6 +13,7 @@ import uuid
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel
 
 from backend.app.routes.chat import (
     _retrieve_cars,
@@ -385,3 +386,23 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
             pass
     finally:
         logger.info(f"[{session_id}] Voice WebSocket closed.")
+
+
+class CommitSpokenTextRequest(BaseModel):
+    session_id: str
+    turn_id: Optional[int] = None
+    spoken_text: str = ""
+    interrupted: bool = True
+
+
+@router.post("/commit_spoken_text")
+async def commit_spoken_text_endpoint(req: CommitSpokenTextRequest):
+    """Barge-in writeback endpoint: commit actual spoken text to the LangGraph checkpointer."""
+    pipeline = _get_pipeline()
+    result = pipeline.agent.commit_spoken_text(
+        session_id=req.session_id,
+        turn_id=req.turn_id,
+        spoken_text=req.spoken_text,
+        interrupted=req.interrupted,
+    )
+    return result

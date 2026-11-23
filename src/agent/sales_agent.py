@@ -40,6 +40,7 @@ class SalesAgent:
         circuit_breaker: Optional[AgentCircuitBreaker] = None,
         plugin_pipeline: Optional[AgentPluginPipeline] = None,
         use_unified_extraction: bool = False,
+        voice_mode: bool = False,
     ):
         self.llm = llm
         self.generation_llm = generation_llm or llm
@@ -49,6 +50,7 @@ class SalesAgent:
         self.circuit_breaker = circuit_breaker or AgentCircuitBreaker()
         self.plugin_pipeline = plugin_pipeline or AgentPluginPipeline()
         self.use_unified_extraction = use_unified_extraction
+        self.voice_mode = voice_mode
         self._langgraph_agent: Optional[LangGraphSalesAgent] = None
 
     @property
@@ -64,6 +66,7 @@ class SalesAgent:
                 circuit_breaker=self.circuit_breaker,
                 plugin_pipeline=self.plugin_pipeline,
                 use_unified_extraction=self.use_unified_extraction,
+                voice_mode=self.voice_mode,
             )
         return self._langgraph_agent
 
@@ -74,6 +77,7 @@ class SalesAgent:
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         skip_extraction: bool = False,
         propose_with_llm: bool = False,
+        voice_mode: Optional[bool] = None,
     ) -> AgentResult:
         """Execute a full conversation turn synchronously via the LangGraph StateGraph."""
         return self.langgraph.invoke_turn(
@@ -83,6 +87,7 @@ class SalesAgent:
             retrieved_cars=retrieved_cars,
             skip_extraction=skip_extraction,
             propose_with_llm=propose_with_llm,
+            voice_mode=voice_mode,
         )
 
     async def arun_graph_turn(
@@ -92,6 +97,7 @@ class SalesAgent:
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         skip_extraction: bool = False,
         propose_with_llm: bool = False,
+        voice_mode: Optional[bool] = None,
     ) -> AgentResult:
         """Execute a full conversation turn asynchronously via the LangGraph StateGraph."""
         return await self.langgraph.ainvoke_turn(
@@ -101,6 +107,7 @@ class SalesAgent:
             retrieved_cars=retrieved_cars,
             skip_extraction=skip_extraction,
             propose_with_llm=propose_with_llm,
+            voice_mode=voice_mode,
         )
 
     async def astream_graph_turn(
@@ -110,6 +117,7 @@ class SalesAgent:
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         skip_extraction: bool = False,
         propose_with_llm: bool = False,
+        voice_mode: Optional[bool] = None,
     ) -> AsyncGenerator[Tuple[str, Any], None]:
         """Stream a conversation turn via LangGraph + LangChain `.astream()`."""
         async for ev in self.langgraph.astream_turn(
@@ -119,8 +127,24 @@ class SalesAgent:
             retrieved_cars=retrieved_cars,
             skip_extraction=skip_extraction,
             propose_with_llm=propose_with_llm,
+            voice_mode=voice_mode,
         ):
             yield ev
+
+    def commit_spoken_text(
+        self,
+        session_id: str,
+        turn_id: Optional[int] = None,
+        spoken_text: str = "",
+        interrupted: bool = True,
+    ) -> Dict[str, Any]:
+        """Commit barge-in truncated spoken text back to the LangGraph checkpointer."""
+        return self.langgraph.commit_spoken_text(
+            session_id=session_id,
+            turn_id=turn_id,
+            spoken_text=spoken_text,
+            interrupted=interrupted,
+        )
 
     def process(self, agent_input: AgentInput) -> AgentResult:
         """Process one conversation turn synchronously through the LangGraph StateGraph."""

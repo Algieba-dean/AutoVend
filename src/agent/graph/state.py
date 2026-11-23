@@ -68,6 +68,15 @@ class AgentGraphState(TypedDict, total=False):
     proposed_stage: Optional[Stage]
     proposed_stage_reason: str
     _state_snapshot_index: int
+    # Voice-First low-latency fields
+    voice_mode: bool
+    active_skill: str
+    active_skill_prompt: str
+    active_skill_tools: List[str]
+    skill_needs_retrieval: bool
+    direct_response_text: Optional[str]
+    async_extraction_scheduled: bool
+    llm_call_count: int
 
 
 def format_messages_as_text(messages: List[AnyMessage], max_turns: int = 20) -> str:

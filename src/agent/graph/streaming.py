@@ -9,18 +9,42 @@ from src.agent.graph.state import OPEN_THINK_RE, AgentGraphState
 from src.agent.guardrail.compliance import DualStreamComplianceGuard
 from src.agent.schemas import SessionState
 
+_MD_LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]+\)")
+_MD_HEADING_RE = re.compile(r"(?m)^\s{0,3}#{1,6}\s*")
+_MD_LIST_RE = re.compile(r"(?m)^\s*(?:[-*+]|(?:\d+\.))\s+")
+_PAREN_NOTE_RE = re.compile(r"[（(][^（）()]{0,40}[)）]")
+_UNREADABLE_RE = re.compile(r"[`*_~>|•▪→←↑↓★☆✅❌⚡🔥💡📌]+")
 
-def sanitize_stream_segment(agent: Any, session_id: str, segment: str) -> str:
+
+def clean_voice_text(text: str) -> str:
+    """Strip Markdown, parenthetical annotations, and unreadable symbols for TTS/voice output."""
+    if not text:
+        return ""
+    cleaned = _MD_LINK_RE.sub(r"\1", text)
+    cleaned = _MD_HEADING_RE.sub("", cleaned)
+    cleaned = _MD_LIST_RE.sub("", cleaned)
+    cleaned = _PAREN_NOTE_RE.sub("", cleaned)
+    cleaned = _UNREADABLE_RE.sub("", cleaned)
+    cleaned = re.sub(r"\s{2,}", " ", cleaned)
+    return cleaned.strip()
+
+
+def sanitize_stream_segment(
+    agent: Any, session_id: str, segment: str, voice_mode: bool = False
+) -> str:
     """Run lightweight compliance & PII redaction on a buffered stream segment before emission."""
     if not segment:
         return ""
+    text = clean_voice_text(segment) if voice_mode else segment
+    if not text:
+        return ""
     try:
-        post_ctx = agent.hook_manager.run_post_response(session_id, segment)
+        post_ctx = agent.hook_manager.run_post_response(session_id, text)
         cleaned = post_ctx.sanitized_response
         guard = DualStreamComplianceGuard.inspect(cleaned)
         return guard.guarded_text if not guard.is_compliant else cleaned
     except Exception:
-        return segment
+        return text
 
 
 async def stream_graph_turn(
@@ -31,6 +55,7 @@ async def stream_graph_turn(
     retrieved_cars: Optional[List[Dict[str, Any]]] = None,
     skip_extraction: bool = False,
     propose_with_llm: bool = False,
+    voice_mode: Optional[bool] = None,
 ) -> AsyncGenerator[Tuple[str, Any], None]:
     """
     Stream a turn natively via `agent.graph.astream(..., stream_mode=["messages", "updates"])`.
@@ -38,6 +63,9 @@ async def stream_graph_turn(
     Buffers tokens at sentence/clause boundaries and runs lightweight compliance/PII
     sanitization before yielding `("delta", chunk)`.
     """
+    effective_voice_mode = (
+        bool(getattr(agent, "voice_mode", False)) if voice_mode is None else bool(voice_mode)
+    )
     config = agent._build_run_config(session_id, session_state)
     graph_input: AgentGraphState = {
         "session_id": session_id,
@@ -45,12 +73,14 @@ async def stream_graph_turn(
         "skip_extraction": skip_extraction,
         "retrieved_cars": retrieved_cars,
         "propose_with_llm": propose_with_llm,
+        "voice_mode": effective_voice_mode,
     }
     if session_state is not None:
         graph_input["session_state"] = session_state
 
     emitted_metadata = False
     emitted_tokens = False
+    emitted_filler = False
     latest_stage_changed = False
     latest_sess: Optional[SessionState] = session_state
     final_text = ""
@@ -59,23 +89,42 @@ async def stream_graph_turn(
     streamed_so_far = ""
     in_think = False
     think_tag = ""
-    boundary_re = re.compile(r"[。！？!?\n；;]")
+    sentence_boundary_re = re.compile(r"[。！？!?\n；;]")
+    clause_boundary_re = re.compile(r"[，,、。！？!?\n；;]")
 
     def _flush_ready_segments(force_all: bool = False) -> List[str]:
         nonlocal stream_pending
         if not stream_pending:
             return []
         if force_all:
-            seg = sanitize_stream_segment(agent, session_id, stream_pending)
+            seg = sanitize_stream_segment(
+                agent, session_id, stream_pending, voice_mode=effective_voice_mode
+            )
             stream_pending = ""
             return [seg] if seg else []
-        matches = list(boundary_re.finditer(stream_pending))
-        if not matches:
-            return []
-        cut = matches[-1].end()
+        if effective_voice_mode:
+            matches = list(clause_boundary_re.finditer(stream_pending))
+            if not matches:
+                return []
+            # Flush on strong sentence boundary immediately, or on comma/pause when >= 8 chars
+            cut = None
+            for m in reversed(matches):
+                ch = stream_pending[m.start() : m.end()]
+                if sentence_boundary_re.match(ch) or m.end() >= 8:
+                    cut = m.end()
+                    break
+            if cut is None:
+                return []
+        else:
+            matches = list(sentence_boundary_re.finditer(stream_pending))
+            if not matches:
+                return []
+            cut = matches[-1].end()
         raw_seg = stream_pending[:cut]
         stream_pending = stream_pending[cut:]
-        seg = sanitize_stream_segment(agent, session_id, raw_seg)
+        seg = sanitize_stream_segment(
+            agent, session_id, raw_seg, voice_mode=effective_voice_mode
+        )
         return [seg] if seg else []
 
     async for mode, payload in agent.graph.astream(
@@ -153,6 +202,27 @@ async def stream_graph_turn(
                 )
             if "generate_reply" in payload:
                 gen_upd = payload["generate_reply"]
+                if effective_voice_mode and not emitted_filler:
+                    gen_msgs = gen_upd.get("messages") or []
+                    if gen_msgs:
+                        last_gen = gen_msgs[-1]
+                        tcs = getattr(last_gen, "tool_calls", None) or []
+                        if tcs:
+                            tc0 = tcs[0]
+                            t_name = (
+                                tc0.get("name", "")
+                                if isinstance(tc0, dict)
+                                else getattr(tc0, "name", "")
+                            )
+                            if t_name:
+                                from src.agent.voice_skills import get_filler_for_tool
+
+                                filler = get_filler_for_tool(t_name)
+                                if filler:
+                                    emitted_filler = True
+                                    emitted_tokens = True
+                                    streamed_so_far += filler
+                                    yield ("delta", filler)
                 if "response_text" in gen_upd:
                     final_text = gen_upd["response_text"]
             if "audit_hallucination" in payload:
@@ -171,6 +241,22 @@ async def stream_graph_turn(
             if getattr(msg_chunk, "tool_call_chunks", None) or getattr(
                 msg_chunk, "tool_calls", None
             ):
+                if effective_voice_mode and not emitted_filler:
+                    tc_list = getattr(msg_chunk, "tool_calls", None) or getattr(
+                        msg_chunk, "tool_call_chunks", None
+                    ) or []
+                    for tc in tc_list:
+                        t_name = tc.get("name", "") if isinstance(tc, dict) else getattr(tc, "name", "")
+                        if t_name:
+                            from src.agent.voice_skills import get_filler_for_tool
+
+                            filler = get_filler_for_tool(t_name)
+                            if filler:
+                                emitted_filler = True
+                                emitted_tokens = True
+                                streamed_so_far += filler
+                                yield ("delta", filler)
+                            break
                 continue
             token = msg_chunk.content if isinstance(msg_chunk.content, str) else ""
             if not token:
@@ -230,7 +316,11 @@ async def stream_graph_turn(
 
     if final_text:
         if emitted_tokens:
-            if streamed_so_far != final_text:
+            if stream_pending:
+                for seg in _flush_ready_segments(force_all=True):
+                    streamed_so_far += seg
+                    yield ("delta", seg)
+            if not effective_voice_mode and streamed_so_far != final_text:
                 if final_text.startswith(streamed_so_far):
                     tail = final_text[len(streamed_so_far) :]
                     if tail:
@@ -238,7 +328,11 @@ async def stream_graph_turn(
                 else:
                     yield ("replace", final_text)
         else:
-            yield ("delta", final_text)
+            cleaned_final = (
+                clean_voice_text(final_text) if effective_voice_mode else final_text
+            )
+            if cleaned_final:
+                yield ("delta", cleaned_final)
     elif stream_pending:
         for seg in _flush_ready_segments(force_all=True):
             emitted_tokens = True

@@ -245,7 +245,7 @@ def node_retrieve_vehicles(agent: Any, state: AgentGraphState) -> Dict[str, Any]
         except Exception as te:
             logger.debug(f"[{sess.session_id}] Tier 0 lookup skipped: {te}")
 
-    if sess.stage not in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
+    if not state.get("voice_mode") and sess.stage not in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
         trace = [*list(state.get("execution_trace") or []), "retrieve_vehicles"]
         return {
             "session_state": sess,
@@ -272,6 +272,14 @@ def node_retrieve_vehicles(agent: Any, state: AgentGraphState) -> Dict[str, Any]
             retrieval_query = query or needs_query or "recommend a vehicle"
 
     cars = retrieve_single_query(agent, retrieval_query, explicit_dict, implicit_dict, top_k=5)
+    if not cars and state.get("voice_mode") and explicit_dict:
+        # Voice-First millisecond FilterEngine relaxation (single-pass, no CRAG LLM rewrite loop)
+        relaxed_dict = {
+            k: v
+            for k, v in explicit_dict.items()
+            if k not in ("brand", "seat_layout", "design_style", "drive_type")
+        }
+        cars = retrieve_single_query(agent, retrieval_query, relaxed_dict, implicit_dict, top_k=5)
     return finalize_retrieved_cars(state, sess, ledger, cars or [], source="hybrid_rag")
 
 
@@ -309,6 +317,8 @@ def car_matches_powertrain(car: Dict[str, Any], target_power: str) -> bool:
 
 def node_grade_retrieval(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
     """CRAG Grader: verify retrieved cars are non-empty and respect hard constraints."""
+    if state.get("voice_mode"):
+        return {"retrieval_grade_passed": True, "retrieval_grade_reason": "voice_hotpath_bypass"}
     sess = state["session_state"].model_copy(deep=True)
     retries = int(state.get("retrieval_retries", 0))
 

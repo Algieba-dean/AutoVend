@@ -453,6 +453,26 @@ def diff_to_events(
             )
         )
 
+    if after.pending_action != before.pending_action:
+        events.append(
+            SlotUpdated(
+                turn_id=turn_id,
+                source=source,
+                field_path="pending_action",
+                value=dict(after.pending_action) if after.pending_action is not None else None,
+            )
+        )
+
+    if after.pending_correction != before.pending_correction:
+        events.append(
+            SlotUpdated(
+                turn_id=turn_id,
+                source=source,
+                field_path="pending_correction",
+                value=after.pending_correction,
+            )
+        )
+
     if after.active_loop != before.active_loop:
         events.append(
             ActiveLoopUpdated(

@@ -98,6 +98,7 @@ class LangGraphSalesAgent:
         hook_manager: Optional[LifecycleHookManager] = None,
         use_unified_extraction: bool = True,
         budget_config: Optional[TurnBudgetConfig] = None,
+        voice_mode: bool = False,
     ):
         self.extraction_chat_model: BaseChatModel = ensure_chat_model(llm)
         self.generation_chat_model: BaseChatModel = ensure_chat_model(generation_llm or llm)
@@ -112,14 +113,22 @@ class LangGraphSalesAgent:
         self.hook_manager = hook_manager or LifecycleHookManager()
         self.use_unified_extraction = use_unified_extraction
         self.budget_config = budget_config or TurnBudgetConfig()
+        self.voice_mode = voice_mode
         self._sync_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="lg_sync_gen")
 
         self.graph = self._build_graph()
 
-    def _get_generation_runnable(self) -> Any:
-        if hasattr(self.generation_chat_model, "bind_tools") and self.tools:
+    def _get_generation_runnable(self, tool_names: Optional[List[str]] = None) -> Any:
+        if tool_names is not None:
+            if not tool_names:
+                return self.generation_chat_model
+            allowed = set(tool_names)
+            selected_tools = [t for t in self.tools if t.name in allowed]
+        else:
+            selected_tools = self.tools
+        if hasattr(self.generation_chat_model, "bind_tools") and selected_tools:
             try:
-                return self.generation_chat_model.bind_tools(self.tools)
+                return self.generation_chat_model.bind_tools(selected_tools)
             except NotImplementedError:
                 pass
         return self.generation_chat_model
@@ -347,6 +356,7 @@ class LangGraphSalesAgent:
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         skip_extraction: bool = False,
         propose_with_llm: bool = False,
+        voice_mode: Optional[bool] = None,
     ) -> AgentResult:
         """Execute one full conversation turn synchronously through the LangGraph StateGraph."""
         config = self._build_run_config(session_id, session_state)
@@ -356,6 +366,7 @@ class LangGraphSalesAgent:
             "skip_extraction": skip_extraction,
             "retrieved_cars": retrieved_cars,
             "propose_with_llm": propose_with_llm,
+            "voice_mode": self.voice_mode if voice_mode is None else bool(voice_mode),
         }
         if session_state is not None:
             graph_input["session_state"] = session_state
@@ -383,6 +394,7 @@ class LangGraphSalesAgent:
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         skip_extraction: bool = False,
         propose_with_llm: bool = False,
+        voice_mode: Optional[bool] = None,
     ) -> AgentResult:
         """Execute one full conversation turn asynchronously through the LangGraph StateGraph."""
         config = self._build_run_config(session_id, session_state)
@@ -392,6 +404,7 @@ class LangGraphSalesAgent:
             "skip_extraction": skip_extraction,
             "retrieved_cars": retrieved_cars,
             "propose_with_llm": propose_with_llm,
+            "voice_mode": self.voice_mode if voice_mode is None else bool(voice_mode),
         }
         if session_state is not None:
             graph_input["session_state"] = session_state
@@ -434,6 +447,7 @@ class LangGraphSalesAgent:
         retrieved_cars: Optional[List[Dict[str, Any]]] = None,
         skip_extraction: bool = False,
         propose_with_llm: bool = False,
+        voice_mode: Optional[bool] = None,
     ) -> AsyncGenerator[Tuple[str, Any], None]:
         async for ev in stream_graph_turn(
             self,
@@ -443,8 +457,71 @@ class LangGraphSalesAgent:
             retrieved_cars=retrieved_cars,
             skip_extraction=skip_extraction,
             propose_with_llm=propose_with_llm,
+            voice_mode=voice_mode,
         ):
             yield ev
+
+    def commit_spoken_text(
+        self,
+        session_id: str,
+        turn_id: Optional[int] = None,
+        spoken_text: str = "",
+        interrupted: bool = True,
+    ) -> Dict[str, Any]:
+        """
+        Barge-in writeback protocol: update the last AIMessage in the Checkpointer
+        to the exact truncated text the user actually heard, marked with `[interrupted]`.
+        """
+        try:
+            snap = self.get_graph_state(session_id)
+        except Exception as exc:
+            logger.warning(f"[{session_id}] commit_spoken_text get_graph_state failed: {exc}")
+            return {"updated": False, "error": str(exc)}
+
+        values = getattr(snap, "values", None) or {}
+        messages = list(values.get("messages") or [])
+        last_ai_idx = None
+        for idx in range(len(messages) - 1, -1, -1):
+            if isinstance(messages[idx], AIMessage):
+                last_ai_idx = idx
+                break
+
+        if last_ai_idx is None:
+            return {"updated": False, "reason": "no_ai_message_found"}
+
+        last_ai = messages[last_ai_idx]
+        clean_spoken = (spoken_text or "").strip()
+        if interrupted and not clean_spoken.endswith("[interrupted]"):
+            new_content = f"{clean_spoken} [interrupted]".strip()
+        else:
+            new_content = clean_spoken
+
+        updated_kwargs = {
+            **dict(getattr(last_ai, "additional_kwargs", None) or {}),
+            "interrupted": interrupted,
+            "turn_id": turn_id,
+            "spoken_text": clean_spoken,
+        }
+        updated_ai = AIMessage(
+            content=new_content,
+            id=getattr(last_ai, "id", None),
+            additional_kwargs=updated_kwargs,
+        )
+        try:
+            self.graph.update_state(
+                {"configurable": {"thread_id": session_id}},
+                {"messages": [updated_ai], "response_text": new_content},
+            )
+            return {
+                "updated": True,
+                "session_id": session_id,
+                "turn_id": turn_id,
+                "content": new_content,
+                "interrupted": interrupted,
+            }
+        except Exception as exc:
+            logger.warning(f"[{session_id}] commit_spoken_text update_state failed: {exc}")
+            return {"updated": False, "error": str(exc)}
 
     def get_graph_state(self, session_id: str) -> Any:
         """Return the LangGraph checkpointer StateSnapshot for `session_id`."""

@@ -77,10 +77,9 @@ STATIC_STAGE_GUIDANCE: Dict[Stage, str] = {
 }
 
 
-def get_static_system_instruction(stage: Stage) -> str:
-    """Return the 100% static SystemMessage instruction for `stage` (KV-cache safe)."""
-    guidance = STATIC_STAGE_GUIDANCE.get(stage, STATIC_STAGE_GUIDANCE[Stage.WELCOME])
-    return f"{STATIC_SYSTEM_PREFIX}\n\n{guidance}"
+def get_static_system_instruction(stage: Optional[Stage] = None) -> str:
+    """Return the 100% cross-turn constant SystemMessage instruction (byte-identical across all stages for KV-cache)."""
+    return STATIC_SYSTEM_PREFIX
 
 
 def micro_compact_messages(
@@ -159,6 +158,9 @@ def _build_dynamic_context_block(
     system_notes: Optional[List[str]] = None,
     preferences: Optional[PreferenceModel] = None,
     pending_confirmation: Optional[Dict[str, Any]] = None,
+    voice_mode: bool = False,
+    active_skill_prompt: Optional[str] = None,
+    pending_correction: Optional[str] = None,
 ) -> str:
     """Build dynamic per-turn context block placed at the tail (after static SystemMessage & history)."""
     from src.agent.battlecards import match_battlecards
@@ -171,14 +173,27 @@ def _build_dynamic_context_block(
         conversation_history, cars_text
     )
 
+    stage_guidance = STATIC_STAGE_GUIDANCE.get(stage, STATIC_STAGE_GUIDANCE[Stage.WELCOME])
     parts: List[str] = [
         f"[当前会话动态状态 | 阶段: {stage.value}]",
+        f"阶段指引: {stage_guidance}",
         f"客户画像: {profile.model_dump_json()}",
         f"待补充画像字段: {_get_missing_profile_fields(profile)}",
         f"显性需求: {needs.explicit.model_dump_json()}",
         f"隐性需求: {needs.implicit.model_dump_json()}",
         f"待探索需求: {_get_missing_needs_fields(needs)}",
     ]
+
+    if voice_mode:
+        from src.agent.voice_skills import VOICE_EXPRESSION_PROTOCOL
+
+        parts.append(VOICE_EXPRESSION_PROTOCOL)
+        if active_skill_prompt:
+            parts.append(f"[动态技能指引]\n{active_skill_prompt}")
+        if pending_correction:
+            parts.append(
+                f"[上轮口语纠偏任务] 请在本轮开头用自然口语简要修正上轮信息：{pending_correction}"
+            )
 
     if preferences is not None:
         pref_summary = PreferenceEngine.format_for_prompt(preferences)
@@ -228,10 +243,13 @@ def _prepare_prompt_inputs(
     messages: Optional[Sequence[BaseMessage]] = None,
     preferences: Optional[PreferenceModel] = None,
     pending_confirmation: Optional[Dict[str, Any]] = None,
+    voice_mode: bool = False,
+    active_skill_prompt: Optional[str] = None,
+    pending_correction: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Build KV-cache-friendly prompt inputs:
-    - `system_instruction`: 100% static per stage
+    - `system_instruction`: 100% static across all turns & stages
     - `history`: micro-compacted message history
     - `user_input`: dynamic context block + current user turn
     """
@@ -246,6 +264,9 @@ def _prepare_prompt_inputs(
         system_notes=system_notes,
         preferences=preferences,
         pending_confirmation=pending_confirmation,
+        voice_mode=voice_mode,
+        active_skill_prompt=active_skill_prompt,
+        pending_correction=pending_correction,
     )
 
     if messages:
@@ -297,6 +318,9 @@ def build_reply_messages(
     messages: Optional[Sequence[BaseMessage]] = None,
     preferences: Optional[PreferenceModel] = None,
     pending_confirmation: Optional[Dict[str, Any]] = None,
+    voice_mode: bool = False,
+    active_skill_prompt: Optional[str] = None,
+    pending_correction: Optional[str] = None,
 ) -> List[BaseMessage]:
     """Build `[Static SystemMessage, *compacted_history, HumanMessage(dynamic + turn)]`."""
     inputs = _prepare_prompt_inputs(
@@ -310,6 +334,9 @@ def build_reply_messages(
         messages=messages,
         preferences=preferences,
         pending_confirmation=pending_confirmation,
+        voice_mode=voice_mode,
+        active_skill_prompt=active_skill_prompt,
+        pending_correction=pending_correction,
     )
     return _PROMPT_TEMPLATE.format_messages(**inputs)
 

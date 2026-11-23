@@ -205,7 +205,7 @@ class TestLangChainTools:
         ServiceContainer.register_rag_service(_DummyRAG())
         try:
             tools = get_autovend_tools()
-            assert len(tools) == 6
+            assert len(tools) == 12
 
             search_out = json.loads(search_vehicles_tool.invoke({"query": "家用SUV", "brand": "理想"}))
             assert search_out["total_count"] == 1

@@ -538,6 +538,12 @@ class SessionState(BaseModel):
     turn_count: int = 0
     handoff_context: Optional[Dict[str, Any]] = None
 
+    #: Voice-First: staged write action awaiting oral confirmation ("好/对/没问题") for 0-LLM execution.
+    pending_action: Optional[Dict[str, Any]] = None
+
+    #: Voice-First: asynchronous post-stream hallucination correction to weave into next turn.
+    pending_correction: Optional[str] = None
+
 
 class HandoffContext(BaseModel):
     """Structured Human-in-the-Loop handoff packet generated at LangGraph interrupt()."""
