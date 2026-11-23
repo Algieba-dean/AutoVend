@@ -18,7 +18,8 @@ class BattlecardPlugin(BaseAgentPlugin):
     def process_before_response(self, state: Any, context: Dict[str, Any]) -> None:
         """Check conversation for competitor mentions and inject battlecard notes."""
         user_input = context.get("user_input", "") or context.get("conversation_text", "")
-        matched_cards = match_battlecards(user_input)
+        matched_cars = context.get("matched_cars")
+        matched_cards = match_battlecards(user_input, matched_cars=matched_cars)
         if matched_cards:
             if not hasattr(state, "system_notes") or state.system_notes is None:
                 state.system_notes = []

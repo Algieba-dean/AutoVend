@@ -152,6 +152,41 @@ class VehicleNeeds(BaseModel):
     implicit: ImplicitNeeds = Field(default_factory=ImplicitNeeds)
 
 
+class WeightedConstraint(BaseModel):
+    """A single weighted preference or constraint with temporal provenance."""
+
+    key: str
+    value: Any
+    weight: float = Field(default=1.0, ge=0.0, le=1.0)
+    tolerance_pct: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    turn_index: int = 0
+    confirmed: bool = True
+
+
+class NegativeExclusions(BaseModel):
+    """Explicitly rejected/excluded vehicle attributes that must never reappear."""
+
+    powertrains: List[str] = Field(default_factory=list)
+    brands: List[str] = Field(default_factory=list)
+    models: List[str] = Field(default_factory=list)
+    categories: List[str] = Field(default_factory=list)
+    features: List[str] = Field(default_factory=list)
+    exclusion_turns: Dict[str, int] = Field(default_factory=dict)
+
+
+class PreferenceModel(BaseModel):
+    """
+    Tri-partite weighted preference model:
+    - hard_constraints: non-negotiable or tolerance-bounded core constraints (weight=1.0)
+    - soft_preferences: ranked soft desires (0 < weight < 1.0)
+    - negative_exclusions: explicitly rejected attributes/models (never re-recommended)
+    """
+
+    hard_constraints: Dict[str, WeightedConstraint] = Field(default_factory=dict)
+    soft_preferences: Dict[str, WeightedConstraint] = Field(default_factory=dict)
+    negative_exclusions: NegativeExclusions = Field(default_factory=NegativeExclusions)
+
+
 # ── Reservation ────────────────────────────────────────────────
 
 
@@ -410,6 +445,17 @@ class ReservationInfo(BaseModel):
 # ── Agent Protocol ─────────────────────────────────────────────
 
 
+class ActiveLoopState(BaseModel):
+    """First-class Active Form Loop state for deterministic slot-filling & recovery."""
+
+    name: str = ""
+    required_slots: List[str] = Field(default_factory=list)
+    is_interrupted: bool = False
+    retry_counts: Dict[str, int] = Field(default_factory=dict)
+    pending_confirmation: Dict[str, Any] = Field(default_factory=dict)
+    last_prompted_slot: str = ""
+
+
 class SessionState(BaseModel):
     """
     Serializable snapshot of all session-level state.
@@ -474,6 +520,41 @@ class SessionState(BaseModel):
     #: Each entry: {"stage": "Stage value", "topic_label": "...", "target_action": "...", "turn_index": int}
     interrupted_goals: List[Dict[str, Any]] = Field(default_factory=list)
 
+    #: Tri-partite weighted preference model (hard constraints, soft preferences, negative exclusions).
+    preferences: PreferenceModel = Field(default_factory=PreferenceModel)
+
+    #: Low-confidence extracted slot updates awaiting user confirmation before overwriting state.
+    pending_confirmation: Dict[str, Any] = Field(default_factory=dict)
+
+    #: First-class Active Form Loop state for deterministic slot-filling, side-QA interruption & recovery.
+    active_loop: Optional[ActiveLoopState] = None
+
+    #: Next-Best-Action planner tracking to prevent consecutive interrogation turns.
+    consecutive_ask_turns: int = 0
+    last_nba_action: str = ""
+
+    #: HITL trigger tracking & handoff summary.
+    consecutive_corrections: int = 0
+    turn_count: int = 0
+    handoff_context: Optional[Dict[str, Any]] = None
+
+
+class HandoffContext(BaseModel):
+    """Structured Human-in-the-Loop handoff packet generated at LangGraph interrupt()."""
+
+    session_id: str = ""
+    trigger_reason: str = ""
+    severity: str = "medium"
+    stage: str = ""
+    customer_profile: Dict[str, Any] = Field(default_factory=dict)
+    hard_constraints: Dict[str, Any] = Field(default_factory=dict)
+    soft_preferences: Dict[str, Any] = Field(default_factory=dict)
+    negative_exclusions: Dict[str, Any] = Field(default_factory=dict)
+    excluded_models: List[str] = Field(default_factory=list)
+    candidate_models: List[str] = Field(default_factory=list)
+    core_blocker: str = ""
+    recommended_human_action: str = ""
+    recent_turns_count: int = 0
 
 
 class AgentInput(BaseModel):
@@ -503,3 +584,7 @@ class AgentResult(BaseModel):
     session_state: SessionState
     response_text: str = ""
     stage_changed: bool = False
+    matched_cars: List[Dict[str, Any]] = Field(default_factory=list)
+    interrupted: bool = False
+    handoff_context: Optional[Dict[str, Any]] = None
+    next_best_action: str = ""

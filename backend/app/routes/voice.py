@@ -280,17 +280,15 @@ async def voice_websocket(websocket: WebSocket, session_id: str):
                                 }
                             )
 
-                            # Observe + Retrieve + Streaming Sentence TTS processing
+                            # Retrieve + Streaming Sentence TTS processing via LangGraph
                             user_text = asr_result.text.strip()
                             if user_text:
-                                observed_state = pipeline.agent.observe(state, user_text)
-                                retrieved_cars = _retrieve_cars(observed_state, user_query=user_text)
+                                retrieved_cars = _retrieve_cars(state, user_query=user_text)
 
                                 async for item in pipeline.process_text_stream_tts(
                                     user_text,
-                                    observed_state,
+                                    state,
                                     retrieved_cars=retrieved_cars,
-                                    already_observed=True,
                                 ):
                                     kind = item[0]
                                     if kind == "metadata":

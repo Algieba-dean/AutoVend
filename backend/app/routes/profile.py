@@ -7,7 +7,7 @@ import logging
 from fastapi import APIRouter, HTTPException
 
 from backend.app.models.schemas import UserProfile
-from backend.app.models.storage import FileStorage
+from backend.app.models.storage import PostgresStorage
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ async def get_default_profile():
 @router.get("/{phone_number}", response_model=UserProfile)
 async def get_profile(phone_number: str):
     """Get a user profile by phone number."""
-    profile = FileStorage.load_profile(phone_number)
+    profile = PostgresStorage.load_profile(phone_number)
     if profile is None:
         raise HTTPException(status_code=404, detail="Profile not found.")
     return profile
@@ -35,18 +35,18 @@ async def create_profile(profile: UserProfile):
     if not profile.phone_number:
         raise HTTPException(status_code=400, detail="Phone number is required.")
 
-    existing = FileStorage.load_profile(profile.phone_number)
+    existing = PostgresStorage.load_profile(profile.phone_number)
     if existing is not None:
         raise HTTPException(status_code=409, detail="Profile already exists.")
 
-    FileStorage.save_profile(profile.phone_number, profile)
+    PostgresStorage.save_profile(profile.phone_number, profile)
     return profile
 
 
 @router.put("/{phone_number}", response_model=UserProfile)
 async def update_profile(phone_number: str, profile: UserProfile):
     """Update an existing user profile."""
-    existing = FileStorage.load_profile(phone_number)
+    existing = PostgresStorage.load_profile(phone_number)
     if existing is None:
         raise HTTPException(status_code=404, detail="Profile not found.")
 
@@ -58,14 +58,14 @@ async def update_profile(phone_number: str, profile: UserProfile):
     merged["phone_number"] = phone_number
 
     updated = UserProfile(**merged)
-    FileStorage.save_profile(phone_number, updated)
+    PostgresStorage.save_profile(phone_number, updated)
     return updated
 
 
 @router.delete("/{phone_number}")
 async def delete_profile(phone_number: str):
     """Delete a user profile."""
-    if not FileStorage.delete_profile(phone_number):
+    if not PostgresStorage.delete_profile(phone_number):
         raise HTTPException(status_code=404, detail="Profile not found.")
     return {"message": "Profile deleted.", "phone_number": phone_number}
 
@@ -73,4 +73,4 @@ async def delete_profile(phone_number: str):
 @router.get("", response_model=list[str])
 async def list_profiles():
     """List all profile phone numbers."""
-    return FileStorage.list_profiles()
+    return PostgresStorage.list_profiles()

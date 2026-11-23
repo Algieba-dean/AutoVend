@@ -100,37 +100,48 @@ def test_rag_service_implements_base_rag_service():
 
 
 def test_single_turn_extraction_signal_isolation(monkeypatch):
-    """Verify _extract_information inspects latest_user_message instead of full history."""
-    from llama_index.core.llms import MockLLM
+    """Verify node_extract_slots isolates stage-appropriate extractors and single-turn preferences."""
+    from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
+    from src.agent.graph.routing_nodes import node_extract_slots
     from src.agent.sales_agent import SalesAgent
     from src.agent.schemas import Stage
 
-    agent = SalesAgent(llm=MockLLM(max_tokens=100))
+    agent = SalesAgent(
+        llm=FakeListChatModel(responses=["好的"]),
+        use_unified_extraction=False,
+    )
     state = SessionState(stage=Stage.CAR_SELECTION)
     state.profile.name = "张三"
 
     profile_calls = []
-    reservation_calls = []
+    needs_calls = []
 
     monkeypatch.setattr(
-        "src.agent.sales_agent.extract_profile",
+        "src.agent.graph.routing_nodes.extract_profile",
         lambda llm, text, existing: profile_calls.append(text) or existing,
     )
     monkeypatch.setattr(
-        "src.agent.sales_agent.extract_combined_needs",
-        lambda llm, text, profile, existing: existing,
+        "src.agent.graph.routing_nodes.extract_combined_needs",
+        lambda llm, text, profile, existing: needs_calls.append(text) or existing,
     )
     monkeypatch.setattr(
-        "src.agent.sales_agent.extract_reservation",
-        lambda llm, text, existing: reservation_calls.append(text) or existing,
+        "src.agent.graph.routing_nodes.extract_reservation",
+        lambda llm, text, existing: existing,
     )
 
-    # Full history contains profile and reservation signals, but latest_user_message has neither
-    history_text = "user: 我叫张三，家里3口人，预算20万，周末下午3点去4S店试驾\nassistant: 好的"
-    agent._extract_information(state, history_text, latest_user_message="哈哈好的谢谢")
+    graph_state = {
+        "base_session_state": state,
+        "session_state": state,
+        "events": [],
+        "conversation_text": "user: 我叫张三，家里3口人，预算20万，周末下午3点去4S店试驾\nassistant: 好的",
+        "safe_message": "哈哈好的谢谢",
+        "user_message": "哈哈好的谢谢",
+        "execution_trace": [],
+    }
+    node_extract_slots(agent.langgraph, graph_state)
     assert len(profile_calls) == 0
-    assert len(reservation_calls) == 0
+    assert len(needs_calls) == 1
 
 
 def test_tiered_engine_singleton_reuses_cache_and_db():

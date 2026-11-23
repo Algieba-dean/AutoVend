@@ -31,6 +31,7 @@ tiers exhaust their daily token budget mid-session; losing the synthesis path
 halfway through a conversation is worse than switching model vendors.
 """
 
+import time
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -107,6 +108,7 @@ class HybridRouter:
         local: Optional[BaseLLM] = None,
         cloud: Optional[Any] = None,
         local_tasks: Optional[frozenset] = None,
+        local_probe_interval_s: float = 30.0,
     ):
         """
         Args:
@@ -115,6 +117,7 @@ class HybridRouter:
                 entries are preferred and later ones act as quota/outage
                 fallbacks.
             local_tasks: Override which tasks route local.
+            local_probe_interval_s: Cooldown before Half-Open probe when local is unhealthy.
         """
         self.local = local
         if cloud is None:
@@ -125,6 +128,8 @@ class HybridRouter:
             self.cloud_chain = [cloud]
         self.local_tasks = local_tasks if local_tasks is not None else LOCAL_TASKS
         self._local_healthy: Optional[bool] = None
+        self._local_unhealthy_since: Optional[float] = None
+        self._local_probe_interval_s: float = max(0.0, float(local_probe_interval_s))
 
     @property
     def cloud(self) -> Optional[BaseLLM]:
@@ -173,22 +178,45 @@ class HybridRouter:
         fallback = plan[1][0] if len(plan) > 1 else None
         return backend, route, fallback
 
+    def _mark_local_unhealthy(self) -> None:
+        self._local_healthy = False
+        self._local_unhealthy_since = time.monotonic()
+
     def _local_available(self) -> bool:
         """
         Health-check the local server once, then remember the answer.
-
-        Probing on every call would add a round trip to the very path the local
-        model exists to make fast. Call `reset_health()` after starting or
-        stopping the server.
+        Supports Half-Open auto-probe recovery after `_local_probe_interval_s`.
         """
         if self.local is None:
             return False
+        now = time.monotonic()
+        if (
+            self._local_healthy is False
+            and self._local_unhealthy_since is not None
+            and (now - self._local_unhealthy_since) >= self._local_probe_interval_s
+        ):
+            # Half-Open probe
+            try:
+                recovered = bool(self.local.is_available())
+            except Exception as exc:
+                logger.debug(f"Half-open local LLM probe failed: {exc}")
+                recovered = False
+            if recovered:
+                self._local_healthy = True
+                self._local_unhealthy_since = None
+                logger.info("Local LLM Half-Open probe succeeded — recovered to healthy.")
+            else:
+                self._local_unhealthy_since = now
+            return self._local_healthy
+
         if self._local_healthy is None:
             try:
                 self._local_healthy = bool(self.local.is_available())
             except Exception as exc:
                 logger.warning(f"Local LLM health check failed: {exc}")
                 self._local_healthy = False
+            if not self._local_healthy:
+                self._local_unhealthy_since = now
             logger.info(
                 f"Local LLM {'available' if self._local_healthy else 'unavailable'} — "
                 f"control-path calls will go {'local' if self._local_healthy else 'to the cloud'}"
@@ -198,6 +226,7 @@ class HybridRouter:
     def reset_health(self) -> None:
         """Forget the cached health verdict (after the server starts or stops)."""
         self._local_healthy = None
+        self._local_unhealthy_since = None
 
     # ── invocation ────────────────────────────────────────────────────
 
@@ -236,18 +265,29 @@ class HybridRouter:
                     + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
                 )
                 if route is Route.LOCAL:
-                    self._local_healthy = False
+                    self._mark_local_unhealthy()
         raise last_error if last_error else RuntimeError("No backend produced a result.")
 
     def stream_chat(self, task: Task, messages: List[Dict[str, str]], **kwargs):
-        """Stream token chunks for `task` dynamically."""
+        """Stream token chunks for `task` dynamically with telemetry & cost ledger accounting."""
         plan = self.plan_for(task)
         last_error: Optional[Exception] = None
 
         for index, (backend, route) in enumerate(plan):
+            model = getattr(backend, "model", "unknown")
             try:
                 if hasattr(backend, "chat_stream_tokens"):
-                    yield from backend.chat_stream_tokens(messages, **kwargs)
+                    with telemetry.measure(task.value, route, model) as record:
+                        try:
+                            for token in backend.chat_stream_tokens(messages, **kwargs):
+                                yield token
+                        finally:
+                            usage = getattr(backend, "last_usage", None)
+                            if usage:
+                                record.prompt_tokens = usage.get("prompt_tokens", 0)
+                                record.completion_tokens = usage.get("completion_tokens", 0)
+                            _record_to_cost_ledger(task, route, model, usage)
+                            record.ttft_s = getattr(backend, "last_ttft_s", None)
                     return
                 else:
                     text = self._call(backend, route, task, "chat", messages, **kwargs)
@@ -255,14 +295,13 @@ class HybridRouter:
                     return
             except Exception as exc:
                 last_error = exc
-                model = getattr(backend, "model", "?")
                 remaining = len(plan) - index - 1
                 logger.warning(
                     f"{route.value} backend '{model}' failed during stream_chat for {task.value} ({exc}); "
                     + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
                 )
                 if route is Route.LOCAL:
-                    self._local_healthy = False
+                    self._mark_local_unhealthy()
 
         if last_error:
             raise last_error
@@ -297,7 +336,7 @@ class HybridRouter:
                     + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
                 )
                 if route is Route.LOCAL:
-                    self._local_healthy = False
+                    self._mark_local_unhealthy()
 
         raise last_error if last_error else RuntimeError("No backend produced a result.")
 
@@ -329,44 +368,50 @@ class HybridRouter:
                     + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
                 )
                 if route is Route.LOCAL:
-                    self._local_healthy = False
+                    self._mark_local_unhealthy()
 
         raise last_error if last_error else RuntimeError("No backend produced a result.")
 
     async def astream_chat(self, task: Task, messages: List[Dict[str, str]], **kwargs):
-        """Stream token chunks asynchronously for `task`."""
+        """Stream token chunks asynchronously for `task` with telemetry & cost ledger accounting."""
         plan = self.plan_for(task)
         last_error: Optional[Exception] = None
 
         for index, (backend, route) in enumerate(plan):
+            model = getattr(backend, "model", "unknown")
             try:
-                if hasattr(backend, "astream_chat"):
-                    async for token in backend.astream_chat(messages, **kwargs):
-                        yield token
-                    return
-                if hasattr(backend, "chat_stream_tokens"):
-                    for token in backend.chat_stream_tokens(messages, **kwargs):
-                        yield token
-                    return
-                if hasattr(backend, "stream_chat"):
-                    for token in backend.stream_chat(messages, **kwargs):
-                        yield token
-                    return
-                if hasattr(backend, "achat"):
-                    yield await backend.achat(messages, **kwargs)
-                    return
-                yield backend.chat(messages, **kwargs)
+                with telemetry.measure(task.value, route, model) as record:
+                    try:
+                        if hasattr(backend, "astream_chat"):
+                            async for token in backend.astream_chat(messages, **kwargs):
+                                yield token
+                        elif hasattr(backend, "chat_stream_tokens"):
+                            for token in backend.chat_stream_tokens(messages, **kwargs):
+                                yield token
+                        elif hasattr(backend, "stream_chat"):
+                            for token in backend.stream_chat(messages, **kwargs):
+                                yield token
+                        elif hasattr(backend, "achat"):
+                            yield await backend.achat(messages, **kwargs)
+                        else:
+                            yield backend.chat(messages, **kwargs)
+                    finally:
+                        usage = getattr(backend, "last_usage", None)
+                        if usage:
+                            record.prompt_tokens = usage.get("prompt_tokens", 0)
+                            record.completion_tokens = usage.get("completion_tokens", 0)
+                        _record_to_cost_ledger(task, route, model, usage)
+                        record.ttft_s = getattr(backend, "last_ttft_s", None)
                 return
             except Exception as exc:
                 last_error = exc
-                model = getattr(backend, "model", "?")
                 remaining = len(plan) - index - 1
                 logger.warning(
                     f"{route.value} backend '{model}' failed during astream_chat for {task.value} ({exc}); "
                     + (f"{remaining} fallback(s) left" if remaining else "no fallbacks left")
                 )
                 if route is Route.LOCAL:
-                    self._local_healthy = False
+                    self._mark_local_unhealthy()
 
         if last_error:
             raise last_error
@@ -388,7 +433,7 @@ class HybridRouter:
                 )
                 if route is Route.LOCAL:
                     # Do not keep paying the timeout on a server that is down.
-                    self._local_healthy = False
+                    self._mark_local_unhealthy()
 
         raise last_error if last_error else RuntimeError("No backend produced a result.")
 

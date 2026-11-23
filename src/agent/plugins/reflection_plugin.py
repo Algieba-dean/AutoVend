@@ -20,6 +20,8 @@ class ReflectionGuardPlugin(BaseAgentPlugin):
 
     def process_after_response(self, response_text: str, context: Dict[str, Any]) -> str:
         """Reflect and guard response text against ground truth matched cars."""
+        if context.get("skip_reflection_plugin"):
+            return response_text
         matched_cars = context.get("matched_cars", [])
         guarded_text, issues = reflect_and_guard(response_text, matched_cars=matched_cars)
         if issues:

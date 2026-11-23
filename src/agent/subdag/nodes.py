@@ -4,10 +4,9 @@ Node Definitions for Sub-DAG Workflow Engine.
 Implements Start, End, Condition, API, LLM, and Decision nodes.
 """
 
-import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from src.agent.subdag.context import SubDAGContext
 
@@ -103,7 +102,6 @@ class APINode(BaseSubDAGNode):
     def execute(self, context: SubDAGContext) -> Tuple[Dict[str, Any], Optional[str]]:
         api_name = self.config.get("api_name", "generic_api")
         url = context.resolve_template(self.config.get("url", ""))
-        params = self.config.get("params", {})
 
         # Custom handler override if provided in config
         custom_handler = self.config.get("handler")
@@ -218,13 +216,5 @@ class DecisionNode(BaseSubDAGNode):
             if resolved_note not in context.system_notes:
                 context.system_notes.append(resolved_note)
 
-        # Optional state field update
-        updates = self.config.get("updates", {})
-        for key, val in updates.items():
-            resolved_val = context.resolve_template(str(val)) if isinstance(val, str) else val
-            if key == "reservation_location" and not context.session_state.reservation.reservation_location:
-                context.session_state.reservation.reservation_location = str(resolved_val)
-            elif key == "salesman" and not context.session_state.reservation.salesman:
-                context.session_state.reservation.salesman = str(resolved_val)
-
+        # Do not fabricate reservation_location or salesman; require explicit user confirmation.
         return {"decision": action, "note_injected": bool(note_template)}, None

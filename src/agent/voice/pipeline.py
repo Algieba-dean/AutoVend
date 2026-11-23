@@ -365,19 +365,15 @@ class VoicePipeline:
 
         start_time = time.time()
 
-        # Step 1: Observe turn unless caller already observed (e.g. before retrieval)
-        observed_state = (
-            session_state if already_observed else self.agent.observe(session_state, text)
-        )
-
-        # Step 2: Stream response from agent
         sentence_buffer = ""
         full_text_parts = []
         old_stage = session_state.stage
 
         punctuation_regex = re.compile(r"([。！？!?\n;；]|(?<=[\u4e00-\u9fa5]{10})[，,])")
 
-        async for item in self.agent.respond_stream(observed_state, retrieved_cars=retrieved_cars):
+        async for item in self.agent.astream_graph_turn(
+            session_state, text, retrieved_cars=retrieved_cars
+        ):
             kind = item[0]
             if kind == "metadata":
                 meta = item[1]

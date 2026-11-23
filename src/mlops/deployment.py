@@ -115,13 +115,17 @@ class DeploymentRouter:
         config: Optional[CanaryConfig] = None,
         storage_dir: Optional[Path] = None,
     ):
-        self.config = config or CanaryConfig()
         self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_DEPLOY_STORAGE
         self.storage_dir.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
         self._samples: List[CanaryMetricSample] = []
+        self._shadow_comparisons: List[Dict[str, Any]] = []
         self._executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="mlops_shadow")
         self._breach_counter = 0
+        self.config = config if config is not None else self._load_config()
+        if config is not None:
+            self._save_config()
+        self._load_samples()
 
     def set_config(self, config: CanaryConfig) -> None:
         """Update active deployment configuration."""
@@ -211,6 +215,7 @@ class DeploymentRouter:
             # Check rollback policy if evaluating candidate
             if variant == "candidate" and self.config.status == DeploymentStatus.MONITORING:
                 self._evaluate_rollback_policy()
+            self._save_samples()
 
     def _evaluate_rollback_policy(self) -> None:
         """Assess SLA health of candidate turns and execute rollback if thresholds breached."""
@@ -328,21 +333,50 @@ class DeploymentRouter:
             self.record_turn_metric(session_id, "baseline", success=False, latency_s=latency)
             raise exc
 
-        # Handle Shadow Execution
+        # Handle Shadow Execution with Shadow Comparison
         if decision.is_shadow:
+            baseline_res = res
 
             def _shadow_worker():
                 t0 = time.time()
                 try:
-                    run_candidate()
+                    shadow_res = run_candidate()
                     dur = time.time() - t0
                     self.record_turn_metric(session_id, "candidate", success=True, latency_s=dur)
+                    matched = shadow_res == baseline_res
+                    with self._lock:
+                        self._shadow_comparisons.append(
+                            {
+                                "session_id": session_id,
+                                "matched": matched,
+                                "candidate_success": True,
+                                "candidate_latency_s": round(dur, 4),
+                                "baseline_latency_s": round(latency, 4),
+                                "timestamp": time.time(),
+                            }
+                        )
+                        if len(self._shadow_comparisons) > 500:
+                            self._shadow_comparisons.pop(0)
                     logger.debug(
-                        f"[Shadow Execution] Completed in {dur:.3f}s for session {session_id}"
+                        f"[Shadow Execution] Completed in {dur:.3f}s for session {session_id} (matched={matched})"
                     )
                 except Exception as c_err:
                     dur = time.time() - t0
                     self.record_turn_metric(session_id, "candidate", success=False, latency_s=dur)
+                    with self._lock:
+                        self._shadow_comparisons.append(
+                            {
+                                "session_id": session_id,
+                                "matched": False,
+                                "candidate_success": False,
+                                "error": str(c_err),
+                                "candidate_latency_s": round(dur, 4),
+                                "baseline_latency_s": round(latency, 4),
+                                "timestamp": time.time(),
+                            }
+                        )
+                        if len(self._shadow_comparisons) > 500:
+                            self._shadow_comparisons.pop(0)
                     logger.warning(f"[Shadow Execution Failed] {c_err}")
 
             self._executor.submit(_shadow_worker)
@@ -381,12 +415,52 @@ class DeploymentRouter:
                     ),
                 }
 
+            total_shadow = len(self._shadow_comparisons)
+            matched_shadow = sum(1 for c in self._shadow_comparisons if c.get("matched"))
             return {
                 "config": asdict(self.config),
                 "candidate_metrics": _stats(cand_samples),
                 "baseline_metrics": _stats(base_samples),
+                "shadow_comparison": {
+                    "total": total_shadow,
+                    "matched": matched_shadow,
+                    "agreement_rate": round(matched_shadow / total_shadow, 4) if total_shadow else 0.0,
+                },
                 "active_breaches": self._breach_counter,
             }
+
+    def get_shadow_comparison_stats(self) -> Dict[str, Any]:
+        """Return shadow mode output agreement and latency comparison statistics."""
+        with self._lock:
+            total = len(self._shadow_comparisons)
+            matched = sum(1 for c in self._shadow_comparisons if c.get("matched"))
+            return {
+                "total": total,
+                "matched": matched,
+                "agreement_rate": round(matched / total, 4) if total else 0.0,
+                "recent": list(self._shadow_comparisons[-20:]),
+            }
+
+    def _load_config(self) -> CanaryConfig:
+        cfg_file = self.storage_dir / "active_deployment.json"
+        if cfg_file.exists():
+            try:
+                with open(cfg_file, "r", encoding="utf-8") as f:
+                    raw = json.load(f)
+                policy_raw = raw.get("policy") or {}
+                policy = RollbackPolicy(**policy_raw) if isinstance(policy_raw, dict) else RollbackPolicy()
+                return CanaryConfig(
+                    mode=RoutingMode(raw.get("mode", RoutingMode.BASELINE_ONLY.value)),
+                    canary_weight=float(raw.get("canary_weight", 0.0)),
+                    baseline_version=str(raw.get("baseline_version", "v1.0.0")),
+                    candidate_version=str(raw.get("candidate_version", "v1.1.0-rc1")),
+                    status=DeploymentStatus(raw.get("status", DeploymentStatus.MONITORING.value)),
+                    policy=policy,
+                    last_rollback_reason=raw.get("last_rollback_reason"),
+                )
+            except Exception as exc:
+                logger.warning(f"Could not load persisted deployment config: {exc}")
+        return CanaryConfig()
 
     def _save_config(self) -> None:
         try:
@@ -398,6 +472,24 @@ class DeploymentRouter:
                 json.dump(d, f, ensure_ascii=False, indent=2)
         except OSError as exc:
             logger.warning(f"Could not persist active deployment configuration: {exc}")
+
+    def _load_samples(self) -> None:
+        samples_file = self.storage_dir / "deployment_samples.json"
+        if samples_file.exists():
+            try:
+                with open(samples_file, "r", encoding="utf-8") as f:
+                    rows = json.load(f)
+                self._samples = [CanaryMetricSample(**r) for r in rows[-2000:]]
+            except Exception as exc:
+                logger.warning(f"Could not load persisted deployment samples: {exc}")
+
+    def _save_samples(self) -> None:
+        try:
+            samples_file = self.storage_dir / "deployment_samples.json"
+            with open(samples_file, "w", encoding="utf-8") as f:
+                json.dump([asdict(s) for s in self._samples[-2000:]], f, ensure_ascii=False)
+        except OSError as exc:
+            logger.warning(f"Could not persist deployment samples: {exc}")
 
 
 # Global Singleton

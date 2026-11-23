@@ -385,18 +385,29 @@ class _InMemoryVectorFallback:
         self.rows.clear()
 
 
+def _current_app_env() -> str:
+    """Resolve current environment dynamically (respecting monkeypatch in tests)."""
+    return (
+        os.getenv("APP_ENV")
+        or os.getenv("APP_ENVIRONMENT")
+        or config.app_environment
+        or "development"
+    ).strip().lower()
+
+
 def _resolve_allow_memory_fallback(explicit: Optional[bool]) -> bool:
-    """Fail-fast by default in production; allow memory fallback only if configured or in test mode."""
+    """
+    Fail-fast in all non-test environments (staging/prod/dev).
+    _InMemoryVectorFallback is strictly a unit-test isolation double (APP_ENV=test/testing).
+    """
+    env = _current_app_env()
+    if env not in ("test", "testing"):
+        return False
     if explicit is not None:
         return bool(explicit)
     if config.pgvector_allow_memory_fallback is not None:
         return bool(config.pgvector_allow_memory_fallback)
-    if config.is_production:
-        return False
-    return bool(
-        os.getenv("PYTEST_CURRENT_TEST")
-        or config.app_environment.lower() in ("test", "testing")
-    )
+    return True
 
 
 class PgVectorStore:
@@ -508,10 +519,11 @@ class PgVectorStore:
             self.backend_mode = "memory_fallback"
 
     def _ensure_schema(self) -> None:
-        """Create pgvector extension, table, HNSW vector index, and GIN metadata index."""
+        """Create pgvector extension, table, HNSW vector index, GIN metadata index, and tsvector GIN index."""
         ops_name, _ = _DISTANCE_OPS[self.distance_metric]
         idx_vec = _validate_identifier(f"idx_{self.table_name}_embedding_hnsw")
         idx_meta = _validate_identifier(f"idx_{self.table_name}_metadata_gin")
+        idx_tsv = _validate_identifier(f"idx_{self.table_name}_tsv_gin")
 
         with self._get_conn() as conn:
             with conn.cursor() as cur:
@@ -523,8 +535,15 @@ class PgVectorStore:
                         document TEXT NOT NULL,
                         metadata JSONB NOT NULL DEFAULT '{{}}'::jsonb,
                         embedding vector({self.embed_dim}),
+                        tsv TSVECTOR,
                         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                     )
+                    """
+                )
+                cur.execute(
+                    f"""
+                    ALTER TABLE {self.table_name}
+                    ADD COLUMN IF NOT EXISTS tsv TSVECTOR
                     """
                 )
                 cur.execute(
@@ -542,6 +561,142 @@ class PgVectorStore:
                     USING gin (metadata)
                     """
                 )
+                cur.execute(
+                    f"""
+                    CREATE INDEX IF NOT EXISTS {idx_tsv}
+                    ON {self.table_name}
+                    USING gin (tsv)
+                    """
+                )
+
+    def hybrid_search_rrf(
+        self,
+        query_embedding: List[float],
+        query_text: str,
+        top_k: int = 10,
+        where: Optional[Dict[str, Any]] = None,
+        rrf_k: int = 60,
+    ) -> List[Dict[str, Any]]:
+        """
+        Single-SQL Hybrid Retrieval combining metadata JSONB filter + pgvector Dense +
+        PostgreSQL tsvector Sparse + Reciprocal Rank Fusion (RRF).
+        """
+        if self._fallback is not None:
+            from src.retrieval.bm25_index import tokenize
+
+            candidate_k = max(int(top_k) * 3, 20)
+            dense_res = self._fallback.query(
+                query_embeddings=[query_embedding],
+                n_results=candidate_k,
+                where=where,
+                include=["metadatas", "documents", "distances"],
+            )
+            ids = dense_res["ids"][0] if dense_res["ids"] else []
+            docs = dense_res["documents"][0] if dense_res["documents"] else []
+            metas = dense_res["metadatas"][0] if dense_res["metadatas"] else []
+            dists = dense_res["distances"][0] if dense_res["distances"] else []
+
+            q_tokens = set(tokenize(query_text))
+            dense_ranks = {doc_id: idx + 1 for idx, doc_id in enumerate(ids)}
+            sparse_scores = []
+            for doc_id, doc in zip(ids, docs):
+                if q_tokens:
+                    doc_tokens = set(tokenize(doc))
+                    overlap = len(q_tokens & doc_tokens)
+                    if overlap > 0:
+                        sparse_scores.append((doc_id, overlap / len(q_tokens)))
+            sparse_scores.sort(key=lambda x: x[1], reverse=True)
+            sparse_ranks = {doc_id: idx + 1 for idx, (doc_id, _) in enumerate(sparse_scores)}
+
+            fused = []
+            for doc_id, doc, meta, dist in zip(ids, docs, metas, dists):
+                rrf = 1.0 / (rrf_k + dense_ranks[doc_id])
+                if doc_id in sparse_ranks:
+                    rrf += 1.0 / (rrf_k + sparse_ranks[doc_id])
+                fused.append(
+                    {"id": doc_id, "document": doc, "metadata": meta, "rrf_score": rrf, "distance": dist}
+                )
+            fused.sort(key=lambda x: x["rrf_score"], reverse=True)
+            return fused[:top_k]
+
+        _, dist_op = _DISTANCE_OPS[self.distance_metric]
+        vec_lit = _format_vector_literal(query_embedding)
+        where_sql, where_params = _build_sql_where(where)
+        filter_clause = f"WHERE {where_sql}" if where_sql else ""
+        and_filter = f"AND {where_sql}" if where_sql else ""
+
+        from src.retrieval.bm25_index import tokenize
+
+        tokens = [t for t in dict.fromkeys(tokenize(query_text)) if re.match(r"^[\w\u4e00-\u9fff]+$", t)]
+        tsquery_expr = " | ".join(tokens) if tokens else ""
+
+        if not tsquery_expr:
+            sql = f"""
+            SELECT id, document, metadata, (1.0 / (%s + ROW_NUMBER() OVER (ORDER BY embedding {dist_op} %s::vector))) AS rrf_score
+            FROM {self.table_name}
+            {filter_clause}
+            ORDER BY embedding {dist_op} %s::vector ASC
+            LIMIT %s
+            """
+            params = [rrf_k, vec_lit, *where_params, vec_lit, int(top_k)]
+        else:
+            sql = f"""
+            WITH dense AS (
+                SELECT id, document, metadata,
+                       ROW_NUMBER() OVER (ORDER BY embedding {dist_op} %s::vector ASC) AS dense_rank
+                FROM {self.table_name}
+                {filter_clause}
+                ORDER BY embedding {dist_op} %s::vector ASC
+                LIMIT %s
+            ),
+            sparse AS (
+                SELECT id, document, metadata,
+                       ROW_NUMBER() OVER (ORDER BY ts_rank_cd(tsv, to_tsquery('simple', %s)) DESC) AS sparse_rank
+                FROM {self.table_name}
+                WHERE tsv @@ to_tsquery('simple', %s)
+                {and_filter}
+                ORDER BY ts_rank_cd(tsv, to_tsquery('simple', %s)) DESC
+                LIMIT %s
+            )
+            SELECT
+                COALESCE(d.id, s.id) AS id,
+                COALESCE(d.document, s.document) AS document,
+                COALESCE(d.metadata, s.metadata) AS metadata,
+                (COALESCE(1.0 / (%s + d.dense_rank), 0.0) + COALESCE(1.0 / (%s + s.sparse_rank), 0.0)) AS rrf_score
+            FROM dense d
+            FULL OUTER JOIN sparse s ON d.id = s.id
+            ORDER BY rrf_score DESC
+            LIMIT %s
+            """
+            candidate_k = max(int(top_k) * 3, 20)
+            params = [
+                vec_lit,
+                *where_params,
+                vec_lit,
+                candidate_k,
+                tsquery_expr,
+                tsquery_expr,
+                *where_params,
+                tsquery_expr,
+                candidate_k,
+                rrf_k,
+                rrf_k,
+                int(top_k),
+            ]
+
+        with self._get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, params)
+                rows = cur.fetchall()
+        return [
+            {
+                "id": str(r[0]),
+                "document": str(r[1]),
+                "metadata": r[2] if isinstance(r[2], dict) else json.loads(r[2]),
+                "rrf_score": float(r[3]),
+            }
+            for r in rows
+        ]
 
     def count(self) -> int:
         """Return total number of stored vector documents."""
@@ -612,13 +767,16 @@ class PgVectorStore:
                 self._fallback.upsert(doc_id, document, metadata, emb)
             return
 
+        from src.retrieval.bm25_index import tokenize
+
         sql = f"""
-            INSERT INTO {self.table_name} (id, document, metadata, embedding, updated_at)
-            VALUES (%s, %s, %s::jsonb, %s::vector, NOW())
+            INSERT INTO {self.table_name} (id, document, metadata, embedding, tsv, updated_at)
+            VALUES (%s, %s, %s::jsonb, %s::vector, to_tsvector('simple', %s), NOW())
             ON CONFLICT (id) DO UPDATE SET
                 document = EXCLUDED.document,
                 metadata = EXCLUDED.metadata,
                 embedding = EXCLUDED.embedding,
+                tsv = EXCLUDED.tsv,
                 updated_at = NOW()
         """
         params_list = [
@@ -627,6 +785,7 @@ class PgVectorStore:
                 document,
                 json.dumps(metadata, ensure_ascii=False),
                 _format_vector_literal(emb),
+                " ".join(tokenize(document)),
             )
             for doc_id, document, metadata, emb in records
         ]
@@ -847,13 +1006,17 @@ class PgVectorStore:
         if self._fallback is not None:
             self._fallback.upsert(doc_id, doc_text, clean_metadata, embedding)
         else:
+            from src.retrieval.bm25_index import tokenize
+
+            tsv_text = " ".join(tokenize(doc_text))
             sql = f"""
-                INSERT INTO {self.table_name} (id, document, metadata, embedding, updated_at)
-                VALUES (%s, %s, %s::jsonb, %s::vector, NOW())
+                INSERT INTO {self.table_name} (id, document, metadata, embedding, tsv, updated_at)
+                VALUES (%s, %s, %s::jsonb, %s::vector, to_tsvector('simple', %s), NOW())
                 ON CONFLICT (id) DO UPDATE SET
                     document = EXCLUDED.document,
                     metadata = EXCLUDED.metadata,
                     embedding = EXCLUDED.embedding,
+                    tsv = EXCLUDED.tsv,
                     updated_at = NOW()
             """
             with self._get_conn() as conn:
@@ -865,6 +1028,7 @@ class PgVectorStore:
                             doc_text,
                             json.dumps(clean_metadata, ensure_ascii=False),
                             _format_vector_literal(embedding),
+                            tsv_text,
                         ),
                     )
 

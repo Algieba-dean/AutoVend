@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 
 from backend.app.models.schemas import TestDriveRequest, TestDriveResponse
-from backend.app.models.storage import FileStorage
+from backend.app.models.storage import PostgresStorage
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ async def create_test_drive(request: TestDriveRequest):
         "car_model": request.car_model,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
-    FileStorage.save_test_drive(request.phone_number, data)
+    PostgresStorage.save_test_drive(request.phone_number, data)
 
     return TestDriveResponse(**data)
 
@@ -42,7 +42,7 @@ async def create_test_drive(request: TestDriveRequest):
 @router.get("/{phone_number}", response_model=TestDriveResponse)
 async def get_test_drive(phone_number: str):
     """Get a test drive reservation."""
-    data = FileStorage.load_test_drive(phone_number)
+    data = PostgresStorage.load_test_drive(phone_number)
     if data is None:
         raise HTTPException(status_code=404, detail="Test drive not found.")
     return TestDriveResponse(**data)
@@ -51,7 +51,7 @@ async def get_test_drive(phone_number: str):
 @router.put("/{phone_number}", response_model=TestDriveResponse)
 async def update_test_drive(phone_number: str, request: TestDriveRequest):
     """Update a test drive reservation."""
-    existing = FileStorage.load_test_drive(phone_number)
+    existing = PostgresStorage.load_test_drive(phone_number)
     if existing is None:
         raise HTTPException(status_code=404, detail="Test drive not found.")
 
@@ -72,14 +72,14 @@ async def update_test_drive(phone_number: str, request: TestDriveRequest):
     if request.car_model:
         existing["car_model"] = request.car_model
 
-    FileStorage.save_test_drive(phone_number, existing)
+    PostgresStorage.save_test_drive(phone_number, existing)
     return TestDriveResponse(**existing)
 
 
 @router.delete("/{phone_number}")
 async def delete_test_drive(phone_number: str):
     """Delete a test drive reservation."""
-    if not FileStorage.delete_test_drive(phone_number):
+    if not PostgresStorage.delete_test_drive(phone_number):
         raise HTTPException(status_code=404, detail="Test drive not found.")
     return {"message": "Test drive deleted.", "phone_number": phone_number}
 
@@ -87,4 +87,4 @@ async def delete_test_drive(phone_number: str):
 @router.get("", response_model=list[str])
 async def list_test_drives():
     """List all test drive phone numbers."""
-    return FileStorage.list_test_drives()
+    return PostgresStorage.list_test_drives()

@@ -10,6 +10,8 @@ Guards against conversational repetition and infinite state-machine ping-pong lo
 """
 
 import logging
+import threading
+import time
 from collections import defaultdict
 from typing import Dict, List, Optional
 
@@ -45,10 +47,13 @@ class AgentCircuitBreaker:
         max_dwell: int = MAX_STAGE_DWELL_TURNS,
         max_rejections: int = MAX_GUARD_REJECTIONS,
         max_oscillations: int = MAX_OSCILLATION_CYCLES,
+        session_ttl_s: float = 3600.0,
     ):
         self.max_dwell = max_dwell
         self.max_rejections = max_rejections
         self.max_oscillations = max_oscillations
+        self.session_ttl_s = max(0.0, float(session_ttl_s))
+        self._lock = threading.RLock()
 
         # Per-session metrics
         self._dwell_counter: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
@@ -56,6 +61,19 @@ class AgentCircuitBreaker:
         self._rejection_history: Dict[str, List[str]] = defaultdict(list)
         self._stage_history: Dict[str, List[str]] = defaultdict(list)
         self._topic_hopping_counter: Dict[str, int] = defaultdict(int)
+        self._last_seen: Dict[str, float] = {}
+
+    def _evict_expired_locked(self, now: float) -> None:
+        if self.session_ttl_s <= 0:
+            return
+        expired = [sid for sid, ts in self._last_seen.items() if now - ts > self.session_ttl_s]
+        for sid in expired:
+            self._last_seen.pop(sid, None)
+            self._dwell_counter.pop(sid, None)
+            self._last_stage.pop(sid, None)
+            self._rejection_history.pop(sid, None)
+            self._stage_history.pop(sid, None)
+            self._topic_hopping_counter.pop(sid, None)
 
     def record_turn(
         self,
@@ -68,6 +86,24 @@ class AgentCircuitBreaker:
         Record a turn outcome and check if an anti-loop circuit breaker is tripped.
         Returns CircuitBreakerTrip if tripped, or None if healthy.
         """
+        with self._lock:
+            now = time.monotonic()
+            self._evict_expired_locked(now)
+            self._last_seen[session_id] = now
+            return self._record_turn_locked(
+                session_id=session_id,
+                current_stage=current_stage,
+                rejection_reason=rejection_reason,
+                is_topic_hopping=is_topic_hopping,
+            )
+
+    def _record_turn_locked(
+        self,
+        session_id: str,
+        current_stage: Stage,
+        rejection_reason: Optional[str] = None,
+        is_topic_hopping: bool = False,
+    ) -> Optional[CircuitBreakerTrip]:
         if is_topic_hopping:
             # Active topic hopping or side-question consultation is a healthy dialogue turn,
             # not a state-machine deadlock. Clear rejection history and bypass anti-loop trip.
@@ -205,11 +241,13 @@ class AgentCircuitBreaker:
 
     def reset_session(self, session_id: str) -> None:
         """Clear tracking data for a session."""
-        self._dwell_counter.pop(session_id, None)
-        self._last_stage.pop(session_id, None)
-        self._rejection_history.pop(session_id, None)
-        self._stage_history.pop(session_id, None)
-        self._topic_hopping_counter.pop(session_id, None)
+        with self._lock:
+            self._last_seen.pop(session_id, None)
+            self._dwell_counter.pop(session_id, None)
+            self._last_stage.pop(session_id, None)
+            self._rejection_history.pop(session_id, None)
+            self._stage_history.pop(session_id, None)
+            self._topic_hopping_counter.pop(session_id, None)
 
 
 # Default global breaker instance

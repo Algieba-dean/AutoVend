@@ -11,7 +11,9 @@ from typing import Any, Dict, List, Optional, Union
 
 from src.core.interfaces import BaseRAGService, RAGQueryRequest, RAGQueryResponse
 from src.filter.vehicle_db import VehicleDB
+from src.ingestion.freshness import DataFreshnessEngine
 from src.rag_service.eval_monitor import RAGEvalMonitor
+from src.rag_service.onnx_reranker import OnnxCrossEncoderReranker
 from src.rag_service.reranker import RankRefiner
 from src.rag_service.schemas import (
     SpecCompareRequest,
@@ -44,11 +46,15 @@ class RAGService(BaseRAGService):
         db: Optional[VehicleDB] = None,
         monitor: Optional[RAGEvalMonitor] = None,
         parent_child_retriever: Optional[Any] = None,
+        cross_encoder: Optional[OnnxCrossEncoderReranker] = None,
+        freshness_engine: Optional[DataFreshnessEngine] = None,
     ):
         self.pipeline = pipeline or build_default_pipeline()
         self.db = db or getattr(self.pipeline, "db", None) or VehicleDB()
         self.monitor = monitor or RAGEvalMonitor()
         self.parent_child_retriever = parent_child_retriever
+        self.cross_encoder = cross_encoder or OnnxCrossEncoderReranker()
+        self.freshness_engine = freshness_engine or DataFreshnessEngine()
         self.tiered_engine = TieredRetrievalEngine.get_instance(
             db=self.db,
             hybrid_pipeline=self.pipeline,
@@ -96,13 +102,20 @@ class RAGService(BaseRAGService):
         else:
             query_text = request.query_text or "recommend a good vehicle"
 
-        # Check Tier 0 In-Memory Fast-Path (< 1-2 ms)
-        t0_res = self.tiered_engine.search_tier0(query_text)
+        # Check Tier 0 In-Memory Fast-Path (< 1-2 ms) only when query qualifies
+        t0_res = (
+            self.tiered_engine.search_tier0(query_text)
+            if self.tiered_engine.is_tier0_candidate(query_text)
+            else None
+        )
         if t0_res is not None and t0_res.results:
+            t0_filtered, t0_advisories = self.freshness_engine.filter_recommendable_vehicles(
+                t0_res.results
+            )
             elapsed_ms = t0_res.latency_ms
             alerts = self.monitor.record_retrieval(
                 query_text=query_text,
-                results=t0_res.results,
+                results=t0_filtered,
                 candidate_count=t0_res.candidate_count,
                 latency_ms=elapsed_ms,
                 degrade_level=0,
@@ -115,8 +128,10 @@ class RAGService(BaseRAGService):
                 "total_time": round(elapsed_ms / 1000.0, 4),
                 "alerts_triggered": [a.model_dump() for a in alerts],
             }
+            if t0_advisories:
+                summary["freshness_advisories"] = t0_advisories
             return VehicleQueryResponse(
-                results=t0_res.results,
+                results=t0_filtered,
                 candidate_count=t0_res.candidate_count,
                 degrade_level=0,
                 total_time_ms=round(elapsed_ms, 2),
@@ -162,9 +177,15 @@ class RAGService(BaseRAGService):
                 results,
                 top_k=request.top_k,
                 constraints=request.explicit_needs,
+                cross_encoder=self.cross_encoder,
             )
         else:
             results = results[: request.top_k]
+
+        # Filter out discontinued/tombstone vehicles via DataFreshnessEngine
+        results, freshness_advisories = self.freshness_engine.filter_recommendable_vehicles(
+            results
+        )
 
         # Apply Context Compression & Hallucination-Grounded Pruning on snippets
         if getattr(request, "enable_context_compression", True):
@@ -192,6 +213,8 @@ class RAGService(BaseRAGService):
 
         summary = pipeline_result.summary()
         summary["alerts_triggered"] = [a.model_dump() for a in alerts]
+        if freshness_advisories:
+            summary["freshness_advisories"] = freshness_advisories
 
         return VehicleQueryResponse(
             results=results,

@@ -435,15 +435,10 @@ class ChromaVectorStore:
                 # Let collection native embedding function infer the dense vector
                 pass
             else:
-                dim = getattr(self.embedding_model, "embed_dimension", 1024) if hasattr(self, "embedding_model") and self.embedding_model else 1024
-                if self.collection:
-                    try:
-                        peek = self.collection.peek(limit=1)
-                        if peek and peek.get("embeddings") is not None and len(peek["embeddings"]) > 0:
-                            dim = len(peek["embeddings"][0])
-                    except Exception:
-                        pass
-                kwargs["embeddings"] = [[0.0] * dim]
+                raise ValueError(
+                    f"Embedding vector is required for document {doc_id!r} "
+                    "and no embedding model or collection embedding function is available."
+                )
 
             if hasattr(self.collection, "upsert"):
                 self.collection.upsert(**kwargs)

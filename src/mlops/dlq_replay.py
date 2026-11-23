@@ -17,6 +17,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from src.mlops.pg_store import MLOpsPostgresStore, is_test_env
 from src.utils.config import PROJECT_ROOT
 from src.utils.logger import get_logger
 
@@ -75,7 +76,10 @@ class DLQReplaySummary:
 
 class DLQReplayEngine:
     """
-    Persistent DLQ & Retry Manager for failed LLM and evaluation operations.
+    Distributed DLQ & Retry Manager for failed LLM and evaluation operations.
+
+    Uses PostgreSQL (`mlops_dlq_tasks` with `FOR UPDATE SKIP LOCKED`) in production/staging
+    for multi-worker concurrency. Uses isolated storage only in test mode.
     """
 
     def __init__(
@@ -84,14 +88,26 @@ class DLQReplayEngine:
         base_backoff_s: float = 1.0,
         max_backoff_s: float = 60.0,
     ):
-        self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_DLQ_STORAGE
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
-        self.tasks_file = self.storage_dir / "dlq_tasks.json"
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        self.tasks_file = (self.storage_dir / "dlq_tasks.json") if self.storage_dir else None
         self.base_backoff_s = base_backoff_s
         self.max_backoff_s = max_backoff_s
         self._lock = threading.RLock()
         self._tasks: Dict[str, DLQTaskRecord] = {}
-        self._load_tasks()
+        if self.storage_dir is not None:
+            self.storage_dir.mkdir(parents=True, exist_ok=True)
+            self._load_tasks()
+
+    def _use_postgres(self) -> bool:
+        """Return True if PostgreSQL should be used for this engine instance."""
+        if self.storage_dir is not None:
+            return False
+        if not is_test_env():
+            # Non-test environments MUST use PostgreSQL (fail-fast if unavailable)
+            if not MLOpsPostgresStore.ensure_ready():
+                raise RuntimeError("PostgreSQL is required for DLQReplayEngine in non-test environments.")
+            return True
+        return MLOpsPostgresStore.ensure_ready()
 
     def _compute_next_retry(self, attempts: int) -> float:
         """Exponential backoff with full jitter: backoff = min(max_backoff, base * 2^(attempts-1)) * uniform(0.8, 1.2)."""
@@ -125,9 +141,12 @@ class DLQReplayEngine:
             created_at=time.time(),
         )
 
-        with self._lock:
-            self._tasks[tid] = record
-            self._save_tasks()
+        if self._use_postgres():
+            MLOpsPostgresStore.dlq_upsert(record.to_dict())
+        else:
+            with self._lock:
+                self._tasks[tid] = record
+                self._save_tasks()
 
         logger.warning(f"[DLQ] Enqueued failed task {tid} ({task_type}): {error_message}")
         return record
@@ -140,13 +159,21 @@ class DLQReplayEngine:
         """
         Execute precision replay for one specified DLQ task.
         """
-        with self._lock:
-            task = self._tasks.get(task_id)
-            if not task:
+        use_pg = self._use_postgres()
+        if use_pg:
+            raw = MLOpsPostgresStore.dlq_get(task_id)
+            if not raw:
                 raise ValueError(f"Task {task_id} not found in DLQ")
-
+            task = DLQTaskRecord.from_dict(raw)
             task.status = DLQTaskStatus.REPLAYING
-            self._save_tasks()
+            MLOpsPostgresStore.dlq_upsert(task.to_dict())
+        else:
+            with self._lock:
+                task = self._tasks.get(task_id)
+                if not task:
+                    raise ValueError(f"Task {task_id} not found in DLQ")
+                task.status = DLQTaskStatus.REPLAYING
+                self._save_tasks()
 
         logger.info(
             f"[DLQ Replay] Executing task {task_id} (attempt {task.attempts + 1}/{task.max_attempts})..."
@@ -154,29 +181,35 @@ class DLQReplayEngine:
 
         try:
             result = executor_fn(task.payload)
-            with self._lock:
-                task.status = DLQTaskStatus.RESOLVED
-                task.resolved_at = time.time()
-                task.execution_result = result
-                self._save_tasks()
+            task.status = DLQTaskStatus.RESOLVED
+            task.resolved_at = time.time()
+            task.execution_result = result
+            if use_pg:
+                MLOpsPostgresStore.dlq_upsert(task.to_dict())
+            else:
+                with self._lock:
+                    self._save_tasks()
             logger.info(f"[DLQ Replay SUCCESS] Task {task_id} resolved successfully.")
             return True
         except Exception as exc:
-            with self._lock:
-                task.attempts += 1
-                task.error_message = str(exc)
-                if task.attempts >= task.max_attempts:
-                    task.status = DLQTaskStatus.DEAD_LETTER
-                    logger.error(
-                        f"[DLQ EXHAUSTED] Task {task_id} exceeded max attempts ({task.max_attempts}). Moved to DEAD_LETTER."
-                    )
-                else:
-                    task.status = DLQTaskStatus.PENDING
-                    task.next_retry_at = self._compute_next_retry(task.attempts)
-                    logger.warning(
-                        f"[DLQ RETRY FAILED] Task {task_id} failed again: {exc}. Next retry at {task.next_retry_at}"
-                    )
-                self._save_tasks()
+            task.attempts += 1
+            task.error_message = str(exc)
+            if task.attempts >= task.max_attempts:
+                task.status = DLQTaskStatus.DEAD_LETTER
+                logger.error(
+                    f"[DLQ EXHAUSTED] Task {task_id} exceeded max attempts ({task.max_attempts}). Moved to DEAD_LETTER."
+                )
+            else:
+                task.status = DLQTaskStatus.PENDING
+                task.next_retry_at = self._compute_next_retry(task.attempts)
+                logger.warning(
+                    f"[DLQ RETRY FAILED] Task {task_id} failed again: {exc}. Next retry at {task.next_retry_at}"
+                )
+            if use_pg:
+                MLOpsPostgresStore.dlq_upsert(task.to_dict())
+            else:
+                with self._lock:
+                    self._save_tasks()
             return False
 
     def replay_pending_tasks(
@@ -192,14 +225,21 @@ class DLQReplayEngine:
         now = time.time()
         start_t = time.time()
 
-        with self._lock:
-            eligible = [
-                t
-                for t in self._tasks.values()
-                if t.status == DLQTaskStatus.PENDING
-                and (force or t.next_retry_at <= now)
-                and (task_type is None or t.task_type == task_type)
-            ]
+        use_pg = self._use_postgres()
+        if use_pg:
+            claimed_rows = MLOpsPostgresStore.dlq_claim_pending(
+                now_ts=now, task_type=task_type, force=force
+            )
+            eligible = [DLQTaskRecord.from_dict(r) for r in claimed_rows]
+        else:
+            with self._lock:
+                eligible = [
+                    t
+                    for t in self._tasks.values()
+                    if t.status == DLQTaskStatus.PENDING
+                    and (force or t.next_retry_at <= now)
+                    and (task_type is None or t.task_type == task_type)
+                ]
 
         summary = DLQReplaySummary(total_attempted=len(eligible))
 
@@ -207,8 +247,15 @@ class DLQReplayEngine:
             fn = exec_map.get(task.task_type)
             if not fn:
                 logger.warning(
-                    f"[DLQ] No executor registered for task_type '{task.task_type}', skipping task {task.task_id}"
+                    f"[DLQ] No executor registered for task_type '{task.task_type}', releasing task {task.task_id} back to pending"
                 )
+                task.status = DLQTaskStatus.PENDING
+                if use_pg:
+                    MLOpsPostgresStore.dlq_upsert(task.to_dict())
+                else:
+                    with self._lock:
+                        self._tasks[task.task_id] = task
+                        self._save_tasks()
                 continue
 
             success = self.replay_single_task(task.task_id, fn)
@@ -216,7 +263,12 @@ class DLQReplayEngine:
                 summary.resolved_count += 1
             else:
                 summary.failed_again_count += 1
-                if task.status == DLQTaskStatus.DEAD_LETTER:
+                updated_task = (
+                    DLQTaskRecord.from_dict(MLOpsPostgresStore.dlq_get(task.task_id))
+                    if use_pg
+                    else self._tasks.get(task.task_id)
+                )
+                if updated_task and updated_task.status == DLQTaskStatus.DEAD_LETTER:
                     summary.dead_letter_count += 1
 
         summary.duration_s = round(time.time() - start_t, 3)
@@ -228,6 +280,9 @@ class DLQReplayEngine:
 
     def list_tasks(self, status: Optional[DLQTaskStatus] = None) -> List[DLQTaskRecord]:
         """List tasks, optionally filtered by status."""
+        if self._use_postgres():
+            rows = MLOpsPostgresStore.dlq_list(status=status.value if status else None)
+            return [DLQTaskRecord.from_dict(r) for r in rows]
         with self._lock:
             tasks = list(self._tasks.values())
             if status is not None:
@@ -236,6 +291,11 @@ class DLQReplayEngine:
 
     def purge_resolved(self) -> int:
         """Remove resolved tasks from storage to keep DLQ lean."""
+        if self._use_postgres():
+            with MLOpsPostgresStore.connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("DELETE FROM mlops_dlq_tasks WHERE status = 'resolved'")
+                    return cur.rowcount
         with self._lock:
             resolved_keys = [
                 k for k, v in self._tasks.items() if v.status == DLQTaskStatus.RESOLVED
@@ -279,7 +339,7 @@ class DLQReplayEngine:
         return items
 
     def _load_tasks(self) -> None:
-        if not self.tasks_file.exists():
+        if not self.tasks_file or not self.tasks_file.exists():
             return
         try:
             with open(self.tasks_file, "r", encoding="utf-8") as f:
@@ -292,6 +352,8 @@ class DLQReplayEngine:
             logger.error(f"Failed to load DLQ file {self.tasks_file}: {exc}")
 
     def _save_tasks(self) -> None:
+        if not self.storage_dir or not self.tasks_file:
+            return
         try:
             tmp_file = self.storage_dir / f"dlq_tasks_{int(time.time() * 1000)}.tmp"
             with open(tmp_file, "w", encoding="utf-8") as f:

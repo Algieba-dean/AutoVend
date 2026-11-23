@@ -6,9 +6,12 @@ Delegates RAG retrieval to `ServiceContainer.get_rag_service()` and deterministi
 pricing/valuation to `TruthEngineFacade` (wrapping `src/truth_engine/price_valuation.py`).
 """
 
+import hashlib
 import json
+import threading
+import time
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.tools import tool
 from pydantic import BaseModel, Field
@@ -28,10 +31,61 @@ class ToolContract:
     isReadOnly: bool = True
     isConcurrencySafe: bool = True
     needsApproval: bool = False
+    requiresIdempotencyKey: bool = False
     maxResultSizeChars: int = 4000
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+
+
+class IdempotencyStore:
+    """Thread-safe in-memory TTL cache ensuring side-effecting tools execute at most once per idempotency_key."""
+
+    _entries: Dict[str, Tuple[float, str]] = {}
+    _lock: threading.RLock = threading.RLock()
+    _default_ttl_s: float = 3600.0
+    _max_entries: int = 2048
+
+    @classmethod
+    def _evict_expired_locked(cls, now: float, ttl_s: float) -> None:
+        expired = [k for k, (ts, _) in cls._entries.items() if now - ts > ttl_s]
+        for k in expired:
+            cls._entries.pop(k, None)
+        if len(cls._entries) > cls._max_entries:
+            # Evict oldest entries
+            by_age = sorted(cls._entries.items(), key=lambda item: item[1][0])
+            for k, _ in by_age[: len(cls._entries) - cls._max_entries]:
+                cls._entries.pop(k, None)
+
+    @classmethod
+    def get(cls, key: str, ttl_s: float = 3600.0) -> Optional[str]:
+        if not key:
+            return None
+        now = time.monotonic()
+        with cls._lock:
+            entry = cls._entries.get(key)
+            if entry is None:
+                return None
+            ts, payload = entry
+            if now - ts > ttl_s:
+                cls._entries.pop(key, None)
+                return None
+            return payload
+
+    @classmethod
+    def set(cls, key: str, payload: str, ttl_s: Optional[float] = None) -> None:
+        if not key:
+            return
+        now = time.monotonic()
+        effective_ttl = cls._default_ttl_s if ttl_s is None else ttl_s
+        with cls._lock:
+            cls._entries[key] = (now, payload)
+            cls._evict_expired_locked(now, effective_ttl)
+
+    @classmethod
+    def clear(cls) -> None:
+        with cls._lock:
+            cls._entries.clear()
 
 
 TOOL_CONTRACTS: Dict[str, ToolContract] = {
@@ -39,36 +93,42 @@ TOOL_CONTRACTS: Dict[str, ToolContract] = {
         isReadOnly=True,
         isConcurrencySafe=True,
         needsApproval=False,
+        requiresIdempotencyKey=False,
         maxResultSizeChars=6000,
     ),
     "get_vehicle_detail": ToolContract(
         isReadOnly=True,
         isConcurrencySafe=True,
         needsApproval=False,
+        requiresIdempotencyKey=False,
         maxResultSizeChars=4000,
     ),
     "calculate_drive_away_price": ToolContract(
         isReadOnly=True,
         isConcurrencySafe=True,
         needsApproval=False,
+        requiresIdempotencyKey=False,
         maxResultSizeChars=4000,
     ),
     "check_constraint_conflicts": ToolContract(
         isReadOnly=True,
         isConcurrencySafe=True,
         needsApproval=False,
+        requiresIdempotencyKey=False,
         maxResultSizeChars=2000,
     ),
     "validate_test_drive_slot": ToolContract(
         isReadOnly=True,
         isConcurrencySafe=True,
         needsApproval=False,
+        requiresIdempotencyKey=False,
         maxResultSizeChars=2000,
     ),
     "submit_test_drive_reservation": ToolContract(
         isReadOnly=False,
         isConcurrencySafe=False,
         needsApproval=True,
+        requiresIdempotencyKey=True,
         maxResultSizeChars=2000,
     ),
 }
@@ -249,15 +309,26 @@ def check_constraint_conflicts_tool(
         temp_state.profile.parking_conditions = parking_conditions
 
     conflicts = reconcile_constraints(temp_state)
-    payload = [
-        {
-            "conflict_type": c.conflict_type,
-            "severity": c.severity,
-            "description": c.description,
-            "suggestion": c.suggestion,
-        }
-        for c in conflicts
-    ]
+    payload = []
+    for c in conflicts:
+        opts_text = " 或 ".join(c.suggested_options) if getattr(c, "suggested_options", None) else ""
+        trade_offs = getattr(c, "trade_off_options", None) or []
+        if not opts_text and trade_offs:
+            opts_text = "；".join(
+                f"{t.get('description', '')}({t.get('action', '')})".strip("()")
+                for t in trade_offs
+                if isinstance(t, dict)
+            )
+        payload.append(
+            {
+                "conflict_type": c.conflict_type,
+                "severity": c.severity,
+                "description": c.description,
+                "suggested_options": list(getattr(c, "suggested_options", None) or []),
+                "trade_off_options": list(trade_offs),
+                "suggestion": opts_text,
+            }
+        )
     if (
         powertrain_type
         and any(k in powertrain_type for k in ("纯电", "EV", "BEV"))
@@ -269,11 +340,19 @@ def check_constraint_conflicts_tool(
                 "conflict_type": "CHARGING_VS_PARKING",
                 "severity": "soft",
                 "description": f"用户偏好纯电车型，但停车条件为「{parking_conditions}」可能不便安装家充桩",
+                "suggested_options": ["重点核实周边快充站覆盖情况", "考虑增程/插混车型作为备选"],
                 "suggestion": "建议重点核实周边快充站覆盖情况，或考虑增程/插混车型作为备选。",
             }
         )
 
-    out = json.dumps({"has_conflicts": len(payload) > 0, "conflicts": payload}, ensure_ascii=False)
+    out = json.dumps(
+        {
+            "has_conflicts": len(payload) > 0,
+            "conflict_count": len(payload),
+            "conflicts": payload,
+        },
+        ensure_ascii=False,
+    )
     return enforce_tool_result_limit("check_constraint_conflicts", out)
 
 
@@ -331,8 +410,35 @@ def submit_test_drive_reservation_tool(
     reservation_location: str,
     test_driver: str,
     phone_number: str,
+    idempotency_key: Optional[str] = None,
 ) -> str:
-    """Submit a verified 4S test-drive reservation (write operation requiring approval/evidence)."""
+    """Submit a verified 4S test-drive reservation (write operation requiring approval, evidence, and idempotency_key)."""
+    if idempotency_key is not None and not str(idempotency_key).strip():
+        out = json.dumps(
+            {
+                "submitted": False,
+                "error_code": "MISSING_IDEMPOTENCY_KEY",
+                "error": "有副作用的预约写入工具必须携带有效的 idempotency_key",
+            },
+            ensure_ascii=False,
+        )
+        return enforce_tool_result_limit("submit_test_drive_reservation", out)
+
+    effective_key = str(idempotency_key).strip() if idempotency_key else hashlib.sha256(
+        f"{car_model}|{reservation_date}|{reservation_time}|{reservation_location}|{phone_number}".encode("utf-8")
+    ).hexdigest()[:24]
+
+    cached = IdempotencyStore.get(effective_key)
+    if cached is not None:
+        try:
+            parsed = json.loads(cached)
+            parsed["idempotent_replay"] = True
+            return enforce_tool_result_limit(
+                "submit_test_drive_reservation", json.dumps(parsed, ensure_ascii=False)
+            )
+        except Exception:
+            return cached
+
     ledger = VerificationEvidenceLedger()
     phone_ok = ledger.verify_phone_number(phone_number)
     store_ok = ledger.verify_4s_store(reservation_location)
@@ -343,8 +449,10 @@ def submit_test_drive_reservation_tool(
         out = json.dumps(
             {
                 "submitted": False,
+                "error_code": "RESERVATION_VALIDATION_FAILED",
                 "error": "预约凭证核验未通过",
                 "missing_or_invalid": missing,
+                "idempotency_key": effective_key,
             },
             ensure_ascii=False,
         )
@@ -354,6 +462,8 @@ def submit_test_drive_reservation_tool(
         {
             "submitted": True,
             "status": "CONFIRMED",
+            "idempotency_key": effective_key,
+            "idempotent_replay": False,
             "car_model": car_model,
             "reservation_date": reservation_date,
             "reservation_time": reservation_time,
@@ -363,6 +473,7 @@ def submit_test_drive_reservation_tool(
         },
         ensure_ascii=False,
     )
+    IdempotencyStore.set(effective_key, out)
     return enforce_tool_result_limit("submit_test_drive_reservation", out)
 
 

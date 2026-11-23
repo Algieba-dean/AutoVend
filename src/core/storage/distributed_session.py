@@ -16,8 +16,20 @@ from contextlib import asynccontextmanager
 from typing import Dict, Optional, Tuple
 
 from src.agent.schemas import SessionState, UserProfile
+from src.utils.config import config
 
 logger = logging.getLogger(__name__)
+
+
+def _is_test_env() -> bool:
+    """Return True only when APP_ENV / APP_ENVIRONMENT is explicitly test or testing."""
+    env = (
+        os.getenv("APP_ENV")
+        or os.getenv("APP_ENVIRONMENT")
+        or config.app_environment
+        or "development"
+    ).strip().lower()
+    return env in ("test", "testing")
 
 # Try importing redis.asyncio or aioredis
 _AIOREDIS = None
@@ -59,14 +71,26 @@ class DistributedSessionStore:
         ttl_seconds: int = 86400 * 7,  # 7-day auto-expiry
     ):
         self.ttl = ttl_seconds
-        self.redis_url = redis_url or os.getenv("REDIS_URL")
+        self.redis_url = redis_url or os.getenv("REDIS_URL") or config.redis_url
         self.redis = None
         self._redis_available = False
+        self._allow_local_fallback = _is_test_env()
 
-        # In-memory storage & locking fallback for standalone / test environments
+        # In-memory storage & locking fallback strictly for test environments (APP_ENV=test/testing)
         self._local_sessions: Dict[str, Tuple[SessionState, float]] = {}  # session_id -> (state, expire_at)
         self._local_locks: Dict[str, asyncio.Lock] = {}
         self._lock_tokens: Dict[str, str] = {}
+
+        if not self._allow_local_fallback:
+            if not self.redis_url:
+                raise RuntimeError(
+                    "REDIS_URL is required in non-test environments; "
+                    "silent in-memory session fallback is disabled."
+                )
+            if _AIOREDIS is None:
+                raise RuntimeError(
+                    "redis package (redis.asyncio) is required in non-test environments."
+                )
 
         if self.redis_url and _AIOREDIS is not None:
             try:
@@ -74,14 +98,19 @@ class DistributedSessionStore:
                 self._redis_available = True
                 logger.info(f"DistributedSessionStore configured with Redis at {self.redis_url}")
             except Exception as e:
+                if not self._allow_local_fallback:
+                    raise RuntimeError(
+                        f"Failed to connect to Redis at {self.redis_url}: {e}. "
+                        "Fail-fast in non-test environment."
+                    ) from e
                 logger.warning(
-                    f"Failed to connect to Redis at {self.redis_url}: {e}. Falling back to in-memory store."
+                    f"Failed to connect to Redis at {self.redis_url}: {e}. Falling back to in-memory store (test mode)."
                 )
                 self.redis = None
                 self._redis_available = False
 
     async def get(self, session_id: str) -> Optional[SessionState]:
-        """Fetch session snapshot from Redis or in-memory store."""
+        """Fetch session snapshot from Redis (or in-memory store in test mode)."""
         if self._redis_available and self.redis is not None:
             try:
                 data = await self.redis.get(f"session:{session_id}")
@@ -89,11 +118,16 @@ class DistributedSessionStore:
                     return None
                 return SessionState.model_validate_json(data)
             except Exception as e:
+                if not self._allow_local_fallback:
+                    raise RuntimeError(f"Redis get failed for session {session_id}: {e}") from e
                 logger.warning(
-                    f"Redis get failed for session {session_id}: {e}. Checking local cache."
+                    f"Redis get failed for session {session_id}: {e}. Checking local cache (test mode)."
                 )
 
-        # Local fallback
+        if not self._allow_local_fallback:
+            raise RuntimeError("Redis is unavailable in non-test environment.")
+
+        # Local fallback (test mode only)
         entry = self._local_sessions.get(session_id)
         if not entry:
             return None
@@ -129,9 +163,14 @@ class DistributedSessionStore:
                 await self.redis.set(f"session:{session_id}", serialized, ex=self.ttl)
                 return
             except Exception as e:
-                logger.warning(f"Redis save failed for session {session_id}: {e}. Storing locally.")
+                if not self._allow_local_fallback:
+                    raise RuntimeError(f"Redis save failed for session {session_id}: {e}") from e
+                logger.warning(f"Redis save failed for session {session_id}: {e}. Storing locally (test mode).")
 
-        # Local fallback
+        if not self._allow_local_fallback:
+            raise RuntimeError("Redis is unavailable in non-test environment.")
+
+        # Local fallback (test mode only)
         self._local_sessions[session_id] = (state.model_copy(deep=True), time.time() + self.ttl)
 
     async def delete(self, session_id: str) -> bool:
@@ -206,7 +245,11 @@ class DistributedSessionStore:
                 except Exception as e:
                     logger.error(f"Failed to release Redis lock for {session_id}: {e}")
         else:
-            # Local async lock fallback
+            if not self._allow_local_fallback:
+                raise RuntimeError(
+                    "Distributed Redis lock is required in non-test environments."
+                )
+            # Local async lock fallback (test mode only)
             if session_id not in self._local_locks:
                 self._local_locks[session_id] = asyncio.Lock()
             lock = self._local_locks[session_id]

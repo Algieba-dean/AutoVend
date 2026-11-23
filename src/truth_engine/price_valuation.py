@@ -11,153 +11,28 @@ Calculates:
 
 from typing import Dict, Optional
 
+from src.truth_engine.master_data import SEED_VEHICLE_PRICING, TruthMasterDataStore
 from src.truth_engine.models import DepreciationValuation, DriveAwayPriceCalculation
 
+# Legacy module-level aliases derived from seed data for backward-compatible imports only.
+# Runtime calculations always query TruthMasterDataStore (PostgreSQL).
 DEPRECIATION_DATABASE: Dict[str, DepreciationValuation] = {
-    "小米SU7 Max": DepreciationValuation(
-        car_model="小米SU7 Max",
-        one_year_residual_rate=0.78,
-        three_year_residual_rate=0.55,
-        current_wholesale_price_range_wan="21.5 - 23.0 万元",
-        current_retail_price_range_wan="23.5 - 25.5 万元",
-        market_liquidity_rating="极高 (热度榜前列，二手周转期<14天)",
-    ),
-    "小米SU7 标准版": DepreciationValuation(
-        car_model="小米SU7 标准版",
-        one_year_residual_rate=0.74,
-        three_year_residual_rate=0.51,
-        current_wholesale_price_range_wan="15.5 - 16.8 万元",
-        current_retail_price_range_wan="17.2 - 18.5 万元",
-        market_liquidity_rating="高",
-    ),
-    "比亚迪汉EV": DepreciationValuation(
-        car_model="比亚迪汉EV",
-        one_year_residual_rate=0.68,
-        three_year_residual_rate=0.48,
-        current_wholesale_price_range_wan="12.0 - 14.5 万元",
-        current_retail_price_range_wan="13.5 - 16.0 万元",
-        market_liquidity_rating="高 (市场保有量大，转手极为容易)",
-    ),
-    "比亚迪汉DM-i": DepreciationValuation(
-        car_model="比亚迪汉DM-i",
-        one_year_residual_rate=0.71,
-        three_year_residual_rate=0.52,
-        current_wholesale_price_range_wan="11.5 - 13.5 万元",
-        current_retail_price_range_wan="13.0 - 15.0 万元",
-        market_liquidity_rating="高",
-    ),
-    "特斯拉Model 3": DepreciationValuation(
-        car_model="特斯拉Model 3",
-        one_year_residual_rate=0.77,
-        three_year_residual_rate=0.56,
-        current_wholesale_price_range_wan="16.5 - 18.5 万元",
-        current_retail_price_range_wan="18.0 - 20.0 万元",
-        market_liquidity_rating="极高 (流通硬通货)",
-    ),
-    "极氪001": DepreciationValuation(
-        car_model="极氪001",
-        one_year_residual_rate=0.69,
-        three_year_residual_rate=0.49,
-        current_wholesale_price_range_wan="17.0 - 20.0 万元",
-        current_retail_price_range_wan="19.0 - 22.5 万元",
-        market_liquidity_rating="中高",
-    ),
-    "问界M9": DepreciationValuation(
-        car_model="问界M9",
-        one_year_residual_rate=0.80,
-        three_year_residual_rate=0.58,
-        current_wholesale_price_range_wan="36.0 - 41.0 万元",
-        current_retail_price_range_wan="38.5 - 43.5 万元",
-        market_liquidity_rating="高 (高端豪华新能源热销车型)",
-    ),
-    "特斯拉Model Y": DepreciationValuation(
-        car_model="特斯拉Model Y",
-        one_year_residual_rate=0.76,
-        three_year_residual_rate=0.55,
-        current_wholesale_price_range_wan="18.0 - 20.0 万元",
-        current_retail_price_range_wan="19.5 - 21.8 万元",
-        market_liquidity_rating="极高 (全球销量标杆，转手极快)",
-    ),
-    "问界M7": DepreciationValuation(
-        car_model="问界M7",
-        one_year_residual_rate=0.75,
-        three_year_residual_rate=0.53,
-        current_wholesale_price_range_wan="17.5 - 20.0 万元",
-        current_retail_price_range_wan="19.0 - 22.0 万元",
-        market_liquidity_rating="高",
-    ),
-    "比亚迪海鸥": DepreciationValuation(
-        car_model="比亚迪海鸥",
-        one_year_residual_rate=0.76,
-        three_year_residual_rate=0.54,
-        current_wholesale_price_range_wan="5.0 - 5.8 万元",
-        current_retail_price_range_wan="5.6 - 6.5 万元",
-        market_liquidity_rating="极高 (低总价代步刚需，残值坚挺)",
-    ),
-    "比亚迪秦PLUS DM-i": DepreciationValuation(
-        car_model="比亚迪秦PLUS DM-i",
-        one_year_residual_rate=0.70,
-        three_year_residual_rate=0.49,
-        current_wholesale_price_range_wan="5.5 - 6.8 万元",
-        current_retail_price_range_wan="6.3 - 7.5 万元",
-        market_liquidity_rating="高",
-    ),
-    "比亚迪海豹EV": DepreciationValuation(
-        car_model="比亚迪海豹EV",
-        one_year_residual_rate=0.68,
-        three_year_residual_rate=0.47,
-        current_wholesale_price_range_wan="11.5 - 13.5 万元",
-        current_retail_price_range_wan="13.0 - 15.0 万元",
-        market_liquidity_rating="中等",
-    ),
-    "极氪007": DepreciationValuation(
-        car_model="极氪007",
-        one_year_residual_rate=0.70,
-        three_year_residual_rate=0.49,
-        current_wholesale_price_range_wan="14.5 - 16.5 万元",
-        current_retail_price_range_wan="16.0 - 18.2 万元",
-        market_liquidity_rating="中高",
-    ),
-    "理想L8": DepreciationValuation(
-        car_model="理想L8",
-        one_year_residual_rate=0.76,
-        three_year_residual_rate=0.54,
-        current_wholesale_price_range_wan="24.0 - 27.0 万元",
-        current_retail_price_range_wan="26.0 - 29.5 万元",
-        market_liquidity_rating="高",
-    ),
-    "小米SU7 Ultra": DepreciationValuation(
-        car_model="小米SU7 Ultra",
-        one_year_residual_rate=0.85,
-        three_year_residual_rate=0.60,
-        current_wholesale_price_range_wan="68.0 - 74.0 万元",
-        current_retail_price_range_wan="72.0 - 78.0 万元",
-        market_liquidity_rating="高 (稀缺性能旗舰)",
-    ),
+    k: DepreciationValuation(
+        car_model=k,
+        one_year_residual_rate=float(v["one_year_residual_rate"]),
+        three_year_residual_rate=float(v["three_year_residual_rate"]),
+        current_wholesale_price_range_wan=str(v["wholesale_price_range_wan"]),
+        current_retail_price_range_wan=str(v["retail_price_range_wan"]),
+        market_liquidity_rating=str(v["market_liquidity_rating"]),
+    )
+    for k, v in SEED_VEHICLE_PRICING.items()
+    if v.get("one_year_residual_rate") is not None
 }
 
 DEFAULT_MSRP_MAP: Dict[str, float] = {
-    "小米SU7 Max": 29.99,
-    "小米SU7 Pro": 24.59,
-    "小米SU7 标准版": 21.59,
-    "小米SU7 Ultra": 81.49,
-    "比亚迪汉EV": 17.98,
-    "比亚迪汉DM-i": 16.98,
-    "比亚迪秦PLUS DM-i": 7.98,
-    "比亚迪海豹EV": 17.58,
-    "比亚迪海鸥": 6.98,
-    "特斯拉Model 3": 23.19,
-    "特斯拉Model Y": 24.99,
-    "极氪001": 26.90,
-    "极氪007": 20.99,
-    "问界M9": 46.98,
-    "问界M9 EV": 50.98,
-    "问界M7": 24.98,
-    "理想L7": 30.18,
-    "理想L8": 32.18,
-    "理想L9": 40.98,
-    "小鹏G6": 19.99,
-    "蔚来ET5": 29.80,
+    k: float(v["msrp_wan"])
+    for k, v in SEED_VEHICLE_PRICING.items()
+    if v.get("msrp_wan") is not None
 }
 
 
@@ -185,11 +60,9 @@ class PriceValuationEngine:
         spec = platform.find_specs(clean)
         canonical = spec.car_model if spec else clean
 
-        target = canonical.lower().replace(" ", "").replace("-", "")
-        for k, v in DEPRECIATION_DATABASE.items():
-            k_clean = k.lower().replace(" ", "").replace("-", "")
-            if k_clean in target or target in k_clean:
-                return v
+        db_val = TruthMasterDataStore.get_depreciation_valuation(canonical)
+        if db_val is not None:
+            return db_val
 
         # Generic estimate for other vehicles
         if len(clean) <= 20:
@@ -232,24 +105,27 @@ class PriceValuationEngine:
         canonical_name = spec.car_model if spec else car_model
 
         if msrp_wan is None:
-            msrp_wan = DEFAULT_MSRP_MAP.get(canonical_name, DEFAULT_MSRP_MAP.get(car_model, 25.0))
+            msrp_wan = TruthMasterDataStore.get_msrp_wan(canonical_name, fallback_model=car_model) or 25.0
 
         # Net car invoice price
         net_car = max(0.0, msrp_wan - effective_cash - effective_perks - effective_subsidy)
 
-        # Purchase tax calculation
+        # Purchase tax calculation from PostgreSQL active tax policy
+        policy = TruthMasterDataStore.get_active_tax_policy()
+        vat_divisor = policy["vat_divisor"]
+        tax_rate = policy["purchase_tax_rate"]
+        nev_cap = policy["nev_exemption_limit_wan"]
+
         purchase_tax = 0.0
         if is_nev:
-            # 2024-2025中国新能源车辆购置税免税额度最高3万元 (对应开票价约33.9万元以下免征，超出部分按10%缴纳)
-            taxable_base = net_car / 1.13
-            normal_tax = taxable_base * 0.10
-            if normal_tax > 3.0:
-                purchase_tax = round(normal_tax - 3.0, 2)
+            taxable_base = net_car / vat_divisor
+            normal_tax = taxable_base * tax_rate
+            if normal_tax > nev_cap:
+                purchase_tax = round(normal_tax - nev_cap, 2)
             else:
                 purchase_tax = 0.0
         else:
-            # 传统燃油车按10%不含税价征收
-            purchase_tax = round((net_car / 1.13) * 0.10, 2)
+            purchase_tax = round((net_car / vat_divisor) * tax_rate, 2)
 
         # Insurance estimate (compulsory 950 RMB + comprehensive commercial insurance)
         if net_car < 15.0:

@@ -117,7 +117,12 @@ class SemanticRouter:
         if not text or not text.strip():
             return RouteDecision(None, None, 0.0, 0.0, matched=False)
 
-        vector = self._embed(text)
+        try:
+            vector = self._embed(text)
+        except Exception as exc:
+            logger.warning(f"[SemanticRouter] Embedding unavailable ({exc}); skipping semantic route.")
+            return RouteDecision(None, None, 0.0, 0.0, matched=False)
+
         scores = vector @ self._matrix  # (n_anchors,)
 
         best_index = int(np.argmax(scores))
@@ -181,9 +186,154 @@ class SemanticRouter:
             "dtype": str(self._matrix.dtype),
         }
 
+    def update_thresholds(self, threshold: float, margin: float) -> None:
+        """Hot-update decision threshold and margin at runtime."""
+        self.threshold = float(threshold)
+        self.margin = float(margin)
+
+    def calibrate_thresholds(
+        self,
+        bad_cases: List[Tuple[str, Optional[str]]],
+        threshold_grid: Optional[List[float]] = None,
+        margin_grid: Optional[List[float]] = None,
+    ) -> Tuple[float, float]:
+        """
+        Calibrate (threshold, margin) against labeled production bad cases
+        `[(utterance, expected_intent_or_None), ...]` and apply the best pair.
+        """
+        if not bad_cases:
+            return self.threshold, self.margin
+
+        t_grid = threshold_grid or [0.55, 0.58, 0.60, 0.62, 0.65, 0.68, 0.70]
+        m_grid = margin_grid or [0.01, 0.02, 0.03, 0.05, 0.08]
+
+        scored_cases = []
+        for text, expected in bad_cases:
+            if not text or not text.strip():
+                continue
+            scores = self._embed(text) @ self._matrix
+            best_idx = int(np.argmax(scores))
+            best_score = float(scores[best_idx])
+            best_intent = self._intents[best_idx]
+            _, runner_score = self._best_other_intent(scores, best_intent)
+            scored_cases.append((best_intent, best_score, best_score - runner_score, expected))
+
+        best_acc = -1.0
+        best_pair = (self.threshold, self.margin)
+        for t in t_grid:
+            for m in m_grid:
+                correct = 0
+                for b_intent, b_score, b_margin, expected in scored_cases:
+                    pred = b_intent if (b_score >= t and b_margin >= m) else None
+                    if pred == expected:
+                        correct += 1
+                acc = correct / max(len(scored_cases), 1)
+                if acc > best_acc:
+                    best_acc = acc
+                    best_pair = (t, m)
+
+        self.update_thresholds(*best_pair)
+        return best_pair
+
+    def update_anchors(self, anchors_by_intent: dict[str, List[str]], family: str = "control_flow") -> int:
+        """Hot-reload semantic router anchor phrases and re-compute normalized anchor matrix."""
+        texts: List[str] = []
+        intents: List[str] = []
+        families: List[str] = []
+        for intent, phrases in anchors_by_intent.items():
+            for phrase in phrases or []:
+                if phrase and phrase.strip():
+                    texts.append(phrase.strip())
+                    intents.append(intent)
+                    families.append(family)
+        if not texts:
+            return 0
+        vecs = np.stack([self._embed(t) for t in texts], axis=0).astype(np.float32)
+        self.anchors = AnchorSet(
+            vectors=vecs,
+            intents=intents,
+            families=families,
+            model_name=self.anchors.model_name,
+            dim=int(vecs.shape[1]),
+        )
+        self._matrix = self.anchors.vectors.T
+        self._intents = self.anchors.intents
+        self._families = self.anchors.families
+        return len(texts)
+
+    def reload_config_from_db(self, dsn: Optional[str] = None) -> bool:
+        """
+        Hot-reload threshold, margin, and optional anchor overrides from PostgreSQL
+        (`semantic_router_config` table). Returns True if updated from DB.
+        """
+        import json
+
+        from src.utils.config import config
+
+        conn_str = dsn or config.pgvector_connection_string
+        try:
+            from psycopg_pool import ConnectionPool
+
+            pool = ConnectionPool(
+                conninfo=conn_str,
+                min_size=1,
+                max_size=2,
+                kwargs={"connect_timeout": 2, "autocommit": True},
+                open=False,
+            )
+            pool.open(wait=True, timeout=3.0)
+            try:
+                with pool.connection() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            """
+                            CREATE TABLE IF NOT EXISTS semantic_router_config (
+                                config_key TEXT PRIMARY KEY,
+                                threshold DOUBLE PRECISION NOT NULL,
+                                margin DOUBLE PRECISION NOT NULL,
+                                anchors_json JSONB,
+                                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                            );
+                            ALTER TABLE semantic_router_config
+                            ADD COLUMN IF NOT EXISTS anchors_json JSONB;
+                            """
+                        )
+                        cur.execute(
+                            "SELECT threshold, margin, anchors_json FROM semantic_router_config WHERE config_key = 'default'"
+                        )
+                        row = cur.fetchone()
+                        if row:
+                            self.update_thresholds(float(row[0]), float(row[1]))
+                            if row[2]:
+                                anchors_data = row[2] if isinstance(row[2], dict) else json.loads(row[2])
+                                if isinstance(anchors_data, dict):
+                                    self.update_anchors(anchors_data)
+                            logger.info(
+                                f"SemanticRouter hot-reloaded config from DB: "
+                                f"threshold={self.threshold}, margin={self.margin}, anchors={len(self._intents)}"
+                            )
+                            return True
+            finally:
+                pool.close()
+        except Exception as exc:
+            logger.debug(f"SemanticRouter DB config reload skipped: {exc}")
+        return False
+
 
 _default_router: Optional[SemanticRouter] = None
 _lock = threading.Lock()
+
+
+def reload_router(
+    path: Optional[Path] = None,
+    embedder=None,
+    required: bool = False,
+) -> Optional[SemanticRouter]:
+    """Force-reload the process-wide SemanticRouter (for hot anchor/config updates)."""
+    global _default_router
+    with _lock:
+        _default_router = None
+    return get_router(path=path, embedder=embedder, required=required)
 
 
 def get_router(

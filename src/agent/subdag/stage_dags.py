@@ -6,7 +6,8 @@ Implements complex local stage DAG topologies for:
 - Stage.RESERVATION_4S: Preliminary qualification verification, 4S dealer inventory API, slot check decision.
 """
 
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
+
 from src.agent.schemas import Stage
 from src.agent.subdag.executor import SubDAGExecutor
 
@@ -126,15 +127,11 @@ def create_reservation_4s_dag() -> SubDAGExecutor:
                 "id": "finalize_reservation_prep",
                 "type": "decision",
                 "data": {
-                    "action": "prefill_and_note",
+                    "action": "add_note",
                     "note": (
                         "[Sub-DAG: 4S资质初审与库存查询] 客户试驾资质初审通过，4S店现车及试驾时段已确认。"
-                        "请向客户确认具体的试驾时间、地点及联系电话。"
+                        "请向客户确认具体的意向城市、门店地点、试驾时间及联系电话，切勿自行假定门店或销售顾问。"
                     ),
-                    "updates": {
-                        "reservation_location": "AutoVend 旗舰 4S 体验中心",
-                        "salesman": "高级销售顾问 Alex",
-                    },
                 },
             },
             {

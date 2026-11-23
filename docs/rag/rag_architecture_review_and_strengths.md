@@ -72,17 +72,16 @@
 | **数据源** | `src/crawler/yiche_crawler.py:21` | **爬虫写死 14 款车系 Slug**：仅支持定向爬取，无全品牌自主遍历能力。 | 升级为自动化全品牌目录树下探爬虫，支持分页发现与增量调度队列。 |
 | **数据源** | `src/ingestion/layout_parser.py:1022` | **长表格几何坐标死阈值**：按 55%/40% 宽度经验值判定跨页表格，双栏多栏排版误判率高。 | 替换为深度多模态版面分析模型（如 LayoutLMv3、Table-Transformer 或 Docling）。 |
 | **数据源** | `src/search/providers/hermetic_mock.py:24` | **500 行手工填写的假行情假销量库**：静态手写月销量、权益数据，非实时抓取。 | 替换为基于 Celery/Playwright 的分布式检索池，对接乘联会等实时数据源并接入 Redis 缓存。 |
-| **RAG/检索** | `src/core/compression.py:157` | **句子加减分启发式**：按是否含数字粗暴 `+1.5` / `-1.0` 分，打碎因果上下文。 | 直接改用结构化数据库特征注入 Prompt；长文本使用基于困惑度（Perplexity）的 LLMLingua 压缩。 |
-| **RAG/检索** | `src/core/compression.py:73` | **公关套话正则硬剥离**：维护 17 个固定夸张词，句式变化易产生语病或漏网。 | 将清洗前移到离线入库阶段，由小模型蒸馏或基于依存句法分析进行修饰语剪枝。 |
+| **RAG/检索** | `src/core/compression.py` | **已升级（Semantic + Info-Density + LLM Distillation）**：采用稠密嵌入余弦相似度（含字符二元/词元 TF-IDF 回退）与信息密度凸组合打分，支持可选 LLM 抽象蒸馏。 | 可进一步接入离线入库阶段异步预蒸馏管道。 |
 | **RAG/检索** | `src/retrieval/query_transform.py:38` | **指代消解车型正则写死**：仅硬编码了 Model Y、SU7 等热门车，小众车全部失效。 | 替换为微调后的领域命名实体识别（NER）模型，配合数据库字典树动态提取。 |
 | **RAG/检索** | `src/retrieval/query_transform.py:185` | **场景隐式映射手写 6 条**：“二胎/自驾”经验映射为大空间/热泵，覆盖面极窄。 | 部署零样本意图分类模型（NLI Zero-Shot）或基于向量相似度的知识图谱扩充。 |
 | **RAG/检索** | `src/retrieval/tiered_engine.py:41` | **上百条手写口语正则模板**：用于判断零百加速、转速等意图，人工维护成本极高。 | 训练轻量口语理解（SLU）模型或在端侧运行微调后的轻量分类器（如 FastText / MiniLM）。 |
 | **RAG/检索** | `src/retrieval/tiered_engine.py:280` | **缓存防漂移枚举爆款车**：仅正则提取 `su7|001|l7` 等防止串车。 | 通过已有的 `FastSpecIndex` 提取全库车型标准 ID，对比两个 Query 的规范化实体集合是否一致。 |
 | **RAG/检索** | `src/rag_service/reranker.py:95` | **表格精排加减分人工设定**：`+0.20 品牌`、`+0.15 动力`，缺乏概率学依据。 | 利用用户真实留资与点击转化数据，训练工业级多目标排序树模型（GBDT / LambdaMART）。 |
-| **RAG/检索** | `src/rag_service/eval_monitor.py:141` | **词表匹配假装域外漂移检测**：依靠“火锅、股票”等词判定是否偏离汽车领域。 | 基于向量嵌入的马氏距离（Mahalanobis Distance）或双塔分类器做统计学置信度判定。 |
+| **RAG/检索** | `src/rag_service/eval_monitor.py` | **已升级（Embedding Centroid + Distributional OOD）**：基于域内向量质心余弦距离与 z-score 判定域外漂移，离线回退至动态车型库分布相似度 + 检索置信度联合判定。 | 可接入独立双塔域分类器与线上阈值自适应标定。 |
 | **Agent** | `src/agent/guardrail/compliance.py:18` | **合规拦截 14 个关键词硬匹配**：无法识别同音字、变体或隐蔽违规承诺。 | 接入标准化 Guardrail 框架（如 NeMo Guardrails、OpenAI Moderation）进行语义级审查。 |
-| **Agent** | `src/agent/battlecards.py:35` | **竞品攻防卡代码写死**：仅覆盖数款热门车，无法随市场价格战动态更新。 | 将战术卡移入动态知识库/CMS，由业务运营维护，Agent 实时动态挂载。 |
-| **Agent** | `src/agent/reflection.py:51` | **正则抓取续航/破百数字做抗幻觉**：只检查了特定数字单位，对虚构配置无感。 | 采用自然语言推理（NLI）算法将生成回复与数据库检索到的事实文档进行蕴含推断比对。 |
+| **Agent** | `src/agent/battlecards.py` | **已升级（Dynamic CMS + TruthEngine + RAG）**：支持运行时 JSON CMS 持久化与 CRUD，并基于 `TruthEngineFacade` 与 `RAGService` 为任意车型实时合成竞品战术卡。 | 可对接外部运营后台数据库实现实时价格战同步。 |
+| **Agent** | `src/agent/reflection.py` | **已升级（Hybrid NLI + Multi-Attribute Evidence Check）**：支持 `auditor_llm` 结构化 NLI 与交叉编码器 `nli_scorer` 蕴含判定，同时对价格/续航/加速/电池/动力做全维度证据核验。 | 可部署专用轻量中文 NLI 模型（如 DeBERTa-v3）进一步降低审计延迟。 |
 
 ---
 

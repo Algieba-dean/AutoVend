@@ -2,7 +2,9 @@
 AutoVend Sales Agent — Pure AI conversation logic.
 
 This package is fully decoupled from the backend (FastAPI, storage, ChromaDB).
-It depends only on: LLM interface, Pydantic schemas, LlamaIndex memory.
+It depends only on: LangGraph, LangChain, Pydantic schemas.
 
-Entry point: SalesAgent.process(AgentInput) -> AgentResult
+Entry points:
+- `LangGraphSalesAgent` (`src.agent.langgraph_agent`)
+- `SalesAgent` (`src.agent.sales_agent`)
 """

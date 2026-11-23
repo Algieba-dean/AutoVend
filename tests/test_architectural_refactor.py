@@ -5,13 +5,13 @@ Comprehensive unit and integration tests for Architectural Refactoring (Battles 
 import asyncio
 import json
 from datetime import date, timedelta
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from backend.app.models.schemas import ChatRequest
 from backend.app.routes.chat import set_agent
+from src.agent.extractors.unified_extractor import extract_unified_slots
 from src.agent.guardrail.compliance import (
     COMPLIANCE_FALLBACK_RESPONSE,
     DualStreamComplianceGuard,
@@ -22,21 +22,16 @@ from src.agent.schemas import (
     ReservationInfo,
     SessionState,
     Stage,
-    UserProfile,
-    VehicleNeeds,
 )
 from src.agent.storage.distributed_session import (
     DistributedSessionStore,
     SessionLockTimeoutError,
-    get_distributed_session_store,
 )
 from src.agent.tools import sanitize_tool_args
 from src.agent.unified_schema import (
     UpdateSessionSlotsTool,
     apply_slot_updates,
 )
-from src.agent.extractors.unified_extractor import extract_unified_slots
-
 
 # ============================================================
 # Helpers & Mocks
@@ -57,13 +52,13 @@ def _create_mock_llm():
 class TestBattle1AsyncStreaming:
     @pytest.mark.asyncio
     async def test_sales_agent_respond_stream_native_async(self):
-        """SalesAgent.respond_stream must be an async generator yielding metadata, delta, and done."""
+        """SalesAgent.astream_graph_turn must be an async generator yielding metadata, delta, and done."""
         llm = _create_mock_llm()
         agent = SalesAgent(llm=llm)
         state = SessionState(session_id="test_stream_1", stage=Stage.WELCOME)
 
         events = []
-        async for event_type, payload in agent.respond_stream(state):
+        async for event_type, payload in agent.astream_graph_turn(state, "你好"):
             events.append((event_type, payload))
 
         event_types = [e[0] for e in events]
@@ -77,32 +72,31 @@ class TestBattle1AsyncStreaming:
         assert "session_state" in meta_event
         assert meta_event["session_state"].session_id == "test_stream_1"
 
-        # Verify memory updated asynchronously
-        history = agent.memory.get_history("test_stream_1")
-        assert len(history) == 1
-        assert history[0].role.value == "assistant"
+        # Verify checkpointer history updated asynchronously
+        history_text = agent.get_history_text("test_stream_1")
+        assert history_text != ""
 
     @pytest.mark.asyncio
     async def test_sales_agent_cancellation_propagation(self):
         """When client cancels, asyncio.CancelledError must be re-raised cleanly for resource teardown."""
-        llm = MagicMock()
-
-        async def cancelled_stream(*args, **kwargs):
-            yield MagicMock(delta="chunk1")
-            raise asyncio.CancelledError("Client disconnected")
-
-        llm.astream_chat = cancelled_stream
+        llm = _create_mock_llm()
         agent = SalesAgent(llm=llm)
         state = SessionState(session_id="test_cancel_1", stage=Stage.WELCOME)
 
+        async def cancelled_astream(*args, **kwargs):
+            yield ("delta", "chunk1")
+            raise asyncio.CancelledError("Client disconnected")
+
+        agent.langgraph.astream_turn = cancelled_astream
+
         with pytest.raises(asyncio.CancelledError):
-            async for _ in agent.respond_stream(state):
+            async for _ in agent.astream_graph_turn(state, "你好"):
                 pass
 
     @pytest.mark.asyncio
     async def test_api_stream_endpoint_sse_flow(self, monkeypatch, tmp_path):
         """Test /api/chat/stream SSE bridge yields metadata, tokens, done with proper SSE headers."""
-        from backend.app.main import app, _startup_status
+        from backend.app.main import _startup_status, app
 
         llm = _create_mock_llm()
         agent = SalesAgent(llm=llm)
@@ -367,7 +361,7 @@ class TestBattle4DomainStrongTypingAndSecurity:
     @pytest.mark.asyncio
     async def test_api_stream_endpoint_with_isodate_reservation(self, monkeypatch):
         """Test that /api/chat/stream handles sessions with ISODate without TypeError serialization failure."""
-        from backend.app.main import app, _startup_status
+        from backend.app.main import _startup_status, app
         from backend.app.routes.chat import _sessions
 
         llm = _create_mock_llm()

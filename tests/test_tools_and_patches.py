@@ -379,53 +379,52 @@ class TestAgentIntegration:
     """The patch log must accumulate across turns, not reset each time."""
 
     def test_patches_accumulate_in_state(self):
-        from src.agent.sales_agent import _record_patches
+        from src.agent.patches import record_patches
 
         state = _state()
         state.profile.name = "张伟"
-        _record_patches(state, {}, source="extractor")
+        record_patches(state, {}, source="extractor")
 
         state.needs.explicit.price = "30万"
-        _record_patches(state, snapshot(state) | {"needs.explicit.price": None}, source="tool")
+        record_patches(state, snapshot(state) | {"needs.explicit.price": None}, source="tool")
 
         paths = [p["path"] for p in state.patch_log]
         assert "profile.name" in paths
         assert "needs.explicit.price" in paths
 
     def test_no_change_clears_last_patch_but_keeps_the_log(self):
-        from src.agent.sales_agent import _record_patches
+        from src.agent.patches import record_patches
 
         state = _state()
         state.profile.name = "张伟"
-        _record_patches(state, {}, source="extractor")
+        record_patches(state, {}, source="extractor")
         assert state.last_patch
 
-        _record_patches(state, snapshot(state), source="extractor")
+        record_patches(state, snapshot(state), source="extractor")
 
         assert state.last_patch == {}
         assert len(state.patch_log) == 1, "history must survive a no-op turn"
 
     def test_tool_transition_request_is_arbitrated(self):
-        from unittest.mock import MagicMock
+        from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
+        from src.agent.policy_arbitration import (
+            arbitrate_policies,
+            evaluate_llm_planner_policy,
+            evaluate_stage_fsm_rule_policy,
+        )
         from src.agent.sales_agent import SalesAgent
+        from src.agent.turn_classifier import TurnIntentClassification
 
-        llm = MagicMock()
-        llm.complete.return_value.text = "请告诉我您的预算。"
+        llm = FakeListChatModel(responses=["请告诉我您的预算。"])
         state = _state(Stage.NEEDS_ANALYSIS)
-        state.pending_requests = [
-            {
-                "type": "transition",
-                "stage": Stage.CAR_SELECTION.value,
-                "reason": "需求已经问完",
-            }
-        ]
+        p2 = evaluate_stage_fsm_rule_policy(state, TurnIntentClassification(intent="normal"), turn_id=1)
+        p1 = evaluate_llm_planner_policy(state, proposed_stage=Stage.CAR_SELECTION, reason="需求已经问完", turn_id=1)
+        arb = arbitrate_policies([p2, p1], current_stage=Stage.NEEDS_ANALYSIS)
+        assert arb.final_stage == Stage.NEEDS_ANALYSIS
 
-        result = SalesAgent(llm).respond(state)
-
+        result = SalesAgent(llm).run_graph_turn(state, "我想要辆车", skip_extraction=True)
         assert result.session_state.stage == Stage.NEEDS_ANALYSIS
-        assert result.session_state.pending_requests == []
-        assert any("缺少预算" in note for note in llm.complete.call_args.args[0].splitlines())
 
     def test_dynamic_notes_are_appended_after_stable_stage_prompt(self):
         from unittest.mock import MagicMock

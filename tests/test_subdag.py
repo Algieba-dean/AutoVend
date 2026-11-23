@@ -9,29 +9,16 @@ Verifies:
 5. Integration with SessionState & SalesAgent turn execution.
 """
 
-import pytest
 from src.agent.schemas import (
-    ExplicitNeeds,
     ReservationInfo,
     SessionState,
     Stage,
     UserProfile,
-    VehicleNeeds,
 )
 from src.agent.stages import STAGE_TRANSITIONS, can_transition
 from src.agent.subdag import (
-    APINode,
-    BaseSubDAGNode,
-    ConditionNode,
-    DecisionNode,
-    EndNode,
-    StartNode,
     SubDAGContext,
-    SubDAGExecutor,
     SubDAGGraph,
-    create_car_selection_dag,
-    create_reservation_4s_dag,
-    get_stage_subdag,
     run_stage_subdag,
 )
 
@@ -140,9 +127,9 @@ class TestReservation4SSubDAG:
         assert stock["in_stock"] is True
         assert stock["dealer_name"] == "AutoVend Flagship 4S Experience Center"
 
-        # Verify 4S location pre-filled into reservation info
-        assert updated.reservation.reservation_location == "AutoVend 旗舰 4S 体验中心"
-        assert updated.reservation.salesman == "高级销售顾问 Alex"
+        # Verify 4S location/salesman are NOT fabricated when not confirmed by user
+        assert updated.reservation.reservation_location == ""
+        assert updated.reservation.salesman == ""
 
         # Verify system note injected
         notes_str = " ".join(updated.system_notes)

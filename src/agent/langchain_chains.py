@@ -24,6 +24,7 @@ from src.agent.response_generator import (
     _get_missing_reservation_fields,
 )
 from src.agent.schemas import (
+    PreferenceModel,
     ReservationInfo,
     Stage,
     UserProfile,
@@ -156,12 +157,20 @@ def _build_dynamic_context_block(
     matched_cars: List[Dict[str, Any]],
     reservation: ReservationInfo,
     system_notes: Optional[List[str]] = None,
+    preferences: Optional[PreferenceModel] = None,
+    pending_confirmation: Optional[Dict[str, Any]] = None,
 ) -> str:
     """Build dynamic per-turn context block placed at the tail (after static SystemMessage & history)."""
     from src.agent.battlecards import match_battlecards
+    from src.agent.preference_model import PreferenceEngine
     from src.privacy.prompt_sanitizer import PromptSanitizer
 
-    cars_text = _format_matched_cars(matched_cars)
+    sanitized_cars, _ = PromptSanitizer.sanitize_matched_cars(matched_cars)
+    cars_text = _format_matched_cars(sanitized_cars)
+    _, wrapped_rag, boundary_directive = PromptSanitizer.wrap_context_boundaries(
+        conversation_history, cars_text
+    )
+
     parts: List[str] = [
         f"[当前会话动态状态 | 阶段: {stage.value}]",
         f"客户画像: {profile.model_dump_json()}",
@@ -169,14 +178,22 @@ def _build_dynamic_context_block(
         f"显性需求: {needs.explicit.model_dump_json()}",
         f"隐性需求: {needs.implicit.model_dump_json()}",
         f"待探索需求: {_get_missing_needs_fields(needs)}",
-        f"匹配车型与证据:\n{cars_text}",
-        f"预约信息: {reservation.model_dump_json()} (待补充: {_get_missing_reservation_fields(reservation)})",
     ]
 
-    active_notes = list(system_notes or [])
-    _, _, boundary_directive = PromptSanitizer.wrap_context_boundaries(
-        conversation_history, cars_text
+    if preferences is not None:
+        pref_summary = PreferenceEngine.format_for_prompt(preferences)
+        if pref_summary:
+            parts.append(f"三元偏好权重建模:\n{pref_summary}")
+
+    if pending_confirmation:
+        parts.append(f"待客户确认的低置信度变更: {pending_confirmation}")
+
+    parts.append(f"匹配车型与证据:\n{wrapped_rag or cars_text}")
+    parts.append(
+        f"预约信息: {reservation.model_dump_json()} (待补充: {_get_missing_reservation_fields(reservation)})"
     )
+
+    active_notes = list(system_notes or [])
     if boundary_directive not in active_notes:
         active_notes.append(boundary_directive)
 
@@ -209,6 +226,8 @@ def _prepare_prompt_inputs(
     reservation: ReservationInfo,
     system_notes: Optional[List[str]] = None,
     messages: Optional[Sequence[BaseMessage]] = None,
+    preferences: Optional[PreferenceModel] = None,
+    pending_confirmation: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Build KV-cache-friendly prompt inputs:
@@ -225,6 +244,8 @@ def _prepare_prompt_inputs(
         matched_cars=matched_cars,
         reservation=reservation,
         system_notes=system_notes,
+        preferences=preferences,
+        pending_confirmation=pending_confirmation,
     )
 
     if messages:
@@ -274,6 +295,8 @@ def build_reply_messages(
     reservation: ReservationInfo,
     system_notes: Optional[List[str]] = None,
     messages: Optional[Sequence[BaseMessage]] = None,
+    preferences: Optional[PreferenceModel] = None,
+    pending_confirmation: Optional[Dict[str, Any]] = None,
 ) -> List[BaseMessage]:
     """Build `[Static SystemMessage, *compacted_history, HumanMessage(dynamic + turn)]`."""
     inputs = _prepare_prompt_inputs(
@@ -285,6 +308,8 @@ def build_reply_messages(
         reservation=reservation,
         system_notes=system_notes,
         messages=messages,
+        preferences=preferences,
+        pending_confirmation=pending_confirmation,
     )
     return _PROMPT_TEMPLATE.format_messages(**inputs)
 

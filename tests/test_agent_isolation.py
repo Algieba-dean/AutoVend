@@ -88,6 +88,8 @@ class TestAgentImportIsolation:
             "tempfile",
             "time",
             "dataclasses",
+            "threading",
+            "warnings",
             "numpy",
             "soundfile",
             "faster_whisper",

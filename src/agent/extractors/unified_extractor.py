@@ -34,13 +34,21 @@ Output a single JSON object with the following schema:
   "reservation_date": "Standard YYYY-MM-DD or relative like '明天' or None",
   "reservation_time_slot": "上午 / 下午 / 晚上 / 14:00 or None",
   "preferred_4s_store": "Dealership store name or None",
-  "retracted_fields": ["list", "of", "fields", "customer", "cancelled", "e.g.", "budget", "suv"]
+  "retracted_fields": ["list", "of", "fields", "customer", "cancelled", "e.g.", "budget", "suv"],
+  "excluded_powertrains": ["explicitly rejected powertrains e.g. 纯电"],
+  "excluded_brands": ["explicitly rejected brands"],
+  "excluded_models": ["explicitly rejected vehicle models"],
+  "soft_preferences": {"space": 0.8, "comfort_level": 0.7},
+  "extraction_confidence": 1.0,
+  "ambiguous_fields": ["field names that are uncertain or ambiguous"]
 }
 
 Rules:
 1. ONLY extract explicitly mentioned or clearly confirmed attributes.
 2. If the user retracts or rejects a previous constraint (e.g. "不要SUV了", "预算改一下"), add it to "retracted_fields".
-3. Return ONLY valid JSON, no markdown formatting or extra text."""
+3. If the user explicitly excludes a powertrain/brand/model (e.g. "不要纯电", "排除特斯拉"), populate "excluded_powertrains"/"excluded_brands"/"excluded_models".
+4. If the user's intent on a field is ambiguous or low-confidence, set "extraction_confidence" < 0.65 and list the field in "ambiguous_fields".
+5. Return ONLY valid JSON, no markdown formatting or extra text."""
 
 
 def extract_unified_slots(

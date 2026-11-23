@@ -13,7 +13,9 @@ from abc import ABC
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
+from src.agent.guardrail.compliance import DualStreamComplianceGuard
 from src.agent.langchain_tools import get_tool_contract
+from src.agent.policy_engine import ToolPolicyEngine
 from src.agent.reflection import check_sales_compliance, sanitize_prompt_leakage
 from src.agent.think_scrubber import scrub_think_blocks
 from src.privacy.prompt_sanitizer import PromptSanitizer
@@ -125,6 +127,23 @@ class ToolContractPreToolHook(LifecycleHook):
         return ctx
 
 
+class ToolPolicyPreToolHook(LifecycleHook):
+    """PreTool hook: deterministic Policy-as-Code argument boundary validation."""
+
+    name = "tool_policy_pre_tool"
+
+    def __init__(self, policy_engine: Optional[ToolPolicyEngine] = None):
+        self.policy_engine = policy_engine or ToolPolicyEngine()
+
+    def pre_tool(self, ctx: ToolHookContext) -> ToolHookContext:
+        res = self.policy_engine.validate(ctx.tool_name, ctx.tool_args)
+        if not res.allowed:
+            ctx.approved = False
+            ctx.rejection_reason = f"[POLICY_VIOLATION] {res.reason}"
+            ctx.metadata["policy_violations"] = res.violations
+        return ctx
+
+
 class ResponseSanitizePostHook(LifecycleHook):
     """PostResponse hook: strips `<think>` blocks, compliance risks, prompt leaks, and restores PII."""
 
@@ -138,9 +157,14 @@ class ResponseSanitizePostHook(LifecycleHook):
         cleaned, had_think = scrub_think_blocks(text)
         ctx.had_think_blocks = had_think
 
-        compliant, comp_warnings = check_sales_compliance(cleaned)
+        guard_res = DualStreamComplianceGuard.inspect(cleaned)
+        if not guard_res.is_compliant:
+            ctx.warnings.extend([f"出站合规拦截: {v}" for v in guard_res.violations])
+            compliant = guard_res.guarded_text
+        else:
+            compliant, comp_warnings = check_sales_compliance(cleaned)
+            ctx.warnings.extend(comp_warnings)
         safe, leak_warnings = sanitize_prompt_leakage(compliant)
-        ctx.warnings.extend(comp_warnings)
         ctx.warnings.extend(leak_warnings)
 
         if self._pii_unmask_fn is not None and safe:
@@ -161,6 +185,7 @@ class LifecycleHookManager:
             self.hooks: List[LifecycleHook] = [
                 PromptSecurityPreTurnHook(),
                 ToolContractPreToolHook(auto_approve_tools=True),
+                ToolPolicyPreToolHook(),
                 ResponseSanitizePostHook(),
             ]
         else:
@@ -199,7 +224,10 @@ class LifecycleHookManager:
                 if not ctx.approved:
                     break
             except Exception as exc:
-                logger.warning(f"PreTool hook '{hook.name}' error: {exc}")
+                logger.warning(f"PreTool hook '{hook.name}' error (fail-closed): {exc}")
+                ctx.approved = False
+                ctx.rejection_reason = f"[POLICY_ERROR] PreTool hook '{hook.name}' failed: {exc}"
+                break
         return ctx
 
     def run_post_response(self, session_id: str, raw_response: str) -> ResponseHookContext:

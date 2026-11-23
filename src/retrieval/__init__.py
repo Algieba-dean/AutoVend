@@ -3,7 +3,7 @@ AutoVend Retrieval Module.
 Provides Hybrid Pipeline (BM25 + Dense + RRF) and Parent-Child Document Retrieval.
 """
 
-from src.retrieval.bm25_index import BM25Index, SQLiteFTS5Index
+from src.retrieval.bm25_index import BM25Index, PostgresFullTextIndex, SQLiteFTS5Index
 from src.retrieval.compression import CompressedContext, ContextCompressor
 from src.retrieval.fusion import reciprocal_rank_fusion
 from src.retrieval.hybrid_pipeline import HybridPipeline, HybridPipelineResult
@@ -26,6 +26,7 @@ from src.retrieval.tiered_engine import (
 
 __all__ = [
     "BM25Index",
+    "PostgresFullTextIndex",
     "SQLiteFTS5Index",
     "HybridPipeline",
     "HybridPipelineResult",

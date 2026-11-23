@@ -1,21 +1,26 @@
 """
 Context Compression & Specification Distillation Engine (src/core/compression.py).
 
-Implements context compression and factual pruning for prompt contexts:
-1. Sentence-level segmentation & factual density extraction.
-2. Hallucination-grounded pruning of marketing hyperbole and unsupported promotional fluff.
-3. Query & constraint-guided relevance scoring.
-4. Token budget condensation to maximize verifiable technical specification density.
+Implements semantic and information-theoretic context compression for prompt contexts:
+1. Sentence-level segmentation preserving Markdown tables.
+2. Semantic relevance scoring via dense embeddings (pluggable `embed_fn`) with
+   character-bigram + token TF-IDF cosine similarity fallback.
+3. Normalized factual information-density scoring (numeric-unit pairs, spec tokens,
+   and tabular structure) combined via convex weighting.
+4. Optional LLM-backed abstractive spec distillation (`compress_with_llm`).
 """
 
 import logging
+import math
 import re
-from typing import Any, Dict, List, Optional
+from collections import Counter
+from typing import Any, Callable, Dict, List, Optional
+
+import numpy as np
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
-# Subjective hype, marketing fluff, and ungrounded hyperbole patterns to prune
 MARKETING_FLUFF_PATTERNS = [
     r"遥遥领先",
     r"地表最强",
@@ -36,20 +41,52 @@ MARKETING_FLUFF_PATTERNS = [
     r"零故障率",
 ]
 
-# High-value verifiable factual specification patterns
 FACTUAL_SPEC_PATTERNS = [
-    r"\d+(?:\.\d+)?\s*(?:万|万元|元)",              # Price: 25.98万
-    r"\d{3,4}\s*(?:km|公里|KM)",                    # Range: 702km
-    r"\d+(?:\.\d+)?\s*(?:秒|s|S)\s*(?:破百|百公里加速)?", # 0-100: 3.8秒
-    r"\d{3,4}\s*(?:mm|毫米|MM)",                    # Dimension: 5020mm
-    r"\d+(?:\.\d+)?\s*(?:度|kWh|KWh|度电)",         # Battery: 100kWh
-    r"(?:800V|400V|高压快充|超充)",                  # Voltage / Charging
-    r"(?:双电机|单电机|四驱|后驱|前驱|两驱)",          # Powertrain / Drive
-    r"(?:激光雷达|Orin-X|高通8295|8155|8255|NOA|L2\+)", # Smart hardware / ADAS
-    r"(?:空气悬架|CDC|魔毯悬架|双叉臂|五连杆)",        # Chassis
-    r"(?:5座|6座|7座|大五座|大六座)",                 # Seating
-    r"(?:CLTC|WLTC|NEDC)",                          # Test cycle
+    r"\d+(?:\.\d+)?\s*(?:万|万元|元)",
+    r"\d{3,4}\s*(?:km|公里|KM)",
+    r"\d+(?:\.\d+)?\s*(?:秒|s|S)\s*(?:破百|百公里加速)?",
+    r"\d{3,4}\s*(?:mm|毫米|MM)",
+    r"\d+(?:\.\d+)?\s*(?:度|kWh|KWh|度电)",
+    r"(?:800V|400V|高压快充|超充)",
+    r"(?:双电机|单电机|四驱|后驱|前驱|两驱)",
+    r"(?:激光雷达|Orin-X|高通8295|8155|8255|NOA|L2\+)",
+    r"(?:空气悬架|CDC|魔毯悬架|双叉臂|五连杆)",
+    r"(?:5座|6座|7座|大五座|大六座)",
+    r"(?:CLTC|WLTC|NEDC)",
 ]
+
+_COMPILED_SPEC_PATTERNS = [re.compile(p, re.IGNORECASE) for p in FACTUAL_SPEC_PATTERNS]
+_TABLE_SEP_RE = re.compile(r"^\|(?:\s*:?-+:?\s*\|)+$")
+_TOKEN_RE = re.compile(r"[a-z0-9\.\-]+|[\u4e00-\u9fff]")
+
+
+def _text_to_ngram_vector(text: str) -> Counter:
+    """Build a normalized unigram + character-bigram frequency vector for cosine similarity."""
+    cleaned = re.sub(r"\s+", " ", text.lower()).strip()
+    tokens = _TOKEN_RE.findall(cleaned)
+    grams: List[str] = list(tokens)
+    for i in range(len(tokens) - 1):
+        grams.append(f"{tokens[i]}_{tokens[i + 1]}")
+    return Counter(grams)
+
+
+def _sparse_cosine_similarity(a: str, b: str) -> float:
+    """Compute cosine similarity in [0, 1] over unigram+bigram vectors."""
+    if not a or not b:
+        return 0.0
+    va = _text_to_ngram_vector(a)
+    vb = _text_to_ngram_vector(b)
+    if not va or not vb:
+        return 0.0
+    common = set(va.keys()) & set(vb.keys())
+    dot = sum(va[k] * vb[k] for k in common)
+    if dot <= 0:
+        return 0.0
+    norm_a = math.sqrt(sum(v * v for v in va.values()))
+    norm_b = math.sqrt(sum(v * v for v in vb.values()))
+    if norm_a == 0.0 or norm_b == 0.0:
+        return 0.0
+    return float(max(0.0, min(1.0, dot / (norm_a * norm_b))))
 
 
 class CompressedContext(BaseModel):
@@ -59,49 +96,46 @@ class CompressedContext(BaseModel):
     compressed_text: str
     original_length: int
     compressed_length: int
-    compression_ratio: float  # e.g. 0.45 = compressed is 45% of original
+    compression_ratio: float
     preserved_facts: List[str] = Field(default_factory=list)
     pruned_sentences: List[str] = Field(default_factory=list)
 
 
 class ContextCompressor:
     """
-    Condenses retrieval contexts by pruning subjective marketing noise and
-    prioritizing verifiable technical specifications aligned with query intent.
+    Condenses retrieval contexts by normalizing promotional noise and prioritizing
+    semantically relevant, high-information-density technical specifications.
     """
 
-    # TOY IMPLEMENTATION: Hardcoded regex stripping of subjective marketing superlatives.
-    # Fragile and brittle against varied natural phrasing; grammar-preserving regex only covers hand-picked patterns.
-    # In production, move extraction/sanitization offline during ingestion using an LLM or proper dependency parsing.
+    _embed_fn: Optional[Callable[[List[str]], np.ndarray]] = None
+
+    @classmethod
+    def set_embedder(cls, embed_fn: Optional[Callable[[List[str]], np.ndarray]]) -> None:
+        """Register a dense embedding callable `(texts) -> ndarray[N, D]` for semantic scoring."""
+        cls._embed_fn = embed_fn
+
     @classmethod
     def clean_marketing_fluff(cls, text: str, query_text: str = "") -> str:
         """
-        Strip marketing superlatives and ungrounded hyperbole in a grammatically sound manner.
-        If the query explicitly asks about marketing terms (e.g. '遥遥领先'), preserves them.
+        Normalize subjective promotional exaggerations while preserving grammatical integrity
+        and Markdown table separator rows.
         """
         if not text:
             return ""
 
-        # Markdown table separator rows (e.g. |---|---|) should never be altered
         trimmed = text.strip()
-        if re.match(r"^\|(?:\s*:?-+:?\s*\|)+$", trimmed):
+        if _TABLE_SEP_RE.match(trimmed):
             return trimmed
 
-        # Check which fluff terms the user specifically queried about
         query_lower = query_text.lower()
-        active_query_fluff = [
+        active_query_fluff = {
             p for p in MARKETING_FLUFF_PATTERNS if p.lower() in query_lower
-        ]
+        }
 
         cleaned = text
         for pattern in MARKETING_FLUFF_PATTERNS:
             if pattern in active_query_fluff:
-                # Do not strip terms explicitly queried by the user
                 continue
-
-            # Grammar-preserving regex: handle optional modifiers before and after
-            # e.g., "搭载了华为被业界誉为遥遥领先的鸿蒙座舱" -> "搭载了华为鸿蒙座舱"
-            # e.g., "百公里加速3.8秒，遥遥领先于同级竞品" -> "百公里加速3.8秒"
             regex = (
                 rf"(?:被[^\s，。、]{{1,10}}(?:誉为|称为|评为|冠以)|堪称|号称|自诩)?\s*"
                 rf"{pattern}\s*"
@@ -109,43 +143,32 @@ class ContextCompressor:
             )
             cleaned = re.sub(regex, "", cleaned)
 
-        # Clean duplicate Chinese/English punctuation without converting whitespace into commas
         cleaned = re.sub(r"[,，、]{2,}", "，", cleaned)
         cleaned = re.sub(r"[。\.]{2,}", "。", cleaned)
         cleaned = re.sub(r"[;；]{2,}", "；", cleaned)
-        # Deduplicate multiple consecutive spaces without converting them to commas
         cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
-        # Clean dangling punctuation before sentence-ending punctuation (e.g. "，。" -> "。")
         cleaned = re.sub(r"[,，、；;]\s*([。！？!?])", r"\1", cleaned)
-        cleaned = cleaned.strip("，, 。.；; \t\n")
-        return cleaned
+        return cleaned.strip("，, 。.；; \t\n")
 
     @classmethod
     def split_sentences(cls, text: str, query_text: str = "") -> List[str]:
         """
-        Split text into discrete spec sentences/clauses, preserving Markdown tables.
-        Never splits on pipes ('|', '｜') to avoid destroying Markdown table structures.
+        Split text into discrete spec sentences/clauses, preserving Markdown tables intact.
         """
         if not text:
             return []
 
-        lines = text.splitlines()
         sentences: List[str] = []
-
-        for line in lines:
+        for line in text.splitlines():
             line_str = line.strip()
             if not line_str:
                 continue
 
-            # If line is part of a markdown table (starts and ends with pipe, or has multiple pipes)
             if (line_str.startswith("|") and line_str.endswith("|")) or line_str.count("|") >= 2:
-                # Markdown table row: preserve completely intact without splitting on pipes!
                 cleaned_row = cls.clean_marketing_fluff(line_str, query_text=query_text)
                 if cleaned_row:
                     sentences.append(cleaned_row)
             else:
-                # Normal narrative text: split on sentence boundaries (Chinese/English periods, semicolons, exclamation marks, question marks)
-                # Strictly DO NOT split on pipes '|' or '｜'!
                 raw_parts = re.split(r"[。！？!?；;]+", line_str)
                 for p in raw_parts:
                     p_clean = cls.clean_marketing_fluff(p.strip(), query_text=query_text)
@@ -154,55 +177,79 @@ class ContextCompressor:
 
         return sentences
 
-    # TOY IMPLEMENTATION: Hardcoded heuristic score adder (+1.5, +2.0, -1.0) based on raw regex matches.
-    # Lacks general semantic validity in production, prone to context rupture and biased sentence selection.
-    # Replace in production with structured DB spec injection or perplexity-based compression (e.g., LLMLingua).
+    @classmethod
+    def _compute_information_density(cls, sentence: str) -> float:
+        """
+        Compute normalized factual information density in [0.0, 1.0]:
+        combines spec-pattern coverage, numeric-token ratio, and tabular structure.
+        """
+        s_stripped = sentence.strip()
+        if _TABLE_SEP_RE.match(s_stripped):
+            return 1.0
+
+        is_table_row = (s_stripped.startswith("|") and s_stripped.endswith("|")) or s_stripped.count("|") >= 2
+        spec_hits = sum(1 for pat in _COMPILED_SPEC_PATTERNS if pat.search(sentence))
+        spec_density = min(1.0, spec_hits / 3.0)
+
+        tokens = _TOKEN_RE.findall(sentence.lower())
+        num_tokens = sum(1 for t in tokens if any(ch.isdigit() for ch in t))
+        numeric_ratio = min(1.0, (num_tokens / max(len(tokens), 1)) * 3.0)
+
+        table_bonus = 0.25 if is_table_row else 0.0
+        return float(min(1.0, 0.55 * spec_density + 0.25 * numeric_ratio + table_bonus))
+
+    @classmethod
+    def _compute_semantic_similarity(
+        cls,
+        query_context: str,
+        sentence: str,
+        embed_fn: Optional[Callable[[List[str]], np.ndarray]] = None,
+    ) -> float:
+        """Compute semantic cosine similarity between query_context and sentence in [0, 1]."""
+        if not query_context or not sentence:
+            return 0.0
+        fn = embed_fn or cls._embed_fn
+        if fn is not None:
+            try:
+                vecs = np.asarray(fn([query_context, sentence]), dtype=np.float32)
+                if vecs.shape[0] == 2:
+                    v0, v1 = vecs[0], vecs[1]
+                    n0 = float(np.linalg.norm(v0))
+                    n1 = float(np.linalg.norm(v1))
+                    if n0 > 0 and n1 > 0:
+                        cos = float(np.dot(v0, v1) / (n0 * n1))
+                        return max(0.0, min(1.0, (cos + 1.0) / 2.0 if cos < 0 else cos))
+            except Exception as exc:
+                logger.debug(f"Dense embedder fallback to sparse cosine: {exc}")
+        return _sparse_cosine_similarity(query_context, sentence)
+
     @classmethod
     def score_sentence(
         cls,
         sentence: str,
         query_text: str = "",
         active_constraints: Optional[Dict[str, Any]] = None,
+        embed_fn: Optional[Callable[[List[str]], np.ndarray]] = None,
     ) -> float:
         """
-        Score factual density and intent alignment for a single sentence.
-        Higher score = more factual and more pertinent to query.
+        Score a sentence via convex combination of semantic similarity to query/constraints
+        and factual information density.
         """
-        score = 0.0
+        s_stripped = sentence.strip()
+        if _TABLE_SEP_RE.match(s_stripped):
+            return 1.5  # Always preserve Markdown table header separator
 
-        # Structured Markdown Table bonus: tables are dense verified technical specifications
-        is_table_separator = bool(re.match(r"^\|(?:\s*:?-+:?\s*\|)+$", sentence.strip()))
-        is_table_row = (sentence.strip().startswith("|") and sentence.strip().endswith("|")) or sentence.count("|") >= 2
-        if is_table_separator:
-            score += 3.0  # Preserve table markdown structure integrity
-        elif is_table_row:
-            score += 2.0
+        constraint_parts = [
+            f"{k}:{v}" for k, v in (active_constraints or {}).items() if v is not None and str(v).strip()
+        ]
+        query_context = " ".join([p for p in [query_text, *constraint_parts] if p]).strip()
 
-        # Base factual signal: presence of concrete technical metrics
-        for pattern in FACTUAL_SPEC_PATTERNS:
-            if re.search(pattern, sentence, re.IGNORECASE):
-                score += 1.5
+        info_density = cls._compute_information_density(sentence)
+        if not query_context:
+            return round(info_density, 4)
 
-        # Query keywords relevance boost
-        if query_text:
-            query_tokens = [t for t in re.split(r"[\s,，、/]+", query_text.lower()) if len(t) >= 2]
-            s_lower = sentence.lower()
-            for token in query_tokens:
-                if token in s_lower:
-                    score += 2.0
-
-        # Active constraints alignment boost
-        if active_constraints:
-            for k, val in active_constraints.items():
-                if val and str(val).lower() in sentence.lower():
-                    score += 2.5
-
-        # Penalty for purely vague or generic marketing statements with no numbers, specs, or table structure
-        has_any_spec = any(re.search(pat, sentence, re.IGNORECASE) for pat in FACTUAL_SPEC_PATTERNS)
-        if not has_any_spec and not is_table_row:
-            score -= 1.0
-
-        return score
+        semantic_sim = cls._compute_semantic_similarity(query_context, sentence, embed_fn=embed_fn)
+        return round(0.55 * semantic_sim + 0.45 * info_density, 4)
 
     @classmethod
     def compress_snippet(
@@ -211,10 +258,9 @@ class ContextCompressor:
         query_text: str = "",
         active_constraints: Optional[Dict[str, Any]] = None,
         max_length: int = 220,
+        embed_fn: Optional[Callable[[List[str]], np.ndarray]] = None,
     ) -> CompressedContext:
-        """
-        Compress a single vehicle text snippet into a concise, factual context.
-        """
+        """Compress a single vehicle text snippet into a concise, factual context."""
         if not snippet or len(snippet) <= max_length:
             cleaned = cls.clean_marketing_fluff(snippet or "", query_text=query_text)
             return CompressedContext(
@@ -222,7 +268,9 @@ class ContextCompressor:
                 compressed_text=cleaned,
                 original_length=len(snippet or ""),
                 compressed_length=len(cleaned),
-                compression_ratio=1.0 if not snippet else round(len(cleaned) / max(len(snippet), 1), 3),
+                compression_ratio=1.0
+                if not snippet
+                else round(len(cleaned) / max(len(snippet), 1), 3),
                 preserved_facts=[cleaned] if cleaned else [],
                 pruned_sentences=[],
             )
@@ -239,29 +287,32 @@ class ContextCompressor:
                 pruned_sentences=[],
             )
 
-        scored_sentences = []
-        for s in sentences:
-            s_score = cls.score_sentence(s, query_text, active_constraints)
-            scored_sentences.append((s_score, s))
-
-        # Sort by score descending to prioritize most factual & relevant content
+        scored_sentences = [
+            (
+                cls.score_sentence(
+                    s,
+                    query_text=query_text,
+                    active_constraints=active_constraints,
+                    embed_fn=embed_fn,
+                ),
+                s,
+            )
+            for s in sentences
+        ]
         scored_sentences.sort(key=lambda x: x[0], reverse=True)
 
         chosen: List[str] = []
         pruned: List[str] = []
         current_len = 0
 
-        for score, sentence in scored_sentences:
+        for _score, sentence in scored_sentences:
             if current_len + len(sentence) + 1 <= max_length or not chosen:
                 chosen.append(sentence)
                 current_len += len(sentence) + 1
             else:
                 pruned.append(sentence)
 
-        # Restore original reading flow order from the source text
         preserved = [s for s in sentences if s in chosen]
-
-        # Join Markdown table rows with newlines to preserve tabular formatting; otherwise join with semicolons
         if any(s.strip().startswith("|") and s.strip().endswith("|") for s in preserved):
             compressed_text = "\n".join(preserved)
         else:
@@ -270,7 +321,6 @@ class ContextCompressor:
                 compressed_text += "。"
 
         ratio = round(len(compressed_text) / max(len(snippet), 1), 3)
-
         return CompressedContext(
             original_text=snippet,
             compressed_text=compressed_text,
@@ -282,6 +332,40 @@ class ContextCompressor:
         )
 
     @classmethod
+    def compress_with_llm(
+        cls,
+        snippet: str,
+        llm: Any,
+        query_text: str = "",
+        max_length: int = 220,
+    ) -> CompressedContext:
+        """Optional LLM-backed abstractive specification distillation."""
+        if not snippet or len(snippet) <= max_length or llm is None:
+            return cls.compress_snippet(snippet, query_text=query_text, max_length=max_length)
+        try:
+            prompt = (
+                f"请将以下车型资料压缩为不超过 {max_length} 字的纯客观参数摘要（保留价格、续航、动力、智驾、空间等核心数字与配置，去除一切主观宣传语）：\n"
+                f"用户关注点：{query_text or '综合选车'}\n"
+                f"原文：{snippet}"
+            )
+            res = llm.invoke(prompt)
+            text = res.content if hasattr(res, "content") else str(res)
+            text = text.strip()[:max_length]
+            if text:
+                return CompressedContext(
+                    original_text=snippet,
+                    compressed_text=text,
+                    original_length=len(snippet),
+                    compressed_length=len(text),
+                    compression_ratio=round(len(text) / max(len(snippet), 1), 3),
+                    preserved_facts=[text],
+                    pruned_sentences=[],
+                )
+        except Exception as exc:
+            logger.debug(f"LLM compression fallback to extractive: {exc}")
+        return cls.compress_snippet(snippet, query_text=query_text, max_length=max_length)
+
+    @classmethod
     def compress_matched_cars(
         cls,
         matched_cars: List[Dict[str, Any]],
@@ -289,9 +373,7 @@ class ContextCompressor:
         active_constraints: Optional[Dict[str, Any]] = None,
         max_length_per_car: int = 220,
     ) -> List[Dict[str, Any]]:
-        """
-        Compress text_snippets for all matched cars, attaching compression metadata.
-        """
+        """Compress text_snippets for all matched cars, attaching compression metadata."""
         compressed_cars = []
         for car in matched_cars:
             car_copy = dict(car)

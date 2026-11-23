@@ -137,11 +137,17 @@ def build_metrics_contract_from_runner(report: Dict[str, Any]) -> MetricsContrac
 
     # Convert latencies in seconds to ms
     median_s = latencies.get("median_s", 0.0)
+    p99_s = latencies.get("p99_s")
     p95_s = latencies.get("p95_s", 0.0)
+    p99_ms = (
+        float(p99_s) * 1000.0
+        if p99_s is not None
+        else float(latencies.get("p99_latency_ms") or (p95_s * 1000.0))
+    )
 
     retrieval = RetrievalContract(
         p50_latency_ms=median_s * 1000.0,
-        p99_latency_ms=p95_s * 1000.0,  # Proxy or p95
+        p99_latency_ms=p99_ms,
         narrow_recall_at_3=narrow_slice.get("recall@3", overall.get("recall@3", 0.0)),
         broad_precision_at_3=broad_slice.get("precision@3", overall.get("precision@3", 0.0)),
         mrr=overall.get("mrr", 0.0),

@@ -13,7 +13,8 @@ def test_match_tesla_battlecard():
     assert "特斯拉" in cards[0].name
     note = cards[0].to_system_note()
     assert "[系统竞品战术卡提示]" in note
-    assert "二排乘坐空间" in note or "内饰豪华感" in note
+    assert "Model Y" in note
+    assert len(cards[0].counter_points) > 0
 
 
 def test_match_ideal_l7_battlecard():

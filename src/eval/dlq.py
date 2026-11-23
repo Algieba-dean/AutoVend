@@ -11,9 +11,9 @@ Provides:
 
 import json
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 from src.eval.async_runner import EvalTask, QueueReport, TaskResult, run_queue
 from src.eval.rate_limit import RateLimits
@@ -58,9 +58,11 @@ class EvalDLQManager:
         self,
         checkpoint_path: Optional[Path] = None,
         dlq_path: Optional[Path] = None,
+        replay_engine: Optional[Any] = None,
     ):
         self.checkpoint_path = Path(checkpoint_path) if checkpoint_path else None
         self.dlq_path = Path(dlq_path) if dlq_path else None
+        self.replay_engine = replay_engine
 
     # ── Checkpoint I/O ────────────────────────────────────────────────
 
@@ -150,6 +152,32 @@ class EvalDLQManager:
             logger.info(f"[DLQ] DLQ file saved: {len(dlq_items)} failed items -> {self.dlq_path}")
         except Exception as exc:
             logger.error(f"[DLQ] Failed to save DLQ file {self.dlq_path}: {exc}")
+
+        if self.replay_engine is not None and dlq_items:
+            self.sync_to_mlops_dlq(dlq_items)
+
+    def sync_to_mlops_dlq(self, dlq_items: Sequence[DLQItem]) -> int:
+        """Mirror failed evaluation items into the unified MLOps DLQReplayEngine."""
+        if self.replay_engine is None:
+            from src.mlops.dlq_replay import dlq_replay_engine
+
+            engine = dlq_replay_engine
+        else:
+            engine = self.replay_engine
+        synced = 0
+        for item in dlq_items:
+            try:
+                engine.enqueue_failed_task(
+                    task_type="eval_judge",
+                    payload={"eval_key": item.key, "attempts": item.attempts},
+                    error_message=item.error,
+                    error_category="eval_task_failure",
+                    task_id=f"eval_{item.key}",
+                )
+                synced += 1
+            except Exception as exc:
+                logger.warning(f"[DLQ] Failed to mirror eval item {item.key} to MLOps DLQ: {exc}")
+        return synced
 
     # ── Execution with Checkpoint & DLQ ──────────────────────────────
 

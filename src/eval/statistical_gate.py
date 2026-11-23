@@ -40,24 +40,40 @@ DEFAULT_STATISTICAL_BASELINES: Dict[str, Dict[str, float]] = {
         "hit_rate@3": 0.836,
         "mrr": 0.794,
         "ndcg@10": 0.707,
+        "narrow_recall@3": 0.836,
+        "narrow_mrr": 0.794,
+        "broad_precision@3": 0.756,
+        "broad_ndcg@10": 0.707,
     },
     "hybrid": {
         "precision@3": 0.701,
         "hit_rate@3": 0.793,
         "mrr": 0.755,
         "ndcg@10": 0.716,
+        "narrow_recall@3": 0.793,
+        "narrow_mrr": 0.755,
+        "broad_precision@3": 0.701,
+        "broad_ndcg@10": 0.716,
     },
     "dense": {
         "precision@3": 0.707,
         "hit_rate@3": 0.845,
         "mrr": 0.782,
         "ndcg@10": 0.708,
+        "narrow_recall@3": 0.845,
+        "narrow_mrr": 0.782,
+        "broad_precision@3": 0.707,
+        "broad_ndcg@10": 0.708,
     },
     "bm25": {
         "precision@3": 0.707,
         "hit_rate@3": 0.802,
         "mrr": 0.777,
         "ndcg@10": 0.693,
+        "narrow_recall@3": 0.802,
+        "narrow_mrr": 0.777,
+        "broad_precision@3": 0.707,
+        "broad_ndcg@10": 0.693,
     },
 }
 
@@ -196,7 +212,9 @@ def evaluate_statistical_gate(
     metric_series: Dict[str, List[float]] = {}
 
     if "narrow_recall@3" in expected:
-        metric_series["narrow_recall@3"] = [float(q.get("recall@3", 0.0)) for q in narrow_queries]
+        metric_series["narrow_recall@3"] = [
+            float(q.get("recall@3", q.get("hit_rate@3", 0.0))) for q in narrow_queries
+        ]
     if "narrow_mrr" in expected:
         metric_series["narrow_mrr"] = [float(q.get("mrr", 0.0)) for q in narrow_queries]
     if "broad_precision@3" in expected:
@@ -209,7 +227,12 @@ def evaluate_statistical_gate(
     # Support generic metrics passed in expected
     for m, baseline_val in expected.items():
         if m not in metric_series:
-            metric_series[m] = [float(q.get(m, 0.0)) for q in per_query_results]
+            if m == "hit_rate@3":
+                metric_series[m] = [
+                    float(q.get("hit_rate@3", q.get("recall@3", 0.0))) for q in per_query_results
+                ]
+            else:
+                metric_series[m] = [float(q.get(m, 0.0)) for q in per_query_results]
 
     results: Dict[str, NonInferiorityResult] = {}
     all_passed = True

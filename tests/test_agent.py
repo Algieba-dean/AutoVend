@@ -528,7 +528,9 @@ class TestSalesAgent:
             retrieved_cars=cars,
         )
         result = agent.process(inp)
-        assert result.session_state.matched_cars == cars
+        assert len(result.session_state.matched_cars) == 1
+        assert result.session_state.matched_cars[0]["car_model"] == "Tesla Model 3"
+        assert result.session_state.matched_cars[0]["score"] == 0.95
 
     def test_process_without_retrieved_cars(self):
         llm = _mock_llm_dynamic()
@@ -541,10 +543,11 @@ class TestSalesAgent:
     def test_clear_session(self):
         llm = _mock_llm_dynamic()
         agent = SalesAgent(llm=llm)
-        agent.memory.add_user_message("s5", "test")
-        assert agent.memory.has_session("s5")
+        state = SessionState(session_id="s5")
+        agent.process(AgentInput(session_state=state, user_message="test"))
+        assert agent.get_history_text("s5") != ""
         agent.clear_session("s5")
-        assert not agent.memory.has_session("s5")
+        assert agent.get_history_text("s5") == ""
 
     def test_get_history_text(self):
         llm = _mock_llm_dynamic()

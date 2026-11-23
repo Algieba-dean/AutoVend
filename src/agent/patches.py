@@ -238,6 +238,22 @@ def format_for_prompt(patches: Iterable[StatePatch], limit: int = 6) -> str:
     return f"本轮/近期状态更新：\n{lines}"
 
 
+def record_patches(state, before: Dict[str, Any], source: str = "") -> List[StatePatch]:
+    """Diff ``before`` against current ``state`` snapshot, updating ``last_patch`` and ``patch_log``."""
+    after = snapshot(state)
+    patches = diff(before, after, source=source)
+    if patches:
+        last_patch: Dict[str, Any] = {}
+        for p in patches:
+            d = p.to_dict()
+            state.patch_log.append(d)
+            last_patch[p.path] = d
+        state.last_patch = last_patch
+    else:
+        state.last_patch = {}
+    return patches
+
+
 def _resolve(state, path: str) -> Optional[Any]:
     """Walk a dotted attribute path, returning None if any hop is missing."""
     current = state

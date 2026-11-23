@@ -297,12 +297,23 @@ class HybridPipeline:
             result.rag_result_count = 0
             return
 
-        # 全套 Query Transformation：重写、拓展、HyDE 伪文档生成、多路展开与子查询拆解
-        from src.retrieval.query_transform import QueryTransformationEngine
+        # Avoid instantiating QueryTransformationEngine(llm=None) unnecessarily
+        llm = getattr(self, "llm", None)
+        if llm is not None:
+            from src.retrieval.query_transform import QueryTransformationEngine
 
-        transformer = QueryTransformationEngine()
-        transform_res = transformer.transform_all(query_text)
-        search_query_text = transform_res["expanded_query"]
+            transformer = QueryTransformationEngine(llm=llm)
+            transform_res = transformer.transform_all(query_text)
+            search_query_text = transform_res["expanded_query"]
+        else:
+            from src.retrieval.query_expander import QueryExpander
+
+            search_query_text = QueryExpander.expand_query(query_text)
+            transform_res = {
+                "expanded_query": search_query_text,
+                "hyde_document": None,
+                "sub_queries": [search_query_text],
+            }
 
         # 融合需要更深的稠密候选池
         dense_depth = top_k * FUSION_DEPTH_MULTIPLIER if self.sparse_index else top_k
@@ -321,7 +332,7 @@ class HybridPipeline:
 
         def _do_dense():
             # 若配置了 LLM 则使用高质量 HyDE 文档；离线确定性环境使用意图增强查询
-            if transformer.llm is not None and transform_res.get("hyde_document"):
+            if llm is not None and transform_res.get("hyde_document"):
                 hyde_query = Query(
                     text=transform_res["hyde_document"], top_k=dense_depth, filters=query.filters
                 )
@@ -386,13 +397,36 @@ class HybridPipeline:
         response: SearchResponse,
         result: HybridPipelineResult,
     ) -> SearchResponse:
-        """用 RRF 融合稠密与已获取的 BM25 稀疏排名。"""
-        dense_ranking = [r.vehicle.car_model for r in response.results]
-        sparse_ranking = [model for model, _ in sparse_hits]
+        """用 RRF 融合稠密与已获取的 BM25 稀疏排名（按 car_model 去重保留最高分，防止多 Trim 分数膨胀）。"""
+        # Deduplicate dense results by car_model, keeping highest-scoring SearchResult
+        dense_map: dict[str, SearchResult] = {}
+        for r in response.results:
+            model = r.vehicle.car_model
+            existing = dense_map.get(model)
+            if existing is None or r.score.overall_score > existing.score.overall_score:
+                dense_map[model] = r
+        dense_ranking = [
+            m
+            for m, _ in sorted(
+                dense_map.items(),
+                key=lambda kv: kv[1].score.overall_score,
+                reverse=True,
+            )
+        ]
 
-        if filter_result.car_models:
-            allowed = set(filter_result.car_models)
-            sparse_ranking = [m for m in sparse_ranking if m in allowed]
+        # Deduplicate sparse hits by car_model, keeping highest sparse score
+        allowed = set(filter_result.car_models) if filter_result.car_models else None
+        sparse_best: dict[str, float] = {}
+        for model, s_score in sparse_hits:
+            if allowed is not None and model not in allowed:
+                continue
+            val = float(s_score)
+            if model not in sparse_best or val > sparse_best[model]:
+                sparse_best[model] = val
+        sparse_ranking = [
+            m
+            for m, _ in sorted(sparse_best.items(), key=lambda kv: kv[1], reverse=True)
+        ]
 
         result.sparse_result_count = len(sparse_ranking)
         weights = weights_for_query(result.matched_keywords, dynamic=self.dynamic_fusion_weights)
@@ -407,7 +441,6 @@ class HybridPipeline:
         max_possible_rrf = sum(weights.as_list()) / (self.fusion_k + 1.0) if weights else 1.0 / (self.fusion_k + 1.0)
         max_possible_rrf = max(max_possible_rrf, 1e-9)
 
-        dense_map = {r.vehicle.car_model: r for r in response.results}
         reranked = []
         for model, rrf_score in fused:
             norm_score = min(1.0, max(0.0, float(rrf_score) / max_possible_rrf))
@@ -581,13 +614,28 @@ def build_default_pipeline(
 
     sparse_index = None
     if enable_sparse:
-        try:
-            from src.retrieval.bm25_index import BM25Index
+        import os
 
-            sparse_index = BM25Index.load_or_build()
-        except Exception as exc:
-            # 稀疏索引缺失不该拖垮整条管线，降级为纯稠密
-            get_logger(__name__).warning(f"BM25 索引不可用，降级为纯稠密检索: {exc}")
+        from src.utils.config import config
+
+        env = (
+            os.getenv("APP_ENV")
+            or os.getenv("APP_ENVIRONMENT")
+            or config.app_environment
+            or "development"
+        ).strip().lower()
+        if env not in ("test", "testing") and config.vector_store_backend == "pgvector":
+            from src.retrieval.bm25_index import PostgresFullTextIndex
+
+            sparse_index = PostgresFullTextIndex()
+        else:
+            try:
+                from src.retrieval.bm25_index import BM25Index
+
+                sparse_index = BM25Index.load_or_build()
+            except Exception as exc:
+                # 稀疏索引缺失不该拖垮整条管线，降级为纯稠密
+                get_logger(__name__).warning(f"BM25 索引不可用，降级为纯稠密检索: {exc}")
 
     return HybridPipeline(
         registry=registry,

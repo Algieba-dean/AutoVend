@@ -6,11 +6,13 @@ and detects Out-of-Domain / vocabulary query drift to trigger automated alerts.
 """
 
 import logging
+import math
 import re
 import time
-from collections import deque
-from typing import Any, Dict, List, Optional
+from collections import Counter, deque
+from typing import Any, Callable, Dict, List, Optional
 
+import numpy as np
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -54,16 +56,43 @@ class RAGEvalMonitor:
         max_latency_ms_threshold: float = 1500.0,
         ood_alert_ratio_threshold: float = 0.15,
         audit_sample_rate: float = 0.01,
+        embed_fn: Optional[Callable[[List[str]], np.ndarray]] = None,
+        ood_similarity_threshold: float = 0.42,
     ):
         self.window_size = window_size
         self.low_score_threshold = low_score_threshold
         self.max_latency_ms_threshold = max_latency_ms_threshold
         self.ood_alert_ratio_threshold = ood_alert_ratio_threshold
         self.audit_sample_rate = audit_sample_rate
+        self.embed_fn = embed_fn
+        self.ood_similarity_threshold = ood_similarity_threshold
+        self._domain_centroid: Optional[np.ndarray] = None
+        self._domain_sim_mean: float = 0.65
+        self._domain_sim_std: float = 0.12
 
         self.window: deque[RetrievalMetricsSnapshot] = deque(maxlen=window_size)
         self.audit_queue: deque[Dict[str, Any]] = deque(maxlen=500)
         self._counter = 0
+
+    def fit_domain_baseline(self, domain_queries: List[str]) -> None:
+        """Calibrate in-domain embedding centroid and similarity distribution."""
+        if self.embed_fn is None or not domain_queries:
+            return
+        try:
+            vecs = np.asarray(self.embed_fn(domain_queries), dtype=np.float32)
+            norms = np.linalg.norm(vecs, axis=1, keepdims=True)
+            norms = np.where(norms == 0, 1.0, norms)
+            normed = vecs / norms
+            centroid = np.mean(normed, axis=0)
+            c_norm = float(np.linalg.norm(centroid))
+            if c_norm > 0:
+                centroid = centroid / c_norm
+            sims = normed @ centroid
+            self._domain_centroid = centroid
+            self._domain_sim_mean = float(np.mean(sims))
+            self._domain_sim_std = max(0.05, float(np.std(sims)))
+        except Exception as exc:
+            logger.debug(f"Domain baseline calibration skipped: {exc}")
 
     def record_retrieval(
         self,
@@ -89,8 +118,12 @@ class RAGEvalMonitor:
         result_count = len(results)
         is_zero = result_count == 0 or candidate_count == 0
 
-        # Simple Out-of-Domain heuristic check for non-automotive topics
-        is_ood = self._detect_out_of_domain(query_text)
+        # Embedding-centroid / distributional Out-of-Domain check
+        is_ood = self._detect_out_of_domain(
+            query_text,
+            top1_score=top1_score,
+            result_count=result_count,
+        )
 
         snapshot = RetrievalMetricsSnapshot(
             query_text=query_text,
@@ -126,57 +159,87 @@ class RAGEvalMonitor:
         # Run real-time drift & quality evaluation
         return self._evaluate_drift_alerts(snapshot)
 
-    def _detect_out_of_domain(self, text: str) -> bool:
+    def _detect_out_of_domain(
+        self,
+        text: str,
+        top1_score: Optional[float] = None,
+        result_count: Optional[int] = None,
+    ) -> bool:
         """
-        Intent-aware automotive domain boundary check.
-        Never flags OOD if automotive intent or entities (e.g. 购车, SUV, 预算, 后备箱, 续航)
-        are present, even when life/leisure scenario keywords (e.g. 自驾旅游, 烧烤架, 露营) are mentioned.
-        Only flags true out-of-domain queries that lack automotive context.
+        Embedding-centroid & distributional Out-of-Domain (OOD) detector.
+
+        1. When `embed_fn` + calibrated `_domain_centroid` are available, computes
+           cosine similarity to the automotive domain centroid and z-score distance.
+        2. Otherwise, computes character-ngram cosine similarity against the automotive
+           reference corpus (enriched with `TruthEngineFacade.get_known_models()`)
+           combined with retrieval confidence (`top1_score` / `result_count`).
         """
         if not text:
             return False
 
-        text_lower = text.lower()
+        # Tier 1: Dense embedding centroid + z-score distance
+        if self.embed_fn is not None:
+            if self._domain_centroid is None:
+                self.fit_domain_baseline(
+                    [
+                        "预算20万买什么纯电SUV合适",
+                        "对比特斯拉Model Y和理想L7续航空间",
+                        "新能源车家用五座底盘舒适推荐",
+                        "预约周末4S店试驾流程和落地价",
+                    ]
+                )
+            if self._domain_centroid is not None:
+                try:
+                    vec = np.asarray(self.embed_fn([text]), dtype=np.float32)[0]
+                    v_norm = float(np.linalg.norm(vec))
+                    if v_norm > 0:
+                        sim = float(np.dot(vec / v_norm, self._domain_centroid))
+                        z_score = (sim - self._domain_sim_mean) / self._domain_sim_std
+                        return sim < self.ood_similarity_threshold or z_score < -2.5
+                except Exception as exc:
+                    logger.debug(f"Embedding OOD check failed, using distributional fallback: {exc}")
 
-        # TOY IMPLEMENTATION: Hardcoded keyword matching lists for automotive signal and OOD topics.
-        # Rigid keyword checking; cannot properly understand semantic domain boundaries.
-        # In production, replace with an embedding-based OOD classifier, Mahalanobis distance on embeddings, or small intent classifier.
-        auto_domain_patterns = [
-            r"车", r"suv", r"mpv", r"轿车", r"跑车", r"越野", r"皮卡", r"旅行车", r"轿跑", r"猎装", r"掀背", r"跨界",
-            r"买车", r"购车", r"选车", r"提车", r"落地", r"预算", r"配置", r"车型", r"车系", r"款型", r"标配", r"选装",
-            r"自驾", r"通勤", r"代步", r"家用", r"商务", r"露营", r"户外",
-            r"后备箱", r"后备厢", r"底盘", r"悬架", r"续航", r"百公里", r"加速", r"零百", r"刹车", r"制动",
-            r"电机", r"电池", r"纯电", r"混动", r"插混", r"增程", r"燃油", r"油耗", r"电耗", r"充电", r"快充", r"慢充", r"换电", r"对外放电", r"v2l",
-            r"智驾", r"自动驾驶", r"辅助驾驶", r"座舱", r"车机", r"空间", r"座椅", r"天窗", r"hud", r"音响", r"后视镜",
-            r"四驱", r"两驱", r"后驱", r"前驱", r"轴距", r"离地间隙", r"风阻",
-            r"\d+\s*万", r"\d+\s*元", r"指导价", r"落地价", r"首付", r"月供", r"二手车",
-            r"cltc", r"wltc", r"nedc",
-            # Domestic & international automotive brand keywords
-            r"比亚迪", r"特斯拉", r"理想", r"蔚来", r"小鹏", r"问界", r"小米", r"极氪",
-            r"奔驰", r"宝马", r"奥迪", r"大众", r"丰田", r"本田", r"保时捷", r"吉利",
-            r"长安", r"奇瑞", r"长城", r"红旗", r"领克", r"腾势", r"仰望", r"零跑",
-            r"阿维塔", r"智己", r"极狐", r"深蓝", r"智界", r"享界", r"尊界", r"岚图",
-            r"方程豹", r"极越", r"坦克", r"捷途", r"沃尔沃", r"雷克萨斯", r"凯迪拉克",
-        ]
+        # Tier 2: Distributional character-ngram similarity + retrieval-confidence joint signal
+        domain_corpus = (
+            "汽车 买车 选车 购车 车型 SUV MPV 轿车 预算 落地价 指导价 续航 公里 CLTC "
+            "纯电 混动 增程 插混 燃油 充电 快充 电池 电机 智驾 辅助驾驶 座舱 车机 "
+            "后备箱 空间 座椅 底盘 悬架 试驾 4S店 质保 首付 月供 零百加速 轴距"
+        )
+        try:
+            from src.core.truth_engine import TruthEngineFacade
 
-        has_auto_signal = any(re.search(pat, text_lower) for pat in auto_domain_patterns)
-        if has_auto_signal:
+            known = TruthEngineFacade.get_instance().get_known_models()
+            if known:
+                domain_corpus = domain_corpus + " " + " ".join(known[:40])
+        except Exception:
+            pass
+
+        tok_re = re.compile(r"[a-z0-9]+|[\u4e00-\u9fff]")
+
+        def _ngrams(s: str) -> Counter:
+            toks = tok_re.findall(s.lower())
+            grams = list(toks) + [f"{toks[i]}_{toks[i + 1]}" for i in range(len(toks) - 1)]
+            return Counter(grams)
+
+        va = _ngrams(text)
+        vb = _ngrams(domain_corpus)
+        if not va or not vb:
             return False
+        common = set(va.keys()) & set(vb.keys())
+        dot = sum(va[k] * vb[k] for k in common)
+        denom = math.sqrt(sum(v * v for v in va.values())) * math.sqrt(
+            sum(v * v for v in vb.values())
+        )
+        domain_sim = (dot / denom) if denom > 0 else 0.0
 
-        # Non-automotive domain drift keywords
-        ood_keywords = [
-            "火锅",
-            "烧烤",
-            "代码",
-            "python",
-            "股市",
-            "股票",
-            "天气",
-            "旅游",
-            "电影",
-            "游戏",
-        ]
-        return any(kw in text_lower for kw in ood_keywords)
+        # If query has zero/near-zero domain overlap AND retrieval confidence is low (or no results), flag OOD
+        low_retrieval = (
+            (result_count is not None and result_count == 0)
+            or (top1_score is not None and top1_score < self.low_score_threshold)
+        )
+        if result_count is None and top1_score is None:
+            return domain_sim < 0.02
+        return domain_sim < 0.04 and low_retrieval
 
     def _evaluate_drift_alerts(self, current: RetrievalMetricsSnapshot) -> List[QueryDriftAlert]:
         """Check current snapshot and rolling metrics for alert conditions."""

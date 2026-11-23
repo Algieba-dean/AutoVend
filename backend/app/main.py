@@ -53,42 +53,34 @@ async def lifespan(app: FastAPI):
     """App lifespan: initialize LLM, SalesAgent, and vehicle index on startup."""
     logger.info("Initializing hybrid LLM router and SalesAgent...")
 
-    # The agent takes two LlamaIndex-protocol LLMs: one for schema-constrained
+    # The agent takes two LangChain BaseChatModels: one for schema-constrained
     # extraction (routed to the local vLLM server when configured — every turn
     # pays this cost), one for the customer-facing reply (routed to the cloud
-    # API). RoutedLLM wraps the HybridRouter so the agent stays unaware that
+    # API). RoutedChatModel wraps HybridRouter so the agent stays unaware that
     # routing exists; see src/llm/router.py for the policy and fallbacks.
     #
-    # Without any credentials, fall back to LlamaIndex's MockLLM so the API
-    # still boots and every non-generative path (retrieval, stage transitions,
-    # storage) stays exercisable. Failing at first-token time instead would
-    # make a missing key look like a runtime bug.
+    # Without any credentials, fall back to LangChain's FakeListChatModel so the
+    # API still boots and every non-generative path stays exercisable.
     if OPENAI_API_KEY or _local_llm_configured():
         from src.llm.langchain_adapter import build_langchain_llms
-        from src.llm.llamaindex_adapter import build_agent_llms
         from src.llm.router import build_default_router
 
         router = build_default_router()
         app.state.llm_router = router
-        extraction_llm, generation_llm = build_agent_llms(router)
         lc_extraction_llm, lc_generation_llm = build_langchain_llms(router)
-        logger.info(f"LLM routing (LangChain + LlamaIndex): {router.describe()}")
+        logger.info(f"LLM routing (LangGraph + LangChain): {router.describe()}")
         agent = SalesAgent(
-            llm=extraction_llm,
-            generation_llm=generation_llm,
-            enable_tool_planning=True,
+            llm=lc_extraction_llm,
+            generation_llm=lc_generation_llm,
             use_unified_extraction=True,
         )
-        # Attach LangChain RoutedChatModels to the LangGraph engine
-        agent.langgraph.extraction_chat_model = lc_extraction_llm
-        agent.langgraph.generation_chat_model = lc_generation_llm
     else:
-        from llama_index.core.llms import MockLLM
+        from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
         app.state.llm_router = None
-        llm = MockLLM(max_tokens=500)
-        logger.warning("No LLM credentials configured — running with MockLLM.")
-        agent = SalesAgent(llm=llm, enable_tool_planning=True, use_unified_extraction=True)
+        llm = FakeListChatModel(responses=["您好！我是 AutoVend 智能汽车导购顾问，请问您目前购车预算和偏好是什么？"])
+        logger.warning("No LLM credentials configured — running with FakeListChatModel.")
+        agent = SalesAgent(llm=llm, use_unified_extraction=True)
     chat.set_agent(agent)
     from src.core.container import ServiceContainer
 

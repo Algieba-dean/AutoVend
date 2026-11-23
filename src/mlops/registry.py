@@ -15,12 +15,81 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from src.mlops.pg_store import MLOpsPostgresStore, is_test_env
 from src.utils.config import PROJECT_ROOT
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 DEFAULT_MLOPS_STORAGE = PROJECT_ROOT / "storage" / "mlops"
+
+
+class _RegistryBackend:
+    """
+    Unified storage backend for MLOps registries.
+    - When `storage_dir` is explicitly provided (unit tests), stores JSON in `storage_dir`.
+    - Otherwise uses PostgreSQL (`mlops_kv` table) in production/staging (fail-fast if unavailable),
+      and falls back to in-memory dict only when `APP_ENV=test/testing`.
+    """
+
+    def __init__(self, namespace: str, storage_dir: Optional[Path] = None):
+        self.namespace = namespace
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        if self.storage_dir is not None:
+            self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self._mem: Dict[str, Dict[str, Any]] = {}
+
+    def _use_postgres(self) -> bool:
+        if self.storage_dir is not None:
+            return False
+        if not is_test_env():
+            if not MLOpsPostgresStore.ensure_ready():
+                raise RuntimeError(
+                    f"PostgreSQL is required for MLOps {self.namespace} in non-test environments."
+                )
+            return True
+        return MLOpsPostgresStore.ensure_ready()
+
+    def save(self, key: str, payload: Dict[str, Any]) -> None:
+        if self.storage_dir is not None:
+            fpath = self.storage_dir / f"{key}.json"
+            with open(fpath, "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False, indent=2)
+            return
+        if self._use_postgres():
+            MLOpsPostgresStore.kv_upsert(self.namespace, key, payload)
+        else:
+            self._mem[key] = dict(payload)
+
+    def get(self, key: str) -> Optional[Dict[str, Any]]:
+        if self.storage_dir is not None:
+            fpath = self.storage_dir / f"{key}.json"
+            if not fpath.exists():
+                return None
+            try:
+                with open(fpath, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                return None
+        if self._use_postgres():
+            all_items = MLOpsPostgresStore.kv_load_all(self.namespace)
+            return all_items.get(key)
+        return self._mem.get(key)
+
+    def load_all(self, prefix: str = "") -> List[Dict[str, Any]]:
+        if self.storage_dir is not None:
+            out: List[Dict[str, Any]] = []
+            for p in self.storage_dir.glob(f"{prefix}*.json"):
+                try:
+                    with open(p, "r", encoding="utf-8") as f:
+                        out.append(json.load(f))
+                except Exception:
+                    continue
+            return out
+        if self._use_postgres():
+            all_items = MLOpsPostgresStore.kv_load_all(self.namespace)
+            return [v for k, v in all_items.items() if not prefix or k.startswith(prefix)]
+        return [v for k, v in self._mem.items() if not prefix or k.startswith(prefix)]
 
 
 class PromptStatus(str, Enum):
@@ -78,10 +147,8 @@ class ExperimentTracker:
     """
 
     def __init__(self, storage_dir: Optional[Path] = None):
-        self.storage_dir = (
-            Path(storage_dir) if storage_dir else DEFAULT_MLOPS_STORAGE / "experiments"
-        )
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        self._backend = _RegistryBackend("experiments", storage_dir=self.storage_dir)
         self._lock = threading.RLock()
         self._active_runs: Dict[str, RunRecord] = {}
 
@@ -175,27 +242,20 @@ class ExperimentTracker:
         with self._lock:
             if run_id in self._active_runs:
                 return self._active_runs[run_id]
-
-            run_file = self.storage_dir / f"{run_id}.json"
-            if run_file.exists():
-                try:
-                    with open(run_file, "r", encoding="utf-8") as f:
-                        return RunRecord.from_dict(json.load(f))
-                except Exception as exc:
-                    logger.error(f"Failed to read run file {run_file}: {exc}")
+            data = self._backend.get(run_id)
+            if data:
+                return RunRecord.from_dict(data)
             return None
 
     def list_runs(self, experiment_name: Optional[str] = None) -> List[RunRecord]:
         """List all logged runs, optionally filtered by experiment name."""
         runs: List[RunRecord] = []
         with self._lock:
-            for p in self.storage_dir.glob("run_*.json"):
+            for data in self._backend.load_all(prefix="run_"):
                 try:
-                    with open(p, "r", encoding="utf-8") as f:
-                        data = json.load(f)
-                        rec = RunRecord.from_dict(data)
-                        if experiment_name is None or rec.experiment_name == experiment_name:
-                            runs.append(rec)
+                    rec = RunRecord.from_dict(data)
+                    if experiment_name is None or rec.experiment_name == experiment_name:
+                        runs.append(rec)
                 except Exception:
                     continue
         runs.sort(key=lambda r: r.start_time, reverse=True)
@@ -221,12 +281,7 @@ class ExperimentTracker:
         return runs[0]
 
     def _save_run(self, run: RunRecord) -> None:
-        try:
-            run_file = self.storage_dir / f"{run.run_id}.json"
-            with open(run_file, "w", encoding="utf-8") as f:
-                json.dump(run.to_dict(), f, ensure_ascii=False, indent=2)
-        except OSError as exc:
-            logger.warning(f"Could not persist experiment run {run.run_id}: {exc}")
+        self._backend.save(run.run_id, run.to_dict())
 
 
 # ── 2. Prompt Versioning & Lifecycle Registry ───────────────────────────
@@ -268,8 +323,8 @@ class PromptRegistry:
     """
 
     def __init__(self, storage_dir: Optional[Path] = None):
-        self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_MLOPS_STORAGE / "prompts"
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        self._backend = _RegistryBackend("prompts", storage_dir=self.storage_dir)
         self._lock = threading.RLock()
 
     @staticmethod
@@ -333,14 +388,13 @@ class PromptRegistry:
 
     def get_prompt_version(self, prompt_name: str, version: str) -> Optional[PromptVersion]:
         """Fetch specific prompt version."""
-        file_path = self.storage_dir / f"{prompt_name}_{version}.json"
-        if not file_path.exists():
+        data = self._backend.get(f"{prompt_name}_{version}")
+        if not data:
             return None
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                return PromptVersion.from_dict(json.load(f))
+            return PromptVersion.from_dict(data)
         except Exception as exc:
-            logger.error(f"Failed to read prompt version {file_path}: {exc}")
+            logger.error(f"Failed to read prompt version {prompt_name}_{version}: {exc}")
             return None
 
     def get_active_prompt(self, prompt_name: str) -> Optional[PromptVersion]:
@@ -355,10 +409,9 @@ class PromptRegistry:
         """List all versions of a prompt, newest first."""
         results: List[PromptVersion] = []
         with self._lock:
-            for p in self.storage_dir.glob(f"{prompt_name}_v*.json"):
+            for data in self._backend.load_all(prefix=f"{prompt_name}_v"):
                 try:
-                    with open(p, "r", encoding="utf-8") as f:
-                        results.append(PromptVersion.from_dict(json.load(f)))
+                    results.append(PromptVersion.from_dict(data))
                 except Exception:
                     continue
         results.sort(key=lambda x: x.created_at, reverse=True)
@@ -494,14 +547,7 @@ class PromptRegistry:
                 )
 
     def _save_version(self, prompt: PromptVersion) -> None:
-        try:
-            file_path = self.storage_dir / f"{prompt.prompt_name}_{prompt.version}.json"
-            with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(prompt.to_dict(), f, ensure_ascii=False, indent=2)
-        except OSError as exc:
-            logger.warning(
-                f"Could not persist prompt version {prompt.prompt_name}@{prompt.version}: {exc}"
-            )
+        self._backend.save(f"{prompt.prompt_name}_{prompt.version}", prompt.to_dict())
 
 
 # ── 3. Model Registry & Deployment Stage Catalog ────────────────────────
@@ -541,8 +587,8 @@ class ModelRegistry:
     """Enterprise Model Catalog managing deployment stages and capabilities."""
 
     def __init__(self, storage_dir: Optional[Path] = None):
-        self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_MLOPS_STORAGE / "models"
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        self._backend = _RegistryBackend("models", storage_dir=self.storage_dir)
         self._lock = threading.RLock()
 
     def register_model(
@@ -582,26 +628,24 @@ class ModelRegistry:
 
     def get_model(self, model_id: str, version: str) -> Optional[ModelVersion]:
         """Fetch model by ID and version."""
-        fpath = self.storage_dir / f"{model_id}_{version}.json"
-        if not fpath.exists():
+        data = self._backend.get(f"{model_id}_{version}")
+        if not data:
             return None
         try:
-            with open(fpath, "r", encoding="utf-8") as f:
-                return ModelVersion.from_dict(json.load(f))
+            return ModelVersion.from_dict(data)
         except Exception as exc:
-            logger.error(f"Failed to read model {fpath}: {exc}")
+            logger.error(f"Failed to read model {model_id}_{version}: {exc}")
             return None
 
     def list_models(self, stage: Optional[ModelStage] = None) -> List[ModelVersion]:
         """List all models, optionally filtered by deployment stage."""
         models: List[ModelVersion] = []
         with self._lock:
-            for p in self.storage_dir.glob("*.json"):
+            for data in self._backend.load_all():
                 try:
-                    with open(p, "r", encoding="utf-8") as f:
-                        m = ModelVersion.from_dict(json.load(f))
-                        if stage is None or m.stage == stage:
-                            models.append(m)
+                    m = ModelVersion.from_dict(data)
+                    if stage is None or m.stage == stage:
+                        models.append(m)
                 except Exception:
                     continue
         models.sort(key=lambda m: m.created_at, reverse=True)
@@ -676,14 +720,7 @@ class ModelRegistry:
                 self.register_model(**m)
 
     def _save_model(self, model: ModelVersion) -> None:
-        try:
-            fpath = self.storage_dir / f"{model.model_id}_{model.version}.json"
-            with open(fpath, "w", encoding="utf-8") as f:
-                json.dump(model.to_dict(), f, ensure_ascii=False, indent=2)
-        except OSError as exc:
-            logger.warning(
-                f"Could not persist model version {model.model_id}@{model.version}: {exc}"
-            )
+        self._backend.save(f"{model.model_id}_{model.version}", model.to_dict())
 
 
 # ── 4. Dataset Metadata Versioning ──────────────────────────────────────
@@ -715,8 +752,8 @@ class DatasetRegistry:
     """Tracks dataset versions, schema definitions, and cryptographic checksums."""
 
     def __init__(self, storage_dir: Optional[Path] = None):
-        self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_MLOPS_STORAGE / "datasets"
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        self._backend = _RegistryBackend("datasets", storage_dir=self.storage_dir)
         self._lock = threading.RLock()
 
     @staticmethod
@@ -753,14 +790,7 @@ class DatasetRegistry:
             metadata=metadata or {},
         )
         with self._lock:
-            try:
-                fpath = self.storage_dir / f"{dataset_name}_{version}.json"
-                with open(fpath, "w", encoding="utf-8") as f:
-                    json.dump(ver.to_dict(), f, ensure_ascii=False, indent=2)
-            except OSError as exc:
-                logger.warning(
-                    f"Could not persist dataset metadata {dataset_name}@{version}: {exc}"
-                )
+            self._backend.save(f"{dataset_name}_{version}", ver.to_dict())
 
         logger.info(
             f"[MLOps] Registered dataset {dataset_name}@{version} ({sample_count} samples, hash={sha256_val[:8]}...)"
@@ -794,12 +824,11 @@ class DatasetRegistry:
 
     def get_dataset(self, dataset_name: str, version: str) -> Optional[DatasetVersion]:
         """Fetch dataset version metadata."""
-        fpath = self.storage_dir / f"{dataset_name}_{version}.json"
-        if not fpath.exists():
+        data = self._backend.get(f"{dataset_name}_{version}")
+        if not data:
             return None
         try:
-            with open(fpath, "r", encoding="utf-8") as f:
-                return DatasetVersion.from_dict(json.load(f))
+            return DatasetVersion.from_dict(data)
         except Exception:
             return None
 
@@ -834,8 +863,8 @@ class ArtifactBundleRegistry:
     """Computes and tracks immutable 4-in-1 `artifact_bundle_version` identifiers."""
 
     def __init__(self, storage_dir: Optional[Path] = None):
-        self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_MLOPS_STORAGE / "bundles"
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        self._backend = _RegistryBackend("bundles", storage_dir=self.storage_dir)
         self._lock = threading.RLock()
         self._current: Optional[ArtifactBundleVersion] = None
 
@@ -858,13 +887,7 @@ class ArtifactBundleRegistry:
         )
         with self._lock:
             self._current = bundle
-            try:
-                (self.storage_dir / f"{bundle_id}.json").write_text(
-                    json.dumps(bundle.to_dict(), ensure_ascii=False, indent=2),
-                    encoding="utf-8",
-                )
-            except Exception:
-                pass
+            self._backend.save(bundle_id, bundle.to_dict())
         return bundle
 
     def get_current(self) -> ArtifactBundleVersion:

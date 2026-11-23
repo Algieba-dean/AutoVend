@@ -2,7 +2,7 @@
 Chat API routes — thin orchestration layer.
 
 Owns session lifecycle and API response formatting.
-Delegates all AI logic to SalesAgent via the observe/respond protocol.
+Delegates all AI logic to `SalesAgent` / `LangGraphSalesAgent` via `arun_graph_turn` and `astream_graph_turn`.
 
 A turn passes through three gates before any model is consulted:
 
@@ -39,7 +39,7 @@ from backend.app.models.schemas import (
     SessionCreateResponse,
     StageInfo,
 )
-from backend.app.models.storage import FileStorage
+from backend.app.models.storage import PostgresStorage
 from src.agent.sales_agent import SalesAgent
 from src.agent.schemas import SessionState, Stage, UserProfile
 from src.agent.storage.distributed_session import (
@@ -207,20 +207,17 @@ def get_or_restore_session(
 
 
 def save_session_state(session_id: str, state: SessionState, agent: SalesAgent) -> None:
-    """Update in-memory session state and persist to disk."""
+    """Update session state and persist to PostgreSQL."""
     _sessions[session_id] = state
     try:
-        FileStorage.save_session(session_id, _session_payload(state, agent))
+        PostgresStorage.save_session(session_id, _session_payload(state, agent))
     except Exception as exc:
         logger.error(f"[{session_id}] session persistence failed: {exc}")
 
 
 def _get_session_lock(session_id: str):
-    import asyncio
-
-    if session_id not in _session_locks:
-        _session_locks[session_id] = asyncio.Lock()
-    return _session_locks[session_id]
+    """Acquire distributed Redis lease lock (or test-mode local lock)."""
+    return get_distributed_session_store().lock_session(session_id)
 
 
 def _read_agent_messages(session_id: str, agent: SalesAgent) -> list[dict]:
@@ -262,14 +259,14 @@ def _session_payload(state: SessionState, agent: SalesAgent) -> dict:
 async def _persist_session(session_id: str, payload: dict) -> None:
     """Background-task entry point for durable session persistence."""
     try:
-        FileStorage.save_session(session_id, payload)
+        PostgresStorage.save_session(session_id, payload)
     except Exception as exc:
         logger.error(f"[{session_id}] session persistence failed: {exc}")
 
 
 def _restore_session(session_id: str, agent: SalesAgent) -> Optional[SessionState]:
     """Restore state and memory after a worker restart, accepting legacy snapshots."""
-    data = FileStorage.load_session(session_id)
+    data = PostgresStorage.load_session(session_id)
     if not data:
         return None
     try:
@@ -589,21 +586,12 @@ async def send_message(request: ChatRequest, background_tasks: BackgroundTasks):
                     state = _rollback_on_constraint_change(state, decision)
 
                 # Vehicle retrieval runs inside LangGraph after extract_slots + arbitrate_stage
-                if hasattr(agent, "arun_graph_turn"):
-                    result = await agent.arun_graph_turn(
-                        state,
-                        safe_message,
-                        skip_extraction=skip_extraction,
-                    )
-                    retrieved_cars = result.session_state.matched_cars
-                else:
-                    # Fallback for custom/mock agent test doubles without LangGraph methods
-                    if skip_extraction:
-                        state = agent.remember(state, safe_message)
-                    else:
-                        state = agent.observe(state, safe_message)
-                    retrieved_cars = _retrieve_cars(state, user_query=request.message)
-                    result = agent.respond(state, retrieved_cars)
+                result = await agent.arun_graph_turn(
+                    state,
+                    safe_message,
+                    skip_extraction=skip_extraction,
+                )
+                retrieved_cars = result.session_state.matched_cars
 
                 # Restore real values before anything is stored or shown.
                 _unmask_state(result.session_state, session_id)
@@ -767,22 +755,12 @@ async def send_message_stream(request: ChatRequest, raw_request: Request):
             pii_chunk_buffer = ""
             current_state = state
             last_emitted_state = current_state
-            use_langgraph_stream = hasattr(agent, "astream_graph_turn")
             try:
-                if use_langgraph_stream:
-                    stream_gen = agent.astream_graph_turn(
-                        current_state,
-                        safe_message,
-                        skip_extraction=skip_extraction,
-                    )
-                else:
-                    current_state = (
-                        agent.remember(current_state, safe_message)
-                        if skip_extraction
-                        else agent.observe(current_state, safe_message)
-                    )
-                    fallback_cars = _retrieve_cars(current_state, user_query=request.message)
-                    stream_gen = agent.respond_stream(current_state, fallback_cars)
+                stream_gen = agent.astream_graph_turn(
+                    current_state,
+                    safe_message,
+                    skip_extraction=skip_extraction,
+                )
 
                 # LangGraph + LangChain async token streaming
                 async for event_type, data in stream_gen:
@@ -985,7 +963,7 @@ async def end_session(session_id: str, background_tasks: BackgroundTasks):
     _sessions.pop(session_id, None)
     _prev_explicit.pop(session_id, None)
     agent.clear_session(session_id)
-    FileStorage.delete_session(session_id)
+    PostgresStorage.delete_session(session_id)
     return {"message": "Session ended successfully.", "session_id": session_id}
 
 

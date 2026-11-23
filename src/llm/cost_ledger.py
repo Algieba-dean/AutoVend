@@ -15,6 +15,34 @@ from typing import Any, Dict, Optional
 
 from src.llm.telemetry import PRICING_USD_PER_MTOK, Route
 
+# Per-model pricing overrides (USD per 1M tokens)
+MODEL_PRICING_USD_PER_MTOK: Dict[str, Dict[str, float]] = {
+    "gpt-4o": {"input": 2.50, "output": 10.00},
+    "gpt-4o-mini": {"input": 0.15, "output": 0.60},
+    "gpt-4.1": {"input": 2.00, "output": 8.00},
+    "gpt-4.1-mini": {"input": 0.40, "output": 1.60},
+    "deepseek-chat": {"input": 0.27, "output": 1.10},
+    "deepseek-reasoner": {"input": 0.55, "output": 2.19},
+    "qwen-plus": {"input": 0.40, "output": 1.20},
+    "qwen-turbo": {"input": 0.10, "output": 0.30},
+    "qwen-max": {"input": 1.60, "output": 6.40},
+    "qwen3-8b": {"input": 0.0, "output": 0.0},
+    "claude-3-5-sonnet": {"input": 3.00, "output": 15.00},
+}
+
+
+def _resolve_model_pricing(model: str, route: Route) -> Dict[str, float]:
+    """Resolve USD/1M-token pricing by exact/prefix model match, falling back to route rate."""
+    if model:
+        m_low = model.strip().lower()
+        if m_low in MODEL_PRICING_USD_PER_MTOK:
+            return MODEL_PRICING_USD_PER_MTOK[m_low]
+        for key, rate in MODEL_PRICING_USD_PER_MTOK.items():
+            if m_low.startswith(key) or key in m_low:
+                return rate
+    route_key = route.value if isinstance(route, Route) else str(route)
+    return PRICING_USD_PER_MTOK.get(route_key, PRICING_USD_PER_MTOK["cloud"])
+
 
 class AgentNodeRole(str, Enum):
     """Logical agent node roles for cost attribution."""
@@ -162,10 +190,7 @@ class CostLedger:
         role = node_role or _CURRENT_NODE_ROLE.get()
         role_key = role.value if isinstance(role, AgentNodeRole) else str(role)
 
-        price = PRICING_USD_PER_MTOK.get(
-            route.value if isinstance(route, Route) else str(route),
-            PRICING_USD_PER_MTOK["cloud"],
-        )
+        price = _resolve_model_pricing(model, route)
         cost = (max(0, prompt_tokens) * price["input"] + max(0, completion_tokens) * price["output"]) / 1_000_000
 
         with self._lock:

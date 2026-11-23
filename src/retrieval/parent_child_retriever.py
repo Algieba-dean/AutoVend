@@ -10,7 +10,6 @@ Implements enterprise-grade Parent-Document Retrieval:
 """
 
 import logging
-import math
 import re
 import threading
 import time
@@ -173,6 +172,16 @@ class SimpleVectorIndex:
                         embeds = self.embedding_model.embed_documents(texts)
                     except Exception as e:
                         logger.warning(f"Embedding model batch encoding failed: {e}")
+                elif hasattr(self.embedding_model, "get_text_embedding_batch"):
+                    try:
+                        embeds = self.embedding_model.get_text_embedding_batch(texts)
+                    except Exception as e:
+                        logger.warning(f"LlamaIndex BaseEmbedding batch encoding failed: {e}")
+                elif hasattr(self.embedding_model, "_get_text_embeddings"):
+                    try:
+                        embeds = self.embedding_model._get_text_embeddings(texts)
+                    except Exception as e:
+                        logger.warning(f"Embedding model _get_text_embeddings failed: {e}")
                 elif hasattr(self.embedding_model, "encode"):
                     try:
                         raw_embeds = self.embedding_model.encode(texts)
@@ -272,6 +281,10 @@ class SimpleVectorIndex:
             try:
                 if hasattr(self.embedding_model, "embed_query"):
                     query_vec = self.embedding_model.embed_query(query)
+                elif hasattr(self.embedding_model, "get_query_embedding"):
+                    query_vec = self.embedding_model.get_query_embedding(query)
+                elif hasattr(self.embedding_model, "_get_query_embedding"):
+                    query_vec = self.embedding_model._get_query_embedding(query)
                 elif hasattr(self.embedding_model, "encode"):
                     raw_vec = self.embedding_model.encode(query)
                     query_vec = raw_vec.tolist() if hasattr(raw_vec, "tolist") else list(raw_vec)

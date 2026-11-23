@@ -62,6 +62,91 @@ class UpdateSessionSlotsTool(BaseModel):
         description="客户明确表示反悔、取消或不要的配置或属性（如：['sunroof', 'suv', 'budget']）",
     )
 
+    # 5. 负向硬排除与软偏好权重
+    excluded_powertrains: Optional[List[str]] = Field(
+        None, description="客户明确排除的动力类型，如 ['纯电']"
+    )
+    excluded_brands: Optional[List[str]] = Field(
+        None, description="客户明确排除的品牌，如 ['特斯拉']"
+    )
+    excluded_models: Optional[List[str]] = Field(
+        None, description="客户明确排除的具体车型，如 ['Model Y']"
+    )
+    soft_preferences: Optional[Dict[str, float]] = Field(
+        None, description="软偏好及权重(0.0~1.0)，如 {'space': 0.8, 'comfort_level': 0.7}"
+    )
+
+    # 6. 提取置信度（Confidence-Gated State Update）
+    extraction_confidence: float = Field(
+        default=1.0, ge=0.0, le=1.0, description="本次提取置信度(0.0~1.0)，歧义或不确定时<0.65"
+    )
+    ambiguous_fields: Optional[List[str]] = Field(
+        None, description="存在歧义或低置信度的字段名列表"
+    )
+
+
+CONFIDENCE_GATE_THRESHOLD = 0.65
+
+
+def _is_low_confidence_overwrite(
+    field_name: str,
+    old_value: Any,
+    new_value: Any,
+    confidence: float,
+    ambiguous_fields: List[str],
+) -> bool:
+    """Return True if updating `field_name` would overwrite a confirmed value with low confidence."""
+    if new_value is None or new_value == "":
+        return False
+    if old_value is None or old_value == "":
+        return False
+    if str(old_value) == str(new_value):
+        return False
+    return confidence < CONFIDENCE_GATE_THRESHOLD or field_name in ambiguous_fields
+
+
+def resolve_pending_confirmation(state: SessionState, confirmed: bool) -> SessionState:
+    """Apply or discard `state.pending_confirmation` once the user confirms or rejects."""
+    if not state.pending_confirmation:
+        return state
+    updated = state.model_copy(deep=True)
+    if confirmed:
+        for field_path, info in updated.pending_confirmation.items():
+            cand = info.get("candidate_value") if isinstance(info, dict) else info
+            if field_path == "needs.explicit.budget_max" and cand is not None:
+                updated.needs.explicit.budget_max = float(cand)
+                updated.needs.explicit.price = f"{cand}万以内"
+            elif field_path == "needs.explicit.budget_min" and cand is not None:
+                updated.needs.explicit.budget_min = float(cand)
+            elif field_path == "needs.explicit.powertrain_type" and cand:
+                updated.needs.explicit.powertrain_type = str(cand)
+            elif field_path == "needs.explicit.brand" and cand:
+                updated.needs.explicit.brand = str(cand)
+            elif field_path == "needs.explicit.vehicle_category_bottom" and cand:
+                updated.needs.explicit.vehicle_category_bottom = str(cand)
+            elif field_path == "needs.explicit.seat_layout" and cand:
+                updated.needs.explicit.seat_layout = str(cand)
+            elif field_path == "profile.name" and cand:
+                updated.profile.name = str(cand)
+            elif field_path == "profile.residence" and cand:
+                updated.profile.residence = str(cand)
+            elif field_path == "reservation.reservation_date" and cand:
+                updated.reservation.reservation_date = str(cand)
+            elif field_path == "reservation.reservation_time" and cand:
+                updated.reservation.reservation_time = str(cand)
+            elif field_path == "reservation.reservation_time_slot" and cand:
+                updated.reservation.reservation_time_slot = str(cand)
+            elif field_path == "reservation.reservation_location" and cand:
+                updated.reservation.reservation_location = str(cand)
+            elif field_path == "reservation.test_driver" and cand:
+                updated.reservation.test_driver = str(cand)
+            elif field_path == "reservation.reservation_phone_number" and cand:
+                updated.reservation.reservation_phone_number = str(cand)
+    updated.pending_confirmation = {}
+    if updated.active_loop is not None:
+        updated.active_loop.pending_confirmation = {}
+    return updated
+
 
 def apply_slot_updates(
     state: SessionState,
@@ -109,23 +194,81 @@ def apply_slot_updates(
                 if hasattr(updated.profile, field):
                     setattr(updated.profile, field, "")
 
-    # 2. Forward updates to Profile
+    # 2. Forward updates to Profile (confidence-gated for existing confirmed fields)
+    conf = float(getattr(tool_call_data, "extraction_confidence", 1.0))
+    ambiguous = [f.lower().strip() for f in (tool_call_data.ambiguous_fields or [])]
+
+    def _gate_or_set(
+        field_key: str,
+        field_path: str,
+        old_val: Any,
+        new_val: Any,
+        setter,
+    ) -> None:
+        if _is_low_confidence_overwrite(field_key, old_val, new_val, conf, ambiguous):
+            updated.pending_confirmation[field_path] = {
+                "old_value": old_val,
+                "candidate_value": new_val,
+                "confidence": conf,
+            }
+            note = (
+                f"[低置信度待确认] 客户提到的 {field_key} 可能是「{new_val}」"
+                f"（当前已确认为「{old_val}」），请礼貌反问确认，暂不覆盖历史状态。"
+            )
+            if note not in updated.system_notes:
+                updated.system_notes.append(note)
+        else:
+            setter(new_val)
+
     cust_name = tool_call_data.customer_name or tool_call_data.name
     if cust_name:
-        updated.profile.name = cust_name
+        _gate_or_set(
+            "name", "profile.name", updated.profile.name, cust_name,
+            lambda v: setattr(updated.profile, "name", v),
+        )
     if tool_call_data.age is not None:
         updated.profile.age = str(tool_call_data.age)
     if tool_call_data.city:
-        updated.profile.residence = tool_call_data.city
+        _gate_or_set(
+            "city", "profile.residence", updated.profile.residence, tool_call_data.city,
+            lambda v: setattr(updated.profile, "residence", v),
+        )
     if tool_call_data.phone_number:
         updated.profile.phone_number = tool_call_data.phone_number
 
-    # 3. Forward updates to Explicit Needs
+    # 3. Forward updates to Explicit Needs (confidence-gated)
+    budget_changed = False
     if tool_call_data.budget_min_wan is not None:
-        updated.needs.explicit.budget_min = tool_call_data.budget_min_wan
+        if _is_low_confidence_overwrite(
+            "budget_min_wan", updated.needs.explicit.budget_min, tool_call_data.budget_min_wan, conf, ambiguous
+        ):
+            updated.pending_confirmation["needs.explicit.budget_min"] = {
+                "old_value": updated.needs.explicit.budget_min,
+                "candidate_value": tool_call_data.budget_min_wan,
+                "confidence": conf,
+            }
+        else:
+            updated.needs.explicit.budget_min = tool_call_data.budget_min_wan
+            budget_changed = True
     if tool_call_data.budget_max_wan is not None:
-        updated.needs.explicit.budget_max = tool_call_data.budget_max_wan
-    if tool_call_data.budget_min_wan is not None or tool_call_data.budget_max_wan is not None:
+        if _is_low_confidence_overwrite(
+            "budget_max_wan", updated.needs.explicit.budget_max, tool_call_data.budget_max_wan, conf, ambiguous
+        ):
+            updated.pending_confirmation["needs.explicit.budget_max"] = {
+                "old_value": updated.needs.explicit.budget_max,
+                "candidate_value": tool_call_data.budget_max_wan,
+                "confidence": conf,
+            }
+            note = (
+                f"[低置信度待确认] 客户提到的预算上限可能是「{tool_call_data.budget_max_wan}万」"
+                f"（当前已确认为「{updated.needs.explicit.budget_max}万」），请礼貌反问确认，暂不覆盖历史状态。"
+            )
+            if note not in updated.system_notes:
+                updated.system_notes.append(note)
+        else:
+            updated.needs.explicit.budget_max = tool_call_data.budget_max_wan
+            budget_changed = True
+    if budget_changed:
         # Also sync legacy price string representation
         min_w = updated.needs.explicit.budget_min
         max_w = updated.needs.explicit.budget_max
@@ -137,13 +280,37 @@ def apply_slot_updates(
             updated.needs.explicit.price = f"{min_w}万以上"
 
     if tool_call_data.preferred_powertrain:
-        updated.needs.explicit.powertrain_type = tool_call_data.preferred_powertrain
+        _gate_or_set(
+            "preferred_powertrain",
+            "needs.explicit.powertrain_type",
+            updated.needs.explicit.powertrain_type,
+            tool_call_data.preferred_powertrain,
+            lambda v: setattr(updated.needs.explicit, "powertrain_type", v),
+        )
     if tool_call_data.seat_count is not None:
-        updated.needs.explicit.seat_layout = f"{tool_call_data.seat_count}座"
+        _gate_or_set(
+            "seat_count",
+            "needs.explicit.seat_layout",
+            updated.needs.explicit.seat_layout,
+            f"{tool_call_data.seat_count}座",
+            lambda v: setattr(updated.needs.explicit, "seat_layout", v),
+        )
     if tool_call_data.brand_preference:
-        updated.needs.explicit.brand = tool_call_data.brand_preference
+        _gate_or_set(
+            "brand_preference",
+            "needs.explicit.brand",
+            updated.needs.explicit.brand,
+            tool_call_data.brand_preference,
+            lambda v: setattr(updated.needs.explicit, "brand", v),
+        )
     if tool_call_data.vehicle_category:
-        updated.needs.explicit.vehicle_category_bottom = tool_call_data.vehicle_category
+        _gate_or_set(
+            "vehicle_category",
+            "needs.explicit.vehicle_category_bottom",
+            updated.needs.explicit.vehicle_category_bottom,
+            tool_call_data.vehicle_category,
+            lambda v: setattr(updated.needs.explicit, "vehicle_category_bottom", v),
+        )
 
     # 4. Forward updates to Reservation Info
     if tool_call_data.reservation_date:
@@ -156,5 +323,19 @@ def apply_slot_updates(
     if store:
         updated.reservation.reservation_location = store
         updated.reservation.store_id = store
+
+    # 5. Apply negative exclusions & soft preferences into PreferenceModel
+    from src.agent.preference_model import PreferenceEngine
+
+    turn_idx = int(getattr(updated, "turn_count", 0))
+    for pt in tool_call_data.excluded_powertrains or []:
+        PreferenceEngine.add_negative_exclusion(updated.preferences, "powertrain", pt, turn_index=turn_idx)
+    for br in tool_call_data.excluded_brands or []:
+        PreferenceEngine.add_negative_exclusion(updated.preferences, "brand", br, turn_index=turn_idx)
+    for md in tool_call_data.excluded_models or []:
+        PreferenceEngine.add_negative_exclusion(updated.preferences, "model", md, turn_index=turn_idx)
+    for sp_key, sp_weight in (tool_call_data.soft_preferences or {}).items():
+        PreferenceEngine.add_soft_preference(updated.preferences, sp_key, sp_key, weight=sp_weight, turn_index=turn_idx)
+    PreferenceEngine.sync_from_needs(updated, turn_index=turn_idx)
 
     return updated

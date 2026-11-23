@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 
+from src.mlops.pg_store import MLOpsPostgresStore, is_test_env
 from src.utils.config import PROJECT_ROOT
 from src.utils.logger import get_logger
 
@@ -179,8 +180,9 @@ class SemanticDriftDetector:
         self.retrieval_hit_rate_warning = retrieval_hit_rate_warning
         self.retrieval_hit_rate_critical = retrieval_hit_rate_critical
 
-        self.storage_dir = Path(storage_dir) if storage_dir else DEFAULT_DRIFT_STORAGE
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        if self.storage_dir is not None:
+            self.storage_dir.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
 
         # In-memory baseline reference
@@ -510,13 +512,16 @@ class SemanticDriftDetector:
             alerts=alerts,
         )
 
-        # Persist report to storage
-        try:
-            report_file = self.storage_dir / f"drift_report_{int(time.time())}.json"
-            with open(report_file, "w", encoding="utf-8") as f:
-                json.dump(report.to_dict(), f, ensure_ascii=False, indent=2)
-        except Exception as exc:
-            logger.error(f"Failed to persist drift report: {exc}")
+        # Persist report to PostgreSQL (or temp test directory when explicitly provided)
+        if self.storage_dir is not None:
+            try:
+                report_file = self.storage_dir / f"drift_report_{int(time.time())}.json"
+                with open(report_file, "w", encoding="utf-8") as f:
+                    json.dump(report.to_dict(), f, ensure_ascii=False, indent=2)
+            except Exception as exc:
+                logger.error(f"Failed to persist drift report: {exc}")
+        elif not is_test_env() or MLOpsPostgresStore.ensure_ready():
+            MLOpsPostgresStore.append_drift_report("semantic_drift", report.to_dict())
 
         return report
 

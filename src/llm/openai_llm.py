@@ -11,7 +11,9 @@ model, and total latency is not a substitute for it: a short reply and a long
 one can share a TTFT while differing tenfold end to end.
 """
 
+import contextvars
 import json
+import os
 import time
 from typing import Any, AsyncIterator, Dict, List, Optional
 
@@ -54,16 +56,38 @@ class OpenAILLM(BaseLLM):
         super().__init__(model, api_key, base_url, **kwargs)
         self.base_url = base_url or "https://api.openai.com/v1"
         self.timeout = kwargs.get("timeout", DEFAULT_TIMEOUT_S)
+        env_verify = os.getenv("AUTOVEND_SSL_VERIFY", "true").strip().lower() not in ("0", "false", "no")
+        self.verify_ssl: bool = bool(kwargs["verify_ssl"]) if "verify_ssl" in kwargs else env_verify
         # Vendor-specific request fields merged into every payload. Used to turn
         # off reasoning-model chain-of-thought on the local server; see
         # `extra_body_for_local()`.
         self.extra_body: Dict[str, Any] = dict(kwargs.get("extra_body") or {})
         self.session = self._create_session()
 
-        # Populated after every call, read by the telemetry layer.
-        self.last_usage: Optional[Dict[str, int]] = None
-        self.last_ttft_s: Optional[float] = None
+        # Context-local per-call usage & TTFT to prevent concurrent coroutine/thread races.
+        self._usage_var: contextvars.ContextVar[Optional[Dict[str, int]]] = contextvars.ContextVar(
+            f"openai_llm_usage_{id(self)}", default=None
+        )
+        self._ttft_var: contextvars.ContextVar[Optional[float]] = contextvars.ContextVar(
+            f"openai_llm_ttft_{id(self)}", default=None
+        )
         self._async_client: Optional[AsyncOpenAI] = None
+
+    @property
+    def last_usage(self) -> Optional[Dict[str, int]]:
+        return self._usage_var.get()
+
+    @last_usage.setter
+    def last_usage(self, value: Optional[Dict[str, int]]) -> None:
+        self._usage_var.set(value)
+
+    @property
+    def last_ttft_s(self) -> Optional[float]:
+        return self._ttft_var.get()
+
+    @last_ttft_s.setter
+    def last_ttft_s(self, value: Optional[float]) -> None:
+        self._ttft_var.set(value)
 
     def _get_async_client(self) -> AsyncOpenAI:
         """Lazily create an AsyncOpenAI client for native async calls."""
@@ -72,14 +96,14 @@ class OpenAILLM(BaseLLM):
                 api_key=self.api_key or "empty",
                 base_url=self.base_url,
                 timeout=self.timeout,
-                http_client=httpx.AsyncClient(verify=False, timeout=self.timeout),
+                http_client=httpx.AsyncClient(verify=self.verify_ssl, timeout=self.timeout),
             )
         return self._async_client
 
     def _create_session(self) -> requests.Session:
         """Create a requests session with retry strategy"""
         session = requests.Session()
-        session.verify = False  # Disable SSL verification for corporate networks
+        session.verify = self.verify_ssl
 
         # Set up retry strategy
         retry_strategy = Retry(

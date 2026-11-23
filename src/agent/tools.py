@@ -939,9 +939,5 @@ def dispatch_transactional(state: SessionState, calls: List[Dict[str, Any]]) -> 
     return dispatch_all(state, calls, atomic=True)
 
 
-# Export Unified Schema & register alias for backwards compatibility
-_sys = __import__("sys")
-from src.agent.unified_schema import UpdateSessionSlotsTool, apply_slot_updates
-import src.agent.unified_schema as _unified_schema_module
-
-_sys.modules["src.agent.tools.unified_schema"] = _unified_schema_module
+# Re-export Unified Schema symbols cleanly (no sys.modules monkey-patching)
+from src.agent.unified_schema import UpdateSessionSlotsTool, apply_slot_updates  # noqa: E402,F401

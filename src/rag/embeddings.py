@@ -16,9 +16,6 @@ from src.utils.config import config
 from src.utils.logger import get_logger, log_performance
 
 
-import hashlib
-
-
 class EmbeddingInferenceError(RuntimeError):
     """Raised when embedding model fails to infer vector representations."""
 
@@ -121,9 +118,13 @@ class BGEEmbeddingModel(BaseEmbedding):
     def embed_dimension(self) -> int:
         """嵌入向量维度"""
         if self._dimension is None:
-            # 创建一个测试嵌入来获取维度
-            test_embedding = self._get_text_embedding("test")
-            self._dimension = len(test_embedding)
+            _ = self.model
+            if self._dimension is None:
+                if self.is_degraded:
+                    self._dimension = getattr(self._model, "dimension", 1024)
+                else:
+                    test_embedding = self._get_text_embedding("test")
+                    self._dimension = len(test_embedding)
         return self._dimension
 
     @property
@@ -355,12 +356,18 @@ class BGEEmbeddingModel(BaseEmbedding):
 
     def get_statistics(self) -> dict:
         """获取统计信息"""
+        try:
+            dim = self.embed_dimension
+        except EmbeddingDegradedError:
+            dim = self._dimension or getattr(self._model, "dimension", 1024)
         return {
             **self._stats,
             "model_name": self.model_name,
             "device": self.device,
-            "embed_dimension": self.embed_dimension,
+            "embed_dimension": dim,
             "batch_size": self._batch_size,
+            "is_degraded": self.is_degraded,
+            "degrade_level": self.degrade_level,
         }
 
     def clear_cache(self) -> None:

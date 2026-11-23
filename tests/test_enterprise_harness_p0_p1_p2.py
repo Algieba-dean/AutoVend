@@ -91,25 +91,28 @@ class _DummyLlamaLLM:
 
 class TestP0SingleSourceOfTruth:
     def test_sales_agent_memory_delegates_to_checkpointer(self):
+        from src.agent.schemas import SessionState
+
         agent = SalesAgent(llm=_DummyLlamaLLM())
         # Wire scripted model into lazy langgraph agent
         lg = agent.langgraph
-        lg.generation_chat_model = _ScriptedChatModel(responses=["好的，收到。"])
+        lg.generation_chat_model = _ScriptedChatModel(responses=["好的，为您推荐几款车型。"])
 
-        agent.memory.add_user_message("p0_sess_1", "我想看20万左右的纯电SUV")
-        agent.memory.add_assistant_message("p0_sess_1", "好的，为您推荐几款车型。")
+        agent.run_graph_turn(
+            SessionState(session_id="p0_sess_1"),
+            "我想看20万左右的纯电SUV",
+            skip_extraction=True,
+        )
 
-        assert agent.memory.has_session("p0_sess_1")
         snap = lg.get_graph_state("p0_sess_1")
         assert snap is not None
         assert len(snap.values.get("messages", [])) == 2
 
-        hist = agent.memory.get_history("p0_sess_1")
-        assert len(hist) == 2
-        assert "纯电SUV" in hist[0].content
+        hist_text = agent.get_history_text("p0_sess_1")
+        assert "纯电SUV" in hist_text
 
         agent.clear_session("p0_sess_1")
-        assert not agent.memory.has_session("p0_sess_1")
+        assert agent.get_history_text("p0_sess_1") == ""
 
     def test_chat_sessions_proxy_reads_from_checkpointer(self):
         from backend.app.routes import chat as chat_route
@@ -520,6 +523,7 @@ class TestAgentOpsMLOpsGovernance:
         assert extract_real_top1_score([{"car_model": "B", "score": 0.64}]) == 0.64
 
         slo = AgentSLOMonitor()
+        alert_manager._last_fired_at.clear()
         before_alerts = len(alert_manager.history)
         metrics = slo.record_turn(
             crag_rewritten=True,

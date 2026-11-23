@@ -8,9 +8,9 @@ import time
 from typing import Dict, List, Optional
 
 from src.crawler.adapters.yiche_adapter import CANONICAL_BRAND_SLUGS, YicheSiteAdapter
-from src.crawler.schemas import BrandMeta, CrawlSummary, SerialMeta, TaskStatus
 from src.crawler.scheduler.diff_engine import DiffEngine
 from src.crawler.scheduler.task_queue import SQLiteTaskQueue
+from src.crawler.schemas import BrandMeta, CrawlSummary, TaskStatus
 from src.crawler.storage import RawDataStorage
 from src.utils.logger import get_logger
 
@@ -114,3 +114,13 @@ class UniversalCrawlerEngine:
     async def close(self) -> None:
         """Shutdown adapter."""
         await self.adapter.close()
+
+    @staticmethod
+    def sync_pricing_to_truth_engine(
+        records: List[Dict],
+        source: str = "crawler",
+    ) -> int:
+        """Push crawled pricing & valuation updates into PostgreSQL Truth Engine master data."""
+        from src.truth_engine.master_data import TruthMasterDataStore
+
+        return TruthMasterDataStore.sync_from_crawler_records(records, source=source)

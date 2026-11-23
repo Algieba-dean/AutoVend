@@ -16,7 +16,8 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
 from src.filter.vehicle_db import VehicleDB
-from src.rag.vector_store import generate_vehicle_doc_id
+from src.models.vehicle import AmbiguousLabels, KeyDetails, PreciseLabels, Vehicle
+from src.rag.vector_store import extract_vehicle_trim, generate_vehicle_doc_id
 from src.retrieval.hybrid_pipeline import HybridPipeline
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,52 @@ class IngestionSummary(BaseModel):
     total_processed: int = 0
     elapsed_seconds: float = 0.0
     affected_models: List[str] = Field(default_factory=list)
+
+
+def _build_vehicle_search_payload(car_model: str, data: Dict[str, Any]) -> tuple[str, str, str]:
+    """Build unified (doc_id, trim, search_text) matching full-index ingestion contract."""
+    raw_trim = str(
+        data.get("trim")
+        or data.get("trim_name")
+        or data.get("version")
+        or data.get("config_name")
+        or ""
+    ).strip()
+    vehicle: Optional[Vehicle] = None
+    try:
+        if "precise_labels" in data or "PriciseLabels" in data:
+            vehicle = Vehicle.model_validate({**data, "car_model": data.get("car_model") or car_model})
+        else:
+            precise_fields = {
+                k: data[k] for k in PreciseLabels.model_fields if k in data and data[k] is not None
+            }
+            ambiguous_fields = {
+                k: data[k] for k in AmbiguousLabels.model_fields if k in data and data[k] is not None
+            }
+            kd_raw = data.get("key_details")
+            kd_obj = KeyDetails.model_validate(kd_raw) if isinstance(kd_raw, dict) else KeyDetails()
+            vehicle = Vehicle(
+                car_model=car_model,
+                trim=raw_trim or None,
+                precise_labels=PreciseLabels(**precise_fields),
+                ambiguous_labels=AmbiguousLabels(**ambiguous_fields),
+                key_details=kd_obj,
+            )
+    except Exception as exc:
+        logger.debug(f"Could not build Vehicle model for {car_model}: {exc}")
+
+    if vehicle is not None:
+        trim = extract_vehicle_trim(vehicle) or raw_trim
+        search_text = vehicle.get_search_text()
+        kd_raw = data.get("key_details")
+        if isinstance(kd_raw, str) and kd_raw.strip() and kd_raw.strip() not in search_text:
+            search_text = f"{search_text} | {kd_raw.strip()}" if search_text else kd_raw.strip()
+    else:
+        trim = raw_trim
+        search_text = str(data.get("key_details", "") or "").strip() or car_model
+
+    doc_id = data.get("doc_id") or generate_vehicle_doc_id(car_model, trim=trim)
+    return doc_id, trim, (search_text or car_model)
 
 
 def compute_vehicle_checksum(data: Dict[str, Any]) -> str:
@@ -203,7 +250,7 @@ class IncrementalIngestionPipeline:
     ) -> List[VehicleDataPatch]:
         """
         Compare incoming vehicle records against stored checksums to identify changes.
-        
+
         Args:
             new_vehicles: List of vehicle dictionary records.
             full_sync: If True, performs full snapshot reconciliation (models missing from
@@ -329,7 +376,8 @@ class IncrementalIngestionPipeline:
             downstream_ok = True
             downstream_err = None
             try:
-                # 2a. Update Vector Store (ChromaDB)
+                # 2a. Update Vector Store & Sparse Index with unified doc_id + Vehicle.get_search_text()
+                doc_id, trim, doc_text = _build_vehicle_search_payload(patch.car_model, patch.data)
                 if self.hybrid_pipeline and getattr(self.hybrid_pipeline, "retriever", None):
                     retriever = self.hybrid_pipeline.retriever
                     vector_store = getattr(retriever, "vector_store", None)
@@ -342,21 +390,9 @@ class IncrementalIngestionPipeline:
                         if hasattr(retriever, "embedding_model") and retriever.embedding_model:
                             try:
                                 if not getattr(retriever.embedding_model, "is_degraded", False):
-                                    emb = retriever.embedding_model.get_text_embedding(
-                                        str(patch.data.get("key_details", "")) or patch.car_model
-                                    )
+                                    emb = retriever.embedding_model.get_text_embedding(doc_text)
                             except Exception as emb_err:
                                 logger.warning(f"Failed to generate embedding for {patch.car_model}: {emb_err}")
-                        trim = str(
-                            patch.data.get("trim")
-                            or patch.data.get("trim_name")
-                            or patch.data.get("version")
-                            or patch.data.get("config_name")
-                            or ""
-                        ).strip()
-                        doc_id = patch.data.get("doc_id") or (
-                            generate_vehicle_doc_id(patch.car_model, trim=trim) if trim else patch.car_model
-                        )
                         vs_meta = dict(patch.data.get("metadata", {}))
                         if "car_model" not in vs_meta:
                             vs_meta["car_model"] = patch.car_model
@@ -365,10 +401,15 @@ class IncrementalIngestionPipeline:
 
                         vector_store.upsert_document(
                             doc_id=doc_id,
-                            text=str(patch.data.get("key_details", "")) or patch.car_model,
+                            text=doc_text,
                             metadata=vs_meta,
                             embedding=emb,
                         )
+
+                if self.hybrid_pipeline:
+                    sparse_index = getattr(self.hybrid_pipeline, "sparse_index", None)
+                    if sparse_index is not None and hasattr(sparse_index, "upsert_document"):
+                        sparse_index.upsert_document(patch.car_model, doc_text)
 
                 # 2b. Evict / Invalidate Freshness Cache
                 if self.freshness_engine and hasattr(self.freshness_engine, "invalidate_and_evict"):
@@ -448,6 +489,10 @@ class IncrementalIngestionPipeline:
                                 f"Vector store {type(vector_store).__name__} does not implement required 'delete_document' contract"
                             )
                         vector_store.delete_document(patch.car_model)
+                if self.hybrid_pipeline:
+                    sparse_index = getattr(self.hybrid_pipeline, "sparse_index", None)
+                    if sparse_index is not None and hasattr(sparse_index, "delete_document"):
+                        sparse_index.delete_document(patch.car_model)
             except Exception as sync_exc:
                 downstream_ok = False
                 downstream_err = sync_exc

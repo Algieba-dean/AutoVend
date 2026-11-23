@@ -137,8 +137,27 @@ class Config(BaseSettings):
     # Data Configuration
     vehicle_data_dir: str = "./DataInUse/VehicleData"
 
+    # Redis & Distributed Session / Cache / Streams
+    redis_url: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("REDIS_URL"),
+    )
+
+    # OpenTelemetry / Observability
+    otlp_endpoint: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("OTEL_EXPORTER_OTLP_ENDPOINT", "OTLP_ENDPOINT"),
+    )
+    otel_service_name: str = Field(
+        default="autovend",
+        validation_alias=AliasChoices("OTEL_SERVICE_NAME"),
+    )
+
     # Application Settings
-    app_environment: str = "development"
+    app_environment: str = Field(
+        default="development",
+        validation_alias=AliasChoices("APP_ENVIRONMENT", "APP_ENV"),
+    )
     debug: bool = False
     log_level: str = "INFO"
 
@@ -201,9 +220,19 @@ class Config(BaseSettings):
         return self.app_environment.lower() == "development"
 
     @property
+    def is_staging(self) -> bool:
+        """是否为预发布环境"""
+        return self.app_environment.lower() == "staging"
+
+    @property
     def is_production(self) -> bool:
         """是否为生产环境"""
-        return self.app_environment.lower() == "production"
+        return self.app_environment.lower() in ("production", "prod")
+
+    @property
+    def is_test(self) -> bool:
+        """是否为测试环境（APP_ENVIRONMENT / APP_ENV = test | testing）"""
+        return self.app_environment.lower() in ("test", "testing")
 
     @property
     def vehicle_data_path(self) -> Path:

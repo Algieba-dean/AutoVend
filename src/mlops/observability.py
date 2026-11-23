@@ -14,12 +14,70 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from src.utils.config import PROJECT_ROOT
+from src.mlops.pg_store import MLOpsPostgresStore, is_test_env
+from src.utils.config import PROJECT_ROOT, config
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 DEFAULT_OBSERVABILITY_STORAGE = PROJECT_ROOT / "storage" / "mlops" / "observability"
+
+# ── Real OpenTelemetry SDK initialization ─────────────────────────────────
+_OTEL_SDK_AVAILABLE = False
+_OTEL_PROVIDER = None
+_OTEL_TRACER = None
+
+try:
+    from opentelemetry import trace as otel_trace
+    from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+    _OTEL_SDK_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    otel_trace = None  # type: ignore[assignment]
+
+
+_OTEL_CONFIGURED_ENDPOINTS: set[str] = set()
+
+
+def _init_otel_tracer(service_name: Optional[str] = None, otlp_endpoint: Optional[str] = None):
+    global _OTEL_PROVIDER, _OTEL_TRACER
+    if not _OTEL_SDK_AVAILABLE:
+        return None
+
+    endpoint = otlp_endpoint or config.otlp_endpoint
+    if _OTEL_TRACER is not None:
+        if endpoint and _OTEL_PROVIDER is not None and endpoint not in _OTEL_CONFIGURED_ENDPOINTS:
+            try:
+                from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+                _OTEL_PROVIDER.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint)))
+                _OTEL_CONFIGURED_ENDPOINTS.add(endpoint)
+                logger.info(f"OpenTelemetry OTLP exporter attached: endpoint={endpoint}")
+            except Exception as exc:
+                logger.warning(f"Failed to attach OTLPSpanExporter ({endpoint}): {exc}")
+        return _OTEL_TRACER
+
+    svc = service_name or config.otel_service_name or "autovend"
+    resource = Resource.create({"service.name": svc, "deployment.environment": config.app_environment})
+    provider = TracerProvider(resource=resource)
+
+    if endpoint:
+        try:
+            from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+            exporter = OTLPSpanExporter(endpoint=endpoint)
+            provider.add_span_processor(BatchSpanProcessor(exporter))
+            _OTEL_CONFIGURED_ENDPOINTS.add(endpoint)
+            logger.info(f"OpenTelemetry OTLP exporter configured: endpoint={endpoint}, service={svc}")
+        except Exception as exc:
+            logger.warning(f"Failed to configure OTLPSpanExporter ({endpoint}): {exc}")
+
+    otel_trace.set_tracer_provider(provider)
+    _OTEL_PROVIDER = provider
+    _OTEL_TRACER = otel_trace.get_tracer("autovend.mlops", "2.0.0")
+    return _OTEL_TRACER
 
 
 class AlertSeverity(str, Enum):
@@ -77,7 +135,7 @@ class AlertRule:
 
 @dataclass
 class OtelSpan:
-    """OpenTelemetry-compatible span with GenAI semantic conventions."""
+    """OpenTelemetry span wrapper backed by real opentelemetry-sdk Span when available."""
 
     trace_id: str
     span_id: str
@@ -90,12 +148,44 @@ class OtelSpan:
     status_message: str = ""
     attributes: Dict[str, Any] = field(default_factory=dict)
     events: List[Dict[str, Any]] = field(default_factory=list)
+    _sdk_span: Optional[Any] = field(default=None, repr=False, compare=False)
+    _otel_token: Optional[Any] = field(default=None, repr=False, compare=False)
+
+    def __enter__(self) -> "OtelSpan":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        if exc_type is not None:
+            self.end(status_code="ERROR", status_message=str(exc_val or exc_type.__name__))
+        elif self.end_time is None:
+            self.end(status_code="OK")
 
     def end(self, status_code: str = "OK", status_message: str = "") -> None:
         self.end_time = time.time()
         self.duration_s = round(self.end_time - self.start_time, 4)
         self.status_code = status_code
         self.status_message = status_message
+        if self._otel_token is not None:
+            try:
+                from opentelemetry import context as otel_context
+
+                otel_context.detach(self._otel_token)
+            except Exception:
+                pass
+            finally:
+                self._otel_token = None
+        if self._sdk_span is not None:
+            try:
+                from opentelemetry.trace import Status, StatusCode
+
+                for k, v in self.attributes.items():
+                    if isinstance(v, (str, bool, int, float)):
+                        self._sdk_span.set_attribute(k, v)
+                code = StatusCode.ERROR if status_code == "ERROR" else StatusCode.OK
+                self._sdk_span.set_status(Status(code, status_message or ""))
+                self._sdk_span.end()
+            except Exception as exc:
+                logger.debug(f"OTel SDK span end warning: {exc}")
 
     def add_event(self, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
         self.events.append(
@@ -105,21 +195,27 @@ class OtelSpan:
                 "attributes": attributes or {},
             }
         )
+        if self._sdk_span is not None:
+            try:
+                self._sdk_span.add_event(name, attributes=attributes or {})
+            except Exception:
+                pass
 
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        d = asdict(self)
+        d.pop("_sdk_span", None)
+        d.pop("_otel_token", None)
+        return d
 
 
 class OpenTelemetryTracer:
-    """In-memory and persistent OpenTelemetry-compatible trace buffer."""
+    """OpenTelemetry SDK-backed tracer with bounded in-memory ring buffer for session lookup."""
 
-    def __init__(self, storage_dir: Optional[Path] = None):
-        self.storage_dir = (
-            Path(storage_dir) if storage_dir else DEFAULT_OBSERVABILITY_STORAGE / "traces"
-        )
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(self, storage_dir: Optional[Path] = None, otlp_endpoint: Optional[str] = None):
+        self.storage_dir = Path(storage_dir) if storage_dir else None
         self._lock = threading.RLock()
         self._spans: List[OtelSpan] = []
+        self._sdk_tracer = _init_otel_tracer(otlp_endpoint=otlp_endpoint)
 
     def start_span(
         self,
@@ -128,11 +224,34 @@ class OpenTelemetryTracer:
         parent_span_id: Optional[str] = None,
         attributes: Optional[Dict[str, Any]] = None,
     ) -> OtelSpan:
-        """Start a new execution span."""
+        """Start a new execution span (and corresponding OTel SDK span)."""
         import uuid
 
+        attrs = dict(attributes or {})
+        sdk_span = None
+        otel_token = None
         tid = trace_id or uuid.uuid4().hex
         sid = uuid.uuid4().hex[:16]
+
+        if self._sdk_tracer is not None:
+            try:
+                from opentelemetry import context as otel_context
+                from opentelemetry import trace as otel_trace
+
+                safe_attrs = {k: v for k, v in attrs.items() if isinstance(v, (str, bool, int, float))}
+                parent_ctx = otel_context.get_current()
+                sdk_span = self._sdk_tracer.start_span(
+                    name=name, context=parent_ctx, attributes=safe_attrs
+                )
+                otel_token = otel_context.attach(otel_trace.set_span_in_context(sdk_span, parent_ctx))
+                ctx = sdk_span.get_span_context()
+                if ctx and ctx.trace_id:
+                    tid = trace_id or f"{ctx.trace_id:032x}"
+                    sid = f"{ctx.span_id:016x}"
+            except Exception as exc:
+                logger.debug(f"OTel SDK start_span fallback: {exc}")
+                sdk_span = None
+                otel_token = None
 
         span = OtelSpan(
             trace_id=tid,
@@ -140,7 +259,9 @@ class OpenTelemetryTracer:
             name=name,
             parent_span_id=parent_span_id,
             start_time=time.time(),
-            attributes=attributes or {},
+            attributes=attrs,
+            _sdk_span=sdk_span,
+            _otel_token=otel_token,
         )
 
         with self._lock:
@@ -199,6 +320,10 @@ class PrometheusMetricsExporter:
         self._counters: Dict[str, float] = {}
         self._gauges: Dict[str, float] = {}
         self._histograms: Dict[str, List[float]] = {}
+        # Cumulative monotonic histogram accumulators (Prometheus spec)
+        self._histogram_counts: Dict[str, int] = {}
+        self._histogram_sums: Dict[str, float] = {}
+        self._histogram_buckets: Dict[str, Dict[float, int]] = {}
 
         # Default histogram buckets for Agent/LLM/RAG latency (seconds)
         self.latency_buckets = [0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 3.5, 5.0, 10.0]
@@ -219,12 +344,21 @@ class PrometheusMetricsExporter:
         self, name: str, value: float, labels: Optional[Dict[str, str]] = None
     ) -> None:
         key = self._format_key(name, labels)
+        val = float(value)
         with self._lock:
             if key not in self._histograms:
                 self._histograms[key] = []
-            self._histograms[key].append(float(value))
+                self._histogram_counts[key] = 0
+                self._histogram_sums[key] = 0.0
+                self._histogram_buckets[key] = {b: 0 for b in self.latency_buckets}
+            self._histograms[key].append(val)
             if len(self._histograms[key]) > 2000:
                 self._histograms[key].pop(0)
+            self._histogram_counts[key] += 1
+            self._histogram_sums[key] += val
+            for b in self.latency_buckets:
+                if val <= b:
+                    self._histogram_buckets[key][b] += 1
 
     @staticmethod
     def _format_key(name: str, labels: Optional[Dict[str, str]]) -> str:
@@ -260,15 +394,16 @@ class PrometheusMetricsExporter:
                     "# TYPE autovend_latency_seconds histogram",
                 ]
             )
-            for key, samples in sorted(self._histograms.items()):
+            for key in sorted(self._histogram_counts.keys()):
                 base_name = key.split("{")[0]
                 lbl_suffix = key[len(base_name) :] if "{" in key else ""
 
-                total_sum = sum(samples)
-                count = len(samples)
+                total_sum = self._histogram_sums[key]
+                count = self._histogram_counts[key]
+                bucket_counts = self._histogram_buckets[key]
 
                 for b in self.latency_buckets:
-                    b_count = sum(1 for s in samples if s <= b)
+                    b_count = bucket_counts.get(b, 0)
                     if lbl_suffix:
                         lbl_inner = lbl_suffix.rstrip("}").lstrip("{")
                         bucket_line = f'{base_name}_bucket{{{lbl_inner},le="{b}"}} {b_count}'
@@ -295,17 +430,17 @@ class PrometheusMetricsExporter:
 
 class AlertManager:
     """
-    Evaluates production metrics against alert rules and dispatches notifications.
+    Evaluates production metrics against alert rules, persists events to PostgreSQL
+    in non-test environments, and dispatches notifications.
     """
 
-    def __init__(self, storage_dir: Optional[Path] = None):
-        self.storage_dir = (
-            Path(storage_dir) if storage_dir else DEFAULT_OBSERVABILITY_STORAGE / "alerts"
-        )
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(self, storage_dir: Optional[Path] = None, cooldown_s: float = 300.0):
+        self.storage_dir = Path(storage_dir) if storage_dir else None
+        self.cooldown_s = max(0.0, float(cooldown_s))
         self._lock = threading.RLock()
         self.rules: Dict[str, AlertRule] = {}
         self.history: List[AlertEvent] = []
+        self._last_fired_at: Dict[str, float] = {}
 
         # Setup standard enterprise alert rules
         self._init_default_rules()
@@ -398,21 +533,32 @@ class AlertManager:
             self.rules[rule.name] = rule
 
     def evaluate_metrics(self, current_metrics: Dict[str, float]) -> List[AlertEvent]:
-        """Check all rules against latest metrics snapshot."""
+        """Check all rules against latest metrics snapshot with deduplication & cooldown."""
         triggered: List[AlertEvent] = []
+        now = time.time()
         with self._lock:
             for rule in self.rules.values():
                 val = current_metrics.get(rule.metric_key)
                 if val is not None and rule.evaluate(val):
+                    last_ts = self._last_fired_at.get(rule.name)
+                    if self.cooldown_s > 0 and last_ts is not None and (now - last_ts) < self.cooldown_s:
+                        continue
+                    self._last_fired_at[rule.name] = now
                     event = AlertEvent(
                         rule_name=rule.name,
                         severity=rule.severity,
                         message=f"{rule.name}: {rule.description} (value={val:.4f}, threshold={rule.threshold:.4f})",
                         metric_value=val,
                         threshold=rule.threshold,
+                        timestamp=now,
                     )
                     triggered.append(event)
                     self.history.append(event)
+                    if not is_test_env() and self.storage_dir is None:
+                        try:
+                            MLOpsPostgresStore.append_alert_event(event.to_dict())
+                        except Exception as exc:
+                            logger.warning(f"Failed to persist alert event to PostgreSQL: {exc}")
                     logger.warning(
                         f"[MLOps ALERT] [{event.severity.value.upper()}] {event.message}"
                     )
