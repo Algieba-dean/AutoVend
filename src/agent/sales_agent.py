@@ -39,7 +39,7 @@ class SalesAgent:
         checkpointer: Optional[Any] = None,
         circuit_breaker: Optional[AgentCircuitBreaker] = None,
         plugin_pipeline: Optional[AgentPluginPipeline] = None,
-        use_unified_extraction: bool = True,
+        use_unified_extraction: bool = False,
     ):
         self.llm = llm
         self.generation_llm = generation_llm or llm

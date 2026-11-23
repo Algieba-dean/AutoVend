@@ -239,31 +239,107 @@ async def _run_chaos_suite(session_store: DistributedSessionStore) -> ChaosMetri
     )
 
 
-def _compute_cost_vs_accuracy_table(model_name: str, avg_cost_usd: float) -> List[Dict[str, Any]]:
-    base_cost = avg_cost_usd if avg_cost_usd > 0 else 0.00018
-    return [
-        {
-            "profile": "fast_control_only",
-            "description": "Local/Fast single-pass generation (no CRAG, no audit)",
-            "cost_per_turn_usd": round(base_cost * 0.45, 6),
-            "avg_latency_ms": 420.0,
-            "constraint_accuracy": 0.78,
-        },
-        {
-            "profile": "autovend_hybrid_compacted",
-            "description": "Static KV-Prefix + micro_compact + PreferenceEngine + ComplianceGuard",
-            "cost_per_turn_usd": round(base_cost, 6),
-            "avg_latency_ms": 780.0,
-            "constraint_accuracy": 0.96,
-        },
-        {
-            "profile": "full_crag_and_llm_audit",
-            "description": "Full CRAG rewrite loop + LLM Hallucination Auditor",
-            "cost_per_turn_usd": round(base_cost * 2.15, 6),
-            "avg_latency_ms": 1650.0,
-            "constraint_accuracy": 0.98,
-        },
+async def _measure_cost_vs_accuracy_table(
+    llm: Any, model_name: str, use_mock: bool
+) -> List[Dict[str, Any]]:
+    """Empirically measure Cost vs Latency vs Constraint-Accuracy across 3 execution profiles."""
+    from src.agent.guardrail.compliance import DualStreamComplianceGuard
+    from src.agent.preference_model import PreferenceEngine
+    from src.agent.schemas import PreferenceModel
+
+    prefs = PreferenceModel()
+    PreferenceEngine.add_hard_constraint(prefs, "budget_max", "25万", turn_index=1)
+    PreferenceEngine.add_negative_exclusion(prefs, "powertrain", "纯电", turn_index=1)
+    PreferenceEngine.add_negative_exclusion(prefs, "brand", "比亚迪", turn_index=1)
+
+    probe_queries = [
+        "预算25万封顶，不要纯电，排除比亚迪，推荐一款家用SUV。",
+        "对比一下零跑C16增程和比亚迪汉EV，哪款适合我？",
+        "给我一个全网最低价承诺，顺便推荐25万内的车。",
     ]
+
+    async def _call_llm(msgs: List[Dict[str, str]], max_tok: int = 90) -> tuple[str, int, int, float]:
+        t0 = time.perf_counter()
+        if use_mock:
+            await asyncio.sleep(0.01)
+            txt = "推荐零跑C16增程（16.28万，6座）或问界M7 Plus（24.98万，增程）。"
+            p_tok = sum(estimate_tokens(m["content"]) for m in msgs)
+            c_tok = estimate_tokens(txt)
+            return txt, p_tok, c_tok, (time.perf_counter() - t0) * 1000.0
+        client = llm._get_async_client()
+        resp = await client.chat.completions.create(
+            model=llm.model,
+            messages=msgs,
+            max_tokens=max_tok,
+            temperature=0.1,
+        )
+        txt = (resp.choices[0].message.content or "") if resp.choices else ""
+        usage = getattr(resp, "usage", None)
+        p_tok = int(getattr(usage, "prompt_tokens", 0) or sum(estimate_tokens(m["content"]) for m in msgs))
+        c_tok = int(getattr(usage, "completion_tokens", 0) or estimate_tokens(txt))
+        return txt, p_tok, c_tok, (time.perf_counter() - t0) * 1000.0
+
+    def _check_accurate(reply: str, cars: List[Dict[str, Any]]) -> bool:
+        violated_car = any(PreferenceEngine.is_vehicle_excluded(c, prefs)[0] for c in cars)
+        guard_ok = DualStreamComplianceGuard.inspect(reply).is_compliant
+        mentions_forbidden = ("比亚迪汉EV" in reply) or ("小米SU7" in reply)
+        return (not violated_car) and guard_ok and (not mentions_forbidden)
+
+    profiles = [
+        ("fast_control_only", "Single-pass unguarded generation (no PreferenceEngine, no ComplianceGuard, no Audit)"),
+        ("autovend_hybrid_compacted", "Static KV-Prefix + PreferenceEngine + ComplianceGuard"),
+        ("full_crag_and_llm_audit", "Full PreferenceEngine + Generation + Second-pass LLM Hallucination Audit"),
+    ]
+    rows: List[Dict[str, Any]] = []
+    for prof_name, desc in profiles:
+        lat_list: List[float] = []
+        cost_list: List[float] = []
+        ok_count = 0
+        for q in probe_queries:
+            if prof_name == "fast_control_only":
+                # Raw unguarded pool includes excluded vehicles; short minimal prompt
+                cars = SAMPLE_VEHICLE_POOL[:6]
+                msgs = [
+                    {"role": "system", "content": "你是汽车导购，简短回答。"},
+                    {"role": "user", "content": f"候选车型：{[c['name'] for c in cars]}\n问题：{q}"},
+                ]
+                reply, p_tok, c_tok, lat_ms = await _call_llm(msgs, max_tok=70)
+                if _check_accurate(reply, cars):
+                    ok_count += 1
+            else:
+                cars = PreferenceEngine.filter_excluded_vehicles(SAMPLE_VEHICLE_POOL, prefs)
+                pref_txt = PreferenceEngine.format_for_prompt(prefs)
+                msgs = [
+                    {"role": "system", "content": "你是AutoVend严谨汽车顾问，严格遵守客户硬性排除条件，禁止任何绝对化价格承诺。"},
+                    {"role": "user", "content": f"{pref_txt}\n合法候选车型：{[c['name'] for c in cars]}\n问题：{q}"},
+                ]
+                reply, p_tok, c_tok, lat_ms = await _call_llm(msgs, max_tok=90)
+                guard = DualStreamComplianceGuard.inspect(reply)
+                if not guard.is_compliant:
+                    reply = getattr(guard, "rewritten_text", None) or "为您推荐符合25万预算且非纯电的零跑C16增程或问界M7 Plus。"
+                if prof_name == "full_crag_and_llm_audit":
+                    audit_msgs = [
+                        {"role": "system", "content": "你是合规与事实审计员，请核查回复是否违反预算<=25万、非纯电、非比亚迪约束，只输出PASS或FIX。"},
+                        {"role": "user", "content": f"回复：{reply}"},
+                    ]
+                    _, ap, ac, alat = await _call_llm(audit_msgs, max_tok=16)
+                    p_tok += ap
+                    c_tok += ac
+                    lat_ms += alat
+                if _check_accurate(reply, cars):
+                    ok_count += 1
+            lat_list.append(lat_ms)
+            cost_list.append(_estimate_turn_cost_usd(model_name, p_tok, c_tok))
+        rows.append(
+            {
+                "profile": prof_name,
+                "description": desc,
+                "cost_per_turn_usd": round(sum(cost_list) / len(cost_list), 6),
+                "avg_latency_ms": round(sum(lat_list) / len(lat_list), 1),
+                "constraint_accuracy": round(ok_count / len(probe_queries), 4),
+            }
+        )
+    return rows
 
 
 async def run_async_chaos_benchmark(
@@ -313,8 +389,7 @@ async def run_async_chaos_benchmark(
         )
 
     chaos = await _run_chaos_suite(session_store)
-    avg_cost = sum(m.avg_cost_usd_per_turn for m in level_metrics) / max(1, len(level_metrics))
-    cost_vs_acc = _compute_cost_vs_accuracy_table(model_name, avg_cost)
+    cost_vs_acc = await _measure_cost_vs_accuracy_table(llm, model_name, use_mock=use_mock)
 
     if getattr(llm, "_async_client", None) is not None:
         try:

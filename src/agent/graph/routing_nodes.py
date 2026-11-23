@@ -3,6 +3,7 @@ Guard, slot-extraction, policy-arbitration, and HITL graph nodes (`src/agent/gra
 """
 
 import logging
+import re
 import uuid
 from typing import Any, Dict, List, Literal
 
@@ -66,6 +67,17 @@ def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
 
     if existing_events:
         sess = project_state(existing_events, base_state=base_sess)
+        raw_sess = state.get("session_state")
+        if raw_sess is not None:
+            caller_events = diff_to_events(
+                sess,
+                raw_sess,
+                turn_id=int(getattr(raw_sess, "turn_count", 0)),
+                source="caller_state",
+            )
+            if caller_events:
+                new_events.extend(caller_events)
+                sess = raw_sess.model_copy(deep=True)
     else:
         raw_sess = state.get("session_state")
         if raw_sess is None:
@@ -269,23 +281,37 @@ def node_extract_slots(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
                 ext_confidence = float(getattr(tool_data, "extraction_confidence", 1.0))
                 ext_ambiguous = list(getattr(tool_data, "ambiguous_fields", None) or [])
             else:
-                if stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS):
+                signal_text = state.get("safe_message") or state.get("user_message", "")
+                has_profile_signal = stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS) or bool(
+                    re.search(
+                        r"我叫|我是|姓|先生|女士|本人|自己开|家人|老婆|老公|太太|爱人|小孩|孩子|老人|口之|代步|通勤|岁|居住|住在|工程师|<CN_PERSON",
+                        signal_text,
+                    )
+                )
+                has_needs_signal = stage in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION) or bool(
+                    re.search(
+                        r"\d+万|预算|价格|纯电|插混|增程|油车|混动|ev|suv|轿车|mpv|猎装|轿跑|续航|加速|马力|空间|座椅|\d座",
+                        signal_text,
+                        re.IGNORECASE,
+                    )
+                )
+                has_reservation_signal = stage in (
+                    Stage.RESERVATION_4S,
+                    Stage.RESERVATION_CONFIRMATION,
+                ) or bool(
+                    re.search(
+                        r"试驾|预约|门店|4s店|体验店|体验中心|明天|后天|周末|周[一二三四五六日天]|\d{1,2}\s*[点:：]|上午|下午|1[3-9]\d{9}|<CN_PHONE",
+                        signal_text,
+                        re.IGNORECASE,
+                    )
+                )
+                if has_profile_signal:
                     sess.profile = extract_profile(ext_model, conversation_text, sess.profile)
+                if has_needs_signal:
                     sess.needs = extract_combined_needs(
                         ext_model, conversation_text, sess.profile, sess.needs
                     )
-                elif stage == Stage.NEEDS_ANALYSIS:
-                    sess.needs = extract_combined_needs(
-                        ext_model, conversation_text, sess.profile, sess.needs
-                    )
-                elif stage == Stage.CAR_SELECTION:
-                    sess.needs = extract_combined_needs(
-                        ext_model, conversation_text, sess.profile, sess.needs
-                    )
-                    sess.reservation = extract_reservation(
-                        ext_model, conversation_text, sess.reservation
-                    )
-                elif stage in (Stage.RESERVATION_4S, Stage.RESERVATION_CONFIRMATION):
+                if has_reservation_signal:
                     sess.reservation = extract_reservation(
                         ext_model, conversation_text, sess.reservation
                     )

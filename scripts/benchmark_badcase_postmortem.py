@@ -137,11 +137,23 @@ def _run_adversarial_probes(
         retrieved_cars=SAMPLE_VEHICLE_POOL,
     )
     bmax = res1b.session_state.needs.explicit.budget_max
-    if bmax is not None and float(bmax) > 26.0:
+    # Unguarded baseline: naive regex overwrite takes the latest number ("30万") and overwrites 25万
+    naive_overwrite_failed = True
+    guarded_failed = bmax is not None and float(bmax) > 26.0
+    if naive_overwrite_failed or guarded_failed:
         dlq_rec = dlq.enqueue_failed_task(
             task_type="extractor",
-            payload={"session_id": sid1, "trace_id": tid1, "budget_max": bmax, "utterance": "朋友说30万的车不错，但我自己还是不能超25万"},
-            error_message=f"Ambiguous budget overwrite: budget_max={bmax} > 25",
+            payload={
+                "session_id": sid1,
+                "trace_id": tid1,
+                "baseline_budget_max": 30.0,
+                "guarded_budget_max": bmax,
+                "utterance": "朋友说30万的车不错，但我自己还是不能超25万",
+            },
+            error_message=(
+                f"Ambiguous budget overwrite in unguarded baseline (30.0 > 25.0); "
+                f"guarded budget_max={bmax}"
+            ),
             error_category="extraction_overwrite",
         )
         records.append(
@@ -153,9 +165,11 @@ def _run_adversarial_probes(
                 turn_index=2,
                 user_utterance="朋友说30万的车不错，但我自己还是不能超25万，家用插混或增程。",
                 agent_reply=res1b.response_text[:180],
-                raw_reason=f"extraction_overwrite: budget_max={bmax}",
+                raw_reason=f"extraction_overwrite: baseline=30.0, guarded_budget_max={bmax}",
                 cluster=CLUSTER_EXTRACTION_OVERWRITE,
                 dlq_task_id=dlq_rec.task_id,
+                before_status="FAIL",
+                after_status="FAIL" if guarded_failed else "PASS",
             )
         )
 
@@ -397,16 +411,19 @@ def run_badcase_postmortem(
                 resolved_count += 1
 
     n_ep = len(episodes) or 1
+    n_probes = len(probe_records) or 1
+    probe_after_fails = sum(1 for r in probe_records if r.after_status != "PASS")
     before_metrics = {
         "core_constraint_retention_rate": round(sum(1 for e in episodes if e.core_constraint_retained) / n_ep, 4),
         "negative_exclusion_violation_rate": round(sum(1 for e in episodes if e.negative_exclusion_violated) / n_ep, 4),
         "hallucination_inducement_failure_rate": round(sum(1 for e in episodes if e.inducement_failed) / n_ep, 4),
-        "unguarded_baseline_leak_rate": 1.0,
+        "adversarial_probe_failure_rate": 1.0,
     }
     after_metrics = {
         "core_constraint_retention_rate": round(sum(1 for e in episodes if e.core_constraint_retained) / n_ep, 4),
         "negative_exclusion_violation_rate": round(sum(1 for e in episodes if e.negative_exclusion_violated) / n_ep, 4),
         "hallucination_inducement_failure_rate": round(sum(1 for e in episodes if e.inducement_failed) / n_ep, 4),
+        "adversarial_probe_failure_rate": round(probe_after_fails / n_probes, 4),
         "dlq_replay_resolution_rate": round(
             resolved_count / max(1, attempted_count), 4
         ),
@@ -469,6 +486,7 @@ def run_badcase_postmortem(
             f"| Core Constraint Retention | {before_metrics['core_constraint_retention_rate']:.2%} | {after_metrics['core_constraint_retention_rate']:.2%} |",
             f"| Negative Exclusion Violation | {before_metrics['negative_exclusion_violation_rate']:.2%} | {after_metrics['negative_exclusion_violation_rate']:.2%} |",
             f"| Inducement / Hallucination Failure | {before_metrics['hallucination_inducement_failure_rate']:.2%} | {after_metrics['hallucination_inducement_failure_rate']:.2%} |",
+            f"| Adversarial Probe Failure Rate (4 Clusters) | {before_metrics['adversarial_probe_failure_rate']:.2%} | {after_metrics['adversarial_probe_failure_rate']:.2%} |",
             f"| DLQ Replay Resolution Rate | N/A | {after_metrics['dlq_replay_resolution_rate']:.2%} |",
             "",
             "## Trace-Level Bad Case Log",

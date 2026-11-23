@@ -294,6 +294,22 @@ class TestRetrievalOrdering:
                 updated.matched_cars = retrieved_cars or []
                 return AgentResult(session_state=updated, response_text="ok", stage_changed=False)
 
+            async def arun_graph_turn(
+                self,
+                state,
+                user_message,
+                retrieved_cars=None,
+                skip_extraction=False,
+                propose_with_llm=False,
+            ):
+                updated = self.observe(state, user_message)
+                cars = (
+                    retrieved_cars
+                    if retrieved_cars is not None
+                    else chat_route._retrieve_cars(updated)
+                )
+                return self.respond(updated, retrieved_cars=cars)
+
         stub = _StubPipeline(cars=("BMW-iX",))
         sessions_dir = tmp_path / "sessions"
         sessions_dir.mkdir()

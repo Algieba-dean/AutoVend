@@ -246,11 +246,14 @@ class TestProfileAPI:
 
     @pytest.mark.asyncio
     async def test_create_profile(self, client, tmp_path, monkeypatch):
+        import uuid
+
         monkeypatch.setattr("backend.app.models.storage.PROFILES_DIR", tmp_path)
+        phone = f"139{uuid.uuid4().int % 100000000:08d}"
 
         resp = await client.post(
             "/api/profile",
-            json={"phone_number": "13900000001", "name": "John"},
+            json={"phone_number": phone, "name": "John"},
         )
         assert resp.status_code == 201
         assert resp.json()["name"] == "John"

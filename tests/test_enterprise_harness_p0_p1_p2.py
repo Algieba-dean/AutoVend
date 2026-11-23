@@ -499,6 +499,7 @@ class TestAgentOpsMLOpsGovernance:
         sess = SessionState(session_id="obs_1", stage=Stage.CAR_SELECTION)
         cars = [{"car_model": "比亚迪汉EV", "score": 0.91, "electric_range": "605km"}]
 
+        otel_tracer._spans.clear()
         before_spans = len(otel_tracer._spans)
         lg.invoke_turn(
             session_id="obs_1",

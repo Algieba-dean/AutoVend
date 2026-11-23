@@ -338,9 +338,12 @@ class TestLangGraphFastAPIEndpoints:
             assert cp_resp.status_code == 200
             assert cp_resp.json()["message_count"] >= 2
 
+            import uuid
+
+            stream_sid = f"ep-stream-{uuid.uuid4().hex[:8]}"
             s_resp = await client.post(
                 "/api/chat/stream",
-                json={"session_id": "ep-stream-1", "message": "你好"},
+                json={"session_id": stream_sid, "message": "你好"},
             )
             assert s_resp.status_code == 200
             body = s_resp.text
@@ -349,7 +352,7 @@ class TestLangGraphFastAPIEndpoints:
             assert "event: done" in body
 
             # Streaming turn must also record history in agent.memory
-            msgs_resp = await client.get("/api/chat/session/ep-stream-1/messages")
+            msgs_resp = await client.get(f"/api/chat/session/{stream_sid}/messages")
             assert msgs_resp.status_code == 200
             assert len(msgs_resp.json()["messages"]) == 2
 

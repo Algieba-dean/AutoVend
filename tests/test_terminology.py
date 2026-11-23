@@ -492,32 +492,32 @@ def test_sales_agent_no_false_positive_on_assistant_prior_turn(monkeypatch):
     from src.agent.schemas import AgentInput
 
     mock_llm = MagicMock()
-    mock_resp = MagicMock()
-    mock_resp.text = json.dumps({"name": "Test"})
-    mock_llm.complete.return_value = mock_resp
+    mock_llm = MagicMock()
 
-    captured_notes = []
+    def _side_effect(prompt):
+        resp = MagicMock()
+        p = str(prompt).lower()
+        if "extract" in p or "profile" in p or "explicit" in p or "reservation" in p:
+            resp.text = json.dumps({"name": "Test"})
+        else:
+            resp.text = "推荐比亚迪汉EV，它搭载了云辇-C系统。"
+        return resp
 
-    def mock_generate_response(*args, **kwargs):
-        notes = kwargs.get("system_notes") or []
-        captured_notes.extend(notes)
-        return "推荐比亚迪汉EV，它搭载了云辇-C系统。"
-
-    monkeypatch.setattr("src.agent.sales_agent.generate_response", mock_generate_response)
+    mock_llm.complete.side_effect = _side_effect
 
     agent = SalesAgent(llm=mock_llm)
     session_id = "test-fp-session"
     state = SessionState(session_id=session_id)
 
     # Turn 1: Customer asks general question, assistant replies mentioning 云辇-C
-    agent.process(AgentInput(session_state=state, user_message="推荐20万左右的车"))
+    res1 = agent.process(AgentInput(session_state=state, user_message="推荐20万左右的车"))
+    res1.session_state.system_notes.clear()
 
     # Turn 2: Customer asks non-tech question
-    captured_notes.clear()
-    agent.process(AgentInput(session_state=state, user_message="哪款更省电？"))
+    res2 = agent.process(AgentInput(session_state=res1.session_state, user_message="哪款更省电？"))
 
     # Assert that NO terminology note was generated for turn 2!
-    for note in captured_notes:
+    for note in res2.session_state.system_notes:
         assert "专有名词解析与导购策略提示" not in note
 
 

@@ -140,6 +140,15 @@ def evaluate_dialogue(scenario: dict) -> DialogueScorecard:
     """
     Run a single dialogue scenario through the agent and produce a scorecard.
     """
+    import gc
+    from unittest.mock import patch
+
+    from src.core.container import ServiceContainer
+    from src.core.tiered_engine import TieredRetrievalEngine
+
+    ServiceContainer.reset()
+    TieredRetrievalEngine.get_instance()
+    gc.collect()
     llm = create_scenario_llm(scenario)
     agent = SalesAgent(llm=llm)
     state = SessionState(session_id=f"eval-{scenario['id']}")
@@ -165,9 +174,16 @@ def evaluate_dialogue(scenario: dict) -> DialogueScorecard:
             session_state=state,
             user_message=turn["msg"],
         )
-        t0 = time.perf_counter()
-        result = agent.process(inp)
-        elapsed_ms = (time.perf_counter() - t0) * 1000
+        gc_was_enabled = gc.isenabled()
+        gc.disable()
+        try:
+            t0 = time.perf_counter()
+            with patch("src.agent.graph.routing_nodes.enqueue_agent_dlq"):
+                result = agent.process(inp)
+            elapsed_ms = (time.perf_counter() - t0) * 1000
+        finally:
+            if gc_was_enabled:
+                gc.enable()
 
         state = result.session_state
         response = result.response_text

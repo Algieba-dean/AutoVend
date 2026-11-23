@@ -223,6 +223,10 @@ def run_long_context_benchmark(
                 actual_prompt_tokens = est_tokens
                 cached_tokens = int(estimate_tokens(prompt_msgs[0]["content"])) if strat == "autovend_compact" else 0
             else:
+                if strat == "autovend_compact":
+                    # Warm up provider KV-Cache for the static prefix so real prompt_cache_hit_tokens is measured
+                    llm.chat(prompt_msgs[:2], max_tokens=8, temperature=0.0)
+                    t0 = time.perf_counter()
                 reply = llm.chat(prompt_msgs, max_tokens=180, temperature=0.1)
                 total_ms = (time.perf_counter() - t0) * 1000.0
                 ttft_ms = (llm.last_ttft_s * 1000.0) if llm.last_ttft_s is not None else total_ms

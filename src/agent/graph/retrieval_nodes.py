@@ -94,8 +94,8 @@ def retrieve_single_query(
         except Exception as exc:
             logger.warning(f"LangChain retriever failed for '{retrieval_query}': {exc}")
 
-    rag_service = ServiceContainer.get_rag_service()
-    if rag_service is not None:
+    if ServiceContainer.has_rag_service():
+        rag_service = ServiceContainer.get_rag_service()
         try:
             resp = rag_service.search_vehicles(
                 RAGQueryRequest(
@@ -198,7 +198,7 @@ def node_retrieve_vehicles(agent: Any, state: AgentGraphState) -> Dict[str, Any]
                     implicit_dict,
                     top_k=3,
                 )
-                if (agent.retriever is not None or ServiceContainer.get_rag_service() is not None)
+                if (agent.retriever is not None or ServiceContainer.has_rag_service())
                 else []
             )
             return t0_cars + rag_cars
@@ -318,9 +318,7 @@ def node_grade_retrieval(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
         if sess.stage not in (Stage.NEEDS_ANALYSIS, Stage.CAR_SELECTION):
             return {"retrieval_grade_passed": True, "retrieval_grade_reason": "non_selection_stage"}
 
-        backend_available = (agent.retriever is not None) or (
-            ServiceContainer.get_rag_service() is not None
-        )
+        backend_available = (agent.retriever is not None) or ServiceContainer.has_rag_service()
         cars = sess.matched_cars or []
 
         if not cars:

@@ -476,6 +476,15 @@ def evaluate_stage_fsm_rule_policy(
             events=[SlotUpdated(turn_id=turn_id, source="StageFSMRulePolicy", field_path="stage_hold", value=False)],
         )
 
+    if turn_cls.is_interrupt and not turn_cls.is_constraint_change and not turn_cls.is_multi_intent:
+        return PolicyProposal(
+            policy_name="StageFSMRulePolicy",
+            priority=PolicyPriority.STAGE_FSM_RULE,
+            action=PolicyAction.SIDE_QA_ALLOW,
+            target_stage=old_stage,
+            reason="side_qa_stage_anchor",
+        )
+
     if turn_cls.is_interrupt and turn_cls.is_constraint_change:
         rb_prop = propose_rollback(sess, reason="turn_classifier_constraint_update")
         if rb_prop is not None:
@@ -518,7 +527,7 @@ def evaluate_stage_fsm_rule_policy(
     auto_multi = has_multi_slots or (
         turn_cls.is_multi_intent
         or len(turn_cls.extracted_slots_hint) >= 2
-        or (len(sess.last_patch) >= 2 and any("needs" in k for k in sess.last_patch))
+        or (len(sess.last_patch) >= 2 and any("needs.explicit" in k for k in sess.last_patch))
         or (
             sess.stage in (Stage.WELCOME, Stage.PROFILE_ANALYSIS)
             and bool(sess.needs.explicit.price)

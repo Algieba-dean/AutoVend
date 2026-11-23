@@ -38,6 +38,11 @@ class ServiceContainer:
         logger.info("Registered RAG Service implementation.")
 
     @classmethod
+    def has_rag_service(cls) -> bool:
+        """Return True if a RAG service instance has been registered/initialized."""
+        return cls._rag_service is not None
+
+    @classmethod
     def get_rag_service(cls) -> BaseRAGService:
         """Retrieve active RAG Service instance."""
         if cls._rag_service is None:

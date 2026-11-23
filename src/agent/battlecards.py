@@ -129,7 +129,7 @@ class BattlecardStore:
 
         # 2. Enrich with live RAG retrieval if available
         try:
-            rag = ServiceContainer.get_rag_service()
+            rag = ServiceContainer.get_rag_service() if ServiceContainer.has_rag_service() else None
             if rag is not None:
                 resp = rag.search_vehicles(
                     RAGQueryRequest(query_text=model_name, top_k=2)
