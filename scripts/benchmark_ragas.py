@@ -36,9 +36,9 @@ def _run_mock_benchmark(sample_limit: int = 5, system_name: str = "fusion") -> D
     from src.eval.golden_set import load_golden_set
 
     queries = load_golden_set()[:sample_limit]
-    per_sample_faithfulness = [0.92 for _ in queries]
-    per_sample_relevancy = [0.88 for _ in queries]
-    per_sample_recall = [0.85 for _ in queries]
+    per_sample_faithfulness = [round(0.88 + 0.03 * (i % 3), 4) for i in range(len(queries))]
+    per_sample_relevancy = [round(0.84 + 0.03 * (i % 3), 4) for i in range(len(queries))]
+    per_sample_recall = [round(0.80 + 0.04 * (i % 3), 4) for i in range(len(queries))]
 
     scores = {}
     for name, vals in (
@@ -46,7 +46,7 @@ def _run_mock_benchmark(sample_limit: int = 5, system_name: str = "fusion") -> D
         ("answer_relevancy", per_sample_relevancy),
         ("context_recall", per_sample_recall),
     ):
-        mean_val, ci_lo, ci_hi = bootstrap_metric_ci(vals)
+        ci_lo, mean_val, ci_hi = bootstrap_metric_ci(vals)
         scores[name] = {
             "score": round(mean_val, 4),
             "ci_95": [round(ci_lo, 4), round(ci_hi, 4)],

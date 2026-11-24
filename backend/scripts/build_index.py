@@ -1,6 +1,6 @@
 """
-One-shot script to build the ChromaDB vehicle knowledge index.
-Usage: python -m scripts.build_index
+One-shot script to build the vehicle knowledge index (SQLite + Vector + BM25).
+Usage: python -m backend.scripts.build_index
 """
 
 import logging
@@ -15,17 +15,24 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    """Build the vehicle knowledge index from TOML files."""
-    from backend.app.config import CHROMA_PERSIST_DIR, VEHICLE_DATA_DIR
-    from backend.app.ingestion.index_builder import build_vehicle_index
+    """Build the vehicle knowledge index from TOML files via native IndexBuilder."""
+    from src.filter.vehicle_db import VehicleDB
+    from src.rag.index_builder import IndexBuilder
 
     logger.info("=== AutoVend Vehicle Knowledge Index Builder ===")
-    logger.info(f"Vehicle data dir: {VEHICLE_DATA_DIR}")
-    logger.info(f"ChromaDB persist dir: {CHROMA_PERSIST_DIR}")
 
     start = time.time()
     try:
-        build_vehicle_index()
+        db = VehicleDB()
+        if db.count() == 0:
+            db.import_from_toml_dir()
+        logger.info(f"SQLite vehicle catalog ready: {db.count()} vehicles")
+
+        builder = IndexBuilder()
+        result = builder.build_index()
+        if result.get("status") != "success":
+            raise ValueError(f"Index build returned status={result.get('status')}")
+
         elapsed = time.time() - start
         logger.info(f"Index built successfully in {elapsed:.1f}s")
     except ValueError as e:

@@ -248,15 +248,25 @@ def summarize(result) -> Dict[str, Dict]:
     """
     import math
 
+    from src.eval.statistical_gate import bootstrap_metric_ci
+
     frame = result.to_pandas()
     summary: Dict[str, Dict] = {}
-    for metric in result.to_pandas().columns:
+    for metric in frame.columns:
         if metric in ("user_input", "retrieved_contexts", "response", "reference"):
             continue
         values = [v for v in frame[metric].tolist() if isinstance(v, (int, float))]
         scored = [v for v in values if not math.isnan(v)]
+        if scored:
+            ci_lo, mean_val, ci_hi = bootstrap_metric_ci(scored)
+            ci_95: Optional[List[float]] = [round(ci_lo, 4), round(ci_hi, 4)]
+            score: Optional[float] = round(mean_val, 4)
+        else:
+            ci_95 = None
+            score = None
         summary[metric] = {
-            "score": round(sum(scored) / len(scored), 4) if scored else None,
+            "score": score,
+            "ci_95": ci_95,
             "n_scored": len(scored),
             "n_failed": len(values) - len(scored),
         }
@@ -272,10 +282,10 @@ class _LocalBGEEmbeddings:
         self._model = BGEEmbeddingModel()
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        return [self._model._get_text_embedding(t) for t in texts]
+        return self._model.get_text_embedding_batch(texts)
 
     def embed_query(self, text: str) -> List[float]:
-        return self._model._get_text_embedding(text)
+        return self._model.get_query_embedding(text)
 
     async def aembed_documents(self, texts: List[str]) -> List[List[float]]:
         return self.embed_documents(texts)
