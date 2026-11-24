@@ -99,7 +99,7 @@ def build_samples(
     turn performs — judging a synthetic pipeline would measure something the
     users never see.
     """
-    from llama_index.llms.openai_like import OpenAILike
+    from langchain_openai import ChatOpenAI
 
     from src.agent.response_generator import generate_response
     from src.agent.schemas import ReservationInfo, Stage, UserProfile, VehicleNeeds
@@ -115,11 +115,10 @@ def build_samples(
     # Not ideal — a model grading its own prose is a known bias — but it beats
     # the alternative here, which is half the run failing on an exhausted quota.
     # The bias is noted in the report so the number is read with it in mind.
-    llm = OpenAILike(
+    llm = ChatOpenAI(
         api_key=generator["api_key"],
-        api_base=generator["base_url"],
+        base_url=generator["base_url"],
         model=generator["model"],
-        is_chat_model=True,
         temperature=0.0,  # judge the median behaviour, not a lucky sample
         max_tokens=500,
     )

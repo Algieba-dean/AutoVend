@@ -15,7 +15,7 @@ from src.agent.extractors.implicit_deductor import deduce_implicit_needs
 from src.agent.extractors.needs_extractor import extract_explicit_needs
 from src.agent.extractors.profile_extractor import extract_profile
 from src.agent.extractors.reservation_extractor import extract_reservation
-from src.agent.memory import ChatMemoryManager
+from src.agent.langgraph_agent import LangGraphSalesAgent
 from src.agent.response_generator import (
     _format_matched_cars,
     _get_missing_needs_fields,
@@ -398,40 +398,35 @@ class TestDetermineNextStage:
 
 class TestChatMemory:
     def test_create_and_get(self):
-        mgr = ChatMemoryManager()
-        buf = mgr.get_or_create("s1")
-        assert buf is not None
+        from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+        agent = LangGraphSalesAgent(llm=FakeListChatModel(responses=["ok"]))
+        agent.hydrate_history("s1", [])
+        snap = agent.get_graph_state("s1")
+        assert snap is not None and "messages" in snap.values
 
     def test_add_messages(self):
-        mgr = ChatMemoryManager()
-        mgr.add_user_message("s1", "Hello")
-        mgr.add_assistant_message("s1", "Hi!")
-        history = mgr.get_history("s1")
-        assert len(history) == 2
+        from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
-    def test_get_history_as_text(self):
-        mgr = ChatMemoryManager()
-        mgr.add_user_message("s1", "Hello")
-        mgr.add_assistant_message("s1", "Hi!")
-        text = mgr.get_history_as_text("s1")
-        assert "User: Hello" in text
-        assert "Assistant: Hi!" in text
+        agent = LangGraphSalesAgent(llm=FakeListChatModel(responses=["ok"]))
+        agent.hydrate_history("s1", [("user", "Hello"), ("assistant", "Hi!")])
+        msgs = agent.get_graph_state("s1").values.get("messages", [])
+        assert len(msgs) == 2
 
     def test_clear_session(self):
-        mgr = ChatMemoryManager()
-        mgr.add_user_message("s1", "Hello")
-        mgr.clear_session("s1")
-        assert not mgr.has_session("s1")
+        from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
-    def test_active_sessions(self):
-        mgr = ChatMemoryManager()
-        mgr.add_user_message("s1", "a")
-        mgr.add_user_message("s2", "b")
-        assert set(mgr.active_sessions) == {"s1", "s2"}
+        agent = LangGraphSalesAgent(llm=FakeListChatModel(responses=["ok"]))
+        agent.hydrate_history("s1", [("user", "Hello")])
+        agent.clear_session("s1")
+        snap = agent.get_graph_state("s1")
+        assert not snap.values
 
     def test_clear_nonexistent(self):
-        mgr = ChatMemoryManager()
-        mgr.clear_session("nonexistent")  # should not raise
+        from langchain_core.language_models.fake_chat_models import FakeListChatModel
+
+        agent = LangGraphSalesAgent(llm=FakeListChatModel(responses=["ok"]))
+        agent.clear_session("nonexistent")  # should not raise
 
 
 # ── Response Generator Tests ──────────────────────────────────

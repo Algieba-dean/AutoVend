@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 # 加载环境变量
 load_dotenv()
 
-from llama_index.llms.openai_like import OpenAILike
+from langchain_openai import ChatOpenAI
 
 
 def test_groq_connection():
@@ -33,14 +33,14 @@ def test_groq_connection():
 
     try:
         # 创建LLM实例
-        llm = OpenAILike(model=model, api_base=base_url, api_key=api_key)
+        llm = ChatOpenAI(model=model, base_url=base_url, api_key=api_key)
 
         # 测试简单对话
         print("\n💬 测试对话...")
-        response = llm.complete("你好，请简单介绍一下你自己。")
+        response = llm.invoke("你好，请简单介绍一下你自己。")
 
         print("✅ 连接成功!")
-        print(f"🤖 响应: {response.text}")
+        print(f"🤖 响应: {response.content}")
 
         return True
 

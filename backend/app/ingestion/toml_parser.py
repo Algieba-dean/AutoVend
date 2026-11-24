@@ -1,5 +1,5 @@
 """
-Parse vehicle TOML files into LlamaIndex Document objects.
+Parse vehicle TOML files into Document objects.
 
 Each TOML file contains structured vehicle data with:
 - Top-level: title, car_model
@@ -9,11 +9,23 @@ Each TOML file contains structured vehicle data with:
 """
 
 import logging
+from dataclasses import dataclass
+from dataclasses import field as dataclass_field
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import toml
-from llama_index.core.schema import Document
+
+
+@dataclass
+class Document:
+    """Lightweight vehicle document container (framework-agnostic)."""
+
+    text: str
+    metadata: Dict[str, Any] = dataclass_field(default_factory=dict)
+    doc_id: Optional[str] = None
+    excluded_llm_metadata_keys: List[str] = dataclass_field(default_factory=list)
+    excluded_embed_metadata_keys: List[str] = dataclass_field(default_factory=list)
 
 logger = logging.getLogger(__name__)
 

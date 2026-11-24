@@ -94,8 +94,8 @@ class StageWorkflow:
         self.llm = llm
         self.vehicle_index = vehicle_index
         retriever = (
-            LlamaIndexHybridRetriever(llama_index=vehicle_index)
-            if vehicle_index is not None
+            LlamaIndexHybridRetriever(pipeline=vehicle_index)
+            if vehicle_index is not None and hasattr(vehicle_index, "search")
             else None
         )
         self.graph_agent = LangGraphSalesAgent(

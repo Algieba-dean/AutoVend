@@ -373,7 +373,7 @@ def generate_report():
             "src.agent.sales_agent",
             "src.agent.schemas",
             "src.agent.stages",
-            "src.agent.memory",
+            "src.agent.langgraph_agent",
             "src.agent.response_generator",
         ]:
             importlib.import_module(mod)

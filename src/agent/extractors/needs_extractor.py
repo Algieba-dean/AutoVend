@@ -2,9 +2,7 @@
 Extract explicit vehicle needs from conversation text using LLM.
 """
 
-from typing import Optional
-
-from llama_index.core.llms import LLM
+from typing import Any, Optional
 
 from src.agent.extractors.base import extract_with_llm
 from src.agent.schemas import ExplicitNeeds
@@ -40,7 +38,7 @@ Return ONLY a valid JSON object with the extracted fields. Merge new information
 
 
 def extract_explicit_needs(
-    llm: LLM,
+    llm: Any,
     conversation: str,
     current_needs: Optional[ExplicitNeeds] = None,
 ) -> ExplicitNeeds:

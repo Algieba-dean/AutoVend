@@ -9,7 +9,6 @@ from typing import Any, List, Optional
 
 import numpy as np
 import torch
-from llama_index.core.embeddings import BaseEmbedding
 from sentence_transformers import SentenceTransformer
 
 from src.utils.config import config
@@ -65,11 +64,8 @@ class _DummySentenceTransformer:
         pass
 
 
-class BGEEmbeddingModel(BaseEmbedding):
+class BGEEmbeddingModel:
     """BGE-M3嵌入模型"""
-
-    is_degraded: bool = False
-    degrade_level: str = "NORMAL"
 
     def __init__(
         self,
@@ -89,8 +85,6 @@ class BGEEmbeddingModel(BaseEmbedding):
             max_length: 最大序列长度
             normalize_embeddings: 是否归一化嵌入向量
         """
-        super().__init__()
-
         # 存储配置
         self._model_name = model_name or config.embedding_model
         self._device = device or config.embedding_device
@@ -183,12 +177,30 @@ class BGEEmbeddingModel(BaseEmbedding):
             self._dimension = 1024
 
     def _get_query_embedding(self, query: str) -> List[float]:
-        """获取查询嵌入向量（LlamaIndex接口）"""
+        """获取查询嵌入向量"""
         return self._get_text_embedding(query)
 
     async def _aget_query_embedding(self, query: str) -> List[float]:
-        """异步获取查询嵌入向量（LlamaIndex接口）"""
+        """异步获取查询嵌入向量"""
         return self._get_query_embedding(query)
+
+    def get_query_embedding(self, query: str) -> List[float]:
+        """获取查询嵌入向量（兼容接口）"""
+        return self._get_query_embedding(query)
+
+    async def aget_query_embedding(self, query: str) -> List[float]:
+        """异步获取查询嵌入向量（兼容接口）"""
+        return await self._aget_query_embedding(query)
+
+    def get_text_embedding(self, text: str) -> List[float]:
+        """获取单个文本的嵌入向量（兼容接口）"""
+        return self._get_text_embedding(text)
+
+    def get_text_embedding_batch(
+        self, texts: List[str], show_progress: bool = False, **kwargs: Any
+    ) -> List[List[float]]:
+        """批量获取文本嵌入向量（兼容接口）"""
+        return self._get_text_embeddings(texts)
 
     @log_performance
     def _get_text_embedding(self, text: str) -> List[float]:

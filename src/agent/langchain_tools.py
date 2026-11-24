@@ -110,6 +110,13 @@ TOOL_CONTRACTS: Dict[str, ToolContract] = {
         requiresIdempotencyKey=False,
         maxResultSizeChars=4000,
     ),
+    "estimate_trade_in_valuation": ToolContract(
+        isReadOnly=True,
+        isConcurrencySafe=True,
+        needsApproval=False,
+        requiresIdempotencyKey=False,
+        maxResultSizeChars=4000,
+    ),
     "check_constraint_conflicts": ToolContract(
         isReadOnly=True,
         isConcurrencySafe=True,
@@ -313,6 +320,65 @@ def calculate_drive_away_price_tool(
 
     out = json.dumps(result, ensure_ascii=False)
     return enforce_tool_result_limit("calculate_drive_away_price", out)
+
+
+class TradeInValuationInput(BaseModel):
+    car_model: str = Field(
+        ...,
+        description="Used car model name to appraise for trade-in, e.g. 'Model Y' or '比亚迪汉EV'",
+    )
+    vehicle_age_years: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=20.0,
+        description="Optional vehicle age in years (used to highlight 1-year/3-year residual reference)",
+    )
+    mileage_wan_km: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+        description="Optional mileage in 万公里 (e.g. 3.5 for 35,000 km)",
+    )
+
+
+@tool("estimate_trade_in_valuation", args_schema=TradeInValuationInput)
+def estimate_trade_in_valuation_tool(
+    car_model: str,
+    vehicle_age_years: Optional[float] = None,
+    mileage_wan_km: Optional[float] = None,
+) -> str:
+    """Estimate used-car trade-in valuation, 1-year/3-year residual value rates, and wholesale/retail price ranges."""
+    facade = TruthEngineFacade.get_instance()
+    dep = facade.get_depreciation_data(car_model)
+    if dep is None:
+        out = json.dumps(
+            {
+                "found": False,
+                "car_model": car_model,
+                "message": "暂未查询到该车型的二手车残值数据，建议提供具体车型名称或到店由评估师实车核价。",
+            },
+            ensure_ascii=False,
+        )
+        return enforce_tool_result_limit("estimate_trade_in_valuation", out)
+
+    payload: Dict[str, Any] = {
+        "found": True,
+        "car_model": dep.car_model,
+        "one_year_residual_rate": dep.one_year_residual_rate,
+        "three_year_residual_rate": dep.three_year_residual_rate,
+        "one_year_residual_pct": f"{dep.one_year_residual_rate * 100:.1f}%",
+        "three_year_residual_pct": f"{dep.three_year_residual_rate * 100:.1f}%",
+        "wholesale_price_range_wan": dep.current_wholesale_price_range_wan,
+        "retail_price_range_wan": dep.current_retail_price_range_wan,
+        "market_liquidity_rating": dep.market_liquidity_rating,
+    }
+    if vehicle_age_years is not None:
+        payload["vehicle_age_years"] = vehicle_age_years
+    if mileage_wan_km is not None:
+        payload["mileage_wan_km"] = mileage_wan_km
+
+    out = json.dumps(payload, ensure_ascii=False)
+    return enforce_tool_result_limit("estimate_trade_in_valuation", out)
 
 
 class ConstraintCheckInput(BaseModel):
@@ -878,6 +944,7 @@ _ALL_TOOLS = [
     get_vehicle_detail_tool,
     compare_two_vehicles_tool,
     calculate_drive_away_price_tool,
+    estimate_trade_in_valuation_tool,
     calculate_financing_plan_tool,
     query_dealer_promotions_tool,
     query_dealer_info_tool,

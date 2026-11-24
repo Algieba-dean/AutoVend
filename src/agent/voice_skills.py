@@ -39,13 +39,14 @@ VOICE_SKILLS: Dict[str, VoiceSkill] = {
     "pricing_finance": VoiceSkill(
         name="pricing_finance",
         prompt_snippet=(
-            "当前目标：落地价、金融月供与优惠咨询。直接调用算价或金融工具给出清晰数字，"
-            "用口语短句播报首付、月供和优惠，禁止使用列表和Markdown，不超过80字。"
+            "当前目标：落地价、金融月供、优惠与二手车置换估价咨询。直接调用算价、金融或置换估价工具给出清晰数字，"
+            "用口语短句播报首付、月供、优惠或残值区间，禁止使用列表和Markdown，不超过80字。"
         ),
         tool_names=(
             "calculate_drive_away_price",
             "calculate_financing_plan",
             "query_dealer_promotions",
+            "estimate_trade_in_valuation",
         ),
         needs_retrieval=False,
     ),
@@ -95,6 +96,7 @@ TOOL_FILLERS: Dict[str, str] = {
     "get_vehicle_detail": "好的，我帮您查一下这款车的具体参数。",
     "check_constraint_conflicts": "我帮您核对一下这几个条件能不能兼顾。",
     "calculate_drive_away_price": "好的，我帮您算一下落地价，稍等。",
+    "estimate_trade_in_valuation": "好的，我帮您查一下这台车的保值率和置换估价区间。",
     "calculate_financing_plan": "没问题，我帮您算一下首付和月供方案。",
     "query_dealer_promotions": "我帮您查一下门店最新的优惠政策。",
     "query_dealer_info": "好的，我帮您查一下门店信息和可约时段。",
@@ -122,7 +124,7 @@ _REJECT_RE = re.compile(
 _HANDOFF_RE = re.compile(r"转人工|人工客服|真人|找顾问|销售经理|投诉")
 _TEST_DRIVE_RE = re.compile(r"试驾|预约|约个|改期|改约|取消预约|查预约|几点去试")
 _DEALER_INFO_RE = re.compile(r"营业时间|几点关门|几点开门|地址|在哪|怎么走|停车|车位|展车|门店")
-_PRICING_RE = re.compile(r"落地价|多少钱|首付|月供|分期|贷款|利率|优惠|补贴|折扣|置换|全款")
+_PRICING_RE = re.compile(r"落地价|多少钱|首付|月供|分期|贷款|利率|优惠|补贴|折扣|置换|全款|估价|保值率|二手车")
 _DISCOVERY_RE = re.compile(
     r"推荐|选车|买车|对比|区别|哪个好|续航|纯电|增程|插混|混动|油车|SUV|轿车|MPV|猎装|万左右|万以内|预算"
 )

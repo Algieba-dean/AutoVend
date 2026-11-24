@@ -181,20 +181,15 @@ def test_vehicle_clean_schema_and_price_range():
 
 
 # ---------------------------------------------------------------------------
-# 6. query_engine: Deprecation notice and backward compatibility
+# 6. query_engine: Legacy LlamaIndex rag module removed
 # ---------------------------------------------------------------------------
-def test_legacy_query_engine_deprecation_notice():
-    import warnings
+def test_legacy_query_engine_removed():
+    import importlib
 
-    with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
-        import importlib
+    import pytest
 
-        import backend.app.rag.query_engine
-        importlib.reload(backend.app.rag.query_engine)
-        assert any(
-            "deprecated" in str(item.message).lower() for item in w
-        )
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("backend.app.rag.query_engine")
 
 
 # ---------------------------------------------------------------------------

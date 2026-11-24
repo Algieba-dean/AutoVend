@@ -10,8 +10,6 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
-from llama_index.core.llms import LLM
-
 from src.agent.schemas import (
     ReservationInfo,
     Stage,
@@ -249,7 +247,7 @@ def _build_stage_prompt(
 
 
 def generate_response(
-    llm: LLM,
+    llm: Any,
     stage: Stage,
     conversation_history: str,
     profile: UserProfile,
@@ -283,7 +281,7 @@ def generate_response(
 
 
 def generate_response_stream(
-    llm: LLM,
+    llm: Any,
     stage: Stage,
     conversation_history: str,
     profile: UserProfile,

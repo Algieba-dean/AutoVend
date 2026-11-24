@@ -4,9 +4,12 @@ Unit tests for incremental turn-based, stage-driven, and hierarchical conversati
 
 from unittest.mock import MagicMock
 
-from llama_index.core.llms import ChatMessage, MessageRole
+from langchain_core.messages import AIMessage, HumanMessage
 
-from src.agent.memory import ChatMemoryManager, compress_history_incrementally
+from src.agent.conversation_compression import (
+    compress_history_incrementally,
+    format_history_with_summaries,
+)
 from src.agent.schemas import SessionState
 
 
@@ -15,11 +18,11 @@ def test_compress_history_incrementally_threshold():
     mock_llm = MagicMock()
     mock_llm.complete.return_value = "客户预算30万，看重续航与安全。"
 
-    # Build 6 turns of messages (12 ChatMessages)
+    # Build 6 turns of messages (12 LangChain messages)
     messages = []
     for i in range(1, 7):
-        messages.append(ChatMessage(role=MessageRole.USER, content=f"这是第{i}轮问题"))
-        messages.append(ChatMessage(role=MessageRole.ASSISTANT, content=f"这是第{i}轮回答"))
+        messages.append(HumanMessage(content=f"这是第{i}轮问题"))
+        messages.append(AIMessage(content=f"这是第{i}轮回答"))
 
     # Compress at interval 6
     updated_state, entry = compress_history_incrementally(
@@ -46,11 +49,11 @@ def test_compress_history_incrementally_no_recompression_on_second_batch():
         "第二批摘要：确认了试驾时间和地点",
     ]
 
-    # Build 12 turns of messages (24 ChatMessages)
+    # Build 12 turns of messages (24 LangChain messages)
     messages = []
     for i in range(1, 13):
-        messages.append(ChatMessage(role=MessageRole.USER, content=f"这是第{i}轮问题"))
-        messages.append(ChatMessage(role=MessageRole.ASSISTANT, content=f"这是第{i}轮回答"))
+        messages.append(HumanMessage(content=f"这是第{i}轮问题"))
+        messages.append(AIMessage(content=f"这是第{i}轮回答"))
 
     # First compression (only first 6 turns)
     state, entry1 = compress_history_incrementally(
@@ -95,8 +98,8 @@ def test_compress_history_stage_driven_direction_a():
     # Build 3 turns of messages
     messages = []
     for i in range(1, 4):
-        messages.append(ChatMessage(role=MessageRole.USER, content=f"这是第{i}轮问题"))
-        messages.append(ChatMessage(role=MessageRole.ASSISTANT, content=f"这是第{i}轮回答"))
+        messages.append(HumanMessage(content=f"这是第{i}轮问题"))
+        messages.append(AIMessage(content=f"这是第{i}轮回答"))
 
     # Stage changed at turn 3 (before interval 6)
     state, entry = compress_history_incrementally(
@@ -129,8 +132,8 @@ def test_hierarchical_summary_aggregation_direction_c():
 
     messages = []
     for i in range(1, 10):
-        messages.append(ChatMessage(role=MessageRole.USER, content=f"这是第{i}轮问题"))
-        messages.append(ChatMessage(role=MessageRole.ASSISTANT, content=f"这是第{i}轮回答"))
+        messages.append(HumanMessage(content=f"这是第{i}轮问题"))
+        messages.append(AIMessage(content=f"这是第{i}轮回答"))
 
     # Produce 3 slices with compress_interval=3 and max_slices=3
     # 1st slice: turns 1-3
@@ -155,9 +158,10 @@ def test_hierarchical_summary_aggregation_direction_c():
 
 
 def test_get_history_as_text_with_summary_history():
-    memory = ChatMemoryManager()
-    memory.add_user_message("s1", "你好，我想买车")
-    memory.add_assistant_message("s1", "您好！请问预算多少？")
+    history = [
+        HumanMessage(content="你好，我想买车"),
+        AIMessage(content="您好！请问预算多少？"),
+    ]
 
     summary_history = [
         {
@@ -174,7 +178,7 @@ def test_get_history_as_text_with_summary_history():
         },
     ]
 
-    formatted_text = memory.get_history_as_text("s1", summary_history=summary_history)
+    formatted_text = format_history_with_summaries(history, summary_history=summary_history)
     assert "=== 历史对话增量与高阶归档摘要 ===" in formatted_text
     assert "• [第 1-6 轮归档 [阶段: profile_analysis]]: 第一阶段聊了预算和喜好" in formatted_text
     assert "• [第 1-12 轮归档 [高阶总结]]: 早期轮次高阶总结" in formatted_text

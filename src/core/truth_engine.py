@@ -57,6 +57,10 @@ class TruthEngineFacade:
             car_model=car_model, query_filter=query_filter
         )
 
+    def get_depreciation_data(self, car_model: str) -> Optional[DepreciationValuation]:
+        """Fetch 1-year/3-year residual value rates and used-car trade-in price ranges."""
+        return self._service.get_depreciation_data(car_model)
+
     def calculate_drive_away_price(
         self,
         car_model: str,

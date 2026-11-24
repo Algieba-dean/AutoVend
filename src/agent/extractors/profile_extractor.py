@@ -2,9 +2,7 @@
 Extract user profile information from conversation text using LLM.
 """
 
-from typing import Optional
-
-from llama_index.core.llms import LLM
+from typing import Any, Optional
 
 from src.agent.extractors.base import extract_with_llm
 from src.agent.schemas import UserProfile
@@ -37,7 +35,7 @@ Return ONLY a valid JSON object with the extracted fields. Merge new information
 
 
 def extract_profile(
-    llm: LLM,
+    llm: Any,
     conversation: str,
     current_profile: Optional[UserProfile] = None,
 ) -> UserProfile:

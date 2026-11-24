@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 
 from src.truth_engine.debiaser import MarketingDebiaser
 from src.truth_engine.miit_platform import MIITSpecsPlatform
-from src.truth_engine.models import VehicleTruthReport
+from src.truth_engine.models import DepreciationValuation, VehicleTruthReport
 from src.truth_engine.price_valuation import PriceValuationEngine
 from src.truth_engine.reliability_cases import ReliabilityCaseRepository
 
@@ -103,6 +103,10 @@ class TruthEngineService:
             "drive_away_price": calc.model_dump() if calc else None,
             "summary_markdown": markdown,
         }
+
+    def get_depreciation_data(self, car_model: str) -> Optional[DepreciationValuation]:
+        """Fetch 1-year/3-year residual value rates and used-car trade-in price ranges."""
+        return self.price_engine.get_depreciation_data(car_model)
 
     def calculate_drive_away_price(
         self,

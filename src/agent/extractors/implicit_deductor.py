@@ -2,9 +2,7 @@
 Deduce implicit vehicle needs from user profile and explicit needs.
 """
 
-from typing import Optional
-
-from llama_index.core.llms import LLM
+from typing import Any, Optional
 
 from src.agent.extractors.base import extract_with_llm
 from src.agent.schemas import ExplicitNeeds, ImplicitNeeds, UserProfile
@@ -48,7 +46,7 @@ Return ONLY a valid JSON object with the deduced fields."""
 
 
 def deduce_implicit_needs(
-    llm: LLM,
+    llm: Any,
     user_profile: UserProfile,
     explicit_needs: ExplicitNeeds,
     current_implicit: Optional[ImplicitNeeds] = None,

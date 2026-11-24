@@ -1,9 +1,9 @@
 """
-LlamaIndex -> LangChain Retriever Bridge.
+HybridPipeline -> LangChain Retriever Bridge.
 
-Exposes AutoVend's LlamaIndex VectorStoreIndex / HybridPipeline / TieredRetrievalEngine
-as a standard LangChain `BaseRetriever` returning `langchain_core.documents.Document`
-instances, so LangGraph nodes and LangChain tools can invoke LlamaIndex RAG natively.
+Exposes AutoVend's HybridPipeline / TieredRetrievalEngine as a standard
+LangChain `BaseRetriever` returning `langchain_core.documents.Document` instances,
+so LangGraph nodes and LangChain tools can invoke Hybrid RAG natively.
 """
 
 from typing import Any, Dict, List, Optional
@@ -16,16 +16,11 @@ from pydantic import ConfigDict, Field
 
 class LlamaIndexHybridRetriever(BaseRetriever):
     """
-    LangChain `BaseRetriever` backed by AutoVend's LlamaIndex + Hybrid RAG stack.
-
-    Priority order:
-    1. Tier 0 in-memory exact spec fast-path (when `tiered_engine` is available)
-    2. `HybridPipeline` (Structured SQLite Filter + LlamaIndex/pgvector Dense + BM25 + RRF)
-    3. Direct LlamaIndex `VectorStoreIndex.as_retriever(...)` if provided
+    LangChain `BaseRetriever` backed by AutoVend's Hybrid RAG stack
+    (`HybridPipeline`: Structured SQLite Filter + pgvector Dense + BM25 + RRF).
     """
 
     pipeline: Any = Field(default=None, exclude=True)
-    llama_index: Any = Field(default=None, exclude=True)
     top_k: int = 5
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -105,20 +100,6 @@ class LlamaIndexHybridRetriever(BaseRetriever):
                 meta["score"] = float(getattr(item, "score", 0.0))
                 meta["source"] = getattr(item, "source", "hybrid_pipeline")
                 text = getattr(item, "text_snippet", "") or str(meta)
-                docs.append(Document(page_content=text, metadata=meta))
-            return docs
-
-        # 2. Direct LlamaIndex VectorStoreIndex fallback
-        if self.llama_index is not None:
-            retriever = self.llama_index.as_retriever(similarity_top_k=self.top_k)
-            nodes = retriever.retrieve(query)
-            for node_with_score in nodes:
-                node = getattr(node_with_score, "node", node_with_score)
-                score = float(getattr(node_with_score, "score", 0.0) or 0.0)
-                meta = dict(getattr(node, "metadata", {}) or {})
-                meta["score"] = score
-                meta["source"] = "llamaindex_vector_store"
-                text = node.get_content() if hasattr(node, "get_content") else str(node)
                 docs.append(Document(page_content=text, metadata=meta))
             return docs
 

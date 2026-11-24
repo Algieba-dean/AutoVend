@@ -160,32 +160,10 @@ class TestLlamaIndexLangChainBridge:
         assert cars[0]["car_model"] == "比亚迪汉EV"
         assert cars[0]["brand"] == "比亚迪"
 
-    def test_llamaindex_vector_index_fallback(self):
-        class _MockNode:
-            def __init__(self):
-                self.metadata = {"car_model": "极氪001", "brand": "极氪"}
-
-            def get_content(self):
-                return "极氪001 猎装纯电"
-
-        class _MockNodeWithScore:
-            def __init__(self):
-                self.node = _MockNode()
-                self.score = 0.88
-
-        class _MockLlamaRetriever:
-            def retrieve(self, query: str):
-                return [_MockNodeWithScore()]
-
-        class _MockLlamaIndex:
-            def as_retriever(self, similarity_top_k: int = 5):
-                return _MockLlamaRetriever()
-
-        retriever = LlamaIndexHybridRetriever(llama_index=_MockLlamaIndex(), top_k=3)
+    def test_empty_retriever_without_pipeline(self):
+        retriever = LlamaIndexHybridRetriever(top_k=3)
         docs = retriever.invoke("猎装车")
-        assert len(docs) == 1
-        assert docs[0].metadata["car_model"] == "极氪001"
-        assert docs[0].metadata["source"] == "llamaindex_vector_store"
+        assert docs == []
 
 
 class TestLangChainTools:
@@ -205,7 +183,18 @@ class TestLangChainTools:
         ServiceContainer.register_rag_service(_DummyRAG())
         try:
             tools = get_autovend_tools()
-            assert len(tools) == 12
+            assert len(tools) == 13
+
+            from src.agent.langchain_tools import estimate_trade_in_valuation_tool
+
+            trade_in_out = json.loads(
+                estimate_trade_in_valuation_tool.invoke(
+                    {"car_model": "Model Y", "vehicle_age_years": 2.0, "mileage_wan_km": 3.0}
+                )
+            )
+            assert trade_in_out["found"] is True
+            assert trade_in_out["one_year_residual_rate"] > 0
+            assert trade_in_out["three_year_residual_rate"] > 0
 
             search_out = json.loads(search_vehicles_tool.invoke({"query": "家用SUV", "brand": "理想"}))
             assert search_out["total_count"] == 1

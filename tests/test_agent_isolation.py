@@ -57,7 +57,7 @@ class TestAgentImportIsolation:
         )
 
     def test_agent_imports_only_allowed_packages(self):
-        """Agent files should only import from: src.agent, pydantic, llama_index, stdlib, typing."""
+        """Agent files should only import from: src.agent, pydantic, langchain/langgraph, stdlib, typing."""
         allowed_prefixes = (
             "src.agent",
             "src.core",
@@ -71,7 +71,6 @@ class TestAgentImportIsolation:
             "uuid",
             "hashlib",
             "pydantic",
-            "llama_index",
             "typing",
             "enum",
             "json",

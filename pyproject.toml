@@ -90,13 +90,8 @@ eval = [
     # `langchain_community.chat_models.vertexai`, which 0.4.x removed.
     "langchain-community<0.4",
 ]
-# Optional legacy ingestion / ChromaDB fallback dependencies (not required for runtime)
+# Optional legacy ChromaDB fallback dependency (not required for runtime)
 legacy = [
-    "llama-index-core>=0.11.0",
-    "llama-index-llms-openai-like>=0.2.0",
-    "llama-index-embeddings-huggingface>=0.3.0",
-    "llama-index-vector-stores-postgres>=0.2.0",
-    "llama-index-vector-stores-chroma>=0.2.0",
     "chromadb>=0.5.0",
 ]
 

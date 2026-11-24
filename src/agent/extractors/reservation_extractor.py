@@ -2,9 +2,7 @@
 Extract test drive reservation information from conversation text.
 """
 
-from typing import Optional
-
-from llama_index.core.llms import LLM
+from typing import Any, Optional
 
 from src.agent.extractors.base import extract_with_llm
 from src.agent.schemas import ReservationInfo
@@ -33,7 +31,7 @@ Return ONLY a valid JSON object with the extracted fields."""
 
 
 def extract_reservation(
-    llm: LLM,
+    llm: Any,
     conversation: str,
     current_reservation: Optional[ReservationInfo] = None,
 ) -> ReservationInfo:
