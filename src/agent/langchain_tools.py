@@ -20,6 +20,7 @@ from src.agent.evidence_ledger import VerificationEvidenceLedger
 from src.agent.reconciliation import reconcile_constraints
 from src.agent.schemas import SessionState
 from src.core.container import ServiceContainer
+from src.core.dealer_store import DealerStore, TestDriveStore
 from src.core.interfaces import RAGQueryRequest
 from src.core.truth_engine import TruthEngineFacade
 
@@ -566,18 +567,37 @@ def submit_test_drive_reservation_tool(
         )
         return enforce_tool_result_limit("submit_test_drive_reservation", out)
 
+    existing_active = [
+        b
+        for b in TestDriveStore.query_bookings(phone_number=phone_number)
+        if b.get("status") != "CANCELLED"
+        and b.get("car_model") == car_model
+        and b.get("reservation_date") == reservation_date
+        and b.get("reservation_time") == reservation_time
+        and b.get("reservation_location") == reservation_location
+    ]
+    res_id = (
+        existing_active[0]["reservation_id"]
+        if existing_active
+        else f"TD-{effective_key[:8].upper()}"
+    )
+    booking = TestDriveStore.upsert_booking(
+        reservation_id=res_id,
+        status="CONFIRMED",
+        car_model=car_model,
+        reservation_date=reservation_date,
+        reservation_time=reservation_time,
+        reservation_location=reservation_location,
+        test_driver=test_driver,
+        phone_number=phone_number,
+        idempotency_key=effective_key,
+    )
     out = json.dumps(
         {
             "submitted": True,
-            "status": "CONFIRMED",
-            "idempotency_key": effective_key,
-            "idempotent_replay": False,
-            "car_model": car_model,
-            "reservation_date": reservation_date,
-            "reservation_time": reservation_time,
-            "reservation_location": reservation_location,
-            "test_driver": test_driver,
-            "phone_number": phone_number,
+            "action": "create",
+            **booking,
+            "idempotent_replay": bool(existing_active),
         },
         ensure_ascii=False,
     )
@@ -725,39 +745,10 @@ def query_dealer_promotions_tool(
 ) -> str:
     """Query current dealership promotions, trade-in subsidies, and low-interest finance perks."""
     out = json.dumps(
-        {
-            "car_model": car_model or "全系热门车型",
-            "store_name": store_name or "AutoVend 旗舰体验中心",
-            "promotions": [
-                {"type": "置换补贴", "benefit": "旧车置换至高补贴1.5万元"},
-                {"type": "金融礼遇", "benefit": "指定车型享2年0息或3.5%低息方案"},
-                {"type": "充电/保养礼包", "benefit": "本月下订赠家用充电桩或3次基础保养"},
-            ],
-            "valid_until": "本月底前有效",
-        },
+        DealerStore.get_promotions(car_model=car_model, store_name=store_name),
         ensure_ascii=False,
     )
     return enforce_tool_result_limit("query_dealer_promotions", out)
-
-
-_DEALER_INFO_CATALOG: Dict[str, Dict[str, Any]] = {
-    "朝阳": {
-        "store_name": "AutoVend 朝阳旗舰4S店",
-        "address": "北京市朝阳区东四环北路88号汽车大道1号馆",
-        "parking": "院内专属地面及地下免费停车场，支持2小时免费充电",
-        "business_hours": "每日 09:00 - 20:30（周末及节假日正常营业）",
-        "showroom_models": ["小米SU7 Max", "特斯拉Model Y", "理想L6", "比亚迪海豹", "问界M7"],
-        "available_test_drive_slots": ["10:00", "11:30", "14:00", "15:30", "17:00", "18:30"],
-    },
-    "海淀": {
-        "store_name": "AutoVend 海淀中关村体验中心",
-        "address": "北京市海淀区北四环西路66号",
-        "parking": "大厦B2层专属客户停车位，凭试驾短信免费停3小时",
-        "business_hours": "每日 09:30 - 21:00",
-        "showroom_models": ["小米SU7", "特斯拉Model 3", "极氪001", "理想L6"],
-        "available_test_drive_slots": ["10:30", "13:30", "15:00", "16:30", "19:00"],
-    },
-}
 
 
 @tool("query_dealer_info")
@@ -767,32 +758,11 @@ def query_dealer_info_tool(
     date: Optional[str] = None,
 ) -> str:
     """Query dealership address, parking, business hours, showroom cars, and today's test-drive slots."""
-    selected = _DEALER_INFO_CATALOG["朝阳"]
-    if store_name:
-        for key, info in _DEALER_INFO_CATALOG.items():
-            if key in store_name or store_name in info["store_name"]:
-                selected = info
-                break
-    has_showroom_car = True
-    if car_model:
-        has_showroom_car = any(
-            car_model.lower() in m.lower() or m.lower() in car_model.lower()
-            for m in selected["showroom_models"]
-        )
     out = json.dumps(
-        {
-            **selected,
-            "query_date": date or "今日",
-            "requested_car_model": car_model,
-            "showroom_car_available": has_showroom_car,
-        },
+        DealerStore.get_dealer_info(store_name=store_name, car_model=car_model, date=date),
         ensure_ascii=False,
     )
     return enforce_tool_result_limit("query_dealer_info", out)
-
-
-_TEST_DRIVE_BOOKINGS: Dict[str, Dict[str, Any]] = {}
-_TEST_DRIVE_LOCK = threading.RLock()
 
 
 class ManageTestDriveInput(BaseModel):
@@ -823,13 +793,10 @@ def manage_test_drive_tool(
 ) -> str:
     """Query, create, reschedule, or cancel a 4S test-drive booking with validation and idempotency."""
     if action == "query":
-        with _TEST_DRIVE_LOCK:
-            matches = [
-                b
-                for b in _TEST_DRIVE_BOOKINGS.values()
-                if (not reservation_id or b["reservation_id"] == reservation_id)
-                and (not phone_number or b["phone_number"] == phone_number)
-            ]
+        matches = TestDriveStore.query_bookings(
+            reservation_id=reservation_id,
+            phone_number=phone_number,
+        )
         return enforce_tool_result_limit(
             "manage_test_drive",
             json.dumps({"action": "query", "bookings": matches, "count": len(matches)}, ensure_ascii=False),
@@ -849,22 +816,30 @@ def manage_test_drive_tool(
             return cached
 
     if action == "cancel":
-        with _TEST_DRIVE_LOCK:
-            target = None
-            if reservation_id and reservation_id in _TEST_DRIVE_BOOKINGS:
-                target = _TEST_DRIVE_BOOKINGS[reservation_id]
-            elif phone_number:
-                for b in _TEST_DRIVE_BOOKINGS.values():
-                    if b.get("phone_number") == phone_number and b.get("status") != "CANCELLED":
-                        target = b
-                        break
-            if target is not None:
-                target["status"] = "CANCELLED"
+        target = TestDriveStore.cancel_booking(
+            reservation_id=reservation_id,
+            phone_number=phone_number,
+        )
+        if target is None:
+            return enforce_tool_result_limit(
+                "manage_test_drive",
+                json.dumps(
+                    {
+                        "submitted": False,
+                        "action": "cancel",
+                        "status": "NOT_FOUND",
+                        "error_code": "BOOKING_NOT_FOUND",
+                        "error": "未找到对应的有效试驾预约记录",
+                        "reservation_id": reservation_id or "",
+                    },
+                    ensure_ascii=False,
+                ),
+            )
         res_payload = {
             "submitted": True,
             "action": "cancel",
             "status": "CANCELLED",
-            "reservation_id": reservation_id or (target["reservation_id"] if target else ""),
+            "reservation_id": target["reservation_id"],
             "idempotency_key": effective_key,
             "idempotent_replay": False,
         }
@@ -872,11 +847,29 @@ def manage_test_drive_tool(
         IdempotencyStore.set(effective_key, out)
         return enforce_tool_result_limit("manage_test_drive", out)
 
+    # For reschedule, preserve existing fields when omitted (prefer active non-cancelled booking)
+    existing_booking: Optional[Dict[str, Any]] = None
+    if action == "reschedule" and (reservation_id or phone_number):
+        found = TestDriveStore.query_bookings(
+            reservation_id=reservation_id,
+            phone_number=phone_number,
+        )
+        if found:
+            active_found = [b for b in found if b.get("status") != "CANCELLED"]
+            existing_booking = active_found[0] if active_found else found[0]
+
+    eff_car = car_model or (existing_booking.get("car_model") if existing_booking else None)
+    eff_date = reservation_date or (existing_booking.get("reservation_date") if existing_booking else None)
+    eff_time = reservation_time or (existing_booking.get("reservation_time") if existing_booking else None)
+    eff_loc = reservation_location or (existing_booking.get("reservation_location") if existing_booking else None)
+    eff_driver = test_driver or (existing_booking.get("test_driver") if existing_booking else None)
+    eff_phone = phone_number or (existing_booking.get("phone_number") if existing_booking else None)
+
     # create or reschedule requires valid phone, store, and date/time
     ledger = VerificationEvidenceLedger()
-    phone_ok = ledger.verify_phone_number(phone_number or "")
-    store_ok = ledger.verify_4s_store(reservation_location or "")
-    dt_ok = ledger.verify_date_time(reservation_date or "", reservation_time or "")
+    phone_ok = ledger.verify_phone_number(eff_phone or "")
+    store_ok = ledger.verify_4s_store(eff_loc or "")
+    dt_ok = ledger.verify_date_time(eff_date or "", eff_time or "")
     can_confirm, missing = ledger.can_confirm_reservation()
     if not (phone_ok and store_ok and dt_ok and can_confirm):
         return enforce_tool_result_limit(
@@ -894,23 +887,41 @@ def manage_test_drive_tool(
             ),
         )
 
-    res_id = reservation_id or f"TD-{effective_key[:8].upper()}"
+    existing_dup: List[Dict[str, Any]] = []
+    if action == "create" and not reservation_id and eff_phone:
+        existing_dup = [
+            b
+            for b in TestDriveStore.query_bookings(phone_number=eff_phone)
+            if b.get("status") != "CANCELLED"
+            and b.get("car_model") == (eff_car or "待定车型")
+            and b.get("reservation_date") == (eff_date or "")
+            and b.get("reservation_time") == (eff_time or "")
+            and b.get("reservation_location") == (eff_loc or "")
+        ]
+
+    res_id = (
+        reservation_id
+        or (existing_booking["reservation_id"] if existing_booking else None)
+        or (existing_dup[0]["reservation_id"] if existing_dup else None)
+        or f"TD-{effective_key[:8].upper()}"
+    )
+    saved = TestDriveStore.upsert_booking(
+        reservation_id=res_id,
+        status="RESCHEDULED" if action == "reschedule" else "CONFIRMED",
+        car_model=eff_car or "待定车型",
+        reservation_date=eff_date or "",
+        reservation_time=eff_time or "",
+        reservation_location=eff_loc or "",
+        test_driver=eff_driver or "贵宾",
+        phone_number=eff_phone or "",
+        idempotency_key=effective_key,
+    )
     booking = {
         "submitted": True,
         "action": action,
-        "status": "RESCHEDULED" if action == "reschedule" else "CONFIRMED",
-        "reservation_id": res_id,
-        "idempotency_key": effective_key,
-        "idempotent_replay": False,
-        "car_model": car_model or "待定车型",
-        "reservation_date": reservation_date,
-        "reservation_time": reservation_time,
-        "reservation_location": reservation_location,
-        "test_driver": test_driver or "贵宾",
-        "phone_number": phone_number,
+        **saved,
+        "idempotent_replay": bool(existing_dup),
     }
-    with _TEST_DRIVE_LOCK:
-        _TEST_DRIVE_BOOKINGS[res_id] = booking
     out = json.dumps(booking, ensure_ascii=False)
     IdempotencyStore.set(effective_key, out)
     return enforce_tool_result_limit("manage_test_drive", out)

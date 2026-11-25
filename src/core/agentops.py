@@ -36,9 +36,22 @@ def _sanitize_dict(data: Any) -> Any:
     return data
 
 
+_DEFAULT_LOCAL_BUNDLE_VERSION = "v1.0.0-local"
+
+
+def reset_artifact_bundle_cache() -> None:
+    """Clear the in-memory artifact bundle version TTL cache (for tests)."""
+    with artifact_bundle_registry._lock:
+        artifact_bundle_registry._current = None
+        artifact_bundle_registry._cached_at = 0.0
+
+
 def get_current_artifact_bundle_version() -> str:
-    """Return the active 4-in-1 artifact bundle version string."""
-    return artifact_bundle_registry.get_current().bundle_version
+    """Return the active 4-in-1 artifact bundle version string (TTL-cached in registry, fail-open)."""
+    try:
+        return artifact_bundle_registry.get_current().bundle_version
+    except Exception:
+        return _DEFAULT_LOCAL_BUNDLE_VERSION
 
 
 def extract_real_top1_score(matched_cars: Optional[List[Dict[str, Any]]]) -> float:
@@ -201,12 +214,21 @@ def enqueue_agent_dlq(
         "stage": stage,
         "context_snapshot": _sanitize_dict(context_snapshot or {}),
     }
-    dlq_replay_engine.enqueue_failed_task(
-        task_type=task_type,
-        payload=payload,
-        error_message=_sanitize_text(error_message),
-        error_category=error_category,
-    )
+    try:
+        dlq_replay_engine.enqueue_failed_task(
+            task_type=task_type,
+            payload=payload,
+            error_message=_sanitize_text(error_message),
+            error_category=error_category,
+        )
+    except Exception as exc:
+        security_audit_logger.log_event(
+            event_type="AGENT_DLQ_FALLBACK",
+            severity="WARNING",
+            session_id=session_id,
+            trace_id=trace_id,
+            details={"task_type": task_type, "dlq_error": str(exc)},
+        )
 
 
 def record_compliance_audit(

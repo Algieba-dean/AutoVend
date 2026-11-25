@@ -114,6 +114,7 @@ class LangGraphSalesAgent:
         self.use_unified_extraction = use_unified_extraction
         self.budget_config = budget_config or TurnBudgetConfig()
         self.voice_mode = voice_mode
+        self._artifact_bundle_version: str = get_current_artifact_bundle_version()
         self._sync_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="lg_sync_gen")
 
         self.graph = self._build_graph()
@@ -298,7 +299,7 @@ class LangGraphSalesAgent:
         trace_id = (
             session_state.trace_id if session_state and session_state.trace_id else ""
         ) or uuid.uuid4().hex[:16]
-        bundle_ver = get_current_artifact_bundle_version()
+        bundle_ver = self._artifact_bundle_version or get_current_artifact_bundle_version()
         cb = AutoVendOtelCallbackHandler(
             session_id=session_id,
             trace_id=trace_id,
@@ -482,7 +483,14 @@ class LangGraphSalesAgent:
         messages = list(values.get("messages") or [])
         last_ai_idx = None
         for idx in range(len(messages) - 1, -1, -1):
-            if isinstance(messages[idx], AIMessage):
+            msg = messages[idx]
+            if isinstance(msg, AIMessage):
+                has_tool_calls = bool(getattr(msg, "tool_calls", None))
+                text_content = (
+                    msg.content if isinstance(msg.content, str) else str(msg.content or "")
+                ).strip()
+                if has_tool_calls and not text_content:
+                    continue
                 last_ai_idx = idx
                 break
 
@@ -507,10 +515,32 @@ class LangGraphSalesAgent:
             id=getattr(last_ai, "id", None),
             additional_kwargs=updated_kwargs,
         )
+        update_payload: Dict[str, Any] = {"messages": [updated_ai], "response_text": new_content}
+        sess = values.get("session_state")
+        interrupted_during_confirmation = False
+        if interrupted and isinstance(sess, SessionState) and sess.pending_action:
+            from src.agent.events import SlotUpdated
+
+            sess_copy = sess.model_copy(deep=True)
+            pa_copy = dict(sess_copy.pending_action or {})
+            pa_copy["interrupted_during_confirmation"] = True
+            sess_copy.pending_action = pa_copy
+            interrupted_during_confirmation = True
+            eff_turn = int(turn_id if turn_id is not None else getattr(sess_copy, "turn_count", 0))
+            update_payload["session_state"] = sess_copy
+            update_payload["events"] = [
+                SlotUpdated(
+                    turn_id=eff_turn,
+                    source="barge_in_commit",
+                    field_path="pending_action",
+                    value=pa_copy,
+                )
+            ]
+
         try:
             self.graph.update_state(
                 {"configurable": {"thread_id": session_id}},
-                {"messages": [updated_ai], "response_text": new_content},
+                update_payload,
             )
             return {
                 "updated": True,
@@ -518,6 +548,7 @@ class LangGraphSalesAgent:
                 "turn_id": turn_id,
                 "content": new_content,
                 "interrupted": interrupted,
+                "interrupted_during_confirmation": interrupted_during_confirmation,
             }
         except Exception as exc:
             logger.warning(f"[{session_id}] commit_spoken_text update_state failed: {exc}")

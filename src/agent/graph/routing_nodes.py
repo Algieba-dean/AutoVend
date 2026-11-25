@@ -11,10 +11,14 @@ from langchain_core.messages import HumanMessage
 from langgraph.types import interrupt
 
 from src.agent.events import (
+    _DIFF_SECTIONS,
     AnyDialogueEvent,
     SessionInitialized,
     SlotUpdated,
     SystemNoteAdded,
+    _get_nested_field,
+    _set_nested_field,
+    _values_differ,
     diff_to_events,
     project_state,
 )
@@ -58,6 +62,62 @@ from src.llm.cost_ledger import AgentNodeRole, node_cost_context
 logger = logging.getLogger(__name__)
 
 
+def _reconcile_caller_session_with_sidecars(
+    projected_from_events: SessionState,
+    caller_sess: SessionState,
+    existing_events: List[AnyDialogueEvent],
+) -> SessionState:
+    """
+    Preserve async sidecar updates (`async_slot_extraction`, `async_hallucination_audit`,
+    `barge_in_commit`) when the caller passes back a `SessionState` captured before those
+    background sidecars completed.
+    """
+    reconciled = caller_sess.model_copy(deep=True)
+    caller_turn = int(getattr(caller_sess, "turn_count", 0) or 0)
+    sidecar_sources = {"async_slot_extraction", "async_hallucination_audit", "barge_in_commit"}
+
+    for ev in existing_events:
+        src = getattr(ev, "source", "")
+        ev_turn = int(getattr(ev, "turn_id", 0) or 0)
+        if src not in sidecar_sources or ev_turn < caller_turn:
+            continue
+        etype = getattr(ev, "event_type", "")
+        if etype == "slot_updated":
+            fp = getattr(ev, "field_path", "")
+            if not fp:
+                continue
+            proj_val = _get_nested_field(projected_from_events, fp)
+            caller_val = _get_nested_field(reconciled, fp)
+            old_val = getattr(ev, "old_value", None)
+            if fp == "pending_correction":
+                if caller_val is None and proj_val is not None:
+                    reconciled.pending_correction = proj_val
+            elif fp == "pending_action":
+                if (
+                    isinstance(proj_val, dict)
+                    and proj_val.get("interrupted_during_confirmation")
+                    and (caller_val is None or not caller_val.get("interrupted_during_confirmation"))
+                ):
+                    reconciled.pending_action = dict(proj_val)
+            else:
+                caller_empty_or_stale = (
+                    caller_val is None
+                    or caller_val == ""
+                    or not _values_differ(caller_val, old_val)
+                )
+                if caller_empty_or_stale and proj_val is not None and proj_val != "":
+                    _set_nested_field(reconciled, fp, proj_val)
+        elif etype == "constraint_negated":
+            p_neg = projected_from_events.preferences.negative_exclusions
+            r_neg = reconciled.preferences.negative_exclusions
+            for attr in ("powertrains", "brands", "models", "categories", "features"):
+                r_list = getattr(r_neg, attr, [])
+                for item in getattr(p_neg, attr, []) or []:
+                    if item and item not in r_list:
+                        r_list.append(item)
+    return reconciled
+
+
 def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
     session_id = state.get("session_id") or "default"
     user_message = state.get("user_message", "")
@@ -69,15 +129,18 @@ def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
         sess = project_state(existing_events, base_state=base_sess)
         raw_sess = state.get("session_state")
         if raw_sess is not None:
+            reconciled_caller = _reconcile_caller_session_with_sidecars(
+                sess, raw_sess, existing_events
+            )
             caller_events = diff_to_events(
                 sess,
-                raw_sess,
-                turn_id=int(getattr(raw_sess, "turn_count", 0)),
+                reconciled_caller,
+                turn_id=int(getattr(reconciled_caller, "turn_count", 0)),
                 source="caller_state",
             )
             if caller_events:
                 new_events.extend(caller_events)
-                sess = raw_sess.model_copy(deep=True)
+                sess = reconciled_caller.model_copy(deep=True)
     else:
         raw_sess = state.get("session_state")
         if raw_sess is None:
@@ -252,7 +315,31 @@ def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
         skill_needs_retrieval = skill_route.skill.needs_retrieval
 
         if projected.pending_action:
-            if skill_route.is_affirm:
+            if projected.pending_action.get("interrupted_during_confirmation"):
+                if skill_route.is_reject:
+                    before_pa = projected.model_copy(deep=True)
+                    projected.pending_action = None
+                    projected.system_notes.append("客户取消了刚才的待确认操作，请简短口语询问如何调整。")
+                    pa_events = diff_to_events(
+                        before_pa, projected, turn_id=new_turn, source="voice_reject_pending"
+                    )
+                    new_events.extend(pa_events)
+                    projected = project_state([*existing_events, *new_events], base_state=base_sess)
+                else:
+                    # Spoken confirmation was interrupted before finishing; do NOT blindly execute on "嗯/好的".
+                    before_pa = projected.model_copy(deep=True)
+                    pa_copy = dict(projected.pending_action)
+                    pa_copy.pop("interrupted_during_confirmation", None)
+                    projected.pending_action = pa_copy
+                    projected.system_notes.append(
+                        "上一轮播报确认信息时被客户打断，客户可能未听清完整内容。请先简短口语复述待确认的关键信息并再次请客户确认，切勿直接执行。"
+                    )
+                    pa_events = diff_to_events(
+                        before_pa, projected, turn_id=new_turn, source="voice_reconfirm_after_bargein"
+                    )
+                    new_events.extend(pa_events)
+                    projected = project_state([*existing_events, *new_events], base_state=base_sess)
+            elif skill_route.is_affirm:
                 _ok, spoken_reply, _payload = execute_pending_action(projected.pending_action)
                 before_pa = projected.model_copy(deep=True)
                 projected.pending_action = None
@@ -295,9 +382,31 @@ def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
                 new_events.extend(ent_events)
                 projected = project_state([*existing_events, *new_events], base_state=base_sess)
 
+        # Fast (<20ms) read-only prefetch for dealer_visit / pricing_finance
+        if direct_response_text is None and any(
+            s in ("dealer_visit", "pricing_finance") for s in (skill_route.matched_skills or ())
+        ):
+            from src.agent.graph.retrieval_nodes import prefetch_dealer_and_promo_context
+
+            prefetch_events = prefetch_dealer_and_promo_context(
+                skill_route.matched_skills,
+                skill_route.entities,
+                projected,
+                turn_id=new_turn,
+            )
+            if prefetch_events:
+                new_events.extend(prefetch_events)
+                projected = project_state([*existing_events, *new_events], base_state=base_sess)
+
         # Schedule async background slot extraction (non-blocking cold path)
         if not state.get("skip_extraction") and direct_response_text is None:
-            _schedule_async_slot_extraction(agent, projected.session_id, conversation_text, projected)
+            _schedule_async_slot_extraction(
+                agent,
+                projected.session_id,
+                conversation_text,
+                projected,
+                origin_turn_id=new_turn,
+            )
             async_extraction_scheduled = True
 
     return {
@@ -340,16 +449,36 @@ def node_guard_and_route(agent: Any, state: AgentGraphState) -> Dict[str, Any]:
     }
 
 
+def _retracted_field_paths(field_name: str) -> List[str]:
+    f = (field_name or "").lower().strip()
+    if f in ("budget", "price", "budget_min_wan", "budget_max_wan"):
+        return ["needs.explicit.budget_min", "needs.explicit.budget_max", "needs.explicit.price"]
+    if f in ("powertrain", "preferred_powertrain", "powertrain_type"):
+        return ["needs.explicit.powertrain_type"]
+    if f in ("category", "suv", "sedan", "mpv", "vehicle_category", "vehicle_category_bottom"):
+        return ["needs.explicit.vehicle_category_bottom"]
+    if f in ("brand", "brand_preference"):
+        return ["needs.explicit.brand"]
+    if f in ("reservation", "reservation_date", "reservation_time", "store"):
+        return [f"reservation.{fn}" for fn in _DIFF_SECTIONS[3][1]]
+    return []
+
+
 def _schedule_async_slot_extraction(
     agent: Any,
     session_id: str,
     conversation_text: str,
     sess_snapshot: SessionState,
+    origin_turn_id: int | None = None,
 ) -> None:
     """Fire-and-forget background slot extraction for Voice-First cold path."""
     ext_model = getattr(agent, "extraction_chat_model", None)
     if ext_model is None or "Mock" in type(ext_model).__name__:
         return
+
+    eff_origin_turn = int(
+        origin_turn_id if origin_turn_id is not None else getattr(sess_snapshot, "turn_count", 0)
+    )
 
     def _bg_extract() -> None:
         try:
@@ -360,19 +489,70 @@ def _schedule_async_slot_extraction(
             )
             if hasattr(agent, "graph") and hasattr(agent.graph, "update_state"):
                 cfg = {"configurable": {"thread_id": session_id}}
-                merged = updated_sess
+                base_for_merge = sess_snapshot.model_copy(deep=True)
+                newer_modified_paths: set[str] = set()
+                retracted_in_newer_turn = False
                 try:
                     snap = agent.graph.get_state(cfg)
-                    latest = (getattr(snap, "values", None) or {}).get("session_state")
+                    vals = getattr(snap, "values", None) or {}
+                    latest = vals.get("session_state")
+                    latest_events = list(vals.get("events") or [])
                     if isinstance(latest, SessionState):
-                        merged = latest.model_copy(deep=True)
-                        merged.profile = updated_sess.profile
-                        merged.needs = updated_sess.needs
-                        merged.reservation = updated_sess.reservation
-                        merged.preferences = updated_sess.preferences
+                        base_for_merge = latest.model_copy(deep=True)
+                    for ev in latest_events:
+                        etype = getattr(ev, "event_type", "")
+                        if etype == "turn_reverted" and int(getattr(ev, "target_turn_id", 0) or 0) <= eff_origin_turn:
+                            return
+                        ev_turn = int(getattr(ev, "turn_id", 0) or 0)
+                        if ev_turn > eff_origin_turn:
+                            if etype == "slot_updated":
+                                fp = getattr(ev, "field_path", "")
+                                if fp:
+                                    newer_modified_paths.add(fp)
+                            elif etype == "constraint_negated" and getattr(ev, "category", "") == "retract_field":
+                                retracted_in_newer_turn = True
+                                for rp in _retracted_field_paths(str(getattr(ev, "value", "") or "")):
+                                    newer_modified_paths.add(rp)
                 except Exception:
                     pass
-                agent.graph.update_state(cfg, {"session_state": merged})
+
+                merged = base_for_merge.model_copy(deep=True)
+                for section, fields in _DIFF_SECTIONS:
+                    for fname in fields:
+                        fpath = f"{section}.{fname}"
+                        if fpath in newer_modified_paths:
+                            continue
+                        snap_val = _get_nested_field(sess_snapshot, fpath)
+                        ext_val = _get_nested_field(updated_sess, fpath)
+                        cur_val = _get_nested_field(merged, fpath)
+                        # Only write if extracted a non-empty change in origin_turn_id AND cur_val wasn't mutated since snapshot
+                        ext_non_empty = ext_val is not None and ext_val != ""
+                        if (
+                            ext_non_empty
+                            and _values_differ(snap_val, ext_val)
+                            and not _values_differ(snap_val, cur_val)
+                        ):
+                            _set_nested_field(merged, fpath, ext_val)
+
+                if not retracted_in_newer_turn:
+                    snap_neg = sess_snapshot.preferences.negative_exclusions
+                    ext_neg = updated_sess.preferences.negative_exclusions
+                    cur_neg = merged.preferences.negative_exclusions
+                    for attr in ("powertrains", "brands", "models", "categories", "features"):
+                        snap_set = set(getattr(snap_neg, attr, []) or [])
+                        cur_list = getattr(cur_neg, attr, [])
+                        for item in getattr(ext_neg, attr, []) or []:
+                            if item and item not in snap_set and item not in cur_list:
+                                cur_list.append(item)
+
+                bg_events = diff_to_events(
+                    base_for_merge,
+                    merged,
+                    turn_id=eff_origin_turn,
+                    source="async_slot_extraction",
+                )
+                if bg_events:
+                    agent.graph.update_state(cfg, {"session_state": merged, "events": bg_events})
         except Exception as exc:
             logger.debug(f"[{session_id}] Async background slot extraction failed: {exc}")
 

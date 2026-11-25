@@ -6,9 +6,10 @@ Goal-Oriented Voice-First Skill Router, Lightweight Entity Matcher,
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from src.agent.schemas import SessionState
+from src.core.dealer_store import DealerStore
 
 
 @dataclass(frozen=True)
@@ -115,7 +116,7 @@ VOICE_EXPRESSION_PROTOCOL = (
 
 _AFFIRM_RE = re.compile(
     r"^(好|好的|好啊|好嘞|行|行吧|可以|可以的|没问题|对|对的|是的|没错|确认|嗯|OK|ok|那就这样|就这么定了|帮我提交|提交吧|请帮我提交)"
-    r"(?:[，,、\s]*(?:确认|提交|提交吧|帮我提交|就这么定了|没问题|可以|好的))?[！!。,.，~？?]*$"
+    r"(?:[，,、\s]*(?:确认提交|确认|提交|提交吧|帮我提交|就这么定了|没问题|可以|好的))?[！!。,.，~？?]*$"
 )
 _REJECT_RE = re.compile(
     r"^(不|不对|不是|不行|不用|不要|算了|取消|改一下|换个|重新)[！!。,.，~？?]*$"
@@ -158,6 +159,7 @@ class SkillRouteResult:
     is_affirm: bool = False
     is_reject: bool = False
     semantic_intent: Optional[str] = None
+    matched_skills: Tuple[str, ...] = ()
 
 
 def extract_lightweight_entities(text: str) -> Dict[str, Any]:
@@ -195,12 +197,72 @@ def extract_lightweight_entities(text: str) -> Dict[str, Any]:
     if m_phone:
         entities["phone_number"] = m_phone.group(1)
 
-    for store in ("朝阳", "海淀"):
-        if store in text:
+    try:
+        store_keywords = DealerStore.get_store_keywords()
+    except Exception:
+        store_keywords = ["朝阳", "海淀"]
+    for store in sorted(store_keywords, key=len, reverse=True):
+        if store and store in text:
             entities["store_name"] = store
             break
 
     return entities
+
+
+def _prioritize_skill_tools(skill: VoiceSkill, text: str) -> Tuple[str, ...]:
+    """Reorder a skill's candidate tools by utterance sub-intent so top tools fit <=4 budget."""
+    tools = list(skill.tool_names)
+    if len(tools) <= 1 or not text:
+        return skill.tool_names
+
+    preferred: List[str] = []
+    if skill.name == "pricing_finance":
+        if re.search(r"置换|估价|保值率|二手车", text):
+            preferred.append("estimate_trade_in_valuation")
+        if re.search(r"首付|月供|分期|贷款|利率", text):
+            preferred.append("calculate_financing_plan")
+        if re.search(r"优惠|补贴|折扣", text):
+            preferred.append("query_dealer_promotions")
+        if re.search(r"落地价|全款|多少钱", text):
+            preferred.append("calculate_drive_away_price")
+    elif skill.name == "vehicle_discovery":
+        if re.search(r"对比|区别|哪个好", text):
+            preferred.append("compare_two_vehicles")
+
+    ordered = [t for t in preferred if t in tools]
+    for t in tools:
+        if t not in ordered:
+            ordered.append(t)
+    return tuple(ordered)
+
+
+def _merge_matched_skills(matched: List[VoiceSkill], text: str = "") -> VoiceSkill:
+    """Merge multiple matched skills into a single VoiceSkill within the <=4 tool budget."""
+    if len(matched) == 1:
+        return matched[0]
+    primary = matched[0]
+    per_skill_tools = [_prioritize_skill_tools(s, text) for s in matched]
+    merged_tools: List[str] = []
+    max_len = max(len(tlist) for tlist in per_skill_tools)
+    for idx in range(max_len):
+        for tlist in per_skill_tools:
+            if idx < len(tlist):
+                tname = tlist[idx]
+                if tname not in merged_tools:
+                    merged_tools.append(tname)
+                    if len(merged_tools) >= 4:
+                        break
+        if len(merged_tools) >= 4:
+            break
+
+    extra_snippets = " ".join(s.prompt_snippet for s in matched[1:] if s.prompt_snippet)
+    merged_prompt = f"{primary.prompt_snippet} {extra_snippets}".strip()
+    return VoiceSkill(
+        name=primary.name,
+        prompt_snippet=merged_prompt,
+        tool_names=tuple(merged_tools),
+        needs_retrieval=any(s.needs_retrieval for s in matched),
+    )
 
 
 def route_voice_skill(
@@ -208,7 +270,7 @@ def route_voice_skill(
     semantic_decision: Optional[Any] = None,
     session_state: Optional[SessionState] = None,
 ) -> SkillRouteResult:
-    """Route user utterance to a focused VoiceSkill in microseconds (<1ms)."""
+    """Route user utterance to one or more focused VoiceSkills in microseconds (<1ms)."""
     text = (user_message or "").strip()
     entities = extract_lightweight_entities(text)
     sem_intent = (
@@ -220,26 +282,45 @@ def route_voice_skill(
     is_affirm = sem_intent == "affirm" or bool(_AFFIRM_RE.match(text))
     is_reject = sem_intent == "reject" or bool(_REJECT_RE.match(text))
 
+    matched_skills: List[VoiceSkill] = []
     if _HANDOFF_RE.search(text):
-        skill = VOICE_SKILLS["advisor_handoff"]
-    elif _TEST_DRIVE_RE.search(text):
-        skill = VOICE_SKILLS["test_drive_booking"]
-    elif _DEALER_INFO_RE.search(text):
-        skill = VOICE_SKILLS["dealer_visit"]
-    elif _PRICING_RE.search(text):
-        skill = VOICE_SKILLS["pricing_finance"]
-    elif _DISCOVERY_RE.search(text) or entities.get("brands") or entities.get("budget_max") or sem_intent in (
-        "budget",
-        "powertrain",
-        "usage",
-        "request_detail",
-        "update_constraint",
+        matched_skills.append(VOICE_SKILLS["advisor_handoff"])
+    if _TEST_DRIVE_RE.search(text):
+        matched_skills.append(VOICE_SKILLS["test_drive_booking"])
+    if _DEALER_INFO_RE.search(text):
+        matched_skills.append(VOICE_SKILLS["dealer_visit"])
+    if _PRICING_RE.search(text):
+        matched_skills.append(VOICE_SKILLS["pricing_finance"])
+    if (
+        _DISCOVERY_RE.search(text)
+        or entities.get("brands")
+        or entities.get("budget_max")
+        or sem_intent
+        in (
+            "budget",
+            "powertrain",
+            "usage",
+            "request_detail",
+            "update_constraint",
+        )
     ):
-        skill = VOICE_SKILLS["vehicle_discovery"]
-    elif session_state is not None and session_state.pending_action and (is_affirm or is_reject):
-        skill = VOICE_SKILLS["test_drive_booking"]
-    else:
-        skill = VOICE_SKILLS["general_chat"]
+        # Avoid adding vehicle_discovery if only a brand was mentioned alongside pricing/test-drive
+        # unless discovery keywords/budget/sem_intent also matched, or nothing else matched.
+        if (
+            _DISCOVERY_RE.search(text)
+            or entities.get("budget_max")
+            or sem_intent in ("budget", "powertrain", "usage", "request_detail", "update_constraint")
+            or not matched_skills
+        ):
+            matched_skills.append(VOICE_SKILLS["vehicle_discovery"])
+
+    if not matched_skills:
+        if session_state is not None and session_state.pending_action and (is_affirm or is_reject):
+            matched_skills.append(VOICE_SKILLS["test_drive_booking"])
+        else:
+            matched_skills.append(VOICE_SKILLS["general_chat"])
+
+    skill = _merge_matched_skills(matched_skills, text=text)
 
     return SkillRouteResult(
         skill=skill,
@@ -247,6 +328,7 @@ def route_voice_skill(
         is_affirm=is_affirm,
         is_reject=is_reject,
         semantic_intent=sem_intent,
+        matched_skills=tuple(s.name for s in matched_skills),
     )
 
 

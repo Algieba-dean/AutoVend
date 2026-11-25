@@ -426,9 +426,18 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
     trace = [*list(state.get("execution_trace") or []), "tools"]
     step = int(state.get("step_count", 0)) + 1
 
+    stage_events: List[AnyDialogueEvent] = []
     if staged_pending_action is not None and sess is not None:
         sess = sess.model_copy(deep=True)
         sess.pending_action = staged_pending_action
+        stage_events.append(
+            SlotUpdated(
+                turn_id=int(getattr(sess, "turn_count", 0)),
+                source="stage_pending_action",
+                field_path="pending_action",
+                value=dict(staged_pending_action),
+            )
+        )
 
     if (blocked_msgs or staged_msgs) and not allowed_calls:
         ret: Dict[str, Any] = {
@@ -438,6 +447,7 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
         }
         if sess is not None and staged_pending_action is not None:
             ret["session_state"] = sess
+            ret["events"] = stage_events
         return ret
 
     call_args_by_id: Dict[str, Any] = {}
@@ -496,6 +506,7 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
     audit_tools = {
         "calculate_drive_away_price",
         "submit_test_drive_reservation",
+        "manage_test_drive",
         "validate_test_drive_slot",
     }
     external_text_tools = {"search_vehicles", "get_vehicle_detail"}
@@ -560,6 +571,7 @@ def node_tools_with_contract(agent: Any, state: AgentGraphState) -> Dict[str, An
     }
     if sess is not None and staged_pending_action is not None:
         final_ret["session_state"] = sess
+        final_ret["events"] = stage_events
     return final_ret
 
 
@@ -586,7 +598,13 @@ def node_audit_hallucination(agent: Any, state: AgentGraphState) -> Dict[str, An
 
     if state.get("voice_mode"):
         # Voice-First: sync compliance guard already ran above; offload heavy hallucination audit to async
-        _schedule_async_hallucination_audit(agent, sess, reply, anchors)
+        _schedule_async_hallucination_audit(
+            agent,
+            sess,
+            reply,
+            anchors,
+            origin_turn_id=int(getattr(sess, "turn_count", 0)),
+        )
         return {
             "audit_passed": True,
             "response_text": reply,
@@ -680,9 +698,13 @@ def _schedule_async_hallucination_audit(
     sess: SessionState,
     reply: str,
     anchors: List[Dict[str, Any]],
+    origin_turn_id: int | None = None,
 ) -> None:
     """Run hallucination audit asynchronously after voice emission; write `pending_correction` on mismatch."""
     auditor_llm = getattr(agent, "auditor_chat_model", None)
+    eff_origin_turn = int(
+        origin_turn_id if origin_turn_id is not None else getattr(sess, "turn_count", 0)
+    )
 
     def _bg_audit() -> None:
         try:
@@ -699,13 +721,35 @@ def _schedule_async_hallucination_audit(
                     updated = sess.model_copy(deep=True)
                     try:
                         snap = agent.graph.get_state(cfg)
-                        latest = (getattr(snap, "values", None) or {}).get("session_state")
+                        vals = getattr(snap, "values", None) or {}
+                        latest = vals.get("session_state")
+                        latest_events = list(vals.get("events") or [])
                         if isinstance(latest, SessionState):
+                            latest_turn = int(getattr(latest, "turn_count", eff_origin_turn) or eff_origin_turn)
+                            if latest_turn > eff_origin_turn:
+                                return
                             updated = latest.model_copy(deep=True)
+                        if any(
+                            int(getattr(ev, "turn_id", 0) or 0) > eff_origin_turn
+                            or (
+                                getattr(ev, "event_type", "") == "turn_reverted"
+                                and int(getattr(ev, "target_turn_id", 0) or 0) <= eff_origin_turn
+                            )
+                            for ev in latest_events
+                        ):
+                            return
                     except Exception:
                         pass
+                    old_corr = updated.pending_correction
                     updated.pending_correction = correction
-                    agent.graph.update_state(cfg, {"session_state": updated})
+                    corr_event = SlotUpdated(
+                        turn_id=eff_origin_turn,
+                        source="async_hallucination_audit",
+                        field_path="pending_correction",
+                        value=correction,
+                        old_value=old_corr,
+                    )
+                    agent.graph.update_state(cfg, {"session_state": updated, "events": [corr_event]})
         except Exception as exc:
             logger.debug(f"[{sess.session_id}] Async hallucination audit failed: {exc}")
 

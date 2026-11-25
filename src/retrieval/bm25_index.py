@@ -235,16 +235,24 @@ class PostgresFullTextIndex:
 
     def _ensure_pool(self) -> Any:
         if self._pool is None:
+            import psycopg
             from psycopg_pool import ConnectionPool
 
-            self._pool = ConnectionPool(
+            with psycopg.connect(self.dsn, connect_timeout=1):
+                pass
+            pool = ConnectionPool(
                 conninfo=self.dsn,
                 min_size=1,
                 max_size=5,
-                kwargs={"connect_timeout": 3, "autocommit": True},
+                kwargs={"connect_timeout": 1, "autocommit": True},
                 open=False,
             )
-            self._pool.open(wait=True, timeout=5.0)
+            try:
+                pool.open(wait=True, timeout=1.2)
+            except Exception:
+                pool.close()
+                raise
+            self._pool = pool
         return self._pool
 
     def _ensure_schema(self) -> None:

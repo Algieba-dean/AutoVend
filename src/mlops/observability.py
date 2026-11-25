@@ -167,9 +167,13 @@ class OtelSpan:
         self.status_message = status_message
         if self._otel_token is not None:
             try:
-                from opentelemetry import context as otel_context
+                var = getattr(self._otel_token, "var", None)
+                if var is not None:
+                    var.reset(self._otel_token)
+                else:
+                    from opentelemetry import context as otel_context
 
-                otel_context.detach(self._otel_token)
+                    otel_context.detach(self._otel_token)
             except Exception:
                 pass
             finally:

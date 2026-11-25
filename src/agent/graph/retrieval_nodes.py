@@ -16,6 +16,7 @@ from src.agent.schemas import SessionState, Stage
 from src.agent.topic_manager import UserDialogueIntent
 from src.core.agentops import enqueue_agent_dlq, record_compliance_audit
 from src.core.container import ServiceContainer
+from src.core.dealer_store import DealerStore
 from src.core.interfaces import RAGQueryRequest
 from src.core.tiered_engine import TieredRetrievalEngine
 from src.core.truth_engine import TruthEngineFacade
@@ -23,6 +24,55 @@ from src.llm.cost_ledger import AgentNodeRole, node_cost_context
 from src.privacy.prompt_sanitizer import PromptSanitizer
 
 logger = logging.getLogger(__name__)
+
+
+def prefetch_dealer_and_promo_context(
+    matched_skills: Tuple[str, ...] | List[str],
+    entities: Dict[str, Any],
+    sess: SessionState,
+    turn_id: int,
+) -> List[AnyDialogueEvent]:
+    """Fast (<20ms) read-only prefetch for dealer_visit / pricing_finance context."""
+    events: List[AnyDialogueEvent] = []
+    skills_set = set(matched_skills or ())
+    store_name = entities.get("store_name") or sess.reservation.reservation_location or None
+    car_model = (entities.get("brands") or [None])[0] or sess.needs.explicit.brand or None
+
+    if "dealer_visit" in skills_set:
+        try:
+            info = DealerStore.get_dealer_info(store_name=store_name, car_model=car_model)
+            slots_str = "、".join(info.get("available_test_drive_slots") or [])
+            note = (
+                f"[门店信息预取] {info.get('store_name')}，地址：{info.get('address')}，"
+                f"营业时间：{info.get('business_hours')}，停车：{info.get('parking')}，"
+                f"今日可约试驾时段：{slots_str}"
+            )
+            if note not in sess.system_notes:
+                sess.system_notes.append(note)
+                events.append(SystemNoteAdded(turn_id=turn_id, source="voice_prefetch", note=note))
+        except Exception as exc:
+            logger.debug(f"[{sess.session_id}] Dealer info prefetch skipped: {exc}")
+
+    if "pricing_finance" in skills_set:
+        try:
+            promo = DealerStore.get_promotions(car_model=car_model, store_name=store_name)
+            promos_str = "；".join(
+                f"{p['type']}：{p['benefit']}" for p in (promo.get("promotions") or [])
+            )
+            if promos_str:
+                note = (
+                    f"[优惠政策预取] {promo.get('store_name')}（{promo.get('car_model')}）："
+                    f"{promos_str}（{promo.get('valid_until')}）"
+                )
+                if note not in sess.system_notes:
+                    sess.system_notes.append(note)
+                    events.append(
+                        SystemNoteAdded(turn_id=turn_id, source="voice_prefetch", note=note)
+                    )
+        except Exception as exc:
+            logger.debug(f"[{sess.session_id}] Dealer promotions prefetch skipped: {exc}")
+
+    return events
 
 
 def extract_comparison_models(query: str, sess: SessionState) -> List[str]:

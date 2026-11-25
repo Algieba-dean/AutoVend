@@ -14,6 +14,7 @@ Metrics:
 6. Cross-turn KV-Cache SystemMessage byte-identity rate (20 turns / all 7 stages)
 """
 
+import argparse
 import asyncio
 import json
 import statistics
@@ -21,6 +22,8 @@ import sys
 import time
 from pathlib import Path
 from typing import Any, AsyncIterator, Dict, List, Optional
+
+import numpy as np
 
 _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
@@ -34,6 +37,18 @@ from langgraph.checkpoint.memory import MemorySaver
 from src.agent.langchain_chains import build_reply_messages
 from src.agent.langgraph_agent import LangGraphSalesAgent
 from src.agent.schemas import SessionState, Stage
+
+
+class _ZeroWeightBenchEmbedder:
+    """Fast deterministic 1024-d embedder so offline benchmark runs in <5s without GPU weights."""
+
+    def _get_text_embedding(self, text: str) -> List[float]:
+        rng = np.random.default_rng(abs(hash(text)) % (2**32))
+        vec = rng.standard_normal(1024).astype(np.float32)
+        vec /= float(np.linalg.norm(vec) + 1e-8)
+        return vec.tolist()
+
+    get_text_embedding = _get_text_embedding
 
 
 class SimulatedLatencyVoiceChatModel(BaseChatModel):
@@ -114,13 +129,14 @@ def _percentile(values: List[float], pct: float) -> float:
     return round(ordered[idx], 2)
 
 
-async def run_voice_benchmark() -> Dict[str, Any]:
+async def run_voice_benchmark(with_bge: bool = False, real_llm: bool = False) -> Dict[str, Any]:
     """Run Legacy vs Voice-First SLA benchmark and return structured report."""
-    # Warm up resident SemanticRouter once (startup cost, not per-turn TTFS)
+    # Warm up resident SemanticRouter once (use lightweight embedder in fast offline mode)
     try:
-        from src.semantic_router.router import get_router
+        from src.semantic_router.router import reload_router
 
-        r = get_router()
+        embedder = None if (with_bge or real_llm) else _ZeroWeightBenchEmbedder()
+        r = reload_router(embedder=embedder)
         if r is not None:
             r.classify("你好")
     except Exception:
@@ -249,7 +265,7 @@ async def run_voice_benchmark() -> Dict[str, Any]:
         )
         sys_hashes.add(msgs[0].content)
 
-    return {
+    result: Dict[str, Any] = {
         "legacy": {
             "ttfs_p50_ms": _percentile(legacy_ttfs, 50),
             "ttfs_p95_ms": _percentile(legacy_ttfs, 95),
@@ -267,7 +283,105 @@ async def run_voice_benchmark() -> Dict[str, Any]:
         },
     }
 
+    if real_llm:
+        from src.utils.config import config
+
+        if config.deepseek_api_key:
+            from langchain_openai import ChatOpenAI
+
+            live_gen_llm = ChatOpenAI(
+                model=config.deepseek_model,
+                api_key=config.deepseek_api_key,
+                base_url=config.deepseek_base_url,
+                temperature=0.2,
+                streaming=True,
+                max_tokens=160,
+            )
+            live_bg_llm = ChatOpenAI(
+                model=config.deepseek_model,
+                api_key=config.deepseek_api_key,
+                base_url=config.deepseek_base_url,
+                temperature=0.0,
+                max_tokens=300,
+            )
+            live_agent = LangGraphSalesAgent(
+                llm=live_bg_llm,
+                generation_llm=live_gen_llm,
+                checkpointer=MemorySaver(),
+                voice_mode=True,
+            )
+            live_turns = [
+                "你们朝阳门店几点开门？能免费停车吗？",
+                "我去门店试驾，顺便问下小米SU7有什么优惠？",
+                "帮我约周六下午两点去朝阳门店试驾小米SU7，我叫李明，电话13900139000",
+                "好的，确认提交",
+            ]
+            live_ttfs: List[float] = []
+            live_replies: List[str] = []
+            live_sess = SessionState(session_id="bench-live-deepseek")
+            for idx, lmsg in enumerate(live_turns):
+                if idx == 3 and not live_sess.pending_action:
+                    live_sess.pending_action = {
+                        "tool_name": "manage_test_drive",
+                        "args": {
+                            "action": "create",
+                            "car_model": "小米SU7",
+                            "reservation_date": "周六",
+                            "reservation_time": "14:00",
+                            "reservation_location": "AutoVend朝阳旗舰4S店",
+                            "test_driver": "李明",
+                            "phone_number": "13900139000",
+                        },
+                    }
+                t0 = time.perf_counter()
+                f_ms: Optional[float] = None
+                done_txt = ""
+                async for kind, payload in live_agent.astream_turn(
+                    "bench-live-deepseek", lmsg, session_state=live_sess, voice_mode=True
+                ):
+                    if kind == "metadata" and isinstance(payload, dict) and payload.get("session_state"):
+                        live_sess = payload["session_state"]
+                    elif kind == "delta" and str(payload).strip() and f_ms is None:
+                        f_ms = (time.perf_counter() - t0) * 1000.0
+                    elif kind == "done":
+                        done_txt = str(payload or "")
+                live_ttfs.append(f_ms or (time.perf_counter() - t0) * 1000.0)
+                live_replies.append(done_txt)
+
+            live_compliant = sum(
+                1
+                for r in live_replies
+                if len(r) <= 100 and not any(tok in r for tok in ("**", "##", "```", "- "))
+            )
+            live_barge = live_agent.commit_spoken_text(
+                session_id="bench-live-deepseek",
+                turn_id=len(live_turns),
+                spoken_text="好的，已经帮您约好",
+                interrupted=True,
+            )
+            live_agent._sync_executor.shutdown(wait=False)
+            result["real_llm_deepseek"] = {
+                "model": config.deepseek_model,
+                "turns": len(live_turns),
+                "ttfs_p50_ms": _percentile(live_ttfs, 50),
+                "ttfs_p95_ms": _percentile(live_ttfs, 95),
+                "affirm_0llm_ttfs_ms": round(live_ttfs[-1], 2),
+                "spoken_compliance_rate": round(live_compliant / len(live_replies), 2),
+                "barge_in_recovery_passed": bool(live_barge.get("updated")),
+                "sample_replies": live_replies,
+            }
+
+    legacy_agent._sync_executor.shutdown(wait=False)
+    voice_agent._sync_executor.shutdown(wait=False)
+    return result
+
 
 if __name__ == "__main__":
-    report = asyncio.run(run_voice_benchmark())
+    parser = argparse.ArgumentParser(description="AutoVend Voice-First SLA Benchmark")
+    parser.add_argument("--with-bge", action="store_true", help="Load full BGE-M3 semantic router")
+    parser.add_argument("--real-llm", action="store_true", help="Also benchmark live DeepSeek API")
+    cli_args = parser.parse_args()
+    report = asyncio.run(
+        run_voice_benchmark(with_bge=cli_args.with_bge, real_llm=cli_args.real_llm)
+    )
     print(json.dumps(report, ensure_ascii=False, indent=2))

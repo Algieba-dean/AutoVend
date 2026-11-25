@@ -14,6 +14,7 @@ In test mode (`APP_ENV=test` / `testing`), gracefully allows isolated test doubl
 import json
 import os
 import threading
+import time
 from contextlib import contextmanager
 from typing import Any, Dict, Iterator, List, Optional
 
@@ -40,6 +41,8 @@ class MLOpsPostgresStore:
     _pool: Optional[Any] = None
     _schema_ready: bool = False
     _unavailable_in_test: bool = False
+    _unavailable_until: float = 0.0
+    _last_error: str = ""
 
     @classmethod
     def reset_for_tests(cls) -> None:
@@ -52,6 +55,8 @@ class MLOpsPostgresStore:
                 cls._pool = None
             cls._schema_ready = False
             cls._unavailable_in_test = False
+            cls._unavailable_until = 0.0
+            cls._last_error = ""
 
     @classmethod
     def ensure_ready(cls) -> bool:
@@ -65,18 +70,30 @@ class MLOpsPostgresStore:
                 return True
             if cls._unavailable_in_test and is_test_env():
                 return False
+            if time.monotonic() < cls._unavailable_until:
+                if is_test_env():
+                    cls._unavailable_in_test = True
+                    return False
+                raise RuntimeError(
+                    f"PostgreSQL is required for MLOps in non-test environments: {cls._last_error}"
+                )
 
+            pool: Optional[Any] = None
             try:
+                import psycopg
                 from psycopg_pool import ConnectionPool
+
+                with psycopg.connect(config.pgvector_connection_string, connect_timeout=1):
+                    pass
 
                 pool = ConnectionPool(
                     conninfo=config.pgvector_connection_string,
                     min_size=1,
                     max_size=5,
-                    kwargs={"connect_timeout": 3, "autocommit": True},
+                    kwargs={"connect_timeout": 1, "autocommit": True},
                     open=False,
                 )
-                pool.open(wait=True, timeout=5.0)
+                pool.open(wait=True, timeout=1.2)
                 with pool.connection() as conn:
                     with conn.cursor() as cur:
                         cur.execute(
@@ -120,8 +137,17 @@ class MLOpsPostgresStore:
                 cls._pool = pool
                 cls._schema_ready = True
                 cls._unavailable_in_test = False
+                cls._unavailable_until = 0.0
+                cls._last_error = ""
                 return True
             except Exception as exc:
+                if pool is not None:
+                    try:
+                        pool.close()
+                    except Exception:
+                        pass
+                cls._last_error = str(exc)
+                cls._unavailable_until = time.monotonic() + 30.0
                 if not is_test_env():
                     raise RuntimeError(
                         f"PostgreSQL is required for MLOps in non-test environments: {exc}"

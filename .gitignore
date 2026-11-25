@@ -38,6 +38,9 @@ models/**
 **/storage/sessions/**
 **/storage/test_drives/**
 **/storage/mlops/**
+**/storage/benchmarks/**
+**/storage/*.db
+**/storage/*.db-*
 
 # IDE / local tooling
 **/.idea/**

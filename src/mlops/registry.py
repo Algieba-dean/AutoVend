@@ -862,11 +862,15 @@ class ArtifactBundleVersion:
 class ArtifactBundleRegistry:
     """Computes and tracks immutable 4-in-1 `artifact_bundle_version` identifiers."""
 
-    def __init__(self, storage_dir: Optional[Path] = None):
+    _DEFAULT_LOCAL_BUNDLE_VERSION = "v1.0.0-local"
+
+    def __init__(self, storage_dir: Optional[Path] = None, cache_ttl_s: float = 300.0):
         self.storage_dir = Path(storage_dir) if storage_dir else None
         self._backend = _RegistryBackend("bundles", storage_dir=self.storage_dir)
         self._lock = threading.RLock()
         self._current: Optional[ArtifactBundleVersion] = None
+        self._cache_ttl_s = float(cache_ttl_s)
+        self._cached_at: float = 0.0
 
     def register_bundle(
         self,
@@ -887,21 +891,38 @@ class ArtifactBundleRegistry:
         )
         with self._lock:
             self._current = bundle
+            self._cached_at = time.monotonic()
             self._backend.save(bundle_id, bundle.to_dict())
         return bundle
 
     def get_current(self) -> ArtifactBundleVersion:
+        now = time.monotonic()
         with self._lock:
-            if self._current is not None:
+            if self._current is not None and (now - self._cached_at) < self._cache_ttl_s:
                 return self._current
-            active_prompt = prompt_registry.get_active_prompt("response_generation_welcome")
-            p_ver = active_prompt.version if active_prompt else "v1.0.0"
-            return self.register_bundle(
-                prompt_version=p_ver,
-                graph_topology_version="langgraph-crag-audit-v1",
-                model_routing_policy="hybrid-local-control-cloud-synthesis-v1",
-                pgvector_index_version="pgvector-hnsw-v1",
-            )
+            try:
+                active_prompt = prompt_registry.get_active_prompt("response_generation_welcome")
+                p_ver = active_prompt.version if active_prompt else "v1.0.0"
+                return self.register_bundle(
+                    prompt_version=p_ver,
+                    graph_topology_version="langgraph-crag-audit-v1",
+                    model_routing_policy="hybrid-local-control-cloud-synthesis-v1",
+                    pgvector_index_version="pgvector-hnsw-v1",
+                )
+            except Exception as exc:
+                logger.warning(
+                    f"[MLOps] ArtifactBundleRegistry unavailable ({exc}); failing open to {self._DEFAULT_LOCAL_BUNDLE_VERSION}."
+                )
+                fallback = ArtifactBundleVersion(
+                    bundle_version=self._DEFAULT_LOCAL_BUNDLE_VERSION,
+                    prompt_version="v1.0.0",
+                    graph_topology_version="langgraph-crag-audit-v1",
+                    model_routing_policy="hybrid-local-control-cloud-synthesis-v1",
+                    pgvector_index_version="pgvector-hnsw-v1",
+                )
+                self._current = fallback
+                self._cached_at = time.monotonic()
+                return fallback
 
 
 # Global Singletons

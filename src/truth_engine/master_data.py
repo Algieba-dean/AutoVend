@@ -181,6 +181,9 @@ class TruthMasterDataStore:
         "vat_divisor": 1.13,
     }
 
+    _unavailable_until: float = 0.0
+    _last_error: str = ""
+
     @classmethod
     def reset_for_tests(cls) -> None:
         with cls._lock:
@@ -192,28 +195,43 @@ class TruthMasterDataStore:
                 cls._pool = None
             cls._schema_ready = False
             cls._use_test_memory = False
+            cls._unavailable_until = 0.0
+            cls._last_error = ""
             cls._mem_pricing.clear()
 
     @classmethod
     def _ensure_ready(cls) -> bool:
         """Return True if PostgreSQL is active, False if in-memory test mode is active."""
+        import time as _time
+
         with cls._lock:
             if cls._schema_ready and cls._pool is not None:
                 return True
             if cls._use_test_memory and _is_test_env():
                 return False
+            if _time.monotonic() < cls._unavailable_until:
+                if not _is_test_env():
+                    raise RuntimeError(
+                        f"PostgreSQL is required for Truth Engine master data in non-test environments: {cls._last_error}"
+                    )
+                return False
 
+            pool: Optional[Any] = None
             try:
+                import psycopg
                 from psycopg_pool import ConnectionPool
+
+                with psycopg.connect(config.pgvector_connection_string, connect_timeout=1):
+                    pass
 
                 pool = ConnectionPool(
                     conninfo=config.pgvector_connection_string,
                     min_size=1,
                     max_size=5,
-                    kwargs={"connect_timeout": 3, "autocommit": True},
+                    kwargs={"connect_timeout": 1, "autocommit": True},
                     open=False,
                 )
-                pool.open(wait=True, timeout=5.0)
+                pool.open(wait=True, timeout=1.2)
                 with pool.connection() as conn:
                     with conn.cursor() as cur:
                         cur.execute(
@@ -243,9 +261,18 @@ class TruthMasterDataStore:
                 cls._pool = pool
                 cls._schema_ready = True
                 cls._use_test_memory = False
+                cls._unavailable_until = 0.0
+                cls._last_error = ""
                 cls._bootstrap_if_empty()
                 return True
             except Exception as exc:
+                if pool is not None:
+                    try:
+                        pool.close()
+                    except Exception:
+                        pass
+                cls._last_error = str(exc)
+                cls._unavailable_until = _time.monotonic() + 30.0
                 if not _is_test_env():
                     raise RuntimeError(
                         f"PostgreSQL is required for Truth Engine master data in non-test environments: {exc}"

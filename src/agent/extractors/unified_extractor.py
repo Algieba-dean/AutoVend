@@ -67,7 +67,16 @@ def extract_unified_slots(
         HumanMessage(content=f"Conversation transcript:\n{conversation_text}\n\nJSON:"),
     ]
     try:
-        tool_data: UpdateSessionSlotsTool = structured_llm.invoke(messages)
+        try:
+            tool_data: UpdateSessionSlotsTool = structured_llm.invoke(messages)
+        except Exception as first_exc:
+            if "response_format" in str(first_exc).lower():
+                fc_llm = chat_model.with_structured_output(
+                    UpdateSessionSlotsTool, method="function_calling"
+                )
+                tool_data = fc_llm.invoke(messages)
+            else:
+                raise
         updated_state = apply_slot_updates(state, tool_data)
         return updated_state, tool_data
     except Exception as exc:

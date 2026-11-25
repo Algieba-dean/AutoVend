@@ -479,20 +479,24 @@ class PgVectorStore:
 
     def _initialize_backend(self) -> None:
         """Connect to PostgreSQL + pgvector via ConnectionPool and ensure schema."""
-        opened_pool = False
         try:
             if self._conn is None:
                 from psycopg_pool import ConnectionPool
+
+                if type(ConnectionPool).__name__ == "type":
+                    import psycopg
+
+                    with psycopg.connect(self.dsn, connect_timeout=1):
+                        pass
 
                 self._pool = ConnectionPool(
                     conninfo=self.dsn,
                     min_size=self.pool_min_size,
                     max_size=self.pool_max_size,
-                    kwargs={"connect_timeout": 3, "autocommit": True},
+                    kwargs={"connect_timeout": 1, "autocommit": True},
                     open=False,
                 )
-                self._pool.open(wait=True, timeout=5.0)
-                opened_pool = True
+                self._pool.open(wait=True, timeout=1.2)
             self._ensure_schema()
             self.is_fallback = False
             self.backend_mode = "postgres"
@@ -501,7 +505,7 @@ class PgVectorStore:
                 f"(dim={self.embed_dim}, metric={self.distance_metric})"
             )
         except Exception as e:
-            if opened_pool and self._pool is not None:
+            if self._pool is not None:
                 try:
                     self._pool.close()
                 except Exception:
